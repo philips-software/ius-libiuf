@@ -5,7 +5,7 @@ FLAGS        = # -std=gnu99 #-Iinclude
 CFLAGS       = -Llib/hdf5/lib -lhdf5 -lhdf5_hl -lpthread -luuid -lm -Ilib/hdf5/include -Iinclude -fPIC -g #-pedantic -Wall -Wextra -ggdb3
 LDFLAGS      = -shared
 
-TARGET  = libius_v3.so
+TARGET  = libius.so
 #SOURCES = $(wildcard src/*.c) $(wildcard src/base/*.c) $(wildcard src/fileio/*.c) 
 SOURCES = $(wildcard src/*.c)
 OBJECTS = $(SOURCES:.c=.o)
