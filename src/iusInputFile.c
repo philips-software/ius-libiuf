@@ -10,6 +10,7 @@
 
 #include "iusInputFile.h"
 #include "iusInput.h"
+#include "iusError.h"
 #include <stdlib.h>    // for calloc
 
 IusInputFileInstance *iusInputFileCreate
@@ -314,7 +315,7 @@ int iusInputFileReadNextFrameDepthRange
     //IusPage wave;
     for (i = 0; i<pInst->pIusInput->pDrivingScheme->numTransmitPulses; i++)
     {
-        iusInputReadNextPulseDepthRange(pInst, pDepthRange, pPage[i]);
+        iusInputFileReadNextPulseDepthRange(pInst, pDepthRange, pPage[i]);
     }
     return 0;
 }
@@ -394,7 +395,7 @@ int iusInputFileClose
 )
 {
     int success=0;
-    Ius_ASSERT_MEMORY(pFileInst);
+    IUS_ASSERT_MEMORY(pFileInst);
     IusInputInstance *pInst = pFileInst->pIusInput;
     iusInputDestroy(pInst);
 

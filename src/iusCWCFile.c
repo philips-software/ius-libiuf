@@ -74,7 +74,7 @@ IusCwcFileInstance * iusCwcFileCreate
     pFileInst->currentFrame     = 0;
     pFileInst->currentComponent = 0;
 
-    success = iusCWCWrite( pFileInst->handle, pInst, version );
+    success = iusCwcWrite( pFileInst->handle, pInst, version );
 
     return success ? pFileInst : NULL;
 }
@@ -99,7 +99,7 @@ IusCwcFileInstance * iusCwcFileOpen
     if ( pFileInst->handle <= 0 )
     {
         fprintf( stderr,
-            "iusCWCFileOpen: could not create file: %s\n", pFullFileName );
+            "iusCwcFileOpen: could not create file: %s\n", pFullFileName );
         return NULL;
     }
 
@@ -149,7 +149,7 @@ int iusCwcFileRead
 //------------------------------------------------------------------------------
 //
 //------------------------------------------------------------------------------
-int iusCWCFileReadFrame
+int iusCwcFileReadFrame
 (    
     IusCwcFileInstance * const    pInst,
     float * const * const * const pppCwcOut,
@@ -189,7 +189,7 @@ int iusCwcFileReadNextFrame
     dataspace = H5Dget_space( pInst->cwcDataset );
     if ( pFrame1D == NULL || memspace ==0 || dataspace ==0 )
     {
-        fprintf( stderr, "iusCWCFileReadNextFrame: Memory error \n" );
+        fprintf( stderr, "iusCwcFileReadNextFrame: Memory error \n" );
         return -1;
     }
 
@@ -350,7 +350,7 @@ int LF_CwcFileWriteNextComponent
 //------------------------------------------------------------------------------
 //
 //------------------------------------------------------------------------------
-int iusCWCFileWriteFramePolarROI
+int iusCwcFileWriteFramePolarROI
 (
     IusCwcFileInstance * const          pFileInst,
     const float * const * const * const pppFrame,
@@ -360,14 +360,14 @@ int iusCWCFileWriteFramePolarROI
 {
     pFileInst->currentFrame = frameNum;
 
-    return iusCWCWriteNextFramePolarROI( pFileInst, pppFrame, pPolarROI );
+    return iusCwcFileWriteNextFramePolarROI( pFileInst, pppFrame, pPolarROI );
 }
 
 
 //------------------------------------------------------------------------------
 //
 //------------------------------------------------------------------------------
-int iusCWCFileWriteNextFramePolarROI
+int iusCwcFileWriteNextFramePolarROI
 (
     IusCwcFileInstance * const          pFileInst,
     const float * const * const * const pppFrame,
@@ -437,14 +437,14 @@ int iusCWCFileWriteNextFramePolarROI
 //------------------------------------------------------------------------------
 //
 //------------------------------------------------------------------------------
-int iusCWCFileClose
+int iusCwcFileClose
 (
     IusCwcFileInstance * const pInst
 )
 {
     int success = -1;
 
-    //iusCWCDestroy( pInst->pCWC4DWDInst );
+    //iusCwcDestroy( pInst->pCWC4DWDInst );
     if ( pInst->fileChunkConfig )  // Only exists when file has been created
     {
         H5Pclose( pInst->fileChunkConfig );

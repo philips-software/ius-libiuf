@@ -577,9 +577,10 @@ int iusInputSetDepthRange
     IusRange * const               pDepthRange
 )
 {
-    assert( pInst != NULL );
-    assert( pDepthRange != NULL );
-    assert( startIndex + numSamples <= pInst->pDrivingScheme->numSamplesPerLine );
+    IUS_ASSERT_MEMORY( pInst != NULL );
+    IUS_ASSERT_MEMORY( pDepthRange != NULL );
+    IUS_ASSERT_VALUE( startIndex + numSamples <=
+        pInst->pDrivingScheme->numSamplesPerLine );
     pInst; // avoid unreferenced parameter warning
 
     pDepthRange->startIndex = startIndex;
@@ -774,15 +775,15 @@ IusInputInstance * iusInputRead
     // init instance variables
     //--------------------------------------------------------------------------
 
-    status = iusHDF5ReadFloat( handle , "/Experiment/speedOfSound",    &(pInst->pExperiment->speedOfSound),              verbose );
-    status = iusHDF5ReadInt( handle,    "/Experiment/date",            &(pInst->pExperiment->date),                      verbose );
-    status = iusHDF5ReadString( handle, "/Experiment/description",     (char * *)&(pInst->pExperiment->pDescription),    verbose );
-    status = iusHDF5ReadString( handle, "/Transducer/transducerName",  (char * *)&(pInst->pTransducer->pTransducerName), verbose );
-    status = iusHDF5ReadFloat( handle,  "/Transducer/centerFrequency", &(pInst->pTransducer->centerFrequency),           verbose );
-    status = iusHDF5ReadInt( handle,    "/Transducer/numElements",     &(pInst->pTransducer->numElements),               verbose );
+    status = iusHdf5ReadFloat( handle , "/Experiment/speedOfSound",    &(pInst->pExperiment->speedOfSound),              verbose );
+    status = iusHdf5ReadInt( handle,    "/Experiment/date",            &(pInst->pExperiment->date),                      verbose );
+    status = iusHdf5ReadString( handle, "/Experiment/description",     (char * *)&(pInst->pExperiment->pDescription),    verbose );
+    status = iusHdf5ReadString( handle, "/Transducer/transducerName",  (char * *)&(pInst->pTransducer->pTransducerName), verbose );
+    status = iusHdf5ReadFloat( handle,  "/Transducer/centerFrequency", &(pInst->pTransducer->centerFrequency),           verbose );
+    status = iusHdf5ReadInt( handle,    "/Transducer/numElements",     &(pInst->pTransducer->numElements),               verbose );
 
     status = LF_readTransElements( pInst, handle, verbose );
-    status = iusHDF5ReadInt( handle, "/DrivingScheme/drivingSchemeType", (int *)&(pInst->pDrivingScheme->drivingSchemeType), verbose );
+    status = iusHdf5ReadInt( handle, "/DrivingScheme/drivingSchemeType", (int *)&(pInst->pDrivingScheme->drivingSchemeType), verbose );
 
     /* Based on a native signed short */
     hid_t hdf_drivingSchemeType = H5Tcreate(H5T_ENUM, sizeof(short));
@@ -793,25 +794,25 @@ IusInputInstance * iusInputRead
     H5Tenum_insert( hdf_drivingSchemeType, "SINGLE_ELEMENT",         (enumValue=IUS_SINGLE_ELEMENT,  &enumValue));
 
     status = H5LTread_dataset( handle, "/DrivingScheme/drivingSchemeType",   hdf_drivingSchemeType, &enumValue ); 
-    status = iusHDF5ReadInt( handle,   "/DrivingScheme/numSamplesPerLine",   &(pInst->pDrivingScheme->numSamplesPerLine), verbose );
-    status = iusHDF5ReadInt( handle,   "/DrivingScheme/numTransmitPulses",   &(pInst->pDrivingScheme->numTransmitPulses), verbose );
-    status = iusHDF5ReadInt( handle,   "/DrivingScheme/numTransmitSources",  &(pInst->pDrivingScheme->numTransmitSources), verbose );
-    status = iusHDF5ReadInt( handle,   "/numFrames",                         &(pInst->numFrames), verbose );
+    status = iusHdf5ReadInt( handle,   "/DrivingScheme/numSamplesPerLine",   &(pInst->pDrivingScheme->numSamplesPerLine), verbose );
+    status = iusHdf5ReadInt( handle,   "/DrivingScheme/numTransmitPulses",   &(pInst->pDrivingScheme->numTransmitPulses), verbose );
+    status = iusHdf5ReadInt( handle,   "/DrivingScheme/numTransmitSources",  &(pInst->pDrivingScheme->numTransmitSources), verbose );
+    status = iusHdf5ReadInt( handle,   "/numFrames",                         &(pInst->numFrames), verbose );
 
     //if (pInst->pIusInput->pDrivingScheme->drivingSchemeType ==  IUS_DIVERGING_WAVES)
     if ( pInst->pDrivingScheme->drivingSchemeType == IUS_DIVERGING_WAVES )
     {
-        status = iusHDF5ReadFloat(handle, "/DrivingScheme/sourceAngularDelta", &(pInst->pDrivingScheme->sourceAngularDelta), verbose );
-        status = iusHDF5ReadFloat(handle, "/DrivingScheme/sourceFNumber",      &(pInst->pDrivingScheme->sourceFNumber), verbose );
-        status = iusHDF5ReadFloat(handle, "/DrivingScheme/sourceStartAngle",   &(pInst->pDrivingScheme->sourceStartAngle), verbose );
+        status = iusHdf5ReadFloat(handle, "/DrivingScheme/sourceAngularDelta", &(pInst->pDrivingScheme->sourceAngularDelta), verbose );
+        status = iusHdf5ReadFloat(handle, "/DrivingScheme/sourceFNumber",      &(pInst->pDrivingScheme->sourceFNumber), verbose );
+        status = iusHdf5ReadFloat(handle, "/DrivingScheme/sourceStartAngle",   &(pInst->pDrivingScheme->sourceStartAngle), verbose );
     }
     else
     {  
         status = LF_readSourceLocationsCartesian(pInst, handle, verbose);
     }
-    status = iusHDF5ReadFloat( handle, "/DrivingScheme/TransmitPattern/transmitPatternDelay", &(pInst->pDrivingScheme->transmitPatternDelay), verbose );
+    status = iusHdf5ReadFloat( handle, "/DrivingScheme/TransmitPattern/transmitPatternDelay", &(pInst->pDrivingScheme->transmitPatternDelay), verbose );
     status = LF_readTransmitPattern( pInst, handle, verbose );
-    status = iusHDF5ReadInt( handle, "/DrivingScheme/TransmitPulse/numPulseValues", &(pInst->pDrivingScheme->transmitPulse.numPulseValues), verbose );
+    status = iusHdf5ReadInt( handle, "/DrivingScheme/TransmitPulse/numPulseValues", &(pInst->pDrivingScheme->transmitPulse.numPulseValues), verbose );
 
     if (pInst->pDrivingScheme->transmitPulse.numPulseValues != 0)
     {
@@ -823,20 +824,20 @@ IusInputInstance * iusInputRead
         //alternative waveform description
         // TODO: define these
     }
-    status = iusHDF5ReadFloat( handle, "/DrivingScheme/TransmitPulse/pulseFrequency", &(pInst->pDrivingScheme->transmitPulse.pulseFrequency), verbose ); 
-    status = iusHDF5ReadFloat( handle, "/DrivingScheme/TransmitPulse/pulseAmplitude", &(pInst->pDrivingScheme->transmitPulse.pulseAmplitude), verbose ); 
-    status = iusHDF5ReadInt( handle,   "/DrivingScheme/TransmitPulse/pulseCount", &(pInst->pDrivingScheme->transmitPulse.pulseCount), verbose ); 
+    status = iusHdf5ReadFloat( handle, "/DrivingScheme/TransmitPulse/pulseFrequency", &(pInst->pDrivingScheme->transmitPulse.pulseFrequency), verbose ); 
+    status = iusHdf5ReadFloat( handle, "/DrivingScheme/TransmitPulse/pulseAmplitude", &(pInst->pDrivingScheme->transmitPulse.pulseAmplitude), verbose ); 
+    status = iusHdf5ReadInt( handle,   "/DrivingScheme/TransmitPulse/pulseCount", &(pInst->pDrivingScheme->transmitPulse.pulseCount), verbose ); 
 
-    status = iusHDF5ReadFloat( handle, "/ReceiveSettings/sampleFrequency", &(pInst->pReceiveSettings->sampleFrequency),verbose );
-    status = iusHDF5ReadInt( handle,   "/ReceiveSettings/TimeGainControl/numValues", &(pInst->pReceiveSettings->numTimeGainControlValues), verbose );
+    status = iusHdf5ReadFloat( handle, "/ReceiveSettings/sampleFrequency", &(pInst->pReceiveSettings->sampleFrequency),verbose );
+    status = iusHdf5ReadInt( handle,   "/ReceiveSettings/TimeGainControl/numValues", &(pInst->pReceiveSettings->numTimeGainControlValues), verbose );
     status = LF_readTimeGainControls( pInst, handle, verbose );
     pInst->pReceiveSettings->pStartDepth = (float *)calloc(pInst->pDrivingScheme->numTransmitPulses, sizeof(float));
     pInst->pReceiveSettings->pEndDepth   = (float *)calloc(pInst->pDrivingScheme->numTransmitPulses, sizeof(float));
     status = H5LTread_dataset_float(handle, "/ReceiveSettings/startDepth", pInst->pReceiveSettings->pStartDepth);
     status = H5LTread_dataset_float(handle, "/ReceiveSettings/endDepth", pInst->pReceiveSettings->pEndDepth);
 
-    status = iusHDF5ReadInt( handle, "/IUSVersion", &(pInst->IusVersion), verbose ); 
-    status = iusHDF5ReadString( handle, "/ID", (char **)&(pInst->iusNode.pId), verbose );
+    status = iusHdf5ReadInt( handle, "/IUSVersion", &(pInst->IusVersion), verbose ); 
+    status = iusHdf5ReadString( handle, "/ID", (char **)&(pInst->iusNode.pId), verbose );
 
     iusNodeLoadParents((IusNode *)pInst, handle);
 

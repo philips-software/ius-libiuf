@@ -56,12 +56,12 @@ IusBModeInstance * iusBModeRead
 
     IUS_ASSERT_MEMORY( pInst != NULL );
 
-    status = iusHDF5ReadFloat( handle, "pixelsPerMeter",
+    status = iusHdf5ReadFloat( handle, "pixelsPerMeter",
                                &(pInst->pixelsPerMeter), verbose);
-    status |= iusHDF5ReadGrid( handle, "Cartesian", pInst->pPixelGrid, verbose);
-    status |= iusHDF5ReadInt( handle,  "interpolationMethod",
+    status |= iusHdf5ReadGrid( handle, "Cartesian", pInst->pPixelGrid, verbose);
+    status |= iusHdf5ReadInt( handle,  "interpolationMethod",
                               &(pInst->interpolationMethod),verbose);
-    status |= iusHDF5ReadInt( handle,  "IUSVersion", &(pInst->IusVersion),
+    status |= iusHdf5ReadInt( handle,  "IUSVersion", &(pInst->IusVersion),
                               verbose);
 
     //check status

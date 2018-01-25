@@ -11,7 +11,7 @@
 //------------------------------------------------------------------------------
 // 
 //------------------------------------------------------------------------------
-herr_t iusHDF5ReadFloat
+herr_t iusHdf5ReadFloat
 (
     hid_t        handle,
     const char * pVariableString,
@@ -40,7 +40,7 @@ herr_t iusHDF5ReadFloat
 //------------------------------------------------------------------------------
 // 
 //------------------------------------------------------------------------------
-herr_t iusHDF5ReadInt
+herr_t iusHdf5ReadInt
 (
     hid_t        handle,
     const char * pVariableString,
@@ -69,7 +69,7 @@ herr_t iusHDF5ReadInt
 //------------------------------------------------------------------------------
 // 
 //------------------------------------------------------------------------------
-herr_t iusHDF5ReadLong
+herr_t iusHdf5ReadLong
 (
     hid_t        handle,
     const char * pVariableString,
@@ -99,7 +99,7 @@ herr_t iusHDF5ReadLong
 //------------------------------------------------------------------------------
 // 
 //------------------------------------------------------------------------------
-herr_t iusHDF5ReadString
+herr_t iusHdf5ReadString
 (
     hid_t        handle,
     const char * pVariableString,
@@ -163,16 +163,16 @@ herr_t iusHdf5ReadGridSize
     {
         sprintf( pVariableNameDim2, "%s/numPointsRadial", pGridName );
         sprintf( pVariableNameDim1, "%s/numPointsTheta", pGridName );
-        status  = iusHDF5ReadInt( handle, pVariableNameDim2, pDim2, verbose );
-        status |= iusHDF5ReadInt( handle, pVariableNameDim1, pDim1, verbose );
+        status  = iusHdf5ReadInt( handle, pVariableNameDim2, pDim2, verbose );
+        status |= iusHdf5ReadInt( handle, pVariableNameDim1, pDim1, verbose );
         *pDim0 = 0;  // elevation dimension not yet supported
     }
     else if ( strcmp( pGridName, "CartesianGrid" ) == 0 )
     {
         sprintf( pVariableNameDim2, "%s/numPointsZ", pGridName );
         sprintf( pVariableNameDim1, "%s/numPointsX", pGridName );
-        status  = iusHDF5ReadInt( handle, pVariableNameDim2, pDim2, verbose );
-        status |= iusHDF5ReadInt( handle, pVariableNameDim1, pDim1, verbose );
+        status  = iusHdf5ReadInt( handle, pVariableNameDim2, pDim2, verbose );
+        status |= iusHdf5ReadInt( handle, pVariableNameDim1, pDim1, verbose );
         *pDim0 = 0;  // elevation dimension not yet supported
     }
     else
@@ -186,7 +186,7 @@ herr_t iusHdf5ReadGridSize
 //------------------------------------------------------------------------------
 //
 //------------------------------------------------------------------------------
-herr_t iusHDF5ReadGrid
+herr_t iusHdf5ReadGrid
 (
     hid_t              handle,
     const char * const pGridName,
@@ -204,7 +204,8 @@ herr_t iusHDF5ReadGrid
     if (strcmp(pGridName, "PolarGrid") == 0 || 
         strcmp(pGridName, "CartesianGrid") == 0)
     {
-        status = iusReadGridSize(handle, pGridName, &dims[0], &dims[1], &dims[2]);
+        status = iusHdf5ReadGridSize( handle, pGridName, &dims[0], &dims[1],
+                                      &dims[2], verbose );
         if ( status < 0 )
         {
             fprintf( stderr,

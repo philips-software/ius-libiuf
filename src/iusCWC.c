@@ -202,7 +202,7 @@ IusCwcInstance * iusCwcRead
 	    status );
         return NULL;
     }
-    iusCreateFloatVector( pInst->pTimeStamps, numFrames * numComponents );
+    pInst->pTimeStamps = iusAllocFloatVector( numFrames * numComponents );
     status =
         iusHdf5ReadFloat( handle, "timeStamps", pInst->pTimeStamps, verbose );
     if ( status < 0 )

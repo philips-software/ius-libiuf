@@ -10,6 +10,7 @@
 
 #include "iusAlgoParams.h"
 #include "iusTypes.h"
+#include "iusError.h"
 #include "iusHDF5.h"
 
 #include <hdf5.h>
@@ -524,7 +525,7 @@ void LF_ReadParameter
     float                          floatValue;
     char *                         pStringValue;
 
-    iusHDF5ReadString( paramGroup, "name", &pName, verbose );
+    iusHdf5ReadString( paramGroup, "name", &pName, verbose );
     strcpy( pInst->pName, pName );
 
     type = LF_DetermineValueType( paramGroup );
@@ -532,24 +533,24 @@ void LF_ReadParameter
     if ( type == IUS_ALGOPARAMT_NONE )
     {
         fprintf( stderr,
-            "iusAlgorithmParameters Read: Failed to determine type of HDF dataset for parameter value" );
+            "iusAlgorithmParameters Read: Failed to determine type of Hdf dataset for parameter value" );
     }
 
     if ( type == IUS_ALGOPARAMT_INT )
     {
-        iusHDF5ReadInt( paramGroup, "value", &intValue, verbose );
+        iusHdf5ReadInt( paramGroup, "value", &intValue, verbose );
         iusAlgorithmParametersAddInt( pInst, pName, intValue );
     }
 
     if ( type == IUS_ALGOPARAMT_FLOAT )
     {
-        iusHDF5ReadFloat( paramGroup, "value", &floatValue, verbose );
+        iusHdf5ReadFloat( paramGroup, "value", &floatValue, verbose );
         iusAlgorithmParametersAddFloat( pInst, pName, floatValue );
     }
 
     if ( type == IUS_ALGOPARAMT_STRING )
     {
-        iusHDF5ReadString( paramGroup, "value", &pStringValue, verbose );
+        iusHdf5ReadString( paramGroup, "value", &pStringValue, verbose );
         iusAlgorithmParametersAddString( pInst, pName, pStringValue );
         free( pStringValue );
     }
@@ -623,9 +624,9 @@ IusAlgorithmParameters * iusAlgorithmParametersRead
 
     algoGroup = H5Gopen( handle, "AlgorithmParameters", H5P_DEFAULT );
 
-    iusHDF5ReadString( algoGroup, "id", &pId, verbose );
-    iusHDF5ReadString( algoGroup, "name", &pName, verbose );
-    iusHDF5ReadString( algoGroup, "description", &pDescription, verbose );
+    iusHdf5ReadString( algoGroup, "id", &pId, verbose );
+    iusHdf5ReadString( algoGroup, "name", &pName, verbose );
+    iusHdf5ReadString( algoGroup, "description", &pDescription, verbose );
 
     pInst = iusAlgorithmParametersCreate( pId, pName, pDescription );
 
@@ -636,7 +637,7 @@ IusAlgorithmParameters * iusAlgorithmParametersRead
         return NULL;
     }
 
-    iusHDF5ReadInt( algoGroup, "numberOfParameters", &numberOfParams, verbose );
+    iusHdf5ReadInt( algoGroup, "numberOfParameters", &numberOfParams, verbose );
 
     for ( i = 0; i < numberOfParams; i++ )
     {
