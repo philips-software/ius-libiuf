@@ -1,7 +1,7 @@
-#include "Unity\unity.h"
-#include "VectorTests.h"
-#include "MedianFilterTests.h"
-#include "LUTTests.h"
+#include "unity\unity.h"
+#include "iusVectorTests.h"
+#include "iusMedianFilterTests.h"
+#include "iusLUTTests.h"
 
 int AverageThreeBytes(int a, int b, int c)
 {
