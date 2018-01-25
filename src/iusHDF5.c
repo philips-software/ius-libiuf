@@ -1,0 +1,432 @@
+
+#include "iusBasicFunctions.h"
+#include "iusTypes.h"
+#include "iusError.h"
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <hdf5.h>
+#include <hdf5_hl.h>
+
+//------------------------------------------------------------------------------
+// 
+//------------------------------------------------------------------------------
+herr_t iusHDF5ReadFloat
+(
+    hid_t        handle,
+    const char * pVariableString,
+    float *      pValue,
+    int          verbose
+)
+{
+    herr_t status = -1;
+
+    IUS_ASSERT_MEMORY( pVariableString && pValue );
+
+    status = H5LTread_dataset_float( handle, pVariableString, pValue );
+    if ( status < 0 )
+    {
+        fprintf( stderr, "H5LTread_dataset_float %s failed\n", pVariableString );
+        return status;
+    }
+    if ( verbose )
+    {
+        fprintf( stdout, "read: %s %f\n", pVariableString, *pValue );
+    }
+
+    return status;
+}
+
+//------------------------------------------------------------------------------
+// 
+//------------------------------------------------------------------------------
+herr_t iusHDF5ReadInt
+(
+    hid_t        handle,
+    const char * pVariableString,
+    int *        pValue,
+    int          verbose
+)
+{
+    herr_t status = -1;
+
+    IUS_ASSERT_MEMORY( pVariableString && pValue );
+
+    status = H5LTread_dataset_int( handle, pVariableString, pValue );
+    if ( status < 0 )
+    {
+        fprintf( stderr, "H5LTread_dataset_int %s failed\n", pVariableString );
+        return status;
+    }
+    if ( verbose )
+    {
+        fprintf( stdout, "read: %s %d\n", pVariableString, *pValue );
+    }
+
+    return status;
+}
+
+//------------------------------------------------------------------------------
+// 
+//------------------------------------------------------------------------------
+herr_t iusHDF5ReadLong
+(
+    hid_t        handle,
+    const char * pVariableString,
+    long int *   pValue,
+    int          verbose
+)
+{
+    herr_t status = -1;
+
+    IUS_ASSERT_MEMORY( pVariableString && pValue );
+
+    status = H5LTread_dataset_long(handle, pVariableString, pValue);
+    if ( status < 0 )
+    {
+        fprintf( stderr, "iusInputFileOpen: H5LTread_dataset_int %s failed\n",
+            pVariableString );
+        return status;
+    }
+    if ( verbose )
+    {
+        fprintf( stdout, "read: %s %ld\n", pVariableString, *pValue );
+    }
+
+    return status;
+}
+
+//------------------------------------------------------------------------------
+// 
+//------------------------------------------------------------------------------
+herr_t iusHDF5ReadString
+(
+    hid_t        handle,
+    const char * pVariableString,
+    char * *     ppReturnString,
+    int          verbose
+)
+{
+    char * h5String;
+    herr_t status = -1;
+    int strLength;
+
+    IUS_ASSERT_MEMORY( pVariableString && ppReturnString );
+
+    h5String = (char *)calloc( IUS_MAX_STRING_LENGTH, sizeof(char) );
+    status = H5LTread_dataset_string( handle, pVariableString, h5String );
+    if ( status < 0 )
+    {
+        fprintf( stderr,"iusInputFileOpen: H5LTread_dataset_string %s failed\n",
+            pVariableString );
+        free( h5String );
+        return status;
+    }
+    else
+    {
+        strLength = (int)strlen( h5String );
+        /* Note: next should be freed when parent object is destroyed */
+        *ppReturnString = (char *)calloc( strLength + 1, sizeof(char) );
+        strncpy( *ppReturnString, h5String, strLength );
+    }
+    if ( verbose )
+    {
+        fprintf( stdout, "read: %s [%d]: %s\n", pVariableString, strLength,
+            *ppReturnString );
+    }
+    free( h5String );
+
+    return status;
+}
+
+
+//------------------------------------------------------------------------------
+// 
+//------------------------------------------------------------------------------
+herr_t iusHdf5ReadGridSize
+(
+    hid_t        handle,
+    const char * pGridName,
+    int *        pDim0,
+    int *        pDim1,
+    int *        pDim2,
+    int          verbose
+)
+{
+    herr_t status = -1;
+    char pVariableNameDim1[128];
+    char pVariableNameDim2[128];
+
+    IUS_ASSERT_MEMORY( pGridName && pDim0 && pDim1 && pDim2 );
+    
+    if ( strcmp( pGridName, "PolarGrid" ) == 0 ) 
+    {
+        sprintf( pVariableNameDim2, "%s/numPointsRadial", pGridName );
+        sprintf( pVariableNameDim1, "%s/numPointsTheta", pGridName );
+        status  = iusHDF5ReadInt( handle, pVariableNameDim2, pDim2, verbose );
+        status |= iusHDF5ReadInt( handle, pVariableNameDim1, pDim1, verbose );
+        *pDim0 = 0;  // elevation dimension not yet supported
+    }
+    else if ( strcmp( pGridName, "CartesianGrid" ) == 0 )
+    {
+        sprintf( pVariableNameDim2, "%s/numPointsZ", pGridName );
+        sprintf( pVariableNameDim1, "%s/numPointsX", pGridName );
+        status  = iusHDF5ReadInt( handle, pVariableNameDim2, pDim2, verbose );
+        status |= iusHDF5ReadInt( handle, pVariableNameDim1, pDim1, verbose );
+        *pDim0 = 0;  // elevation dimension not yet supported
+    }
+    else
+    {
+        fprintf( stderr, "Error: Grid type %s, is not supported\n", pGridName );
+    }
+
+    return status;
+}
+
+//------------------------------------------------------------------------------
+//
+//------------------------------------------------------------------------------
+herr_t iusHDF5ReadGrid
+(
+    hid_t              handle,
+    const char * const pGridName,
+    const IusGrid *    pGrid,
+    int                verbose
+)
+{
+    herr_t status = -1;
+    char pVariableNameDim1[128];
+    char pVariableNameDim2[128];
+    int  dims[3];
+
+    IUS_ASSERT_MEMORY( pGrid && pGridName );
+    
+    if (strcmp(pGridName, "PolarGrid") == 0 || 
+        strcmp(pGridName, "CartesianGrid") == 0)
+    {
+        status = iusReadGridSize(handle, pGridName, &dims[0], &dims[1], &dims[2]);
+        if ( status < 0 )
+        {
+            fprintf( stderr,
+                    "Error reading dataset: H5Dread returned: %d\n", status );
+            return status;
+        }
+
+        IUS_ASSERT_VALUE( dims[0] == pGrid->numPoints0 );
+        IUS_ASSERT_VALUE( dims[1] == pGrid->numPoints1 );
+        IUS_ASSERT_VALUE( dims[2] == pGrid->numPoints2 );
+
+        status  = H5LTread_dataset_float( handle, pVariableNameDim2,
+                pGrid->pPoints2 );
+        status |= H5LTread_dataset_float( handle, pVariableNameDim1,
+                pGrid->pPoints1 );
+        //TODO status = H5LTread_dataset_float( handle, pointsZName,
+        //         pGrid.pointsZ );
+        if ( status < 0 )
+        {
+            fprintf( stderr,
+                    "Error reading dataset: H5Dread returned: %d\n", status );
+            return status;
+        }
+    }
+    else
+    {
+        fprintf(stderr, "Error: Grid type %s, is not supported\n", pGridName);
+        return status;
+    }
+
+    return status;
+}
+
+
+//------------------------------------------------------------------------------
+// 
+//------------------------------------------------------------------------------
+herr_t iusHdf5WriteFloat
+(
+    hid_t               handle,
+    const char * const  pVariableString,
+    const float * const pValues,
+    int                 numValues,
+    int                 verbose
+)
+{
+    herr_t   returnValue;
+    hsize_t  dims[1];
+
+    IUS_ASSERT_MEMORY( pVariableString && pValues );
+
+    dims[0] = (hsize_t)numValues;
+
+    returnValue =
+        H5LTmake_dataset_float( handle, pVariableString, 1, dims, pValues );
+    if (verbose)
+    {
+        printf("writing float(s) to hdf5\n");
+    }
+    if (returnValue !=0 )
+    {
+        fprintf(stderr, "Error: iusHdf5WriteFloat error: %d\n", returnValue);
+    }
+    return returnValue;
+}
+ 
+
+//------------------------------------------------------------------------------
+// 
+//------------------------------------------------------------------------------
+herr_t iusHdf5WriteInt
+(
+    hid_t              handle,
+    const char * const pVariableString,
+    const int * const  pValues,
+    int                numValues,
+    int                verbose
+)
+{
+    herr_t returnValue;
+    hsize_t  dims[1];
+
+    IUS_ASSERT_MEMORY( pVariableString && pValues );
+
+    dims[0] = (hsize_t)numValues;
+
+    returnValue =
+        H5LTmake_dataset_int( handle, pVariableString, 1, dims, pValues );
+    if ( verbose )
+    {
+        printf("writing int(s) to hdf5\n");
+    }
+    if ( returnValue != 0 )
+    {
+        fprintf( stderr, "Error: iusHdf5WriteInt error: %d\n", returnValue );
+    }
+    return returnValue;
+}
+
+
+//------------------------------------------------------------------------------
+// 
+//------------------------------------------------------------------------------
+herr_t iusHdf5WriteLong
+(
+    hid_t              handle,
+    const char * const pVariableString,
+    const long * const pValues,
+    int                numValues,
+    int                verbose
+)
+{
+    herr_t returnValue;
+    hsize_t dims[1];
+
+    IUS_ASSERT_MEMORY( pVariableString && pValues );
+
+    dims[0] = (hsize_t)numValues;
+
+    returnValue = 
+        H5LTmake_dataset_long( handle, pVariableString, 1, dims, pValues );
+    if ( verbose )
+    {
+        printf( "writing long(s) to hdf5\n ");
+    }
+    if ( returnValue != 0 )
+    {
+        fprintf(stderr, "Error: iusHdf5WriteLong error: %d\n", returnValue );
+    }
+    return returnValue;
+}
+
+
+//------------------------------------------------------------------------------
+// 
+//------------------------------------------------------------------------------
+herr_t iusHdf5WriteString
+(
+    hid_t              handle,
+    const char * const pVariableString,
+    const char * const pString,
+    int                numValues,
+    int                verbose
+)
+{
+    herr_t returnValue;
+    
+    IUS_ASSERT_MEMORY( pVariableString && pString );
+    
+    returnValue = H5LTmake_dataset_string( handle, pVariableString, pString );
+    if ( verbose )
+    {
+        printf( "writing long(s) to hdf5\n" );
+    }
+    if ( returnValue != 0 )
+    {
+        fprintf( stderr, "Error: iusHdf5WriteLong error: %d\n", returnValue );
+    }
+    return returnValue;
+}
+
+
+//------------------------------------------------------------------------------
+// 
+//------------------------------------------------------------------------------
+herr_t iusHdf5WriteGrid
+(
+    hid_t        handle,
+    const char * pGridName,
+    IusGrid *    pGrid,
+    int          verbose
+)
+{
+    herr_t returnValue;
+    char pVariableNameDim[128];
+    hsize_t dims[1];
+
+    IUS_ASSERT_MEMORY( pGrid && pGridName );
+    
+    dims[0] = (hsize_t)1;
+
+    if ( strcmp( pGridName, "PolarGrid" ) == 0 )
+    {
+        sprintf(pVariableNameDim, "%s/numPointsRadial");
+        returnValue = H5LTmake_dataset_int( handle, pVariableNameDim, 1,
+                                            &dims[0], &(pGrid->numPoints2) );
+        sprintf(pVariableNameDim, "%s/numPointsTheta");
+        returnValue |= H5LTmake_dataset_int( handle, pVariableNameDim, 1,
+                                             &dims[0], &(pGrid->numPoints1) );
+        //sprintf(pVariableNameDim, "%s/numPointsPhi");
+        //returnValue |= H5LTmake_dataset_int( handle, pVariableNameDim, 1,
+        //    &dim[0], &(pGrid->numPoints0) );
+    }
+    else if ( strcmp( pGridName, "CartesianGrid" ) == 0 ) 
+    {
+        sprintf( pVariableNameDim, "%s/numPointsZ" );
+        returnValue = H5LTmake_dataset_int( handle, pVariableNameDim, 1,
+                                            &dims[0], &(pGrid->numPoints2) );
+        sprintf( pVariableNameDim, "%s/numPointsX" );
+        returnValue |= H5LTmake_dataset_int( handle, pVariableNameDim, 1,
+                                             &dims[0], &(pGrid->numPoints1) );
+        //sprintf(pVariableNameDim, "%s/numPointsY");
+        //returnValue |= H5LTmake_dataset_int( handle, pVariableNameDim, 1,
+        //                                     &dims[0], &(pGrid->numPoints0) );
+    }
+    else
+    {
+        returnValue = -1;
+        fprintf( stderr, "Error: iusHdf5WriteGrid, Grid name unknown (%s)\n",
+            pGridName );
+    }
+
+    if ( verbose )
+    {
+        printf( "iusHdf5WriteGrid: writing grid to hdf5\n" );
+    }
+
+    if ( returnValue != 0 )
+    {
+        fprintf( stderr, "Error: iusHdf5WriteGrid error: %d\n", returnValue );
+    }
+
+    return returnValue;
+}
+
