@@ -8,5 +8,6 @@ echo path is:
 echo $LD_LIBRARY_PATH
 
 make $Target
-valgrind --tool=memcheck --leak-check=yes --track-origins=yes $Target
+# valgrind --tool=memcheck --leak-check=yes --track-origins=yes $Target
+$Target
 
