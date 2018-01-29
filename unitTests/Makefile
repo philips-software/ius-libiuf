@@ -3,21 +3,17 @@ CC = gcc
 FLAGS = -c
 CFLAGS = -lm -fPIC -Iunity -g -I../include 
 LDFLAGS = -L../lib/ -lius -lm
-
-OBJTARGET = libalgo.so
 TARGET  = unitTests
 
-SOURCES = $(wildcard *.c) unity/unity.c
-OBJECTS = *.o
+SOURCES = $(wildcard *.c unity/*.c)
+OBJ = $(SOURCES:.c=.o)
 
 
-all: clean $(TARGET)
+all: $(TARGET)
+
+$(TARGET): $(OBJ)
+	$(CC) $(LDFLAGS) -o $(TARGET) $(OBJ)
 
 clean:
 	rm -f *.so *.o $(TARGET)
-
-$(TARGET):
-	$(CC) $(FLAGS) $(CFLAGS) $(SOURCES)
-	$(CC) $(LDFLAGS) -o $(TARGET) $(OBJECTS)
-
 
