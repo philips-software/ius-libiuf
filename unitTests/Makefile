@@ -15,5 +15,5 @@ $(TARGET): $(OBJ)
 	$(CC) $(LDFLAGS) -o $(TARGET) $(OBJ)
 
 clean:
-	rm -f *.so *.o $(TARGET)
+	rm -f $(OBJ)  $(TARGET)
 
