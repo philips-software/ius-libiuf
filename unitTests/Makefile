@@ -1,23 +1,21 @@
 CC = gcc
 
-FLAGS = -c
-CFLAGS = -lm -fPIC -Iunity -g -I../include -I../lib/hdf5/include
+CFLAGS = -Iunity -I../include -I./ -g -Wall
 LDFLAGS = -L../lib/ -lius -lm
-TARGET  = ./unitTests
 
-SOURCES = $(wildcard *.c unity/*.c)
-OBJ = $(SOURCES:.c=.o)
+TARGET = main
+
+SOURCES = $(wildcard *.c) unity/unity.c
+OBJECTS = *.o
 
 
-all: $(TARGET)
-
-$(TARGET): $(OBJ)
-	export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${PWD}/../lib:${PWD}/../lib/hdf5/lib ;\
-	$(CC) $(LDFLAGS) -o $(TARGET) $(OBJ)
+all: clean $(TARGET)
 
 clean:
-	rm -f $(OBJ)  $(TARGET)
+	rm -f $(OBJECTS) $(TARGET)
 
-valgrind: $(TARGET)
-	export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${PWD}/../lib:${PWD}/../lib/hdf5/lib ;\
-	valgrind --tool=memcheck --leak-check=yes --track-origins=yes  $(TARGET)
+$(TARGET):
+	$(CC) $(CFLAGS) $(SOURCES)
+	$(CC) $(LDFLAGS) -o $(OBJECTS) $(TARGET).c
+
+
