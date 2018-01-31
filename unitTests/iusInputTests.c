@@ -1,6 +1,7 @@
 #include "unity/unity.h"
 #include "iusInput.h"
 #include "iusInputFile.h"
+#include "iusVector.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -103,6 +104,27 @@ void DestroyHeaderStructs(IusExperiment* experiment, IusTransducer* transducer, 
 	free(drivingScheme->transmitChannelCoding.pChannelMap);
 }
 
+//------------------------------------------------------------------------------
+//
+//------------------------------------------------------------------------------
+static void genRFLine
+(
+    IusInputFileInstance* pInputFile0
+)
+{
+	float *          pPageVector = NULL;
+	int numSamples  = pInputFile0->pIusInput->pDrivingScheme->numSamplesPerLine;
+	int i = 0 ;
+	// Allocate some memory
+	pPageVector = iusAllocFloatVector( numSamples );
+	for( i=0 ; i < numSamples ; i++ ) {
+		pPageVector[i] = 0.0  + i;
+	}
+
+	iusInputFileWriteNextPulse( pInputFile0, pPageVector );
+	iusFreeFloatVector( pPageVector );
+}
+
 int InputFormatTest()
 {
 	IusExperiment experiment;
@@ -127,14 +149,15 @@ int InputFormatTest()
 	Print("destroying header completed.");
 
 	Print("creating iusInputFile...");
-//	pFile = iusInputFileCreate("TestInput.input", pInst, 3);
+	pFile = iusInputFileCreate("TestInput.input", pInst, 3);
 	Print("iusInputFile created.");
 
 	// Todo: write frames?
+	// genRFLine(pFile);
 
 	Print("closing iusInputFile...");
-//	result = iusInputFileClose(pFile);
-//	printf("close return value: %d\n", result);
+	// result = iusInputFileClose(pFile);
+	printf("close return value: %d\n", result);
 	Print("iusInputFile closed.");
 
 
