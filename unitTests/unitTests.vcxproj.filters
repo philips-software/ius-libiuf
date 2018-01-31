@@ -59,11 +59,28 @@
     <ClCompile Include="..\src\iusMedianFilter.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="iusInputTests.c" />
+    <ClCompile Include="..\src\iusInput.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\iusInputFile.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\iusNode.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\iusHDF5.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\iusUuid.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="iusLUTTests.h" />
     <ClInclude Include="iusVectorTests.h" />
     <ClInclude Include="unity\unity.h" />
     <ClInclude Include="unity\unity_internals.h" />
+    <ClInclude Include="iusInputTests.h" />
   </ItemGroup>
 </Project>
