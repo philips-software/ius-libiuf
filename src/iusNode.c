@@ -1,6 +1,7 @@
 #include "iusNode.h"
 //#include "iusInputFile.h"
 #include "iusInput.h"
+#include "iusError.h"
 //#include "iusCWC.h"
 //#include "iusCWCFile.h"
 #include "iusHDF5.h"
@@ -22,6 +23,8 @@ IusNode * iusNodeLoadInputType
 //    IusInputInstance * pInst = iusInputRead( handle, 0 );
 
 //    return (IusNode *)pInst;
+    // nlv09165: TODO: Implement
+    IUS_ASSERT(handle != handle);
     return NULL;
 }
 
@@ -36,6 +39,10 @@ void iusNodeSaveInputType
 )
 {
     // Method for writing iusInputIsntance into hdf handle. Also in iusInput.h/c
+    // nlv09165: TODO: Implement
+    IUS_ASSERT(handle != handle);
+    IUS_ASSERT(pInst != pInst);
+
 }
 
 
@@ -47,6 +54,8 @@ IusNode * iusNodeLoadCwcType
     hid_t handle
 )
 {
+    IUS_ASSERT(handle != handle);
+    // nlv09165: TODO: Implement
     return NULL; // This method belongs to the iusCwxFile.h/c. Use the handle to
                  // load the data, and call HandleParents load the parent data.
                  // Then return the struct.

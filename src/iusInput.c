@@ -174,8 +174,11 @@ int LF_copyDrivingSchemeData
 
     if ( pDst->numTransmitSources != 0 && pSrc->sourceAngularDelta == 0 ) // We are using Cartesian source location defintions
     {
-        IusPosition * pSourceLocations;                      // position of the US sources in case of CARTESIAN coordinates
+        // nlv09165: TODO: Implement or loose code!
+        IusPosition * pSourceLocations = NULL;                      // position of the US sources in case of CARTESIAN coordinates
+        IUS_ASSERT( pSourceLocations != NULL );
     }
+
     pDst->sourceFNumber        = pSrc->sourceFNumber;        // distance in [m] of sources to transducer for POLAR
     pDst->sourceAngularDelta   = pSrc->sourceAngularDelta;   // angle in [rad] between sources
     pDst->sourceStartAngle     = pSrc->sourceStartAngle;     // starting angle in [rad] for the sources
@@ -241,7 +244,8 @@ int LF_copyDrivingSchemeData
 //------------------------------------------------------------------------------
 static herr_t LF_readTransElements(IusInputInstance *pInst, hid_t handle, int verbose)
 {
-  int           i, ndims;
+  int           ndims;
+  hsize_t       i;
   hid_t         dataset, space;
   hsize_t       dims[1];              //NOTE: pElements assumed 1D array, extra length to prevent 
   IusPosition * pPosData;
@@ -252,7 +256,7 @@ static herr_t LF_readTransElements(IusInputInstance *pInst, hid_t handle, int ve
   hid_t         size_tid;     //size id
 
   herr_t status = 0;
-  verbose; // avoid compiler warning
+  IUS_UNUSED(verbose); // avoid compiler warning
 
   dataset = H5Dopen(handle, "/Transducer/Elements/positions", H5P_DEFAULT);
   space = H5Dget_space(dataset);
@@ -374,7 +378,7 @@ static herr_t LF_readSourceLocationsCartesian
 
     int numLocations = pInst->pDrivingScheme->numTransmitSources;
 
-    verbose; // avoid compiler warnings
+    IUS_UNUSED(verbose); // avoid compiler warnings
 
     dataset = H5Dopen( handle, "/DrivingScheme/sourceLocations", H5P_DEFAULT );
     space   = H5Dget_space( dataset );
@@ -435,7 +439,7 @@ static herr_t LF_readPulseRaw
 {
     herr_t status = 0;
 
-    verbose; // avoid compiler warnings
+    IUS_UNUSED(verbose); // avoid compiler warnings
 
     pInst->pDrivingScheme->transmitPulse.pRawPulseAmplitudes = (float *) malloc(numAmplitudes * sizeof(float));
     pInst->pDrivingScheme->transmitPulse.pRawPulseTimes = (float *) malloc(numAmplitudes * sizeof(float));
@@ -477,7 +481,7 @@ static herr_t LF_readTransmitPattern
 
     int numPulses = pInst->pDrivingScheme->numTransmitPulses;
 
-    verbose; // avoid compiler warnings
+    IUS_UNUSED(verbose); // avoid compiler warnings
 
     pIndexData   =   (int *) malloc(numPulses * sizeof(int));
     pTimeData   = (float *) malloc(numPulses * sizeof(float));
@@ -530,7 +534,7 @@ static herr_t LF_readTimeGainControls
 
     int numElements = pInst->pReceiveSettings->numTimeGainControlValues;
 
-    verbose; // avoid compiler warnings
+    IUS_UNUSED(verbose); // avoid compiler warnings
 
     pGainData   = (float *) malloc(numElements * sizeof(float));
     pTimeData   = (float *) malloc(numElements * sizeof(float));
@@ -581,7 +585,7 @@ int iusInputSetDepthRange
     IUS_ASSERT_MEMORY( pDepthRange != NULL );
     IUS_ASSERT_VALUE( startIndex + numSamples <=
         pInst->pDrivingScheme->numSamplesPerLine );
-    pInst; // avoid unreferenced parameter warning
+    IUS_UNUSED(pInst); // avoid unreferenced parameter warning
 
     pDepthRange->startIndex = startIndex;
     pDepthRange->numSamples = numSamples;
@@ -603,10 +607,11 @@ IusInputInstance * iusInputCreate
     int                  numFrames
 )
 {
-    int i; //iterator
     int copyStatus  = -1;
     int numElements =  0;
     IusInputInstance * pInst;
+    IUS_UNUSED(version);
+    IUS_UNUSED(numFrames);
 
     if ( pExperiment == NULL ||
          pTransducer == NULL ||
@@ -877,6 +882,7 @@ int iusInputWrite
     hsize_t chunkDims[4];
 
     int i; //iterator
+    hsize_t j; //iterator
 
     if ( handle == 0 || pInst == NULL )
     {
@@ -1075,17 +1081,17 @@ int iusInputWrite
 
     dims[0] = pInst->pDrivingScheme->numTransmitPulses;
     pFloatArray = (float *)calloc( (size_t)dims[0], sizeof(float) ); 
-    for ( i = 0; i < dims[0]; i++ )
+    for ( j = 0; j < dims[0]; j++ )
     {
-        pFloatArray[i] = pInst->pDrivingScheme->pTransmitPattern[i].time;
+        pFloatArray[j] = pInst->pDrivingScheme->pTransmitPattern[j].time;
     }
     H5LTmake_dataset_float( subgroup_id, "/DrivingScheme/TransmitPattern/transmitPatternTime",  1, dims, pFloatArray );
     free( pFloatArray );
 
     pIntArray = (int *)calloc( (size_t)dims[0], sizeof(int) ); 
-    for ( i = 0; i < dims[0]; i++ )
+    for ( j = 0; j < dims[0]; j++ )
     {
-        pIntArray[i] = pInst->pDrivingScheme->pTransmitPattern[i].index;
+        pIntArray[j] = pInst->pDrivingScheme->pTransmitPattern[j].index;
     }
     H5LTmake_dataset_int( subgroup_id,   "/DrivingScheme/TransmitPattern/transmitPatternIndex",  1, dims, pIntArray );
     free( pIntArray );

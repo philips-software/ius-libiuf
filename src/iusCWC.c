@@ -139,9 +139,8 @@ IusCwcInstance * iusCwcRead
     int   verbose
 )
 {
-    int i, num, dims[3];
+    int dims[3];
     int numFrames, numComponents;
-    float dx, x1;
     IusCwcInstance * pInst;
     herr_t status;
 

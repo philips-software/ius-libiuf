@@ -1,6 +1,7 @@
 #include "iusBasicFunctions.h"
 #include "iusBMode.h"
 #include "iusError.h"
+#include "iusHDF5.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -47,8 +48,6 @@ IusBModeInstance * iusBModeRead
     int   verbose
 )
 {
-    int                i, num;
-    float              dx, x1;
     herr_t             status;
     IusBModeInstance * pInst;
     

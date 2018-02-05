@@ -43,8 +43,8 @@ void iusQuadratureDetect4SamplesPerWave
 {
     int i, j;
     float pW[] = { 1.0f, -1.0f };
-    numLinesOut;       // avoid compiler warning on unreferenced parameter
-    numSamplesPerLine; // avoid compiler warning on unreferenced parameter
+    IUS_UNUSED(numLinesOut);       // avoid compiler warning on unreferenced parameter
+    IUS_UNUSED(numSamplesPerLine); // avoid compiler warning on unreferenced parameter
 
     IUS_ASSERT( ppRfLinesIn != NULL );
 	IUS_ASSERT( pIQ != NULL );
@@ -84,7 +84,7 @@ void iusKasaiCorr1D
 )
 {
     int i, j, k;
-    numSamplesPerLine; // avoid compiler warning on unreferenced parameter
+    IUS_UNUSED(numSamplesPerLine); // avoid compiler warning on unreferenced parameter
 
 	IUS_ASSERT( (pVOut != NULL) && (pSigmaVOut != NULL) && (pIQ != NULL) );
 	IUS_ASSERT_VALUE( numElemOut == numSamplesPerLine / packetSize );

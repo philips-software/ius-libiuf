@@ -261,8 +261,6 @@ void LF_getString
     char * const                        pBuffer
 )
 {
-    char * pValue;
-
     if ( pInst == NULL )
     {
         return;
@@ -604,7 +602,6 @@ IusAlgorithmParameters * iusAlgorithmParametersRead
     int verbose
 )
 {
-    herr_t                   status;
     hid_t                    algoGroup;
     hid_t                    paramGroup;
     char *                   pId;

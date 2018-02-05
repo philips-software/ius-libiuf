@@ -230,7 +230,7 @@ int iusInputFileReadNextPulse
     float *const *const pRFout
 )
 {
-    int i, j;
+    hsize_t i, j;
     hsize_t offset[4];
     hsize_t count[4];
     hid_t   memspace;
@@ -327,7 +327,7 @@ int iusInputFileReadNextPulseDepthRange
     float *const *const ppPageOut
 )
 {
-    int i, j;
+    hsize_t i, j;
     hsize_t offset[4];
     hsize_t count[4];
 

@@ -79,7 +79,7 @@ void iusMedianFilterRun
 
     IUS_ASSERT( (pDest != NULL) && (pSrc != NULL) );
     IUS_ASSERT_VALUE( length == inputBufferSize );
-    length; // prevent compile warning
+    IUS_UNUSED(length); // prevent compile warning
     //IUS_ASSERT_VALUE (((int) pInst->inputBufferSize % 16) == 0);
 
     // pInputData layout (size = inputBufferSize * windowWidth) :

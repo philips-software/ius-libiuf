@@ -26,6 +26,11 @@ extern "C" {
 
 
 /**
+ * \brief Prevent unused parameter warning
+ */
+#define IUS_UNUSED(x) (void)(x)
+
+/**
  * \brief List of error codes
  */
 #define IUS_ERR_GENERAL      (100001)   /**< general error */
