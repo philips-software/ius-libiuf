@@ -634,7 +634,7 @@ IusInputInstance * iusInputCreate
         return NULL;
     }
 
-    pInst->pTransducer = (IusTransducer *)calloc( 1, sizeof( IusExperiment ) );
+    pInst->pTransducer = (IusTransducer *)calloc( 1, sizeof( IusTransducer ) );
     if ( pInst->pTransducer == NULL )
     {
         free( pInst->pExperiment );

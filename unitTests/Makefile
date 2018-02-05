@@ -1,7 +1,7 @@
 CC = gcc
 
 FLAGS = -c
-CFLAGS = -lm -fPIC -Iunity -g -I../include -I../lib/hdf5/include
+CFLAGS = -std=c99 -Wall -Wextra -pedantic -lm -fPIC -Iunity -g -I../include -I../lib/hdf5/include
 LDFLAGS = -L../lib/ -lius -lm
 TARGET  = ./unitTests
 
