@@ -1,7 +1,9 @@
 CC = gcc
 
 FLAGS = -c
-CFLAGS = -std=c99 -Wall -Wextra -pedantic -lm -fPIC -Iunity -g -I../include -I../lib/hdf5/include
+
+CPP_DEFINES = -DUNITY_INCLUDE_DOUBLE
+CFLAGS = $(CPP_DEFINES) -std=c99 -Wall -Wextra -pedantic -lm -fPIC -Iunity -g -I../include -I../lib/hdf5/include
 LDFLAGS = -L../lib/ -lius -lm
 TARGET  = ./unitTests
 
