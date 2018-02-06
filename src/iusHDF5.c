@@ -389,10 +389,10 @@ herr_t iusHdf5WriteGrid
 
     if ( strcmp( pGridName, "PolarGrid" ) == 0 )
     {
-        sprintf(pVariableNameDim, "%s/numPointsRadial");
+        sprintf(pVariableNameDim, "%s/numPointsRadial",pGridName );
         returnValue = H5LTmake_dataset_int( handle, pVariableNameDim, 1,
                                             &dims[0], &(pGrid->numPoints2) );
-        sprintf(pVariableNameDim, "%s/numPointsTheta");
+        sprintf(pVariableNameDim, "%s/numPointsTheta", pGridName );
         returnValue |= H5LTmake_dataset_int( handle, pVariableNameDim, 1,
                                              &dims[0], &(pGrid->numPoints1) );
         //sprintf(pVariableNameDim, "%s/numPointsPhi");
@@ -401,10 +401,10 @@ herr_t iusHdf5WriteGrid
     }
     else if ( strcmp( pGridName, "CartesianGrid" ) == 0 ) 
     {
-        sprintf( pVariableNameDim, "%s/numPointsZ" );
+        sprintf( pVariableNameDim, "%s/numPointsZ", pGridName );
         returnValue = H5LTmake_dataset_int( handle, pVariableNameDim, 1,
                                             &dims[0], &(pGrid->numPoints2) );
-        sprintf( pVariableNameDim, "%s/numPointsX" );
+        sprintf( pVariableNameDim, "%s/numPointsX", pGridName );
         returnValue |= H5LTmake_dataset_int( handle, pVariableNameDim, 1,
                                              &dims[0], &(pGrid->numPoints1) );
         //sprintf(pVariableNameDim, "%s/numPointsY");
