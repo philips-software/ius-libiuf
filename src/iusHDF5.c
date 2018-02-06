@@ -352,7 +352,7 @@ herr_t iusHdf5WriteString
 )
 {
     herr_t returnValue;
-    
+    IUS_UNUSED(numValues);
     IUS_ASSERT_MEMORY( pVariableString && pString );
     
     returnValue = H5LTmake_dataset_string( handle, pVariableString, pString );

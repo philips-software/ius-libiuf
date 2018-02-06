@@ -14,6 +14,8 @@
 #include "iusVector.h"
 #include "iusError.h"
 #include "iusHDF5.h"
+#include "iusUuid.h"
+#include <H5LTpublic.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -249,7 +251,7 @@ int iusCwcWrite
 
     dims[0] = pInst->numFrames * pInst->numComponents;
     H5LTmake_dataset_float( handle,  "timeStamps",  1, dims,
-                            &(pInst->pTimeStamps) );
+                            (pInst->pTimeStamps) );
 
     iusHdf5WriteGrid( handle, "PolarGrid", pInst->pSampleGrid, verbose );
     //H5LTmake_dataset_int( handle,    "/numTransducerElements",  1, dims,

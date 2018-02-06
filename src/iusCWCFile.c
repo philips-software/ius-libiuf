@@ -171,7 +171,7 @@ int iusCwcFileReadNextFrame
     float * const * const * const pppCwcOut
 )
 {
-    int r, t, z;
+    hsize_t r, t, z;
     hsize_t memdim[3];
     hsize_t offset[4];
     hsize_t count[4];
@@ -258,28 +258,6 @@ int iusCwcFileWriteFrame
 }
 
 
-//------------------------------------------------------------------------------
-//
-//------------------------------------------------------------------------------
-int iusCwcFileWriteNextFrame
-(
-    IusCwcFileInstance * const          pInst,
-    const float * const * const * const pppFrame
-)
-{
-    int i;
-    int error = 0;
-
-    pInst->currentComponent = 0;
-    for ( i = 0; i < pInst->pIusCwc->numComponents; i++ )
-    {
-        error = (int)LF_CwcFileWriteNextComponent( pInst, pppFrame[i] );
-        IUS_ASSERT_VALUE( error == 0 );
-    }
-
-    return error;
-}
-
 
 //------------------------------------------------------------------------------
 //
@@ -344,6 +322,29 @@ int LF_CwcFileWriteNextComponent
         pInst->currentComponent = 0;
         pInst->currentFrame++;
     }
+    return status;
+}
+
+//------------------------------------------------------------------------------
+//
+//------------------------------------------------------------------------------
+int iusCwcFileWriteNextFrame
+(
+    IusCwcFileInstance * const          pInst,
+    const float * const * const * const pppFrame
+)
+{
+    int i;
+    int error = 0;
+
+    pInst->currentComponent = 0;
+    for ( i = 0; i < pInst->pIusCwc->numComponents; i++ )
+    {
+        error = (int)LF_CwcFileWriteNextComponent( pInst, pppFrame[i] );
+        IUS_ASSERT_VALUE( error == 0 );
+    }
+
+    return error;
 }
 
 
@@ -380,7 +381,7 @@ int iusCwcFileWriteNextFramePolarROI
     hid_t   memspace;
     hid_t   dataspace;
     herr_t  status;
-    int     z, theta, r;  // column and type iterators
+    hsize_t z, theta, r;  // column and type iterators
     float * pFrame1D;
 
     memdim[0] = pPolarROI->numThetaGridPointsROI;
