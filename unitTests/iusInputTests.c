@@ -162,12 +162,13 @@ int InputFormatTest()
     pInst = iusInputCreate( &experiment, &transducer, &receiveSettings, &drivingScheme, 3, 1 );
     Print( "iusInput created." );
 
-    Print( "destroying header structs..." );
-    DestroyHeaderStructs( &experiment, &transducer, &receiveSettings, &drivingScheme );
-    Print( "destroying header completed." );
+    //Print( "destroying header structs..." );
+    //DestroyHeaderStructs( &experiment, &transducer, &receiveSettings, &drivingScheme );
+    //Print( "destroying header completed." );
 
     Print( "creating iusInputFile..." );
     pFile = iusInputFileCreate( "TestInput.input", pInst, 3 );
+    return 1;
     Print( "iusInputFile created." );
 
     // Todo: write frames?

@@ -347,12 +347,10 @@ herr_t iusHdf5WriteString
     hid_t              handle,
     const char * const pVariableString,
     const char * const pString,
-    int                numValues,
     int                verbose
 )
 {
     herr_t returnValue;
-    IUS_UNUSED(numValues);
     IUS_ASSERT_MEMORY( pVariableString && pString );
     
     returnValue = H5LTmake_dataset_string( handle, pVariableString, pString );

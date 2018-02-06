@@ -43,7 +43,12 @@ IusInputFileInstance *iusInputFileCreate
     return NULL;
   }
 
-  pFileInst->handle = H5Fopen( pFullFileName, H5F_ACC_CREAT, H5P_DEFAULT );
+  pFileInst->handle = H5Fcreate( pFullFileName, H5F_ACC_EXCL, H5P_DEFAULT, H5P_DEFAULT );
+  if ( pFileInst->handle < 0 )
+  {
+    fprintf( stderr, "%s, iusInputFileCreate: %d Could not create file\n",__FILE__,  __LINE__ );
+    return NULL;
+  }
 
   chunkDims[0] = pInst->pTransducer->numElements;
   chunkDims[1] = pInst->pDrivingScheme->numSamplesPerLine;
