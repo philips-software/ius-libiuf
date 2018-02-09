@@ -43,10 +43,11 @@ IusInputFileInstance *iusInputFileCreate
     return NULL;
   }
 
-  pFileInst->handle = H5Fcreate( pFullFileName, H5F_ACC_EXCL, H5P_DEFAULT, H5P_DEFAULT );
+  pFileInst->handle = H5Fcreate( pFullFileName, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT );
   if ( pFileInst->handle < 0 )
   {
     fprintf( stderr, "%s, iusInputFileCreate: %d Could not create file\n",__FILE__,  __LINE__ );
+    printf("aaaaa\n");
     return NULL;
   }
 
@@ -74,9 +75,16 @@ IusInputFileInstance *iusInputFileCreate
   pFileInst->currentFrame=0;
   pFileInst->currentPulse=0;
   
+printf("beginning iusInputWrite...\n");
   success = iusInputWrite(pFileInst->handle, pInst, version);
+printf("iusInputWrite passed.\n");
 
-  return success?pFileInst:NULL;
+  if (success != 0)
+  {
+    return NULL;
+  }
+
+  return pFileInst;
 }
 
 IusInputFileInstance * iusInputFileOpen

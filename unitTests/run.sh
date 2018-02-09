@@ -1,5 +1,9 @@
 #!/bin/sh
 
+cd ..
+make
+cd unitTests
+
 Target=./unitTests
 
 export LD_LIBRARY_PATH=$(pwd)/../lib:$(pwd)/../lib/hdf5/lib:$LD_LIBRARY_PATH

@@ -152,7 +152,6 @@ int InputFormatTest()
 
     IusInputInstance * pInst;
     IusInputFileInstance * pFile;
-    int result=1;
 
     Print( "Decorating header structs..." );
     CreateHeaderStructs( &experiment, &transducer, &receiveSettings, &drivingScheme );    
@@ -160,6 +159,7 @@ int InputFormatTest()
 
     Print( "creating iusInput..." );
     pInst = iusInputCreate( &experiment, &transducer, &receiveSettings, &drivingScheme, 3, 1 );
+    TEST_ASSERT(pInst != NULL);
     Print( "iusInput created." );
 
     //Print( "destroying header structs..." );
@@ -168,19 +168,14 @@ int InputFormatTest()
 
     Print( "creating iusInputFile..." );
     pFile = iusInputFileCreate( "TestInput.input", pInst, 3 );
-    return 1;
+    TEST_ASSERT(pFile != NULL);
     Print( "iusInputFile created." );
 
     // Todo: write frames?
     genRFLine(pFile);
 
     Print( "closing iusInputFile..." );
-    // result = iusInputFileClose( pFile );
-    printf( "close return value: %d\n", result );
     Print( "iusInputFile closed." );
-
-
-
 
     Print( "destroying iusInput..." );
     iusInputDestroy( pInst );
@@ -190,7 +185,7 @@ int InputFormatTest()
 //    unlink( "TestInput.input" );
     Print( "test file deleted." );
 
-    return result;    
+    return 0;
 }
 
 
