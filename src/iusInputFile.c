@@ -75,9 +75,7 @@ IusInputFileInstance *iusInputFileCreate
   pFileInst->currentFrame=0;
   pFileInst->currentPulse=0;
   
-printf("beginning iusInputWrite...\n");
   success = iusInputWrite(pFileInst->handle, pInst, version);
-printf("iusInputWrite passed.\n");
 
   if (success != 0)
   {

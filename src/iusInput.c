@@ -165,6 +165,7 @@ int LF_copyDrivingSchemeData
     int                numElements
 )
 {
+    int i;
     IUS_ASSERT( numPulsesPerFrame > 0 );
 
     pDst->drivingSchemeType  = pSrc->drivingSchemeType;   // driving scheme: e.g. diveringwaves, planeswaves, ...
@@ -172,11 +173,15 @@ int LF_copyDrivingSchemeData
     pDst->numTransmitSources = pSrc->numTransmitSources;  // number of US sources (tyically these are virtual)
     pDst->numTransmitPulses  = pSrc->numTransmitPulses;   // number of pulses in a frame
 
-    if ( pDst->numTransmitSources != 0 && pSrc->sourceAngularDelta == 0 ) // We are using Cartesian source location defintions
+    if ( pDst->numTransmitSources != 0 )
     {
-        // nlv09165: TODO: Implement or loose code!
-        IusPosition * pSourceLocations = NULL;                      // position of the US sources in case of CARTESIAN coordinates
-        IUS_ASSERT( pSourceLocations != NULL );
+	pDst->pSourceLocations = (IusPosition *)calloc(pDst->numTransmitSources, sizeof(IusPosition));
+	for (i = 0; i < pDst->numTransmitSources; i++)
+	{
+	    pDst->pSourceLocations[i].x = pSrc->pSourceLocations[i].x;
+	    pDst->pSourceLocations[i].y = pSrc->pSourceLocations[i].y;
+	    pDst->pSourceLocations[i].z = pSrc->pSourceLocations[i].z;
+	}
     }
 
     pDst->sourceFNumber        = pSrc->sourceFNumber;        // distance in [m] of sources to transducer for POLAR
@@ -1051,13 +1056,13 @@ int iusInputWrite
         H5LTmake_dataset_float( group_id, "/DrivingScheme/sourceFNumber",      1, dims, &(pInst->pDrivingScheme->sourceFNumber) );
         H5LTmake_dataset_float( group_id, "/DrivingScheme/sourceAngularDelta", 1, dims, &(pInst->pDrivingScheme->sourceAngularDelta) );
         H5LTmake_dataset_float( group_id, "/DrivingScheme/sourceStartAngle",   1, dims, &(pInst->pDrivingScheme->sourceStartAngle) );
-        pInst->pDrivingScheme->pSourceLocations=NULL; //dear Frank, this line, and 3 below, change the state of our data object, pInst. Why?
+        // pInst->pDrivingScheme->pSourceLocations=NULL; //dear Frank, this line, and 3 below, change the state of our data object, pInst. Why?
     }
     else
     {
-        pInst->pDrivingScheme->sourceFNumber      = 0;
-        pInst->pDrivingScheme->sourceAngularDelta = 0;
-        pInst->pDrivingScheme->sourceStartAngle   = 0;
+//        pInst->pDrivingScheme->sourceFNumber      = 0;
+//        pInst->pDrivingScheme->sourceAngularDelta = 0;
+//        pInst->pDrivingScheme->sourceStartAngle   = 0;
 
         dims[0] = pInst->pDrivingScheme->numTransmitSources;
         space   = H5Screate_simple( 1, dims, NULL );
@@ -1068,6 +1073,7 @@ int iusInputWrite
         H5Tinsert( position_tid, "z", HOFFSET(IusPosition, z), H5T_NATIVE_FLOAT );
         //H5Dcreate( hid_t loc_id, const char *name, hid_t type_id, hid_t space_id, hid_t create_plist_id) 
         dataset = H5Dcreate( group_id, "/DrivingScheme/sourceLocations", position_tid, space, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT );
+
         // step b: write the array to the dataset
         status = H5Dwrite( dataset, position_tid, H5S_ALL, H5S_ALL, H5P_DEFAULT, pInst->pDrivingScheme->pSourceLocations );
         // step c: release resources 

@@ -69,7 +69,7 @@ void CreateHeaderStructs
 
     pDrivingScheme->drivingSchemeType = IUS_FOCUSED_WAVES;
     pDrivingScheme->numSamplesPerLine = 9;
-    pDrivingScheme->numTransmitSources = 8;
+    pDrivingScheme->numTransmitSources = 1; // Determines length of pSourceLocations
     pDrivingScheme->numTransmitPulses = 7;
     pDrivingScheme->pSourceLocations = (IusPosition *)calloc(1, sizeof(IusPosition));
     pDrivingScheme->pSourceLocations[0].x = 1.1f;
