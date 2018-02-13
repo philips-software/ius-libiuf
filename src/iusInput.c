@@ -1129,23 +1129,6 @@ int iusInputWrite
     H5LTmake_dataset_string( handle, "/type", pInst->iusNode.pType );
     H5LTmake_dataset_int( handle,    "/numFrames",  1, dims, &(pInst->numFrames) );
 
-    rfDataDims[0] = pInst->pTransducer->numElements;          // colums in memory
-    rfDataDims[1] = pInst->pDrivingScheme->numSamplesPerLine; // rows in memory
-    rfDataDims[2] = pInst->pDrivingScheme->numTransmitPulses;
-    rfDataDims[3] = pInst->numFrames;
-
-    chunkDims[0] = pInst->pTransducer->numElements;
-    chunkDims[1] = pInst->pDrivingScheme->numSamplesPerLine;
-    chunkDims[2] = 1;
-    chunkDims[3] = 1;
-
-    dataChunkConfig = H5Pcreate( H5P_DATASET_CREATE );
-    H5Pset_chunk( dataChunkConfig, 4, chunkDims );
-
-    space   = H5Screate_simple( 4, rfDataDims, NULL);
-    dataset = H5Dcreate( handle, "/rfData", H5T_NATIVE_FLOAT, space, H5P_DEFAULT, dataChunkConfig, H5P_DEFAULT);
-    H5Sclose( space );
-
     iusNodeSaveParents( (IusNode*)pInst, handle );
 
     return 0;
@@ -1160,11 +1143,11 @@ void iusInputDestroy
    IusInputInstance * pInst
 )
 {
-    IUS_ASSERT_MEMORY( pInst );
-    IUS_ASSERT_MEMORY( pInst->pExperiment );
-    IUS_ASSERT_MEMORY( pInst->pTransducer );
-    IUS_ASSERT_MEMORY( pInst->pReceiveSettings );
-    IUS_ASSERT_MEMORY( pInst->pDrivingScheme );
+//    IUS_ASSERT_MEMORY( pInst );
+//    IUS_ASSERT_MEMORY( pInst->pExperiment );
+//    IUS_ASSERT_MEMORY( pInst->pTransducer );
+//    IUS_ASSERT_MEMORY( pInst->pReceiveSettings );
+//    IUS_ASSERT_MEMORY( pInst->pDrivingScheme );
 
     //free memory of sub structures
 
@@ -1188,6 +1171,7 @@ void iusInputDestroy
     free( pInst->pDrivingScheme->transmitPulse.pRawPulseAmplitudes );
     free( pInst->pDrivingScheme->transmitPulse.pRawPulseTimes );
     free( pInst->pDrivingScheme->pTransmitApodization );
+    free( pInst->pDrivingScheme->pSourceLocations );
     if ( pInst->pDrivingScheme->transmitChannelCoding.numChannels != 0 )
     {
         free( pInst->pDrivingScheme->transmitChannelCoding.pChannelMap );

@@ -54,7 +54,7 @@ void CreateHeaderStructs
     pTransducer->pElements[0].size.y = 7.7f;
     pTransducer->pElements[0].size.z = 8.8f;
 
-    pReceiveSettings->receiveChannelCoding.numChannels = 9;
+    pReceiveSettings->receiveChannelCoding.numChannels = 1; // this * numTransmitPulses = pChannelMap length
     pReceiveSettings->receiveChannelCoding.pChannelMap = (int *)calloc(1, sizeof(int));
     pReceiveSettings->receiveChannelCoding.pChannelMap[0] = 8;
     pReceiveSettings->sampleFrequency = 1.1f;
@@ -70,7 +70,7 @@ void CreateHeaderStructs
     pDrivingScheme->drivingSchemeType = IUS_FOCUSED_WAVES;
     pDrivingScheme->numSamplesPerLine = 9;
     pDrivingScheme->numTransmitSources = 1; // Determines length of pSourceLocations
-    pDrivingScheme->numTransmitPulses = 7;
+    pDrivingScheme->numTransmitPulses = 1; // this * receiveChannelCoding.numChannels = pChannelMap length
     pDrivingScheme->pSourceLocations = (IusPosition *)calloc(1, sizeof(IusPosition));
     pDrivingScheme->pSourceLocations[0].x = 1.1f;
     pDrivingScheme->pSourceLocations[0].y = 2.2f;
@@ -162,9 +162,11 @@ int InputFormatTest()
     TEST_ASSERT(pInst != NULL);
     Print( "iusInput created." );
 
-    //Print( "destroying header structs..." );
-    //DestroyHeaderStructs( &experiment, &transducer, &receiveSettings, &drivingScheme );
-    //Print( "destroying header completed." );
+    pInst->numFrames = 1;
+
+    Print( "destroying header structs..." );
+    DestroyHeaderStructs( &experiment, &transducer, &receiveSettings, &drivingScheme );
+    Print( "destroying header completed." );
 
     Print( "creating iusInputFile..." );
     pFile = iusInputFileCreate( "TestInput.input", pInst, 3 );
@@ -172,7 +174,7 @@ int InputFormatTest()
     Print( "iusInputFile created." );
 
     // Todo: write frames?
-    genRFLine(pFile);
+    //genRFLine(pFile);
 
     Print( "closing iusInputFile..." );
     Print( "iusInputFile closed." );
@@ -181,8 +183,12 @@ int InputFormatTest()
     iusInputDestroy( pInst );
     Print( "iusInput destroyed." );
 
+    Print( "destroying iusInputFile..." );
+    iusInputFileClose( pFile );
+    Print( "iusInputFile destroyed." );
+
     Print( "deleting test file..." );
-//    unlink( "TestInput.input" );
+    unlink( "TestInput.input" );
     Print( "test file deleted." );
 
     return 0;

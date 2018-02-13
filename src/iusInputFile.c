@@ -26,7 +26,7 @@ IusInputFileInstance *iusInputFileCreate
   hid_t dataset;
   
   IusInputFileInstance *pFileInst;
-  int success=0;
+  int success = 0;
 
   if (pFullFileName == NULL || pInst == NULL)
   {
@@ -407,8 +407,6 @@ int iusInputFileClose
 {
     int success=0;
     IUS_ASSERT_MEMORY(pFileInst);
-    IusInputInstance *pInst = pFileInst->pIusInput;
-    iusInputDestroy(pInst);
 
     if (pFileInst->fileChunkConfig)
     {
@@ -423,6 +421,10 @@ int iusInputFileClose
     {
       free(pFileInst);
       pFileInst = NULL;
+    }
+    else
+    {
+    	printf("[!] H5Dclose or H5Fclose failed. success: %d\n", success);
     }
     return success;
 }
