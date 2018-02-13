@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-
+#include <unistd.h>
 
 #define Print(text) \
 { \
@@ -131,50 +131,47 @@ static void genRFLine
 {
     float * pPageVector = NULL;
     int     numSamples  = pInputFile0->pIusInput->pDrivingScheme->numSamplesPerLine;
-    int     i = 0 ;
+    int     numElements = pInputFile0->pIusInput->pTransducer->numElements;
+    int     i = 0;
+
     // Allocate some memory
-    pPageVector = iusAllocFloatVector( numSamples );
-    for ( i = 0; i < numSamples; i++ )
+    pPageVector = (float *)calloc(numSamples * numElements, sizeof(float));
+    
+    for ( i = 0; i < numSamples * numElements; i++ )
     {
         pPageVector[i] = 0.0f + (float)i;
     }
 
     iusInputFileWriteNextPulse( pInputFile0, pPageVector );
-    iusFreeFloatVector( pPageVector );
+
+    free(pPageVector);
 }
 
-int InputFormatTest()
+void CreateInputFile(
+    char* filename,
+    IusExperiment* experiment,
+    IusTransducer* transducer,
+    IusReceiveSettings* receiveSettings,
+    IusDrivingScheme* drivingScheme)
 {
-    IusExperiment      experiment;
-    IusTransducer      transducer;
-    IusReceiveSettings receiveSettings;
-    IusDrivingScheme   drivingScheme;
-
     IusInputInstance * pInst;
     IusInputFileInstance * pFile;
 
-    Print( "Decorating header structs..." );
-    CreateHeaderStructs( &experiment, &transducer, &receiveSettings, &drivingScheme );    
-    Print( "header structs completed." );
-
-    Print( "creating iusInput..." );
-    pInst = iusInputCreate( &experiment, &transducer, &receiveSettings, &drivingScheme, 3, 1 );
+    Print("creating iusInput...");
+    pInst = iusInputCreate(experiment, transducer, receiveSettings, drivingScheme, 3, 1);
     TEST_ASSERT(pInst != NULL);
-    Print( "iusInput created." );
+    Print("iusInput created.");
 
     pInst->numFrames = 1;
 
-    Print( "destroying header structs..." );
-    DestroyHeaderStructs( &experiment, &transducer, &receiveSettings, &drivingScheme );
-    Print( "destroying header completed." );
-
-    Print( "creating iusInputFile..." );
-    pFile = iusInputFileCreate( "TestInput.input", pInst, 3 );
+    Print("creating iusInputFile...");
+    pFile = iusInputFileCreate(filename, pInst, 3);
     TEST_ASSERT(pFile != NULL);
-    Print( "iusInputFile created." );
+    Print("iusInputFile created.");
 
-    // Todo: write frames?
-    //genRFLine(pFile);
+//    Print("adding RF line...");
+//    genRFLine(pFile);
+//    Print("RF line added.");
 
     Print( "closing iusInputFile..." );
     Print( "iusInputFile closed." );
@@ -186,10 +183,57 @@ int InputFormatTest()
     Print( "destroying iusInputFile..." );
     iusInputFileClose( pFile );
     Print( "iusInputFile destroyed." );
+}
 
-    Print( "deleting test file..." );
-    unlink( "TestInput.input" );
-    Print( "test file deleted." );
+void ReadInputFile(
+    char* filename,
+    IusExperiment* experiment,
+    IusTransducer* transducer,
+    IusReceiveSettings* receiveSettings,
+    IusDrivingScheme* drivingScheme)
+{
+    IusInputFileInstance* pInst;
+
+    Print("opening...");
+    pInst = iusInputFileOpen(filename, 0);
+    Print("opened.");
+
+    // Check data.
+
+    Print("deleting data object...");
+    iusInputDestroy(pInst->pIusInput);
+    Print("delete completed.");
+
+    Print("closing...");
+    iusInputFileClose(pInst);
+    Print("closed.");
+}
+
+int InputFormatTest()
+{
+    IusExperiment      experiment;
+    IusTransducer      transducer;
+    IusReceiveSettings receiveSettings;
+    IusDrivingScheme   drivingScheme;
+    char* filename = "TestInput.input";
+
+    Print("Decorating header structs...");
+    CreateHeaderStructs(&experiment, &transducer, &receiveSettings, &drivingScheme);
+    Print("header structs completed.");
+
+    // Write this data to an input file.
+    CreateInputFile(filename, &experiment, &transducer, &receiveSettings, &drivingScheme);
+
+    // Read the data from the input file and check it against these structs.
+//    ReadInputFile(filename, &experiment, &transducer, &receiveSettings, &drivingScheme);
+
+    Print("deleting test file...");
+    unlink(filename);
+    Print("test file deleted.");
+
+    Print("destroying header structs...");
+    DestroyHeaderStructs(&experiment, &transducer, &receiveSettings, &drivingScheme);
+    Print("destroying header completed.");
 
     return 0;
 }
