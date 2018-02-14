@@ -457,9 +457,9 @@ static herr_t LF_readPulseRaw
 
     status = H5LTread_dataset_float( handle, "/DrivingScheme/TransmitPulse/rawPulseAmplitudes", pInst->pDrivingScheme->transmitPulse.pRawPulseAmplitudes );
     status = H5LTread_dataset_float( handle, "/DrivingScheme/TransmitPulse/rawPulseTimes", pInst->pDrivingScheme->transmitPulse.pRawPulseTimes );
-    status = H5LTread_dataset_float( handle, "/DrivingScheme/Transmitwave/pulseFrequency", &(pInst->pDrivingScheme->transmitPulse.pulseFrequency) );
-    status = H5LTread_dataset_float( handle, "/DrivingScheme/Transmitwave/pulseAmplitude", &(pInst->pDrivingScheme->transmitPulse.pulseAmplitude) );
-    status = H5LTread_dataset_int( handle, "/DrivingScheme/Transmitwave/pulseCount", &(pInst->pDrivingScheme->transmitPulse.pulseCount) );
+    status = H5LTread_dataset_float( handle, "/DrivingScheme/TransmitPulse/pulseFrequency", &(pInst->pDrivingScheme->transmitPulse.pulseFrequency) );
+    status = H5LTread_dataset_float( handle, "/DrivingScheme/TransmitPulse/pulseAmplitude", &(pInst->pDrivingScheme->transmitPulse.pulseAmplitude) );
+    status = H5LTread_dataset_int( handle, "/DrivingScheme/TransmitPulse/pulseCount", &(pInst->pDrivingScheme->transmitPulse.pulseCount) );
     if ( status < 0 )
     {
         fprintf( stderr, "LF_readPulseRaw: Error reading dataset: H5Dread returned: %d\n", status );
@@ -846,7 +846,7 @@ IusInputInstance * iusInputRead
     status = H5LTread_dataset_float(handle, "/ReceiveSettings/startDepth", pInst->pReceiveSettings->pStartDepth);
     status = H5LTread_dataset_float(handle, "/ReceiveSettings/endDepth", pInst->pReceiveSettings->pEndDepth);
 
-    status = iusHdf5ReadInt( handle, "/IUSVersion", &(pInst->IusVersion), verbose ); 
+    status = iusHdf5ReadInt( handle, "/IusVersion", &(pInst->IusVersion), verbose ); 
     status = iusHdf5ReadString( handle, "/ID", (char **)&(pInst->iusNode.pId), verbose );
 
     iusNodeLoadParents((IusNode *)pInst, handle);
@@ -1109,7 +1109,7 @@ int iusInputWrite
     if ( pInst->pDrivingScheme->transmitPulse.numPulseValues > 0 )
     {
         dims[0] = pInst->pDrivingScheme->transmitPulse.numPulseValues;
-        H5LTmake_dataset_float( subgroup_id, "/DrivingScheme/TransmitPulse/rawPulseAmplitude", 1, dims, pInst->pDrivingScheme->transmitPulse.pRawPulseAmplitudes );
+        H5LTmake_dataset_float( subgroup_id, "/DrivingScheme/TransmitPulse/rawPulseAmplitudes", 1, dims, pInst->pDrivingScheme->transmitPulse.pRawPulseAmplitudes );
         H5LTmake_dataset_float( subgroup_id, "/DrivingScheme/TransmitPulse/rawPulseTimes", 1, dims, pInst->pDrivingScheme->transmitPulse.pRawPulseTimes );
     }
 

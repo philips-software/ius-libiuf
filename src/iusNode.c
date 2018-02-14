@@ -175,14 +175,18 @@ void iusNodeSaveParents
     char      groupName[20];
     IusNode * pParent;
     hid_t     group;
+    hsize_t dims[1] = {1};
 
-    for ( i = 0; i < pNode->numberOfParents; i++ )
+    H5LTmake_dataset_int(handle, "numberOfParents", 1, dims, &(pNode->numberOfParents));
+
+    for (i = 0; i < pNode->numberOfParents; i++)
     {
-        sprintf( groupName, "parent%d", i );
+        sprintf(groupName, "parent%d", i);
 
-        group   = H5Gcreate( handle, groupName, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT );
+        group   = H5Gcreate(handle, groupName, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
         pParent = pNode->pParents[i];
-        iusNodeSaveAnyType( group, pParent );
-        H5Gclose( group );
+        iusNodeSaveAnyType(group, pParent);
+        H5Gclose(group);
     }
 }
+

@@ -185,6 +185,62 @@ void CreateInputFile(
     Print( "iusInputFile destroyed." );
 }
 
+void AssertAllFields(IusInputInstance* pInst,
+    IusExperiment* experiment,
+    IusTransducer* transducer,
+    IusReceiveSettings* receiveSettings,
+    IusDrivingScheme* drivingScheme)
+{
+    TEST_ASSERT_EQUAL(experiment->speedOfSound, pInst->pExperiment->speedOfSound);
+    TEST_ASSERT_EQUAL(experiment->date, pInst->pExperiment->date);
+    TEST_ASSERT_EQUAL_STRING(experiment->pDescription, pInst->pExperiment->pDescription);
+
+    TEST_ASSERT_EQUAL_STRING(transducer->pTransducerName, pInst->pTransducer->pTransducerName);
+    TEST_ASSERT_EQUAL(transducer->centerFrequency, pInst->pTransducer->centerFrequency);
+    TEST_ASSERT_EQUAL(transducer->numElements, pInst->pTransducer->numElements);
+    TEST_ASSERT_EQUAL(transducer->pElements[0].position.x , pInst->pTransducer->pElements[0].position.x);
+    TEST_ASSERT_EQUAL(transducer->pElements[0].position.y , pInst->pTransducer->pElements[0].position.y);
+    TEST_ASSERT_EQUAL(transducer->pElements[0].position.z , pInst->pTransducer->pElements[0].position.z);
+    TEST_ASSERT_EQUAL(transducer->pElements[0].angle.theta, pInst->pTransducer->pElements[0].angle.theta);
+    TEST_ASSERT_EQUAL(transducer->pElements[0].angle.phi, pInst->pTransducer->pElements[0].angle.phi);
+    TEST_ASSERT_EQUAL(transducer->pElements[0].size.x, pInst->pTransducer->pElements[0].size.x);
+    TEST_ASSERT_EQUAL(transducer->pElements[0].size.y, pInst->pTransducer->pElements[0].size.y);
+    TEST_ASSERT_EQUAL(transducer->pElements[0].size.z, pInst->pTransducer->pElements[0].size.z);
+
+    TEST_ASSERT_EQUAL(receiveSettings->receiveChannelCoding.numChannels, pInst->pReceiveSettings->receiveChannelCoding.numChannels);
+    TEST_ASSERT_EQUAL(receiveSettings->receiveChannelCoding.pChannelMap[0], pInst->pReceiveSettings->receiveChannelCoding.pChannelMap[0]);
+    TEST_ASSERT_EQUAL(receiveSettings->sampleFrequency, pInst->pReceiveSettings->sampleFrequency);
+    TEST_ASSERT_EQUAL(receiveSettings->pStartDepth[0], pInst->pReceiveSettings->pStartDepth[0]);
+    TEST_ASSERT_EQUAL(receiveSettings->pEndDepth[0], pInst->pReceiveSettings->pEndDepth[0]);
+    TEST_ASSERT_EQUAL(receiveSettings->numTimeGainControlValues, pInst->pReceiveSettings->numTimeGainControlValues);
+    TEST_ASSERT_EQUAL(receiveSettings->pTimeGainControl[0].time, pInst->pReceiveSettings->pTimeGainControl[0].time);
+    TEST_ASSERT_EQUAL(receiveSettings->pTimeGainControl[0].gain, pInst->pReceiveSettings->pTimeGainControl[0].gain);
+
+    TEST_ASSERT_EQUAL(drivingScheme->drivingSchemeType, pInst->pDrivingScheme->drivingSchemeType);
+    TEST_ASSERT_EQUAL(drivingScheme->numSamplesPerLine, pInst->pDrivingScheme->numSamplesPerLine);
+    TEST_ASSERT_EQUAL(drivingScheme->numTransmitSources, pInst->pDrivingScheme->numTransmitSources);
+    TEST_ASSERT_EQUAL(drivingScheme->numTransmitPulses, pInst->pDrivingScheme->numTransmitPulses);
+
+    TEST_ASSERT_EQUAL(drivingScheme->pSourceLocations[0].x, pInst->pDrivingScheme->pSourceLocations[0].x);
+    TEST_ASSERT_EQUAL(drivingScheme->pSourceLocations[0].y, pInst->pDrivingScheme->pSourceLocations[0].y);
+    TEST_ASSERT_EQUAL(drivingScheme->pSourceLocations[0].z, pInst->pDrivingScheme->pSourceLocations[0].z);
+    TEST_ASSERT_EQUAL(drivingScheme->sourceFNumber, pInst->pDrivingScheme->sourceFNumber);
+    TEST_ASSERT_EQUAL(drivingScheme->sourceAngularDelta, pInst->pDrivingScheme->sourceAngularDelta);
+    TEST_ASSERT_EQUAL(drivingScheme->sourceStartAngle, pInst->pDrivingScheme->sourceStartAngle);
+    TEST_ASSERT_EQUAL(drivingScheme->transmitPatternDelay, pInst->pDrivingScheme->transmitPatternDelay);
+    TEST_ASSERT_EQUAL(drivingScheme->pTransmitPattern[0].index, pInst->pDrivingScheme->pTransmitPattern[0].index);
+    TEST_ASSERT_EQUAL(drivingScheme->pTransmitPattern[0].time, pInst->pDrivingScheme->pTransmitPattern[0].time);
+    TEST_ASSERT_EQUAL(drivingScheme->transmitPulse.numPulseValues, pInst->pDrivingScheme->transmitPulse.numPulseValues);
+    TEST_ASSERT_EQUAL(drivingScheme->transmitPulse.pRawPulseAmplitudes[0], pInst->pDrivingScheme->transmitPulse.pRawPulseAmplitudes[0]);
+    TEST_ASSERT_EQUAL(drivingScheme->transmitPulse.pRawPulseTimes[0], pInst->pDrivingScheme->transmitPulse.pRawPulseTimes[0]);
+    TEST_ASSERT_EQUAL(drivingScheme->transmitPulse.pulseFrequency, pInst->pDrivingScheme->transmitPulse.pulseFrequency);
+    TEST_ASSERT_EQUAL(drivingScheme->transmitPulse.pulseAmplitude, pInst->pDrivingScheme->transmitPulse.pulseAmplitude);
+    TEST_ASSERT_EQUAL(drivingScheme->transmitPulse.pulseCount, pInst->pDrivingScheme->transmitPulse.pulseCount);
+    TEST_ASSERT_EQUAL(drivingScheme->pTransmitApodization[0], pInst->pDrivingScheme->pTransmitApodization[0]);
+    TEST_ASSERT_EQUAL(drivingScheme->transmitChannelCoding.numChannels, pInst->pDrivingScheme->transmitChannelCoding.numChannels);
+    TEST_ASSERT_EQUAL(drivingScheme->transmitChannelCoding.pChannelMap[0], pInst->pDrivingScheme->transmitChannelCoding.pChannelMap[0]);
+}
+
 void ReadInputFile(
     char* filename,
     IusExperiment* experiment,
@@ -199,6 +255,7 @@ void ReadInputFile(
     Print("opened.");
 
     // Check data.
+    AssertAllFields(pInst->pIusInput, experiment, transducer, receiveSettings, drivingScheme);
 
     Print("deleting data object...");
     iusInputDestroy(pInst->pIusInput);
@@ -225,7 +282,7 @@ int InputFormatTest()
     CreateInputFile(filename, &experiment, &transducer, &receiveSettings, &drivingScheme);
 
     // Read the data from the input file and check it against these structs.
-//    ReadInputFile(filename, &experiment, &transducer, &receiveSettings, &drivingScheme);
+    ReadInputFile(filename, &experiment, &transducer, &receiveSettings, &drivingScheme);
 
     Print("deleting test file...");
     unlink(filename);
