@@ -20,6 +20,20 @@
 //------------------------------------------------------------------------------
 //
 //------------------------------------------------------------------------------
+int LF_GetNumberOfElements(IusInputInstance* pInst)
+{
+    if ( pInst->pDrivingScheme->transmitChannelCoding.numChannels == 0 )
+    {
+        //we use all transducer elements
+        return pInst->pTransducer->numElements; 
+    }
+    else
+    {
+        // we use only th number of channels
+        return pInst->pDrivingScheme->transmitChannelCoding.numChannels;
+    }
+}
+
 int LF_copyExperimentData
 (
     IusExperiment * pDst,
@@ -678,26 +692,14 @@ IusInputInstance * iusInputCreate
     copyStatus |= LF_copyTransducerData( pInst->pTransducer, pTransducer );
     copyStatus |= LF_copyReceiveSettingsData( pInst->pReceiveSettings,
                       pReceiveSettings, pDrivingScheme->numTransmitPulses );
-    
-    if ( pInst->pDrivingScheme->transmitChannelCoding.numChannels == 0 )
-    {
-        //we use all transducer elements
-        numElements = pInst->pTransducer->numElements; 
-    }
-    else
-    {
-        // we use only th number of channels
-        numElements = pInst->pDrivingScheme->transmitChannelCoding.numChannels;
-    }
+   
+    numElements = LF_GetNumberOfElements(pInst);
 
-    copyStatus |=
-        LF_copyDrivingSchemeData( pInst->pDrivingScheme, pDrivingScheme,
-        pDrivingScheme->numTransmitPulses, numElements);
+    copyStatus |= LF_copyDrivingSchemeData(pInst->pDrivingScheme, pDrivingScheme, pDrivingScheme->numTransmitPulses, numElements);
+
     if ( copyStatus != 0 )
     {
-        fprintf( stderr, 
-            "iusInputCreate: deep copy of data instance failed: status is %d\n",
-            copyStatus );
+        fprintf(stderr, "iusInputCreate: deep copy of data instance failed: status is %d\n", copyStatus);
         free( pInst->pExperiment );
         free( pInst->pTransducer );
         free( pInst->pReceiveSettings );
@@ -726,6 +728,7 @@ IusInputInstance * iusInputRead
 {
     IusInputInstance *pInst;
     herr_t  status;
+    int numElements;
   
     //--------------------------------------------------------------------------
     // alloc instance ; using calloc to clear all state.
@@ -796,26 +799,18 @@ IusInputInstance * iusInputRead
     status = iusHdf5ReadInt( handle, "/DrivingScheme/drivingSchemeType", (int *)&(pInst->pDrivingScheme->drivingSchemeType), verbose );
 
     /* Based on a native signed short */
-    hid_t hdf_drivingSchemeType = H5Tcreate(H5T_ENUM, sizeof(short));
-    short enumValue = 0;
-    H5Tenum_insert( hdf_drivingSchemeType, "DIVERGING_WAVES_RADIAL", (enumValue=IUS_DIVERGING_WAVES,&enumValue));
-    H5Tenum_insert( hdf_drivingSchemeType, "FOCUSED_WAVES",          (enumValue=IUS_FOCUSED_WAVES,&enumValue));
-    H5Tenum_insert( hdf_drivingSchemeType, "PLANE_WAVES",            (enumValue=IUS_PLANE_WAVES,  &enumValue));
-    H5Tenum_insert( hdf_drivingSchemeType, "SINGLE_ELEMENT",         (enumValue=IUS_SINGLE_ELEMENT,  &enumValue));
-
-    status = H5LTread_dataset( handle, "/DrivingScheme/drivingSchemeType",   hdf_drivingSchemeType, &enumValue ); 
     status = iusHdf5ReadInt( handle,   "/DrivingScheme/numSamplesPerLine",   &(pInst->pDrivingScheme->numSamplesPerLine), verbose );
     status = iusHdf5ReadInt( handle,   "/DrivingScheme/numTransmitPulses",   &(pInst->pDrivingScheme->numTransmitPulses), verbose );
     status = iusHdf5ReadInt( handle,   "/DrivingScheme/numTransmitSources",  &(pInst->pDrivingScheme->numTransmitSources), verbose );
     status = iusHdf5ReadInt( handle,   "/numFrames",                         &(pInst->numFrames), verbose );
 
-    if ( pInst->pDrivingScheme->drivingSchemeType == IUS_DIVERGING_WAVES )
+    //if ( pInst->pDrivingScheme->drivingSchemeType == IUS_DIVERGING_WAVES )
     {
         status = iusHdf5ReadFloat(handle, "/DrivingScheme/sourceAngularDelta", &(pInst->pDrivingScheme->sourceAngularDelta), verbose );
         status = iusHdf5ReadFloat(handle, "/DrivingScheme/sourceFNumber",      &(pInst->pDrivingScheme->sourceFNumber), verbose );
         status = iusHdf5ReadFloat(handle, "/DrivingScheme/sourceStartAngle",   &(pInst->pDrivingScheme->sourceStartAngle), verbose );
     }
-    else
+    //else
     {  
         status = LF_readSourceLocationsCartesian(pInst, handle, verbose);
     }
@@ -849,6 +844,10 @@ IusInputInstance * iusInputRead
     pInst->pReceiveSettings->pEndDepth   = (float *)calloc(pInst->pDrivingScheme->numTransmitPulses, sizeof(float));
     status = H5LTread_dataset_float(handle, "/ReceiveSettings/startDepth", pInst->pReceiveSettings->pStartDepth);
     status = H5LTread_dataset_float(handle, "/ReceiveSettings/endDepth", pInst->pReceiveSettings->pEndDepth);
+
+    numElements = LF_GetNumberOfElements(pInst);
+    pInst->pDrivingScheme->pTransmitApodization = (float*)calloc(pInst->pDrivingScheme->numTransmitPulses * numElements, sizeof(float));
+    status = H5LTread_dataset_float(handle, "/DrivingScheme/transmitApodization", pInst->pDrivingScheme->pTransmitApodization);
 
     status = iusHdf5ReadInt( handle, "/IusVersion", &(pInst->IusVersion), verbose ); 
     status = iusHdf5ReadString( handle, "/ID", (char **)&(pInst->iusNode.pId), verbose );
@@ -1063,13 +1062,15 @@ int iusInputWrite
     H5LTmake_dataset_int( group_id, "/DrivingScheme/numTransmitPulses",  1, dims, &(pInst->pDrivingScheme->numTransmitPulses) );
     H5LTmake_dataset_int( group_id, "/DrivingScheme/numTransmitSources", 1, dims, &(pInst->pDrivingScheme->numTransmitSources) );
 
-    if (enumValue == IUS_DIVERGING_WAVES) //use radial info
+    // Is there any reason to make these datafields conditional, ON THE FILE-IO level???
+    // Spoiler: I don't think so.
+    //if (enumValue == IUS_DIVERGING_WAVES) //use radial info
     {
         H5LTmake_dataset_float( group_id, "/DrivingScheme/sourceFNumber",      1, dims, &(pInst->pDrivingScheme->sourceFNumber) );
         H5LTmake_dataset_float( group_id, "/DrivingScheme/sourceAngularDelta", 1, dims, &(pInst->pDrivingScheme->sourceAngularDelta) );
         H5LTmake_dataset_float( group_id, "/DrivingScheme/sourceStartAngle",   1, dims, &(pInst->pDrivingScheme->sourceStartAngle) );
     }
-    else
+    //else
     {
         dims[0] = pInst->pDrivingScheme->numTransmitSources;
         space   = H5Screate_simple( 1, dims, NULL );
