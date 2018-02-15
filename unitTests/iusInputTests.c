@@ -191,54 +191,53 @@ void AssertAllFields(IusInputInstance* pInst,
     IusReceiveSettings* receiveSettings,
     IusDrivingScheme* drivingScheme)
 {
-    TEST_ASSERT_EQUAL(experiment->speedOfSound, pInst->pExperiment->speedOfSound);
-    TEST_ASSERT_EQUAL(experiment->date, pInst->pExperiment->date);
-    TEST_ASSERT_EQUAL_STRING(experiment->pDescription, pInst->pExperiment->pDescription);
+    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(experiment->speedOfSound, pInst->pExperiment->speedOfSound, "speedOfSound incorrect.");
+    TEST_ASSERT_EQUAL_INT_MESSAGE(experiment->date, pInst->pExperiment->date, "date incorrect.");
+    TEST_ASSERT_EQUAL_STRING_MESSAGE(experiment->pDescription, pInst->pExperiment->pDescription, "description incorrect.");
 
-    TEST_ASSERT_EQUAL_STRING(transducer->pTransducerName, pInst->pTransducer->pTransducerName);
-    TEST_ASSERT_EQUAL(transducer->centerFrequency, pInst->pTransducer->centerFrequency);
-    TEST_ASSERT_EQUAL(transducer->numElements, pInst->pTransducer->numElements);
-    TEST_ASSERT_EQUAL(transducer->pElements[0].position.x , pInst->pTransducer->pElements[0].position.x);
-    TEST_ASSERT_EQUAL(transducer->pElements[0].position.y , pInst->pTransducer->pElements[0].position.y);
-    TEST_ASSERT_EQUAL(transducer->pElements[0].position.z , pInst->pTransducer->pElements[0].position.z);
-    TEST_ASSERT_EQUAL(transducer->pElements[0].angle.theta, pInst->pTransducer->pElements[0].angle.theta);
-    TEST_ASSERT_EQUAL(transducer->pElements[0].angle.phi, pInst->pTransducer->pElements[0].angle.phi);
-    TEST_ASSERT_EQUAL(transducer->pElements[0].size.x, pInst->pTransducer->pElements[0].size.x);
-    TEST_ASSERT_EQUAL(transducer->pElements[0].size.y, pInst->pTransducer->pElements[0].size.y);
-    TEST_ASSERT_EQUAL(transducer->pElements[0].size.z, pInst->pTransducer->pElements[0].size.z);
+    TEST_ASSERT_EQUAL_STRING_MESSAGE(transducer->pTransducerName, pInst->pTransducer->pTransducerName, "transducer name incorrect.");
+    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(transducer->centerFrequency, pInst->pTransducer->centerFrequency, "centerFrequency incorrect.");
+    TEST_ASSERT_EQUAL_INT_MESSAGE(transducer->numElements, pInst->pTransducer->numElements, "numElements incorrect.");
+    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(transducer->pElements[0].position.x , pInst->pTransducer->pElements[0].position.x, "position X incorrect.");
+    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(transducer->pElements[0].position.y , pInst->pTransducer->pElements[0].position.y, "position Y incorrect.");
+    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(transducer->pElements[0].position.z , pInst->pTransducer->pElements[0].position.z, "position Z incorrect.");
+    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(transducer->pElements[0].angle.theta, pInst->pTransducer->pElements[0].angle.theta, "angle theta incorrect.");
+    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(transducer->pElements[0].angle.phi, pInst->pTransducer->pElements[0].angle.phi, "angle phi incorrect.");
+    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(transducer->pElements[0].size.x, pInst->pTransducer->pElements[0].size.x, "size X incorrect.");
+    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(transducer->pElements[0].size.y, pInst->pTransducer->pElements[0].size.y, "size Y incorrect.");
+    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(transducer->pElements[0].size.z, pInst->pTransducer->pElements[0].size.z, "size Z incorrect.");
 
-    TEST_ASSERT_EQUAL(receiveSettings->receiveChannelCoding.numChannels, pInst->pReceiveSettings->receiveChannelCoding.numChannels);
-    TEST_ASSERT_EQUAL(receiveSettings->receiveChannelCoding.pChannelMap[0], pInst->pReceiveSettings->receiveChannelCoding.pChannelMap[0]);
-    TEST_ASSERT_EQUAL(receiveSettings->sampleFrequency, pInst->pReceiveSettings->sampleFrequency);
-    TEST_ASSERT_EQUAL(receiveSettings->pStartDepth[0], pInst->pReceiveSettings->pStartDepth[0]);
-    TEST_ASSERT_EQUAL(receiveSettings->pEndDepth[0], pInst->pReceiveSettings->pEndDepth[0]);
-    TEST_ASSERT_EQUAL(receiveSettings->numTimeGainControlValues, pInst->pReceiveSettings->numTimeGainControlValues);
-    TEST_ASSERT_EQUAL(receiveSettings->pTimeGainControl[0].time, pInst->pReceiveSettings->pTimeGainControl[0].time);
-    TEST_ASSERT_EQUAL(receiveSettings->pTimeGainControl[0].gain, pInst->pReceiveSettings->pTimeGainControl[0].gain);
+    TEST_ASSERT_EQUAL_INT_MESSAGE(receiveSettings->receiveChannelCoding.numChannels, pInst->pReceiveSettings->receiveChannelCoding.numChannels, "receiveChannelCoding numChannels incorrect.");
+    TEST_ASSERT_EQUAL_INT_MESSAGE(receiveSettings->receiveChannelCoding.pChannelMap[0], pInst->pReceiveSettings->receiveChannelCoding.pChannelMap[0], "channel map incorrect.");
+    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(receiveSettings->sampleFrequency, pInst->pReceiveSettings->sampleFrequency, "sampleFrequency incorrect.");
+    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(receiveSettings->pStartDepth[0], pInst->pReceiveSettings->pStartDepth[0], "startDepth incorrect.");
+    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(receiveSettings->pEndDepth[0], pInst->pReceiveSettings->pEndDepth[0], "endDepth incorrect.");
+    TEST_ASSERT_EQUAL_INT_MESSAGE(receiveSettings->numTimeGainControlValues, pInst->pReceiveSettings->numTimeGainControlValues, "numTimeGainControlValues incorrect.");
+    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(receiveSettings->pTimeGainControl[0].time, pInst->pReceiveSettings->pTimeGainControl[0].time, "timeGain time incorrect.");
+    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(receiveSettings->pTimeGainControl[0].gain, pInst->pReceiveSettings->pTimeGainControl[0].gain, "timeGain gain incorrect.");
+    TEST_ASSERT_EQUAL_INT_MESSAGE(drivingScheme->drivingSchemeType, pInst->pDrivingScheme->drivingSchemeType, "drivingSchemeType incorrect.");
+    TEST_ASSERT_EQUAL_INT_MESSAGE(drivingScheme->numSamplesPerLine, pInst->pDrivingScheme->numSamplesPerLine, "numSamplesPerLine incorrect.");
+    TEST_ASSERT_EQUAL_INT_MESSAGE(drivingScheme->numTransmitSources, pInst->pDrivingScheme->numTransmitSources, "numTransmitSources incorrect.");
+    TEST_ASSERT_EQUAL_INT_MESSAGE(drivingScheme->numTransmitPulses, pInst->pDrivingScheme->numTransmitPulses, "numTransmitPulses incorrect.");
 
-    TEST_ASSERT_EQUAL(drivingScheme->drivingSchemeType, pInst->pDrivingScheme->drivingSchemeType);
-    TEST_ASSERT_EQUAL(drivingScheme->numSamplesPerLine, pInst->pDrivingScheme->numSamplesPerLine);
-    TEST_ASSERT_EQUAL(drivingScheme->numTransmitSources, pInst->pDrivingScheme->numTransmitSources);
-    TEST_ASSERT_EQUAL(drivingScheme->numTransmitPulses, pInst->pDrivingScheme->numTransmitPulses);
-
-    TEST_ASSERT_EQUAL(drivingScheme->pSourceLocations[0].x, pInst->pDrivingScheme->pSourceLocations[0].x);
-    TEST_ASSERT_EQUAL(drivingScheme->pSourceLocations[0].y, pInst->pDrivingScheme->pSourceLocations[0].y);
-    TEST_ASSERT_EQUAL(drivingScheme->pSourceLocations[0].z, pInst->pDrivingScheme->pSourceLocations[0].z);
-    TEST_ASSERT_EQUAL(drivingScheme->sourceFNumber, pInst->pDrivingScheme->sourceFNumber);
-    TEST_ASSERT_EQUAL(drivingScheme->sourceAngularDelta, pInst->pDrivingScheme->sourceAngularDelta);
-    TEST_ASSERT_EQUAL(drivingScheme->sourceStartAngle, pInst->pDrivingScheme->sourceStartAngle);
-    TEST_ASSERT_EQUAL(drivingScheme->transmitPatternDelay, pInst->pDrivingScheme->transmitPatternDelay);
-    TEST_ASSERT_EQUAL(drivingScheme->pTransmitPattern[0].index, pInst->pDrivingScheme->pTransmitPattern[0].index);
-    TEST_ASSERT_EQUAL(drivingScheme->pTransmitPattern[0].time, pInst->pDrivingScheme->pTransmitPattern[0].time);
-    TEST_ASSERT_EQUAL(drivingScheme->transmitPulse.numPulseValues, pInst->pDrivingScheme->transmitPulse.numPulseValues);
-    TEST_ASSERT_EQUAL(drivingScheme->transmitPulse.pRawPulseAmplitudes[0], pInst->pDrivingScheme->transmitPulse.pRawPulseAmplitudes[0]);
-    TEST_ASSERT_EQUAL(drivingScheme->transmitPulse.pRawPulseTimes[0], pInst->pDrivingScheme->transmitPulse.pRawPulseTimes[0]);
-    TEST_ASSERT_EQUAL(drivingScheme->transmitPulse.pulseFrequency, pInst->pDrivingScheme->transmitPulse.pulseFrequency);
-    TEST_ASSERT_EQUAL(drivingScheme->transmitPulse.pulseAmplitude, pInst->pDrivingScheme->transmitPulse.pulseAmplitude);
-    TEST_ASSERT_EQUAL(drivingScheme->transmitPulse.pulseCount, pInst->pDrivingScheme->transmitPulse.pulseCount);
-    TEST_ASSERT_EQUAL(drivingScheme->pTransmitApodization[0], pInst->pDrivingScheme->pTransmitApodization[0]);
-    TEST_ASSERT_EQUAL(drivingScheme->transmitChannelCoding.numChannels, pInst->pDrivingScheme->transmitChannelCoding.numChannels);
-    TEST_ASSERT_EQUAL(drivingScheme->transmitChannelCoding.pChannelMap[0], pInst->pDrivingScheme->transmitChannelCoding.pChannelMap[0]);
+    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(drivingScheme->pSourceLocations[0].x, pInst->pDrivingScheme->pSourceLocations[0].x, "sourceLocations X incorrect.");
+    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(drivingScheme->pSourceLocations[0].y, pInst->pDrivingScheme->pSourceLocations[0].y, "sourceLocations Y incorrect.");
+    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(drivingScheme->pSourceLocations[0].z, pInst->pDrivingScheme->pSourceLocations[0].z, "sourceLocations Z incorrect.");
+    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(drivingScheme->sourceFNumber, pInst->pDrivingScheme->sourceFNumber, "sourceFNumber incorrect.");
+    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(drivingScheme->sourceAngularDelta, pInst->pDrivingScheme->sourceAngularDelta, "sourceAngularDelta incorrect.");
+    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(drivingScheme->sourceStartAngle, pInst->pDrivingScheme->sourceStartAngle, "sourceStartAngle incorrect.");
+    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(drivingScheme->transmitPatternDelay, pInst->pDrivingScheme->transmitPatternDelay, "transmitPatternDelay incorrect.");
+    TEST_ASSERT_EQUAL_INT_MESSAGE(drivingScheme->pTransmitPattern[0].index, pInst->pDrivingScheme->pTransmitPattern[0].index, "transmitPattern index incorrect.");
+    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(drivingScheme->pTransmitPattern[0].time, pInst->pDrivingScheme->pTransmitPattern[0].time, "transmitPattern time incorrect.");
+    TEST_ASSERT_EQUAL_INT_MESSAGE(drivingScheme->transmitPulse.numPulseValues, pInst->pDrivingScheme->transmitPulse.numPulseValues, "numPulseValues incorrect.");
+    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(drivingScheme->transmitPulse.pRawPulseAmplitudes[0], pInst->pDrivingScheme->transmitPulse.pRawPulseAmplitudes[0], "rawPulseAmplitudes incorrect.");
+    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(drivingScheme->transmitPulse.pRawPulseTimes[0], pInst->pDrivingScheme->transmitPulse.pRawPulseTimes[0], "rawPulseTimes incorrect.");
+    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(drivingScheme->transmitPulse.pulseFrequency, pInst->pDrivingScheme->transmitPulse.pulseFrequency, "pulseFrequency incorrect.");
+    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(drivingScheme->transmitPulse.pulseAmplitude, pInst->pDrivingScheme->transmitPulse.pulseAmplitude, "pulseAmplitude incorrect.");
+    TEST_ASSERT_EQUAL_INT_MESSAGE(drivingScheme->transmitPulse.pulseCount, pInst->pDrivingScheme->transmitPulse.pulseCount, "pulseCount incorrect.");
+    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(drivingScheme->pTransmitApodization[0], pInst->pDrivingScheme->pTransmitApodization[0], "transmitApodization incorrect.");
+    TEST_ASSERT_EQUAL_INT_MESSAGE(drivingScheme->transmitChannelCoding.numChannels, pInst->pDrivingScheme->transmitChannelCoding.numChannels, "transmitChannelCoding numChannels incorrect.");
+    TEST_ASSERT_EQUAL_INT_MESSAGE(drivingScheme->transmitChannelCoding.pChannelMap[0], pInst->pDrivingScheme->transmitChannelCoding.pChannelMap[0], "channelMap incorrect.");
 }
 
 void ReadInputFile(
@@ -266,7 +265,7 @@ void ReadInputFile(
     Print("closed.");
 }
 
-int InputFormatTest()
+void InputFormatTest_Default()
 {
     IusExperiment      experiment;
     IusTransducer      transducer;
@@ -291,17 +290,18 @@ int InputFormatTest()
     Print("destroying header structs...");
     DestroyHeaderStructs(&experiment, &transducer, &receiveSettings, &drivingScheme);
     Print("destroying header completed.");
-
-    return 0;
 }
 
-
-// InputTest
-//------------------------------------------------------------------------------
-int InputTest(void)
+void InputFormatTest_OneParentNode()
 {
-    int retVal = InputFormatTest();
-    TEST_ASSERT( 0 == retVal );
-
-    return retVal;
 }
+
+// InputFormatTest
+//------------------------------------------------------------------------------
+
+void InputFormatTest()
+{
+    InputFormatTest_Default();
+    InputFormatTest_OneParentNode();
+}
+

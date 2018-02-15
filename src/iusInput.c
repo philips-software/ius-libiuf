@@ -797,7 +797,7 @@ IusInputInstance * iusInputRead
 
     /* Based on a native signed short */
     hid_t hdf_drivingSchemeType = H5Tcreate(H5T_ENUM, sizeof(short));
-    short enumValue = 0;  //pInst->pIusInput->pDrivingScheme->drivingSchemeType;
+    short enumValue = 0;
     H5Tenum_insert( hdf_drivingSchemeType, "DIVERGING_WAVES_RADIAL", (enumValue=IUS_DIVERGING_WAVES,&enumValue));
     H5Tenum_insert( hdf_drivingSchemeType, "FOCUSED_WAVES",          (enumValue=IUS_FOCUSED_WAVES,&enumValue));
     H5Tenum_insert( hdf_drivingSchemeType, "PLANE_WAVES",            (enumValue=IUS_PLANE_WAVES,  &enumValue));
@@ -809,7 +809,6 @@ IusInputInstance * iusInputRead
     status = iusHdf5ReadInt( handle,   "/DrivingScheme/numTransmitSources",  &(pInst->pDrivingScheme->numTransmitSources), verbose );
     status = iusHdf5ReadInt( handle,   "/numFrames",                         &(pInst->numFrames), verbose );
 
-    //if (pInst->pIusInput->pDrivingScheme->drivingSchemeType ==  IUS_DIVERGING_WAVES)
     if ( pInst->pDrivingScheme->drivingSchemeType == IUS_DIVERGING_WAVES )
     {
         status = iusHdf5ReadFloat(handle, "/DrivingScheme/sourceAngularDelta", &(pInst->pDrivingScheme->sourceAngularDelta), verbose );
@@ -837,6 +836,11 @@ IusInputInstance * iusInputRead
     status = iusHdf5ReadFloat( handle, "/DrivingScheme/TransmitPulse/pulseFrequency", &(pInst->pDrivingScheme->transmitPulse.pulseFrequency), verbose ); 
     status = iusHdf5ReadFloat( handle, "/DrivingScheme/TransmitPulse/pulseAmplitude", &(pInst->pDrivingScheme->transmitPulse.pulseAmplitude), verbose ); 
     status = iusHdf5ReadInt( handle,   "/DrivingScheme/TransmitPulse/pulseCount", &(pInst->pDrivingScheme->transmitPulse.pulseCount), verbose ); 
+
+//receiveSettings->receiveChannelCoding.numChannels
+    status = iusHdf5ReadInt(handle, "/ReceiveSettings/numChannels", &(pInst->pReceiveSettings->receiveChannelCoding.numChannels), verbose);
+    pInst->pReceiveSettings->receiveChannelCoding.pChannelMap = (int*)calloc(pInst->pReceiveSettings->receiveChannelCoding.numChannels, sizeof(int));
+    status = iusHdf5ReadInt(handle, "/ReceiveSettings/channelMap", pInst->pReceiveSettings->receiveChannelCoding.pChannelMap, verbose);
 
     status = iusHdf5ReadFloat( handle, "/ReceiveSettings/sampleFrequency", &(pInst->pReceiveSettings->sampleFrequency),verbose );
     status = iusHdf5ReadInt( handle,   "/ReceiveSettings/TimeGainControl/numValues", &(pInst->pReceiveSettings->numTimeGainControlValues), verbose );
@@ -1003,6 +1007,14 @@ int iusInputWrite
       //float *endDepths = (float *)calloc()
       //  pReceiveSettings->pStartDepth + (pDrivingScheme->numSamplesPerLine * pReceiveSettings->sampleFrequency);
       group_id = H5Gcreate( handle, "/ReceiveSettings", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT );
+      // write channel map
+      H5LTmake_dataset_int(group_id, "/ReceiveSettings/numChannels", 1, dims, &(pInst->pReceiveSettings->receiveChannelCoding.numChannels));
+      if(pInst->pReceiveSettings->receiveChannelCoding.numChannels > 0)
+      {
+	  dims[0] = pInst->pReceiveSettings->receiveChannelCoding.numChannels;
+	  H5LTmake_dataset_int(group_id, "/ReceiveSettings/channelMap", 1, dims, pInst->pReceiveSettings->receiveChannelCoding.pChannelMap);
+      }
+
       H5LTmake_dataset_float( group_id,    "/ReceiveSettings/sampleFrequency", 1, dims, &(pInst->pReceiveSettings->sampleFrequency) );
       dims[0] = pInst->pDrivingScheme->numTransmitPulses;
       H5LTmake_dataset_float( group_id,    "/ReceiveSettings/startDepth", 1, dims, pInst->pReceiveSettings->pStartDepth );
@@ -1056,14 +1068,9 @@ int iusInputWrite
         H5LTmake_dataset_float( group_id, "/DrivingScheme/sourceFNumber",      1, dims, &(pInst->pDrivingScheme->sourceFNumber) );
         H5LTmake_dataset_float( group_id, "/DrivingScheme/sourceAngularDelta", 1, dims, &(pInst->pDrivingScheme->sourceAngularDelta) );
         H5LTmake_dataset_float( group_id, "/DrivingScheme/sourceStartAngle",   1, dims, &(pInst->pDrivingScheme->sourceStartAngle) );
-        // pInst->pDrivingScheme->pSourceLocations=NULL; //dear Frank, this line, and 3 below, change the state of our data object, pInst. Why?
     }
     else
     {
-//        pInst->pDrivingScheme->sourceFNumber      = 0;
-//        pInst->pDrivingScheme->sourceAngularDelta = 0;
-//        pInst->pDrivingScheme->sourceStartAngle   = 0;
-
         dims[0] = pInst->pDrivingScheme->numTransmitSources;
         space   = H5Screate_simple( 1, dims, NULL );
         // step a:  create H5 dataset

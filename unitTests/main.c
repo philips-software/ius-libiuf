@@ -4,6 +4,8 @@
 #include "iusLUTTests.h"
 #include "iusInputTests.h"
 
+#define UNITY_FLOAT_VERBOSE
+
 int AverageThreeBytes(int a, int b, int c)
 {
     return (int)(((int)a + (int)b + (int)c) / 3);
@@ -90,7 +92,7 @@ int main(void)
     // RUN_TEST(CountUniqueElementsIntVectorTest);
     // RUN_TEST(FloatIntervalLUTTest);
     // RUN_TEST(MedianFilterTest);
-    RUN_TEST(InputTest);
+    RUN_TEST(InputFormatTest);
 
     return UNITY_END();
 }
