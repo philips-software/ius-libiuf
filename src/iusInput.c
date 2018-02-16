@@ -832,7 +832,6 @@ IusInputInstance * iusInputRead
     status = iusHdf5ReadFloat( handle, "/DrivingScheme/TransmitPulse/pulseAmplitude", &(pInst->pDrivingScheme->transmitPulse.pulseAmplitude), verbose ); 
     status = iusHdf5ReadInt( handle,   "/DrivingScheme/TransmitPulse/pulseCount", &(pInst->pDrivingScheme->transmitPulse.pulseCount), verbose ); 
 
-//receiveSettings->receiveChannelCoding.numChannels
     status = iusHdf5ReadInt(handle, "/ReceiveSettings/numChannels", &(pInst->pReceiveSettings->receiveChannelCoding.numChannels), verbose);
     pInst->pReceiveSettings->receiveChannelCoding.pChannelMap = (int*)calloc(pInst->pReceiveSettings->receiveChannelCoding.numChannels, sizeof(int));
     status = iusHdf5ReadInt(handle, "/ReceiveSettings/channelMap", pInst->pReceiveSettings->receiveChannelCoding.pChannelMap, verbose);
@@ -844,6 +843,10 @@ IusInputInstance * iusInputRead
     pInst->pReceiveSettings->pEndDepth   = (float *)calloc(pInst->pDrivingScheme->numTransmitPulses, sizeof(float));
     status = H5LTread_dataset_float(handle, "/ReceiveSettings/startDepth", pInst->pReceiveSettings->pStartDepth);
     status = H5LTread_dataset_float(handle, "/ReceiveSettings/endDepth", pInst->pReceiveSettings->pEndDepth);
+
+    status = iusHdf5ReadInt(handle,  "/DrivingScheme/numChannels", &(pInst->pDrivingScheme->transmitChannelCoding.numChannels), verbose);
+    pInst->pDrivingScheme->transmitChannelCoding.pChannelMap = (int*)calloc(pInst->pDrivingScheme->transmitChannelCoding.numChannels, sizeof(int));
+    status = iusHdf5ReadInt(handle, "/DrivingScheme/channelMap", pInst->pDrivingScheme->transmitChannelCoding.pChannelMap, verbose);
 
     numElements = LF_GetNumberOfElements(pInst);
     pInst->pDrivingScheme->pTransmitApodization = (float*)calloc(pInst->pDrivingScheme->numTransmitPulses * numElements, sizeof(float));
@@ -1061,6 +1064,14 @@ int iusInputWrite
     H5LTmake_dataset_int( group_id, "/DrivingScheme/numSamplesPerLine",  1, dims, &(pInst->pDrivingScheme->numSamplesPerLine) );
     H5LTmake_dataset_int( group_id, "/DrivingScheme/numTransmitPulses",  1, dims, &(pInst->pDrivingScheme->numTransmitPulses) );
     H5LTmake_dataset_int( group_id, "/DrivingScheme/numTransmitSources", 1, dims, &(pInst->pDrivingScheme->numTransmitSources) );
+
+    dims[0] = 1;
+    H5LTmake_dataset_int(group_id, "/DrivingScheme/numChannels", 1, dims, &(pInst->pDrivingScheme->transmitChannelCoding.numChannels));
+    if(pInst->pDrivingScheme->transmitChannelCoding.numChannels > 0)
+    {
+        dims[0] = pInst->pDrivingScheme->transmitChannelCoding.numChannels;
+	H5LTmake_dataset_int(group_id, "/DrivingScheme/channelMap", 1, dims, pInst->pDrivingScheme->transmitChannelCoding.pChannelMap);
+    }
 
     // Is there any reason to make these datafields conditional, ON THE FILE-IO level???
     // Spoiler: I don't think so.
