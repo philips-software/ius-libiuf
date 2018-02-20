@@ -1,6 +1,6 @@
 CC = gcc
-
 FLAGS = -c
+VERSION = 3.0
 
 CPP_DEFINES = -DUNITY_INCLUDE_DOUBLE
 CFLAGS = $(CPP_DEFINES) -std=c99 -Wall -Wextra -pedantic -lm -fPIC -Iunity -g -I../include -I../lib/hdf5/include
@@ -19,6 +19,10 @@ $(TARGET): $(OBJ)
 
 clean:
 	rm -f $(OBJ)  $(TARGET)
+
+test: $(TARGET)
+	export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${PWD}/../lib:${PWD}/../lib/hdf5/lib ;\
+	$(TARGET)
 
 valgrind: $(TARGET)
 	export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${PWD}/../lib:${PWD}/../lib/hdf5/lib ;\
