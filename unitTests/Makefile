@@ -9,7 +9,7 @@ TARGET  = ./unitTests
 
 SOURCES = $(wildcard *.c unity/*.c)
 OBJ = $(SOURCES:.c=.o)
-
+VALGRIND_EXIT_CODE=10
 
 all: $(TARGET)
 
@@ -26,4 +26,4 @@ test: $(TARGET)
 
 valgrind: $(TARGET)
 	export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${PWD}/../lib:${PWD}/../lib/hdf5/lib ;\
-	valgrind --tool=memcheck --leak-check=yes --track-origins=yes  $(TARGET)
+	valgrind --error-exitcode=$(VALGRIND_EXIT_CODE) --tool=memcheck --leak-check=yes --track-origins=yes  $(TARGET)
