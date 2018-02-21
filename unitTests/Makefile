@@ -8,7 +8,7 @@ TARGET  = ./unitTests
 
 SOURCES = $(wildcard *.c unity/*.c)
 OBJ = $(SOURCES:.c=.o)
-VALGRIND_EXIT_CODE=10
+VALGRIND_EXIT_CODE=11
 
 all: $(TARGET)
 
