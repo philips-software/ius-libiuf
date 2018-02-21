@@ -41,7 +41,7 @@ void test_build_notification(void)
 int main(void)
 {
     UNITY_BEGIN();
-    RUN_TEST(test_build_notification);
+    // RUN_TEST(test_build_notification);
     // RUN_TEST(test_AverageThreeBytes_should_AverageMidRangeValues);
     // RUN_TEST(test_AverageThreeBytes_should_AverageHighValues);
 
