@@ -33,9 +33,15 @@ void test_AverageThreeBytes_should_AverageHighValues(void)
     TEST_ASSERT_EQUAL_HEX8(84, AverageThreeBytes(0, 126, 126));
 }
 
+void test_build_notification(void)
+{
+	TEST_ASSERT( 0 == 1 );
+}
+
 int main(void)
 {
     UNITY_BEGIN();
+    RUN_TEST(test_build_notification);
     // RUN_TEST(test_AverageThreeBytes_should_AverageMidRangeValues);
     // RUN_TEST(test_AverageThreeBytes_should_AverageHighValues);
 
