@@ -237,7 +237,12 @@ char *iusUuidCreate()
   uuid_t uuid;
 
   // generate
+  // uuid_generate_time_safe(uuid);
+#ifdef __APPLE__
+  uuid_generate_time(uuid);
+#else
   uuid_generate_time_safe(uuid);
+#endif
   // unparse (to string)
   uuid_str = (char *)calloc(37, sizeof(char));    // ex. "1b4e28ba-2fa1-11d2-883f-0016d3cca427" + "\0"
   uuid_unparse_lower(uuid, uuid_str);

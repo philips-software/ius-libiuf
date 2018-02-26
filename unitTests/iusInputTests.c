@@ -25,10 +25,8 @@ char* AllocString
 
     pResult = (char *)calloc( strlen(pStr) + 1, sizeof(char) );
     strcpy( pResult, pStr );
-    
     return pResult;
 }
-
 
 void CreateHeaderStructs
 (
@@ -41,6 +39,7 @@ void CreateHeaderStructs
     pExperiment->speedOfSound = 1.2f;
     pExperiment->date = 3;
     pExperiment->pDescription = AllocString( "experimentDescription" );
+
     pTransducer->pTransducerName = AllocString( "transducerName" );
     pTransducer->centerFrequency = 1.2f;
     pTransducer->numElements = 1;
@@ -121,38 +120,48 @@ void DestroyHeaderStructs
     free( pDrivingScheme->transmitChannelCoding.pChannelMap );
 }
 
+static float *  allocRFLine
+(
+    int numSamplesPerLine,
+    int numElements
+)
+{
+    return (float *)calloc(numSamplesPerLine * numElements, sizeof(float));
+}
+
 //------------------------------------------------------------------------------
 //
 //------------------------------------------------------------------------------
-static void genRFLine
+static float * genRFLine
 (
-    IusInputFileInstance * pInputFile0
+    IusDrivingScheme* drivingScheme,
+    IusTransducer* transducer
+    
 )
 {
     float * pPageVector = NULL;
-    int     numSamples  = pInputFile0->pIusInput->pDrivingScheme->numSamplesPerLine;
-    int     numElements = pInputFile0->pIusInput->pTransducer->numElements;
+    int     numSamples  = drivingScheme->numSamplesPerLine;
+    int     numElements = transducer->numElements;
     int     i = 0;
 
     // Allocate some memory
-    pPageVector = (float *)calloc(numSamples * numElements, sizeof(float));
-    
+    pPageVector = allocRFLine(numSamples,numElements);
     for ( i = 0; i < numSamples * numElements; i++ )
     {
         pPageVector[i] = 0.0f + (float)i;
     }
-
-    iusInputFileWriteNextPulse( pInputFile0, pPageVector );
-
-    free(pPageVector);
+    return pPageVector;
 }
 
-void CreateInputFile(
+void CreateInputFile
+(
     char* filename,
     IusExperiment* experiment,
     IusTransducer* transducer,
     IusReceiveSettings* receiveSettings,
-    IusDrivingScheme* drivingScheme)
+    IusDrivingScheme* drivingScheme,
+    float * pPageVector
+)
 {
     IusInputInstance * pInst;
     IusInputFileInstance * pFile;
@@ -169,9 +178,9 @@ void CreateInputFile(
     TEST_ASSERT(pFile != NULL);
     Print("iusInputFile created.");
 
-//    Print("adding RF line...");
-//    genRFLine(pFile);
-//    Print("RF line added.");
+    Print("adding RF line...");
+    iusInputFileWriteNextPulse( pFile, pPageVector );
+    Print("RF line added.");
 
     Print( "closing iusInputFile..." );
     Print( "iusInputFile closed." );
@@ -185,67 +194,101 @@ void CreateInputFile(
     Print( "iusInputFile destroyed." );
 }
 
-void AssertAllFields(IusInputInstance* pInst,
-    IusExperiment* experiment,
-    IusTransducer* transducer,
-    IusReceiveSettings* receiveSettings,
-    IusDrivingScheme* drivingScheme)
+
+void AssertExperimentFields(IusExperiment* truth, IusExperiment* validate)
 {
-    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(experiment->speedOfSound, pInst->pExperiment->speedOfSound, "speedOfSound incorrect.");
-    TEST_ASSERT_EQUAL_INT_MESSAGE(experiment->date, pInst->pExperiment->date, "date incorrect.");
-    TEST_ASSERT_EQUAL_STRING_MESSAGE(experiment->pDescription, pInst->pExperiment->pDescription, "description incorrect.");
-
-    TEST_ASSERT_EQUAL_STRING_MESSAGE(transducer->pTransducerName, pInst->pTransducer->pTransducerName, "transducer name incorrect.");
-    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(transducer->centerFrequency, pInst->pTransducer->centerFrequency, "centerFrequency incorrect.");
-    TEST_ASSERT_EQUAL_INT_MESSAGE(transducer->numElements, pInst->pTransducer->numElements, "numElements incorrect.");
-    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(transducer->pElements[0].position.x , pInst->pTransducer->pElements[0].position.x, "position X incorrect.");
-    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(transducer->pElements[0].position.y , pInst->pTransducer->pElements[0].position.y, "position Y incorrect.");
-    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(transducer->pElements[0].position.z , pInst->pTransducer->pElements[0].position.z, "position Z incorrect.");
-    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(transducer->pElements[0].angle.theta, pInst->pTransducer->pElements[0].angle.theta, "angle theta incorrect.");
-    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(transducer->pElements[0].angle.phi, pInst->pTransducer->pElements[0].angle.phi, "angle phi incorrect.");
-    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(transducer->pElements[0].size.x, pInst->pTransducer->pElements[0].size.x, "size X incorrect.");
-    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(transducer->pElements[0].size.y, pInst->pTransducer->pElements[0].size.y, "size Y incorrect.");
-    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(transducer->pElements[0].size.z, pInst->pTransducer->pElements[0].size.z, "size Z incorrect.");
-
-    TEST_ASSERT_EQUAL_INT_MESSAGE(receiveSettings->receiveChannelCoding.numChannels, pInst->pReceiveSettings->receiveChannelCoding.numChannels, "receiveChannelCoding numChannels incorrect.");
-    TEST_ASSERT_EQUAL_INT_MESSAGE(receiveSettings->receiveChannelCoding.pChannelMap[0], pInst->pReceiveSettings->receiveChannelCoding.pChannelMap[0], "channel map incorrect.");
-    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(receiveSettings->sampleFrequency, pInst->pReceiveSettings->sampleFrequency, "sampleFrequency incorrect.");
-    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(receiveSettings->pStartDepth[0], pInst->pReceiveSettings->pStartDepth[0], "startDepth incorrect.");
-    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(receiveSettings->pEndDepth[0], pInst->pReceiveSettings->pEndDepth[0], "endDepth incorrect.");
-    TEST_ASSERT_EQUAL_INT_MESSAGE(receiveSettings->numTimeGainControlValues, pInst->pReceiveSettings->numTimeGainControlValues, "numTimeGainControlValues incorrect.");
-    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(receiveSettings->pTimeGainControl[0].time, pInst->pReceiveSettings->pTimeGainControl[0].time, "timeGain time incorrect.");
-    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(receiveSettings->pTimeGainControl[0].gain, pInst->pReceiveSettings->pTimeGainControl[0].gain, "timeGain gain incorrect.");
-    TEST_ASSERT_EQUAL_INT_MESSAGE(drivingScheme->drivingSchemeType, pInst->pDrivingScheme->drivingSchemeType, "drivingSchemeType incorrect.");
-    TEST_ASSERT_EQUAL_INT_MESSAGE(drivingScheme->numSamplesPerLine, pInst->pDrivingScheme->numSamplesPerLine, "numSamplesPerLine incorrect.");
-    TEST_ASSERT_EQUAL_INT_MESSAGE(drivingScheme->numTransmitSources, pInst->pDrivingScheme->numTransmitSources, "numTransmitSources incorrect.");
-    TEST_ASSERT_EQUAL_INT_MESSAGE(drivingScheme->numTransmitPulses, pInst->pDrivingScheme->numTransmitPulses, "numTransmitPulses incorrect.");
-
-    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(drivingScheme->pSourceLocations[0].x, pInst->pDrivingScheme->pSourceLocations[0].x, "sourceLocations X incorrect.");
-    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(drivingScheme->pSourceLocations[0].y, pInst->pDrivingScheme->pSourceLocations[0].y, "sourceLocations Y incorrect.");
-    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(drivingScheme->pSourceLocations[0].z, pInst->pDrivingScheme->pSourceLocations[0].z, "sourceLocations Z incorrect.");
-    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(drivingScheme->sourceFNumber, pInst->pDrivingScheme->sourceFNumber, "sourceFNumber incorrect.");
-    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(drivingScheme->sourceAngularDelta, pInst->pDrivingScheme->sourceAngularDelta, "sourceAngularDelta incorrect.");
-    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(drivingScheme->sourceStartAngle, pInst->pDrivingScheme->sourceStartAngle, "sourceStartAngle incorrect.");
-    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(drivingScheme->transmitPatternDelay, pInst->pDrivingScheme->transmitPatternDelay, "transmitPatternDelay incorrect.");
-    TEST_ASSERT_EQUAL_INT_MESSAGE(drivingScheme->pTransmitPattern[0].index, pInst->pDrivingScheme->pTransmitPattern[0].index, "transmitPattern index incorrect.");
-    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(drivingScheme->pTransmitPattern[0].time, pInst->pDrivingScheme->pTransmitPattern[0].time, "transmitPattern time incorrect.");
-    TEST_ASSERT_EQUAL_INT_MESSAGE(drivingScheme->transmitPulse.numPulseValues, pInst->pDrivingScheme->transmitPulse.numPulseValues, "numPulseValues incorrect.");
-    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(drivingScheme->transmitPulse.pRawPulseAmplitudes[0], pInst->pDrivingScheme->transmitPulse.pRawPulseAmplitudes[0], "rawPulseAmplitudes incorrect.");
-    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(drivingScheme->transmitPulse.pRawPulseTimes[0], pInst->pDrivingScheme->transmitPulse.pRawPulseTimes[0], "rawPulseTimes incorrect.");
-    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(drivingScheme->transmitPulse.pulseFrequency, pInst->pDrivingScheme->transmitPulse.pulseFrequency, "pulseFrequency incorrect.");
-    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(drivingScheme->transmitPulse.pulseAmplitude, pInst->pDrivingScheme->transmitPulse.pulseAmplitude, "pulseAmplitude incorrect.");
-    TEST_ASSERT_EQUAL_INT_MESSAGE(drivingScheme->transmitPulse.pulseCount, pInst->pDrivingScheme->transmitPulse.pulseCount, "pulseCount incorrect.");
-    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(drivingScheme->pTransmitApodization[0], pInst->pDrivingScheme->pTransmitApodization[0], "transmitApodization incorrect.");
-    TEST_ASSERT_EQUAL_INT_MESSAGE(drivingScheme->transmitChannelCoding.numChannels, pInst->pDrivingScheme->transmitChannelCoding.numChannels, "transmitChannelCoding numChannels incorrect.");
-    TEST_ASSERT_EQUAL_INT_MESSAGE(drivingScheme->transmitChannelCoding.pChannelMap[0], pInst->pDrivingScheme->transmitChannelCoding.pChannelMap[0], "channelMap incorrect.");
+    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(truth->speedOfSound, validate->speedOfSound, "speedOfSound incorrect.");
+    TEST_ASSERT_EQUAL_INT_MESSAGE(truth->date, validate->date, "date incorrect.");
+    TEST_ASSERT_EQUAL_STRING_MESSAGE(truth->pDescription, validate->pDescription, "description incorrect.");
 }
 
-void ReadInputFile(
+void AssertTransducerFields(IusTransducer* truth, IusTransducer* validate)
+{
+    TEST_ASSERT_EQUAL_STRING_MESSAGE(truth->pTransducerName, validate->pTransducerName, "transducer name incorrect.");
+    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(truth->centerFrequency, validate->centerFrequency, "centerFrequency incorrect.");
+    TEST_ASSERT_EQUAL_INT_MESSAGE(truth->numElements, validate->numElements, "numElements incorrect.");
+    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(truth->pElements[0].position.x , validate->pElements[0].position.x, "position X incorrect.");
+    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(truth->pElements[0].position.y , validate->pElements[0].position.y, "position Y incorrect.");
+    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(truth->pElements[0].position.z , validate->pElements[0].position.z, "position Z incorrect.");
+    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(truth->pElements[0].angle.theta, validate->pElements[0].angle.theta, "angle theta incorrect.");
+    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(truth->pElements[0].angle.phi, validate->pElements[0].angle.phi, "angle phi incorrect.");
+    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(truth->pElements[0].size.x, validate->pElements[0].size.x, "size X incorrect.");
+    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(truth->pElements[0].size.y, validate->pElements[0].size.y, "size Y incorrect.");
+    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(truth->pElements[0].size.z, validate->pElements[0].size.z, "size Z incorrect.");
+}
+
+void AssertReceiveSettingsFields(IusReceiveSettings* truth, IusReceiveSettings* validate) 
+{
+    TEST_ASSERT_EQUAL_INT_MESSAGE(truth->receiveChannelCoding.numChannels, validate->receiveChannelCoding.numChannels, "receiveChannelCoding numChannels incorrect.");
+    TEST_ASSERT_EQUAL_INT_MESSAGE(truth->receiveChannelCoding.pChannelMap[0], validate->receiveChannelCoding.pChannelMap[0], "channel map incorrect.");
+    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(truth->sampleFrequency, validate->sampleFrequency, "sampleFrequency incorrect.");
+    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(truth->pStartDepth[0], validate->pStartDepth[0], "startDepth incorrect.");
+    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(truth->pEndDepth[0], validate->pEndDepth[0], "endDepth incorrect.");
+    TEST_ASSERT_EQUAL_INT_MESSAGE(truth->numTimeGainControlValues, validate->numTimeGainControlValues, "numTimeGainControlValues incorrect.");
+    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(truth->pTimeGainControl[0].time, validate->pTimeGainControl[0].time, "timeGain time incorrect.");
+    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(truth->pTimeGainControl[0].gain, validate->pTimeGainControl[0].gain, "timeGain gain incorrect.");
+}
+
+void AssertDrivingSchemeFields(IusDrivingScheme* truth, IusDrivingScheme* validate)
+{
+    TEST_ASSERT_EQUAL_INT_MESSAGE(truth->drivingSchemeType, validate->drivingSchemeType, "drivingSchemeType incorrect.");
+    TEST_ASSERT_EQUAL_INT_MESSAGE(truth->numSamplesPerLine, validate->numSamplesPerLine, "numSamplesPerLine incorrect.");
+    TEST_ASSERT_EQUAL_INT_MESSAGE(truth->numTransmitSources, validate->numTransmitSources, "numTransmitSources incorrect.");
+    TEST_ASSERT_EQUAL_INT_MESSAGE(truth->numTransmitPulses, validate->numTransmitPulses, "numTransmitPulses incorrect.");
+
+    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(truth->pSourceLocations[0].x, validate->pSourceLocations[0].x, "sourceLocations X incorrect.");
+    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(truth->pSourceLocations[0].y, validate->pSourceLocations[0].y, "sourceLocations Y incorrect.");
+    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(truth->pSourceLocations[0].z, validate->pSourceLocations[0].z, "sourceLocations Z incorrect.");
+    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(truth->sourceFNumber, validate->sourceFNumber, "sourceFNumber incorrect.");
+    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(truth->sourceAngularDelta, validate->sourceAngularDelta, "sourceAngularDelta incorrect.");
+    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(truth->sourceStartAngle, validate->sourceStartAngle, "sourceStartAngle incorrect.");
+    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(truth->transmitPatternDelay, validate->transmitPatternDelay, "transmitPatternDelay incorrect.");
+    TEST_ASSERT_EQUAL_INT_MESSAGE(truth->pTransmitPattern[0].index, validate->pTransmitPattern[0].index, "transmitPattern index incorrect.");
+    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(truth->pTransmitPattern[0].time, validate->pTransmitPattern[0].time, "transmitPattern time incorrect.");
+    TEST_ASSERT_EQUAL_INT_MESSAGE(truth->transmitPulse.numPulseValues, validate->transmitPulse.numPulseValues, "numPulseValues incorrect.");
+    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(truth->transmitPulse.pRawPulseAmplitudes[0], validate->transmitPulse.pRawPulseAmplitudes[0], "rawPulseAmplitudes incorrect.");
+    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(truth->transmitPulse.pRawPulseTimes[0], validate->transmitPulse.pRawPulseTimes[0], "rawPulseTimes incorrect.");
+    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(truth->transmitPulse.pulseFrequency, validate->transmitPulse.pulseFrequency, "pulseFrequency incorrect.");
+    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(truth->transmitPulse.pulseAmplitude, validate->transmitPulse.pulseAmplitude, "pulseAmplitude incorrect.");
+    TEST_ASSERT_EQUAL_INT_MESSAGE(truth->transmitPulse.pulseCount, validate->transmitPulse.pulseCount, "pulseCount incorrect.");
+    TEST_ASSERT_EQUAL_FLOAT_MESSAGE(truth->pTransmitApodization[0], validate->pTransmitApodization[0], "transmitApodization incorrect.");
+    TEST_ASSERT_EQUAL_INT_MESSAGE(truth->transmitChannelCoding.numChannels, validate->transmitChannelCoding.numChannels, "transmitChannelCoding numChannels incorrect.");
+    TEST_ASSERT_EQUAL_INT_MESSAGE(truth->transmitChannelCoding.pChannelMap[0], validate->transmitChannelCoding.pChannelMap[0], "channelMap incorrect.");
+}
+
+void AssertData
+(
+    IusInputFileInstance* pInst,
+    float * truth
+)
+{
+    int     numSamples  = pInst->pIusInput->pDrivingScheme->numSamplesPerLine;
+    int     numElements = pInst->pIusInput->pTransducer->numElements;
+    float   *pPageVector = allocRFLine(numSamples,numElements);
+    int     i = 0;
+    char    message[256];
+
+    iusInputFileReadNextPulse(pInst, &pPageVector);
+    TEST_ASSERT( pPageVector != NULL );
+
+    // Enumerate data
+    for ( i = 0; i < numSamples * numElements; i++ )
+    {
+        sprintf(message, "RF data[%d] not correct", i);
+        TEST_ASSERT_EQUAL_INT_MESSAGE(truth[i], pPageVector[i], message);
+    }
+    return;
+}
+
+void ReadInputFile
+(
     char* filename,
     IusExperiment* experiment,
     IusTransducer* transducer,
     IusReceiveSettings* receiveSettings,
-    IusDrivingScheme* drivingScheme)
+    IusDrivingScheme* drivingScheme,
+    float *pPageVector
+)
 {
     IusInputFileInstance* pInst;
 
@@ -253,8 +296,14 @@ void ReadInputFile(
     pInst = iusInputFileOpen(filename, 0);
     Print("opened.");
 
-    // Check data.
-    AssertAllFields(pInst->pIusInput, experiment, transducer, receiveSettings, drivingScheme);
+    // Check Fields.
+    AssertExperimentFields( experiment, pInst->pIusInput->pExperiment );
+    AssertTransducerFields( transducer, pInst->pIusInput->pTransducer );
+    AssertReceiveSettingsFields( receiveSettings, pInst->pIusInput->pReceiveSettings );
+    AssertDrivingSchemeFields( drivingScheme, pInst->pIusInput->pDrivingScheme );
+
+    // Check Data.
+    AssertData( pInst, pPageVector );
 
     Print("deleting data object...");
     iusInputDestroy(pInst->pIusInput);
@@ -272,24 +321,30 @@ void InputFormatTest_Default()
     IusReceiveSettings receiveSettings;
     IusDrivingScheme   drivingScheme;
     char* filename = "TestInput.input";
+    float *pPageVector = NULL;
 
     Print("Decorating header structs...");
     CreateHeaderStructs(&experiment, &transducer, &receiveSettings, &drivingScheme);
     Print("header structs completed.");
 
+    pPageVector = genRFLine(&drivingScheme,&transducer);
+    TEST_ASSERT(pPageVector != NULL);
+
     // Write this data to an input file.
-    CreateInputFile(filename, &experiment, &transducer, &receiveSettings, &drivingScheme);
+    CreateInputFile(filename, &experiment, &transducer, &receiveSettings, &drivingScheme, pPageVector);
 
     // Read the data from the input file and check it against these structs.
-    ReadInputFile(filename, &experiment, &transducer, &receiveSettings, &drivingScheme);
+    ReadInputFile(filename, &experiment, &transducer, &receiveSettings, &drivingScheme, pPageVector);
 
     Print("deleting test file...");
-    unlink(filename);
+    // unlink(filename);
     Print("test file deleted.");
 
     Print("destroying header structs...");
     DestroyHeaderStructs(&experiment, &transducer, &receiveSettings, &drivingScheme);
     Print("destroying header completed.");
+
+    free(pPageVector);
 }
 
 void InputFormatTest_OneParentNode()
