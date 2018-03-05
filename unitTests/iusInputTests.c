@@ -351,6 +351,12 @@ void InputFormatTest_OneParentNode()
 {
 }
 
+void iusInputCreateTest() 
+{
+// Goal test iusInputCreate routine
+// 
+}
+
 // InputFormatTest
 //------------------------------------------------------------------------------
 

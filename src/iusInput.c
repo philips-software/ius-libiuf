@@ -187,7 +187,7 @@ int LF_copyDrivingSchemeData
     pDst->numTransmitSources = pSrc->numTransmitSources;  // number of US sources (tyically these are virtual)
     pDst->numTransmitPulses  = pSrc->numTransmitPulses;   // number of pulses in a frame
 
-    if ( pDst->numTransmitSources != 0 )
+    if ( pDst->numTransmitSources != 0 && pSrc->pSourceLocations != NULL )
     {
 	pDst->pSourceLocations = (IusPosition *)calloc(pDst->numTransmitSources, sizeof(IusPosition));
 	for (i = 0; i < pDst->numTransmitSources; i++)
@@ -804,13 +804,13 @@ IusInputInstance * iusInputRead
     status = iusHdf5ReadInt( handle,   "/DrivingScheme/numTransmitSources",  &(pInst->pDrivingScheme->numTransmitSources), verbose );
     status = iusHdf5ReadInt( handle,   "/numFrames",                         &(pInst->numFrames), verbose );
 
-    //if ( pInst->pDrivingScheme->drivingSchemeType == IUS_DIVERGING_WAVES )
+    if ( pInst->pDrivingScheme->drivingSchemeType == IUS_DIVERGING_WAVES )
     {
         status = iusHdf5ReadFloat(handle, "/DrivingScheme/sourceAngularDelta", &(pInst->pDrivingScheme->sourceAngularDelta), verbose );
         status = iusHdf5ReadFloat(handle, "/DrivingScheme/sourceFNumber",      &(pInst->pDrivingScheme->sourceFNumber), verbose );
         status = iusHdf5ReadFloat(handle, "/DrivingScheme/sourceStartAngle",   &(pInst->pDrivingScheme->sourceStartAngle), verbose );
     }
-    //else
+    else
     {  
         status = LF_readSourceLocationsCartesian(pInst, handle, verbose);
     }
@@ -1075,13 +1075,13 @@ int iusInputWrite
 
     // Is there any reason to make these datafields conditional, ON THE FILE-IO level???
     // Spoiler: I don't think so.
-    //if (enumValue == IUS_DIVERGING_WAVES) //use radial info
+    if (enumValue == IUS_DIVERGING_WAVES) //use radial info
     {
         H5LTmake_dataset_float( group_id, "/DrivingScheme/sourceFNumber",      1, dims, &(pInst->pDrivingScheme->sourceFNumber) );
         H5LTmake_dataset_float( group_id, "/DrivingScheme/sourceAngularDelta", 1, dims, &(pInst->pDrivingScheme->sourceAngularDelta) );
         H5LTmake_dataset_float( group_id, "/DrivingScheme/sourceStartAngle",   1, dims, &(pInst->pDrivingScheme->sourceStartAngle) );
     }
-    //else
+    else
     {
         dims[0] = pInst->pDrivingScheme->numTransmitSources;
         space   = H5Screate_simple( 1, dims, NULL );
