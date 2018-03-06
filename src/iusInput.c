@@ -630,7 +630,6 @@ IusInputInstance * iusInputCreate
     int numElements =  0;
     IusInputInstance * pInst;
     IUS_UNUSED(version);
-    IUS_UNUSED(numFrames);
 
     if ( pExperiment == NULL ||
          pTransducer == NULL ||
@@ -712,7 +711,7 @@ IusInputInstance * iusInputCreate
     // Uuid should be generated for it.
     setIusUuidCreate( pInst->iusNode.pId );
     strcpy( pInst->iusNode.pType, IUS_INPUT_TYPE ); 
-
+    pInst->numFrames = numFrames ;
     return pInst;
 }
 

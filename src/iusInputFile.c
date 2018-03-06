@@ -59,7 +59,7 @@ IusInputFileInstance *iusInputFileCreate
   rfDataDims[0] = pInst->pTransducer->numElements;
   rfDataDims[1] = pInst->pDrivingScheme->numSamplesPerLine;
   rfDataDims[2] = pInst->pDrivingScheme->numTransmitPulses;
-  rfDataDims[3] = 1;
+  rfDataDims[3] = pInst->numFrames;
 
   hid_t dataChunkConfig = H5Pcreate(H5P_DATASET_CREATE);
   H5Pset_chunk(dataChunkConfig, 4, chunkDims);
@@ -169,6 +169,8 @@ int iusInputFileReadNextFrame
     return 0;
 }
 
+#define CHECK(aap) if (aap != 0) fprintf(stderr,"***** Error in iusInputFileWriteNextPulse %s@%d: %d\n" , __FILE__,__LINE__ ,  aap)
+
 int iusInputFileWriteNextPulse
 (
 	IusInputFileInstance * pInst,
@@ -210,16 +212,20 @@ int iusInputFileWriteNextPulse
   }
   dataspace = H5Dget_space(pInst->rfDataset);
   status = H5Sselect_hyperslab(dataspace, H5S_SELECT_SET, offset, NULL, count, NULL);
-
+  CHECK(status);
   /*
    *   Write the data to the dataset.
   */
   status |= H5Dwrite(pInst->rfDataset, H5T_NATIVE_FLOAT, memspace, dataspace, H5P_DEFAULT, pFrame);
+  CHECK(status);
+
   /*
    *   Close and release memspace but not (file)dataspace
   */
   status |= H5Sclose(memspace);
+  CHECK(status);
   status |= H5Sclose(dataspace);
+  CHECK(status);
 
   /*------------------------------------------------------------------------*/
   /* increment file read pointers                                           */
@@ -231,6 +237,7 @@ int iusInputFileWriteNextPulse
       pInst->currentFrame++;
   }
 
+  CHECK(status);
   return status;
 
 }
