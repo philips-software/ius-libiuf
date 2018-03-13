@@ -19,7 +19,7 @@ typedef  IusInputInstance * iuh_t;
 
 iuh_t iusHLCreateInputHeader(void);
 int iusHLGetNumFrames(iuh_t header);
-IUS_BOOL iusCompareHeader(iuh_t reference_header,iuh_t actual_header);
+IUS_BOOL iusHLCompareHeader(iuh_t reference_header, iuh_t actual_header);
 
 
 #endif //IUSLIBRARY_IUSHLINPUT_H

@@ -113,7 +113,7 @@ IusInputFileInstance * iusInputFileOpen
 
     //create pInputInst
     pFileInst->pIusInput = iusInputRead(pFileInst->handle, verbose);
-    
+#ifdef old
     chunkDims[0] = pFileInst->pIusInput->pTransducer->numElements;
     chunkDims[1] = pFileInst->pIusInput->pDrivingScheme->numSamplesPerLine;
     chunkDims[2] = 1;
@@ -127,7 +127,7 @@ IusInputFileInstance * iusInputFileOpen
     pFileInst->fileChunkConfig = dataChunkConfig;  // TODO get the datachunk info from rfDataSet
     pFileInst->currentFrame=0;
     pFileInst->currentPulse=0;
-
+#endif
     return pFileInst;
 }
 

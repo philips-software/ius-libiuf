@@ -12,6 +12,7 @@
 #include <iusHLNode.h>
 #include <iusHLInput.h>
 #include <iusHLInputFile.h>
+#include <include/iusInput.h>
 
 
 int iusHLGetNumFrames(iuh_t header)
@@ -52,9 +53,10 @@ iuh_t iusHLCreateInputHeader(void)
 
 
 
-IUS_BOOL iusCompareHeader(iuh_t reference_header,iuh_t actual_header)
+IUS_BOOL iusHLCompareHeader(iuh_t reference_header, iuh_t actual_header)
 {
-    return !IUS_TRUE;
+    if( reference_header->IusVersion != actual_header->IusVersion ) return IUS_FALSE;
+    return IUS_TRUE;
 }
 
 int iusGetVersionMajor(void) {

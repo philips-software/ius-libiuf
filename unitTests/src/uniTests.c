@@ -76,15 +76,15 @@ void testInputFileHeader(void)
     TEST_ASSERT(status == IUS_E_OK);
 
     // read from file
-    ifh = iusOpenFile(filename);
+    ifh = iusHLOpenFile(filename);
     TEST_ASSERT(ifh != IUF_INVALID);
-    actual_header = iusGetHeader(ifh);
-    TEST_ASSERT(actual_header == IUH_INVALID);
+    actual_header = iusHLGetHeader(ifh);
+    TEST_ASSERT(actual_header != IUH_INVALID);
     status = iusHLCloseFile(ifh);
     TEST_ASSERT(status == IUS_E_OK);
 
     // validate / compare reference with actual header
-    equal = iusCompareHeader( reference_header, actual_header );
+    equal = iusHLCompareHeader(reference_header, actual_header);
     TEST_ASSERT(equal == IUS_TRUE);
 }
 

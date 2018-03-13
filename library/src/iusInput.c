@@ -18,6 +18,7 @@
 #include <H5LTpublic.h>
 #include <include/iusHLNode.h>
 #include <include/iusInput.h>
+#include <include/ius.h>
 
 
 //------------------------------------------------------------------------------
@@ -634,6 +635,7 @@ IusInputInstance * iusInputCreate( IusNode *node, int  numFrames )
 
     memcpy( &pInst->iusNode, node, sizeof(IusNode));
     pInst->numFrames = numFrames;
+    pInst->IusVersion = iusGetVersionMajor();
     return pInst;
 };
 
@@ -767,7 +769,7 @@ IusInputInstance * iusInputRead
         fprintf( stderr, "iusInputRead: calloc failed\n" );
         return NULL;
     }
-
+#ifdef old
     strcpy( pInst->iusNode.pType, IUS_INPUT_TYPE );
 
     pInst->pExperiment = (IusExperiment *)calloc( 1, sizeof( IusExperiment ) );
@@ -874,8 +876,12 @@ IusInputInstance * iusInputRead
     pInst->pDrivingScheme->pTransmitApodization = (float*)calloc(pInst->pDrivingScheme->numTransmitPulses * numElements, sizeof(float));
     status = H5LTread_dataset_float(handle, "/DrivingScheme/transmitApodization", pInst->pDrivingScheme->pTransmitApodization);
 
-    status = iusHdf5ReadInt( handle, "/IusVersion", &(pInst->IusVersion), verbose ); 
-    status = iusHdf5ReadString( handle, "/ID", (char **)&(pInst->iusNode.pId), verbose );
+#endif
+
+    status |= iusHdf5ReadInt( handle, "/IusVersion", &(pInst->IusVersion), verbose );
+    status |= iusHdf5ReadString( handle, "/ID", (char **)&(pInst->iusNode.pId), verbose );
+    status |= iusHdf5ReadString( handle, "/type", (char **)&(pInst->iusNode.pType), verbose );
+    status |= iusHdf5ReadInt( handle, "/numFrames", &(pInst->numFrames), verbose );
 
     iusNodeLoadParents((IusNode *)pInst, handle);
 

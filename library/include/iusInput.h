@@ -147,7 +147,6 @@ typedef struct
     IusDrivingScheme   * pDrivingScheme;   /**< data transmit settings */
     
     int                  numFrames;        /**< The number of frames in the data */
-
     int                  IusVersion;       /**< version of input file format */
 } IusInputInstance;
 

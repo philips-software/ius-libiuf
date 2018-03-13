@@ -18,7 +18,7 @@ typedef  IusInputFileInstance * iuf_t;
 iuf_t iusHLCreateFile(const char *filename, iuh_t header);
 int iusSaveHeader(iuf_t fileHandle,iuh_t header);
 int iusHLCloseFile(iuf_t fileHandle);
-iuf_t iusOpenFile(const char *filename);
-iuh_t iusGetHeader(iuf_t fileHandle);
+iuf_t iusHLOpenFile(const char *filename);
+iuh_t iusHLGetHeader(iuf_t fileHandle);
 
 #endif //IUSLIBRARY_IUSHLINPUTFILE_H

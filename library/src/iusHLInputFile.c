@@ -12,6 +12,7 @@
 #include <iusHLNode.h>
 #include <iusHLInput.h>
 #include <iusHLInputFile.h>
+#include <include/iusInputFile.h>
 
 iuf_t iusHLCreateFile(const char *filename, iuh_t inputInstance)
 {
@@ -29,12 +30,14 @@ int iusHLCloseFile(iuf_t fileHandle)
     return iusInputFileClose(fileHandle);
 }
 
-iuf_t iusOpenFile(const char *filename)
+iuf_t iusHLOpenFile(const char *filename)
 {
-    return IUF_INVALID;
+    IusInputFileInstance* pIFI;
+    pIFI = iusInputFileOpen(filename, 0);
+    return pIFI;
 }
 
-iuh_t iusGetHeader(iuf_t fileHandle)
+iuh_t iusHLGetHeader(iuf_t fileHandle)
 {
-    return IUH_INVALID;
+    return fileHandle->pIusInput;
 }
