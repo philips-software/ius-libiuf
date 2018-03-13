@@ -2,4 +2,4 @@
 BuildFolder=C_v3/build/$(uname)
 echo === UnitTests
 cd $BuildFolder
-ctest3 -T memcheck
+ctest3 -T memcheck --verbose

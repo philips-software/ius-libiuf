@@ -2,5 +2,5 @@
 BuildFolder=C_v3/build/$(uname)
 echo === UnitTests
 cd $BuildFolder
-ctest3
+ctest3 --verbose
 
