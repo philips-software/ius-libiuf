@@ -1,2 +1,0 @@
-
-void MedianFilterTest(void);

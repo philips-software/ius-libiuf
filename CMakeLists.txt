@@ -1,0 +1,15 @@
+cmake_minimum_required(VERSION 3.00)
+project(iusLibrary C)
+
+set (TARGET_GROUP test CACHE STRING "Group to build")
+if(TARGET_GROUP STREQUAL production)
+    add_subdirectory(main)
+elseif(TARGET_GROUP STREQUAL test)
+    include(CTest)
+    add_subdirectory(external)
+    add_subdirectory(unitTests)
+else()
+    message(FATAL_ERROR "Given TARGET_GROUP unknown")
+endif()
+
+add_subdirectory(library)

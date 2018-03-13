@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
+BuildFolder=C_v3/build/$(uname)
 echo === UnitTests
-cd C_v3/unitTests 
-exec make test
+cd $BuildFolder
+ctest3
 
