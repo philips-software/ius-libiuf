@@ -894,6 +894,9 @@ int iusInputWrite
 )
 {
     herr_t        status;
+    hsize_t dims[1] = {1};
+    const int     libVersion = version;
+#if old
     IusPosition * pPositionArray;
     IusAngle *    pAngleArray;
     IusSize *     pSizeArray;
@@ -1164,6 +1167,8 @@ int iusInputWrite
     H5LTmake_dataset_float( group_id,"/DrivingScheme/transmitApodization",  2, apodDims, pInst->pDrivingScheme->pTransmitApodization );
   
     H5Gclose( group_id );
+#endif // old
+    dims[0] = 1;
     H5LTmake_dataset_int( handle,    "/IusVersion", 1, dims, &libVersion );
 
     H5LTmake_dataset_string( handle, "/ID", pInst->iusNode.pId );
