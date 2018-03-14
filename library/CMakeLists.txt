@@ -21,7 +21,6 @@ include_directories(${HDF5_INCLUDE_DIR})
 
 
 add_library(ius STATIC
-        src/library.c
         src/iusInput.c
         src/iusInputFile.c
         src/iusUuid.c
@@ -30,7 +29,7 @@ add_library(ius STATIC
         src/iusHLNode.c
         src/iusHDF5.c
         src/iusNode.c
-        )
+        src/iusUtil.c include/iusUtil.h)
 
 target_include_directories(ius PUBLIC
         ${CMAKE_CURRENT_LIST_DIR}

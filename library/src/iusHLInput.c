@@ -2,7 +2,6 @@
 // Created by Ruijzendaal on 08/03/2018.
 //
 #include <library_config.h>
-#include "library.h"
 
 #define IUSLIBRARY_IMPLEMENTATION
 
@@ -67,6 +66,11 @@ IUS_BOOL iusCompareNode(IusNode *pReferenceNode, IusNode *pActualNode)
     return IUS_TRUE;
 }
 
+int iusHLHeaderSetExperiment(iuh_t header, iue_t experiment)
+{
+    header->pExperiment = experiment;
+    return IUS_E_OK;
+}
 
 IUS_BOOL iusHLCompareHeader(iuh_t referenceHeader, iuh_t actualHeader)
 {

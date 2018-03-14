@@ -39,6 +39,12 @@ typedef struct
 
 } IusInputFileInstance;
 
+
+int iusInputFileSave
+(
+	IusInputFileInstance *pIFI
+);
+
 /**
  * \brief Creates a File instance from the specified parameters, allocates
  * internal memory and initializes internal header data.
@@ -52,9 +58,7 @@ typedef struct
  */
 IusInputFileInstance *iusInputFileCreate
 (
-    const char *pFullFileName,
-    IusInputInstance *pInst,
-    int version
+    const char *pFullFileName
 );
 
 /** 

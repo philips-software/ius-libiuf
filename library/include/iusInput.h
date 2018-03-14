@@ -214,8 +214,7 @@ IusInputInstance * iusInputRead
 int iusInputWrite
 (
     hid_t              handle,
-    IusInputInstance * pIusInput,
-    int                version
+    IusInputInstance * pIusInput
 );
 
 /**

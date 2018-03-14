@@ -246,6 +246,8 @@ herr_t iusHdf5WriteGrid
     int          verbose
 );
 
+herr_t iusHdf5DisableMessages();
+
 
 #ifdef __cplusplus
 }

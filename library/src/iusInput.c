@@ -898,13 +898,11 @@ IusInputInstance * iusInputRead
 int iusInputWrite
 ( 
     hid_t handle, 
-    IusInputInstance *pInst,
-    int version
+    IusInputInstance *pInst
 )
 {
     herr_t        status;
     hsize_t dims[1] = {1};
-    const int     libVersion = version;
 #if old
     IusPosition * pPositionArray;
     IusAngle *    pAngleArray;
@@ -1178,11 +1176,10 @@ int iusInputWrite
     H5Gclose( group_id );
 #endif // old
     dims[0] = 1;
-    H5LTmake_dataset_int( handle,    "/IusVersion", 1, dims, &libVersion );
+    H5LTmake_dataset_int( handle,    "/IusVersion", 1, dims, &(pInst->IusVersion));
     H5LTmake_dataset_string( handle, "/ID", pInst->iusNode.pId );
     H5LTmake_dataset_string( handle, "/type", pInst->iusNode.pType );
     H5LTmake_dataset_int( handle,    "/numFrames",  1, dims, &(pInst->numFrames) );
-
     iusNodeSaveParents( (IusNode*)pInst, handle );
 
     return 0;

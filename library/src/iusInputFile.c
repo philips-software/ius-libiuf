@@ -14,11 +14,21 @@
 #include <stdlib.h>    // for calloc
 #include <include/iusInputFile.h>
 
+
+int iusInputFileSave(IusInputFileInstance *pIFI)
+{
+    if (pIFI->pIusInput == NULL)
+    {
+        fprintf( stderr, "iusInputFileSave: Input arguments can not be NULL \n");
+        return IUS_ERR_VALUE;
+    }
+    int success = iusInputWrite(pIFI->handle, pIFI->pIusInput);
+    return success;
+}
+
 IusInputFileInstance *iusInputFileCreate
 (
-    const char *pFullFileName,
-    IusInputInstance *pInst,
-    int version
+    const char *pFullFileName
 )
 {
   hsize_t chunkDims[4];
@@ -27,9 +37,8 @@ IusInputFileInstance *iusInputFileCreate
   hid_t dataset;
   
   IusInputFileInstance *pFileInst;
-  int success = 0;
 
-  if (pFullFileName == NULL || pInst == NULL)
+  if (pFullFileName == NULL)
   {
     fprintf( stderr, "iusInputFileCreate: Input arguments can not be NULL \n");
     return NULL;
@@ -48,8 +57,6 @@ IusInputFileInstance *iusInputFileCreate
   pFileInst->handle = H5Fcreate( pFullFileName, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT );
   if ( pFileInst->handle < 0 )
   {
-    fprintf( stderr, "%s, iusInputFileCreate: %d Could not create file\n",__FILE__,  __LINE__ );
-    printf("aaaaa\n");
     return NULL;
   }
 
@@ -80,11 +87,6 @@ IusInputFileInstance *iusInputFileCreate
   
 #endif
 
-  success = iusInputWrite(pFileInst->handle, pInst, version);
-  if (success != 0)
-  {
-    return NULL;
-  }
   return pFileInst;
 }
 
@@ -435,10 +437,6 @@ int iusInputFileClose
     {
       free(pFileInst);
       pFileInst = NULL;
-    }
-    else
-    {
-    	printf("[!] H5Dclose or H5Fclose failed. success: %d\n", success);
     }
     return success;
 }
