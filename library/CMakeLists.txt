@@ -26,10 +26,11 @@ add_library(ius STATIC
         src/iusUuid.c
         src/iusHLInput.c
         src/iusHLInputFile.c
+        src/iusHLExperiment.c
         src/iusHLNode.c
         src/iusHDF5.c
         src/iusNode.c
-        src/iusUtil.c include/iusUtil.h)
+        src/iusUtil.c include/iusUtil.h include/iusHLExperiment.h src/iusHLExperiment.c)
 
 target_include_directories(ius PUBLIC
         ${CMAKE_CURRENT_LIST_DIR}

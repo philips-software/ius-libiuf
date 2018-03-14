@@ -19,6 +19,8 @@
 #include <include/iusHLNode.h>
 #include <include/iusInput.h>
 #include <include/ius.h>
+#include <include/iusHLExperiment.h>
+#include <include/iusHLInput.h>
 
 
 //------------------------------------------------------------------------------
@@ -740,6 +742,32 @@ IusInputInstance * iusInputCreateOld
 }
 
 
+herr_t iusReadNodeDataSet(hid_t handle, IusInputInstance *pInst, int verbose) {
+    char *pString;
+    int status = 0;
+    status |= iusHdf5ReadString( handle, "/ID", &pString, verbose );
+    if( status == 0 ) strcpy(pInst->iusNode.pId,pString);
+    status |= iusHdf5ReadString( handle, "/type", &pString, verbose );
+    if( status == 0 ) strcpy(pInst->iusNode.pType,pString);
+    iusNodeLoadParents((IusNode *)pInst, handle);
+    return status;
+}
+
+herr_t iusReadExperimentDataSet(hid_t handle, IusInputInstance *pInst, int verbose) {
+    int status = 0;
+    float speedOfSound;
+    int date;
+    char *pDescription;
+    iue_t experiment;
+    status |= iusHdf5ReadFloat( handle , "/Experiment/speedOfSound",    &(speedOfSound),    verbose );
+    status |= iusHdf5ReadInt( handle,    "/Experiment/date",            &(date),            verbose );
+    status |= iusHdf5ReadString( handle, "/Experiment/description",     &(pDescription),    verbose );
+
+    experiment = iusHLCreateExperiment(speedOfSound,date,pDescription);
+    status |= iusHLHeaderSetExperiment(pInst,experiment);
+    iusNodeLoadParents((IusNode *)pInst, handle);
+    return status;
+}
 
 //------------------------------------------------------------------------------
 //
@@ -877,20 +905,42 @@ IusInputInstance * iusInputRead
     status = H5LTread_dataset_float(handle, "/DrivingScheme/transmitApodization", pInst->pDrivingScheme->pTransmitApodization);
 
 #endif
-
-    char *pString;
+    // Read NodeData
     status = 0;
-    status |= iusHdf5ReadInt( handle, "/IusVersion", &(pInst->IusVersion), verbose );
-    status |= iusHdf5ReadString( handle, "/ID", &pString, verbose );
-    if( status == 0 ) strcpy(pInst->iusNode.pId,pString);
-    status |= iusHdf5ReadString( handle, "/type", &pString, verbose );
-    if( status == 0 ) strcpy(pInst->iusNode.pType,pString);
-    status |= iusHdf5ReadInt( handle, "/numFrames", &(pInst->numFrames), verbose );
-    iusNodeLoadParents((IusNode *)pInst, handle);
+    status |= iusReadNodeDataSet(handle, pInst, verbose);
 
-    return pInst;
+    // Read input type fields
+    status |= iusHdf5ReadInt( handle, "/IusVersion", &(pInst->IusVersion), verbose );
+    status |= iusHdf5ReadInt( handle, "/numFrames", &(pInst->numFrames), verbose );
+
+    // Read Experiment fields
+    status |= iusReadExperimentDataSet(handle, pInst, verbose);
+    if( status != 0 )
+        return NULL;
+    else
+        return pInst;
 }
 
+
+void iusMakeNodeDataset(hid_t handle, IusInputInstance *pInst) {
+    hsize_t dims[1] = {1};
+    H5LTmake_dataset_string( handle, "/ID", pInst->iusNode.pId );
+    H5LTmake_dataset_string( handle, "/type", pInst->iusNode.pType );
+    iusNodeSaveParents( (IusNode*)pInst, handle );
+}
+
+herr_t iusMakeExperimentDataset(hid_t handle, IusInputInstance *pInst) {
+    hsize_t dims[1] = {1};
+    hid_t group_id = H5Gcreate(handle, "/Experiment", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+
+    /* write the /Experiment data */
+    H5LTmake_dataset_float( group_id,  "/Experiment/speedOfSound", 1, dims, &(pInst->pExperiment->speedOfSound) );
+    H5LTmake_dataset_int( group_id,    "/Experiment/date",         1, dims, &(pInst->pExperiment->date) );
+    H5LTmake_dataset_string( group_id, "/Experiment/description", pInst->pExperiment->pDescription );
+    /* Close the group. */
+    herr_t status = H5Gclose(group_id );
+    return status;
+}
 
 //------------------------------------------------------------------------------
 //
@@ -1175,13 +1225,22 @@ int iusInputWrite
   
     H5Gclose( group_id );
 #endif // old
-    dims[0] = 1;
-    H5LTmake_dataset_int( handle,    "/IusVersion", 1, dims, &(pInst->IusVersion));
-    H5LTmake_dataset_string( handle, "/ID", pInst->iusNode.pId );
-    H5LTmake_dataset_string( handle, "/type", pInst->iusNode.pType );
-    H5LTmake_dataset_int( handle,    "/numFrames",  1, dims, &(pInst->numFrames) );
-    iusNodeSaveParents( (IusNode*)pInst, handle );
+    if ( handle == 0 || pInst == NULL )
+    {
+        fprintf( stderr, "iusInputWrite: Input arguments can not be NULL \n");
+        return -1;
+    }
 
+    // Make dataset for Node
+    iusMakeNodeDataset(handle,pInst);
+
+    // Make dataset for input type
+    H5LTmake_dataset_int( handle,    "/IusVersion", 1, dims, &(pInst->IusVersion));
+    H5LTmake_dataset_int( handle,    "/numFrames",  1, dims, &(pInst->numFrames) );
+
+    // Make dataset for Experiment
+    iusMakeExperimentDataset(handle, pInst);
+    
     return 0;
 }
 

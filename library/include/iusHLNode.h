@@ -17,7 +17,8 @@ typedef IusNode *iun_t;
 // Operations
 iun_t iusHLCreateNode(char *pNodeType,int parents);
 char *iusHLGetNodeType(iun_t node);
-int iusHLNodeGetNumParents( iun_t node );
+int iusHLNodeGetNumParents(iun_t node);
 char *iusHLGetNodeId(iun_t node);
+IUS_BOOL iusCompareNode(iun_t reference, iun_t actual);
 
 #endif //IUSLIBRARY_IUSHLNODE_H

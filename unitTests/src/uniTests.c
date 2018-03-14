@@ -6,6 +6,7 @@
 #include <include/iusHLInput.h>
 #include <include/iusHLInputFile.h>
 #include <include/iusUtil.h>
+#include <include/iusHLExperiment.h>
 #include "uniTests.h"
 #include "iusTypes.h"
 #include "iusHLNode.h"
@@ -41,16 +42,72 @@ void testNode(void)
     TEST_ASSERT( iusHLGetNodeId( hSimpleNode ) != IUN_INVALID );
 }
 
+
+void testIusCompareExperiment()
+{
+    float    speedOfSound = 1498.0;
+    int      date = 20160123;
+    char *   pDescription = "My important experiment notes";
+    int      status = 0;
+    IUS_BOOL isEqual;
+
+    iue_t ex, exAltered;
+    iue_t exDuplicate;
+
+    // Test duplicate
+    ex = iusHLCreateExperiment(speedOfSound,date,pDescription);
+    TEST_ASSERT(ex != IUEX_INVALID);
+
+    exDuplicate = iusHLCreateExperiment(speedOfSound,date,pDescription);
+    TEST_ASSERT(exDuplicate != IUEX_INVALID);
+    isEqual = iusCompareExperiment(ex,exDuplicate);
+    TEST_ASSERT(isEqual == IUS_TRUE);
+    isEqual = iusCompareExperiment(ex,ex);
+    TEST_ASSERT(isEqual == IUS_TRUE);
+    iusHLDeleteExperiment(ex);
+    iusHLDeleteExperiment(exDuplicate);
+
+    ex = iusHLCreateExperiment(speedOfSound,date,"");
+    TEST_ASSERT(ex != IUEX_INVALID);
+    exDuplicate = iusHLCreateExperiment(speedOfSound,date,NULL);
+    TEST_ASSERT(exDuplicate != IUEX_INVALID);
+    isEqual = iusCompareExperiment(ex,exDuplicate);
+    TEST_ASSERT(isEqual == IUS_TRUE);
+
+    // Test alterations
+    exAltered = iusHLCreateExperiment(speedOfSound+0.00007,date,pDescription);
+    isEqual = iusCompareExperiment(ex,exAltered);
+    TEST_ASSERT(isEqual == IUS_FALSE);
+    iusHLDeleteExperiment(exAltered);
+
+    exAltered = iusHLCreateExperiment(speedOfSound,date+1,pDescription);
+    isEqual = iusCompareExperiment(ex,exAltered);
+    TEST_ASSERT(isEqual == IUS_FALSE);
+    iusHLDeleteExperiment(exAltered);
+
+    // floating point errors
+    exAltered = iusHLCreateExperiment(speedOfSound+0.00006,date,pDescription);
+    isEqual = iusCompareExperiment(ex,exAltered);
+    TEST_ASSERT(isEqual == IUS_TRUE);
+    iusHLDeleteExperiment(exAltered);
+
+}
+
 void testIusHLCreateExperiment()
 {
     float  speedOfSound = 1498.0;
     int    date = 20160123;
     char * pDescription = "My important experiment notes";
+    int    status = 0;
+
     iue_t ex;
     ex = iusHLCreateExperiment(speedOfSound,date,pDescription);
+    TEST_ASSERT(status == IUS_E_OK);
     TEST_ASSERT_EQUAL_FLOAT(speedOfSound,iusHLExperimentGetSpeedOfSound(ex));
     TEST_ASSERT_EQUAL(date,iusHLExperimentGetDate(ex));
     TEST_ASSERT_EQUAL_STRING(pDescription,iusHLExperimentGetDescription(ex));
+    status = iusHLDeleteExperiment(ex);
+    TEST_ASSERT(status == IUS_E_OK);
 }
 
 
@@ -80,7 +137,7 @@ void testIusHLCreateInputHeader()
 
     ex = iusHLCreateExperiment(speedOfSound,date,pDescription);
     status = iusHLHeaderSetExperiment(ih, ex);
-
+    TEST_ASSERT(status == IUS_E_OK);
 
 }
 
@@ -112,30 +169,51 @@ void testIusHLCreateFile()
     TEST_ASSERT(ifh == IUF_INVALID);
 }
 
+
+iuh_t createHeader()
+{
+    float  speedOfSound = 1498.1;
+    int    date = 20160124;
+    int    status;
+    char * pDescription = "My important experiment notes, by createHeader()";
+    iuh_t  iuhHeader;
+    iue_t  ex;
+
+    iuhHeader = iusHLCreateInputHeader();
+    TEST_ASSERT(iuhHeader != IUH_INVALID);
+    
+//    IusExperiment
+//    IusTransducer      * pTransducer;      /**< transducer that has been used */
+//    IusReceiveSettings * pReceiveSettings; /**< data receive settings */
+//    IusDrivingScheme   * pDrivingScheme;   /**< data transmit settings */
+
+    ex = iusHLCreateExperiment(speedOfSound, date, pDescription);
+    status = iusHLHeaderSetExperiment(iuhHeader, ex);
+    if( status != IUS_E_OK ) return IUH_INVALID;
+    return iuhHeader;
+}
+
 void testInputFileHeader(void)
 {
-    // Goal: validate experiment hdf5 file io.
-    //
+    // Goal: Construct meta data for input file type
+    //       Store data, Read back and validate
     // fill ius generic input file header fields
-    //  Fill ID
-    //  Fill type
-    //  Fill numberOfParents
-    iuh_t reference_header;
-    iuh_t actual_header;
+    iuh_t iuhReferenceHeader;
+    iuh_t iuhActualHeader;
     iuf_t ifh;
     int status;
     IUS_BOOL equal;
     const char *filename="myfirst.input";
-    reference_header = iusHLCreateInputHeader();
-    TEST_ASSERT(reference_header != IUH_INVALID);
-    TEST_ASSERT(iusHLGetNumFrames(reference_header) == IUS_DEFAULT_NUM_FRAMES );
+
+    iuhReferenceHeader = createHeader();
+    TEST_ASSERT(iusHLGetNumFrames(iuhReferenceHeader) == IUS_DEFAULT_NUM_FRAMES );
 
     // save to file
     ifh = iusHLCreateFile(filename);
     TEST_ASSERT(ifh != IUF_INVALID);
 
     // set header
-    status = iusHLFileSetHeader(ifh,reference_header);
+    status = iusHLFileSetHeader(ifh,iuhReferenceHeader);
     TEST_ASSERT(status == IUS_E_OK);
 
     status = iusHLFileSave(ifh);
@@ -147,13 +225,13 @@ void testInputFileHeader(void)
     // read from file
     ifh = iusHLOpenFile(filename);
     TEST_ASSERT(ifh != IUF_INVALID);
-    actual_header = iusHLFileGetHeader(ifh);
-    TEST_ASSERT(actual_header != IUH_INVALID);
+    iuhActualHeader = iusHLFileGetHeader(ifh);
+    TEST_ASSERT(iuhActualHeader != IUH_INVALID);
     status = iusHLCloseFile(ifh);
     TEST_ASSERT(status == IUS_E_OK);
 
     // validate / compare reference with actual header
-    equal = iusHLCompareHeader(reference_header, actual_header);
+    equal = iusHLCompareHeader(iuhReferenceHeader, iuhActualHeader);
     TEST_ASSERT(equal == IUS_TRUE);
 }
 
@@ -167,6 +245,7 @@ int main(void)
     RUN_TEST(testNode);
     RUN_TEST(testVersion);
     RUN_TEST(testIusHLCreateExperiment);
+    RUN_TEST(testIusCompareExperiment);
     RUN_TEST(testIusHLCreateFile);
     RUN_TEST(testIusHLCreateInputHeader);
     RUN_TEST(testInputFileHeader);

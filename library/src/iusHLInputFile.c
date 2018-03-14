@@ -17,47 +17,6 @@
 #include <memory.h>
 
 
-iue_t iusHLCreateExperiment
-(
-        float speedOfSound, /**< speed of sound in m/s */
-        int date,           /**< interger concatenation of year-month-day  */
-        char *pDescription  /**< Experiment notes */
-)
-{
-    IusExperiment *pExperiment = (IusExperiment *) calloc(1, sizeof(IusExperiment));
-    pExperiment->speedOfSound = speedOfSound;
-    pExperiment->date = date;
-    if( pDescription == NULL )
-        pExperiment->pDescription = "";
-    else
-        pExperiment->pDescription = strdup(pDescription);
-    return pExperiment;
-}
-
-float iusHLExperimentGetSpeedOfSound
-(
-    iue_t experiment
-)
-{
-    return experiment->speedOfSound;
-}
-
-int iusHLExperimentGetDate
-(
-    iue_t experiment
-)
-{
-    return experiment->date;
-}
-
-char * iusHLExperimentGetDescription
-(
-    iue_t experiment
-)
-{
-    return experiment->pDescription;
-}
-
 iuf_t iusHLCreateFile(const char *filename)
 {
     IusInputFileInstance *pIFI = iusInputFileCreate(filename);

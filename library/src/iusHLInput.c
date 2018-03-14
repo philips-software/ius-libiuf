@@ -14,6 +14,7 @@
 #include <iusHLInputFile.h>
 #include <include/iusInput.h>
 #include <memory.h>
+#include <stdlib.h>
 
 
 int iusHLGetNumFrames(iuh_t header)
@@ -52,25 +53,21 @@ iuh_t iusHLCreateInputHeader(void)
 
 }
 
-IUS_BOOL iusCompareNode(IusNode *pReferenceNode, IusNode *pActualNode)
-{
-    if( pReferenceNode->numberOfParents != pActualNode->numberOfParents ){
-        return IUS_FALSE;
-    }
-    if( strcmp( pReferenceNode->pType, pActualNode->pType ) != 0 ){
-        return IUS_FALSE;
-    }
-    if( strcmp( pReferenceNode->pId, pActualNode->pId ) != 0 ){
-        return IUS_FALSE;
-    }
-    return IUS_TRUE;
-}
-
 int iusHLHeaderSetExperiment(iuh_t header, iue_t experiment)
 {
     header->pExperiment = experiment;
     return IUS_E_OK;
 }
+
+iue_t iusHLHeaderGetExperiment
+(
+    iuh_t pInstance
+)
+{
+    return pInstance->pExperiment;
+}
+
+
 
 IUS_BOOL iusHLCompareHeader(iuh_t referenceHeader, iuh_t actualHeader)
 {
@@ -85,7 +82,11 @@ IUS_BOOL iusHLCompareHeader(iuh_t referenceHeader, iuh_t actualHeader)
     if( iusCompareNode(&referenceHeader->iusNode, &actualHeader->iusNode) == IUS_FALSE ){
         return IUS_FALSE;
     }
-    // Todo: Add experiment, transducer, receivesettings, drivingscheme
+
+    if( iusCompareExperiment(referenceHeader->pExperiment,actualHeader->pExperiment) == IUS_FALSE ){
+        return IUS_FALSE;
+    }
+    // Todo: Add , transducer, receivesettings, drivingscheme
     return IUS_TRUE;
 }
 

@@ -47,26 +47,4 @@ int iusHLFileSetHeader
     iuh_t header
 );
 
-iue_t iusHLCreateExperiment
-(
-    float speedOfSound, /**< speed of sound in m/s */
-    int date,           /**< interger concatenation of year-month-day  */
-    char *pDescription  /**< Experiment notes */
-);
-
-float iusHLExperimentGetSpeedOfSound
-(
-    iue_t experiment
-);
-
-
-int iusHLExperimentGetDate
-(
-    iue_t experiment
-);
-
-char *iusHLExperimentGetDescription
-(
-    iue_t experiment
-);
 #endif //IUSLIBRARY_IUSHLINPUTFILE_H
