@@ -5,6 +5,7 @@
 #include "library.h"
 
 #define IUSLIBRARY_IMPLEMENTATION
+
 #include "ius.h"
 #include "iusNode.h"
 #include <iusInputFile.h>
@@ -13,6 +14,7 @@
 #include <iusHLInput.h>
 #include <iusHLInputFile.h>
 #include <include/iusInput.h>
+#include <memory.h>
 
 
 int iusHLGetNumFrames(iuh_t header)
@@ -51,13 +53,38 @@ iuh_t iusHLCreateInputHeader(void)
 
 }
 
-
-
-IUS_BOOL iusHLCompareHeader(iuh_t reference_header, iuh_t actual_header)
+IUS_BOOL iusCompareNode(IusNode *pReferenceNode, IusNode *pActualNode)
 {
-    if( reference_header->IusVersion != actual_header->IusVersion ) return IUS_FALSE;
+    if( pReferenceNode->numberOfParents != pActualNode->numberOfParents ){
+        return IUS_FALSE;
+    }
+    if( strcmp( pReferenceNode->pType, pActualNode->pType ) != 0 ){
+        return IUS_FALSE;
+    }
+    if( strcmp( pReferenceNode->pId, pActualNode->pId ) != 0 ){
+        return IUS_FALSE;
+    }
     return IUS_TRUE;
 }
+
+
+IUS_BOOL iusHLCompareHeader(iuh_t referenceHeader, iuh_t actualHeader)
+{
+    if( referenceHeader->IusVersion != actualHeader->IusVersion ) {
+        fprintf( stderr, "iusHLCompareHeader version match %s@%d\n", __FILE__, __LINE__);
+        return IUS_FALSE;
+    }
+    if( referenceHeader->numFrames != actualHeader->numFrames ) {
+        fprintf(stderr, "iusHLCompareHeader numFrames match %s@%d\n", __FILE__, __LINE__);
+        return IUS_FALSE;
+    }
+    if( iusCompareNode(&referenceHeader->iusNode, &actualHeader->iusNode) == IUS_FALSE ){
+        return IUS_FALSE;
+    }
+    // Todo: Add experiment, transducer, receivesettings, drivingscheme
+    return IUS_TRUE;
+}
+
 
 int iusGetVersionMajor(void) {
     return IUS_VERSION_MAJOR;

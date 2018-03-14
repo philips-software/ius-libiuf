@@ -878,11 +878,14 @@ IusInputInstance * iusInputRead
 
 #endif
 
+    char *pString;
+    status = 0;
     status |= iusHdf5ReadInt( handle, "/IusVersion", &(pInst->IusVersion), verbose );
-    status |= iusHdf5ReadString( handle, "/ID", (char **)&(pInst->iusNode.pId), verbose );
-    status |= iusHdf5ReadString( handle, "/type", (char **)&(pInst->iusNode.pType), verbose );
+    status |= iusHdf5ReadString( handle, "/ID", &pString, verbose );
+    if( status == 0 ) strcpy(pInst->iusNode.pId,pString);
+    status |= iusHdf5ReadString( handle, "/type", &pString, verbose );
+    if( status == 0 ) strcpy(pInst->iusNode.pType,pString);
     status |= iusHdf5ReadInt( handle, "/numFrames", &(pInst->numFrames), verbose );
-
     iusNodeLoadParents((IusNode *)pInst, handle);
 
     return pInst;
@@ -1176,7 +1179,6 @@ int iusInputWrite
 #endif // old
     dims[0] = 1;
     H5LTmake_dataset_int( handle,    "/IusVersion", 1, dims, &libVersion );
-
     H5LTmake_dataset_string( handle, "/ID", pInst->iusNode.pId );
     H5LTmake_dataset_string( handle, "/type", pInst->iusNode.pType );
     H5LTmake_dataset_int( handle,    "/numFrames",  1, dims, &(pInst->numFrames) );

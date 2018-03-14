@@ -107,35 +107,25 @@ herr_t iusHdf5ReadString
     int          verbose
 )
 {
-    char * h5String;
     herr_t status = -1;
     int strLength;
 
     IUS_ASSERT_MEMORY( pVariableString && ppReturnString );
 
-    h5String = (char *)calloc( IUS_MAX_STRING_LENGTH, sizeof(char) );
-    status = H5LTread_dataset_string( handle, pVariableString, h5String );
+    *ppReturnString = (char *)calloc( IUS_MAX_STRING_LENGTH, sizeof(char) );
+    status = H5LTread_dataset_string( handle, pVariableString, *ppReturnString );
     if ( status < 0 )
     {
         fprintf( stderr,"iusInputFileOpen: H5LTread_dataset_string %s failed\n",
             pVariableString );
-        free( h5String );
+        free( *ppReturnString );
         return status;
-    }
-    else
-    {
-        strLength = (int)strlen( h5String );
-        /* Note: next should be freed when parent object is destroyed */
-        *ppReturnString = (char *)calloc( strLength + 1, sizeof(char) );
-        strncpy( *ppReturnString, h5String, strLength );
     }
     if ( verbose )
     {
         fprintf( stdout, "read: %s [%d]: %s\n", pVariableString, strLength,
             *ppReturnString );
     }
-    free( h5String );
-
     return status;
 }
 
