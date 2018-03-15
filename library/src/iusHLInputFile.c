@@ -31,7 +31,7 @@ int iusHLFileSetHeader(iuf_t fileHandle, iuh_t header)
 
 int iusHLFileSave(iuf_t fileHandle)
 {
-    int status = iusInputWrite(fileHandle->handle, fileHandle->pIusInput);
+    int status = iusInputWrite(fileHandle->handle, fileHandle->pIusInput, 1);
     return status;
 }
 

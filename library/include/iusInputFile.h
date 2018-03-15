@@ -42,7 +42,8 @@ typedef struct
 
 int iusInputFileSave
 (
-	IusInputFileInstance *pIFI
+	IusInputFileInstance *pIFI,
+	int verbose
 );
 
 /**

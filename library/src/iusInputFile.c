@@ -15,14 +15,14 @@
 #include <include/iusInputFile.h>
 
 
-int iusInputFileSave(IusInputFileInstance *pIFI)
+int iusInputFileSave(IusInputFileInstance *pIFI, int verbose)
 {
     if (pIFI->pIusInput == NULL)
     {
         fprintf( stderr, "iusInputFileSave: Input arguments can not be NULL \n");
         return IUS_ERR_VALUE;
     }
-    int success = iusInputWrite(pIFI->handle, pIFI->pIusInput);
+    int success = iusInputWrite(pIFI->handle, pIFI->pIusInput, verbose);
     return success;
 }
 

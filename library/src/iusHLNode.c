@@ -6,6 +6,7 @@
 #include <include/iusUuid.h>
 #include <memory.h>
 #include <include/iusTypes.h>
+#include <include/iusHDF5.h>
 
 #include "iusNode.h"
 #include "iusHLNode.h"

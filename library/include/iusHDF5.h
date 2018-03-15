@@ -215,7 +215,7 @@ herr_t iusHdf5WriteString
 (
     hid_t        handle,
     const char * pVariableString,
-    long *       pString,
+    char *       pString,
     int          numValues,
     int          verbose
 );

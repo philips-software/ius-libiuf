@@ -35,4 +35,18 @@ void iusNodeSaveParents
     hid_t     handle
 );
 
+int iusReadNode
+(
+    IusNode *pNode,
+    hid_t handle,
+    int verbose
+);
+
+int iusWriteNode
+(
+    IusNode *pNode,
+    hid_t handle,
+    int verbose
+);
+
 #endif

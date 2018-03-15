@@ -21,4 +21,5 @@ int iusHLNodeGetNumParents(iun_t node);
 char *iusHLGetNodeId(iun_t node);
 IUS_BOOL iusCompareNode(iun_t reference, iun_t actual);
 
+
 #endif //IUSLIBRARY_IUSHLNODE_H

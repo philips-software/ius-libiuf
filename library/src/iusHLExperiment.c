@@ -2,16 +2,13 @@
 // Created by Ruijzendaal on 14/03/2018.
 //
 #define IUSLIBRARY_IMPLEMENTATION
+#include <stdlib.h>
+#include <memory.h>
+#include <math.h>
+#include <ius.h>
+#include <iusUtil.h>
 #include <iusInput.h>
 #include <include/iusHLInput.h>
-#include <stdlib.h>
-#include <iusInput.h>
-#include <memory.h>
-#include <include/ius.h>
-#include <include/iusInput.h>
-#include <include/iusUtil.h>
-#include <math.h>
-#include <include/iusUtil.h>
 
 
 

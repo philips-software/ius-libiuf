@@ -190,3 +190,24 @@ void iusNodeSaveParents
     }
 }
 
+
+int iusReadNode(IusNode *pNode, hid_t handle, int verbose) {
+    char *pString;
+    int status = 0;
+    status |= iusHdf5ReadString( handle, "/ID", &pString, verbose );
+    if( status == 0 ) strcpy(pNode->pId,pString);
+    status |= iusHdf5ReadString( handle, "/type", &pString, verbose );
+    if( status == 0 ) strcpy(pNode->pType,pString);
+    iusNodeLoadParents((IusNode *)pNode, handle);
+    return status;
+}
+
+
+
+int iusWriteNode(IusNode *pNode, hid_t handle, int verbose) {
+    herr_t status = 0;
+    status |= iusHdf5WriteString( handle , "/ID",    pNode->pId, 1,   verbose );
+    status |= iusHdf5WriteString( handle , "/type",    pNode->pType, 1,   verbose );
+    iusNodeSaveParents( pNode, handle );
+    return status;
+}
