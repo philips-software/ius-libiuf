@@ -22,7 +22,6 @@
 #include <include/iusHLExperiment.h>
 #include <include/iusHLInput.h>
 
-
 //------------------------------------------------------------------------------
 //
 //------------------------------------------------------------------------------
@@ -72,32 +71,32 @@ int LF_copyTransducerData
     IusTransducer * pSrc
 )
 {
-    // transducerName is a descriptive name of the ultrasound probe
-    pDst->pTransducerName =
-        (char *)calloc( strlen(pSrc->pTransducerName) + 1, sizeof(char) );
-
-    if (pDst->pTransducerName == NULL)
-    {
-        return 1 << 2;
-    }
-    strcpy( pDst->pTransducerName, pSrc->pTransducerName );
-
-    // centerFrequency: operating frequency of the transducer in Hz
-    // numElements    : number of transducer Elements in the probe
-    pDst->centerFrequency = pSrc->centerFrequency;
-    pDst->numElements     = pSrc->numElements;
-
-    pDst->pElements = (IusTransducerElement *)calloc( pDst->numElements,
-        sizeof( IusTransducerElement ) );
-
-    if ( pDst->pElements == NULL )
-    {
-        return 2 << 2;
-    }
-
-    // an array of numElements transducer element (position, angle, size)
-    memcpy( pDst->pElements, pSrc->pElements,
-        pDst->numElements * sizeof( IusTransducerElement ) );
+//    // transducerName is a descriptive name of the ultrasound probe
+//    pDst->pTransducerName =
+//        (char *)calloc( strlen(pSrc->pTransducerName) + 1, sizeof(char) );
+//
+//    if (pDst->pTransducerName == NULL)
+//    {
+//        return 1 << 2;
+//    }
+//    strcpy( pDst->pTransducerName, pSrc->pTransducerName );
+//
+//    // centerFrequency: operating frequency of the transducer in Hz
+//    // numElements    : number of transducer Elements in the probe
+//    pDst->centerFrequency = pSrc->centerFrequency;
+//    pDst->numElements     = pSrc->numElements;
+//
+//    pDst->pElements = (IusTransducerElement *)calloc( pDst->numElements,
+//        sizeof( IusTransducerElement ) );
+//
+//    if ( pDst->pElements == NULL )
+//    {
+//        return 2 << 2;
+//    }
+//
+//    // an array of numElements transducer element (position, angle, size)
+//    memcpy( pDst->pElements, pSrc->pElements,
+//        pDst->numElements * sizeof( IusTransducerElement ) );
 
     return 0;
 }
@@ -185,81 +184,81 @@ int LF_copyDrivingSchemeData
     int                numElements
 )
 {
-    int i;
-    IUS_ASSERT( numPulsesPerFrame > 0 );
-
-    pDst->drivingSchemeType  = pSrc->drivingSchemeType;   // driving scheme: e.g. diveringwaves, planeswaves, ...
-    pDst->numSamplesPerLine  = pSrc->numSamplesPerLine;   // length of an acquisition line
-    pDst->numTransmitSources = pSrc->numTransmitSources;  // number of US sources (tyically these are virtual)
-    pDst->numTransmitPulses  = pSrc->numTransmitPulses;   // number of pulses in a frame
-
-    if ( pDst->numTransmitSources != 0 && pSrc->pSourceLocations != NULL )
-    {
-	pDst->pSourceLocations = (IusPosition *)calloc(pDst->numTransmitSources, sizeof(IusPosition));
-	for (i = 0; i < pDst->numTransmitSources; i++)
-	{
-	    pDst->pSourceLocations[i].x = pSrc->pSourceLocations[i].x;
-	    pDst->pSourceLocations[i].y = pSrc->pSourceLocations[i].y;
-	    pDst->pSourceLocations[i].z = pSrc->pSourceLocations[i].z;
-	}
-    }
-
-    pDst->sourceFNumber        = pSrc->sourceFNumber;        // distance in [m] of sources to transducer for POLAR
-    pDst->sourceAngularDelta   = pSrc->sourceAngularDelta;   // angle in [rad] between sources
-    pDst->sourceStartAngle     = pSrc->sourceStartAngle;     // starting angle in [rad] for the sources
-    pDst->transmitPatternDelay = pSrc->transmitPatternDelay; // extra delay at the end of a transmit pattern
-
-    pDst->pTransmitPattern = (IusTransmitPattern *)calloc( numPulsesPerFrame, sizeof(IusTransmitPattern) );
-    if ( pDst->pTransmitPattern == 0 )
-    {
-        return 1 << 7;
-    }
-    memcpy( pDst->pTransmitPattern, pSrc->pTransmitPattern,
-            numPulsesPerFrame * sizeof( IusTransmitPattern ) );  // array (time, index) of length numTransmitPulses
-
-    pDst->transmitPulse.numPulseValues = pSrc->transmitPulse.numPulseValues;  // waveform of the transmit pulse
-    if ( pDst->transmitPulse.numPulseValues != 0 )
-    {
-        pDst->transmitPulse.pRawPulseAmplitudes = (float *)calloc( pDst->transmitPulse.numPulseValues, sizeof(float));       /* shape of waveform [in Volts] */
-        pDst->transmitPulse.pRawPulseTimes      = (float *)calloc( pDst->transmitPulse.numPulseValues, sizeof(float));            /* corresponding timestamps of amplitudes [in seconds] */
-        if ( pDst->transmitPulse.pRawPulseAmplitudes == NULL || pDst->transmitPulse.pRawPulseTimes == 0)
-        {
-            return 2 << 7;
-        }
-        memcpy( pDst->transmitPulse.pRawPulseAmplitudes, pSrc->transmitPulse.pRawPulseAmplitudes, pDst->transmitPulse.numPulseValues*sizeof(float));
-        memcpy( pDst->transmitPulse.pRawPulseTimes,      pSrc->transmitPulse.pRawPulseTimes,      pDst->transmitPulse.numPulseValues*sizeof(float));
-    }
-    pDst->transmitPulse.pulseFrequency = pSrc->transmitPulse.pulseFrequency;
-    pDst->transmitPulse.pulseAmplitude = pSrc->transmitPulse.pulseAmplitude;
-    pDst->transmitPulse.pulseCount     = pSrc->transmitPulse.pulseCount;
-
-    pDst->pTransmitApodization = (float *)calloc( numPulsesPerFrame * numElements, sizeof(float) );   // 2D array: per transmitted pulse we have numElement gains
-                                                                                                      // (which are numTransducerElements or numChannelElements)
-    if ( pDst->pTransmitApodization == NULL )
-    {
-        return 3<<7;
-    }
-    memcpy( pDst->pTransmitApodization, pSrc->pTransmitApodization,
-            numPulsesPerFrame * numElements * sizeof(float) );
-
-    if ( pSrc->transmitChannelCoding.numChannels != 0 )
-    {
-        pDst->transmitChannelCoding.numChannels = pSrc->transmitChannelCoding.numChannels;
-        pDst->transmitChannelCoding.pChannelMap = (int *)calloc(pDst->transmitChannelCoding.numChannels*numPulsesPerFrame, sizeof(int));
-        if ( pDst->transmitChannelCoding.pChannelMap == NULL )
-        {
-            return 4<<7;
-        }
-        memcpy( pDst->transmitChannelCoding.pChannelMap,
-                pSrc->transmitChannelCoding.pChannelMap,
-                pDst->transmitChannelCoding.numChannels * numPulsesPerFrame * sizeof(int) );
-    }
-    else
-    {
-        pDst->transmitChannelCoding.numChannels = 0;
-        pDst->transmitChannelCoding.pChannelMap = NULL;
-    }
-
+//    int i;
+//    IUS_ASSERT( numPulsesPerFrame > 0 );
+//
+//    pDst->drivingSchemeType  = pSrc->drivingSchemeType;   // driving scheme: e.g. diveringwaves, planeswaves, ...
+//    pDst->numSamplesPerLine  = pSrc->numSamplesPerLine;   // length of an acquisition line
+//    pDst->numTransmitSources = pSrc->numTransmitSources;  // number of US sources (tyically these are virtual)
+//    pDst->numTransmitPulses  = pSrc->numTransmitPulses;   // number of pulses in a frame
+//
+//    if ( pDst->numTransmitSources != 0 && pSrc->pSourceLocations != NULL )
+//    {
+//	pDst->pSourceLocations = (IusPosition *)calloc(pDst->numTransmitSources, sizeof(IusPosition));
+//	for (i = 0; i < pDst->numTransmitSources; i++)
+//	{
+//	    pDst->pSourceLocations[i].x = pSrc->pSourceLocations[i].x;
+//	    pDst->pSourceLocations[i].y = pSrc->pSourceLocations[i].y;
+//	    pDst->pSourceLocations[i].z = pSrc->pSourceLocations[i].z;
+//	}
+//    }
+//
+//    pDst->sourceFNumber        = pSrc->sourceFNumber;        // distance in [m] of sources to transducer for POLAR
+//    pDst->sourceAngularDelta   = pSrc->sourceAngularDelta;   // angle in [rad] between sources
+//    pDst->sourceStartAngle     = pSrc->sourceStartAngle;     // starting angle in [rad] for the sources
+//    pDst->transmitPatternDelay = pSrc->transmitPatternDelay; // extra delay at the end of a transmit pattern
+//
+//    pDst->pTransmitPattern = (IusTransmitPattern *)calloc( numPulsesPerFrame, sizeof(IusTransmitPattern) );
+//    if ( pDst->pTransmitPattern == 0 )
+//    {
+//        return 1 << 7;
+//    }
+//    memcpy( pDst->pTransmitPattern, pSrc->pTransmitPattern,
+//            numPulsesPerFrame * sizeof( IusTransmitPattern ) );  // array (time, index) of length numTransmitPulses
+//
+//    pDst->transmitPulse.numPulseValues = pSrc->transmitPulse.numPulseValues;  // waveform of the transmit pulse
+//    if ( pDst->transmitPulse.numPulseValues != 0 )
+//    {
+//        pDst->transmitPulse.pRawPulseAmplitudes = (float *)calloc( pDst->transmitPulse.numPulseValues, sizeof(float));       /* shape of waveform [in Volts] */
+//        pDst->transmitPulse.pRawPulseTimes      = (float *)calloc( pDst->transmitPulse.numPulseValues, sizeof(float));            /* corresponding timestamps of amplitudes [in seconds] */
+//        if ( pDst->transmitPulse.pRawPulseAmplitudes == NULL || pDst->transmitPulse.pRawPulseTimes == 0)
+//        {
+//            return 2 << 7;
+//        }
+//        memcpy( pDst->transmitPulse.pRawPulseAmplitudes, pSrc->transmitPulse.pRawPulseAmplitudes, pDst->transmitPulse.numPulseValues*sizeof(float));
+//        memcpy( pDst->transmitPulse.pRawPulseTimes,      pSrc->transmitPulse.pRawPulseTimes,      pDst->transmitPulse.numPulseValues*sizeof(float));
+//    }
+//    pDst->transmitPulse.pulseFrequency = pSrc->transmitPulse.pulseFrequency;
+//    pDst->transmitPulse.pulseAmplitude = pSrc->transmitPulse.pulseAmplitude;
+//    pDst->transmitPulse.pulseCount     = pSrc->transmitPulse.pulseCount;
+//
+//    pDst->pTransmitApodization = (float *)calloc( numPulsesPerFrame * numElements, sizeof(float) );   // 2D array: per transmitted pulse we have numElement gains
+//                                                                                                      // (which are numTransducerElements or numChannelElements)
+//    if ( pDst->pTransmitApodization == NULL )
+//    {
+//        return 3<<7;
+//    }
+//    memcpy( pDst->pTransmitApodization, pSrc->pTransmitApodization,
+//            numPulsesPerFrame * numElements * sizeof(float) );
+//
+//    if ( pSrc->transmitChannelCoding.numChannels != 0 )
+//    {
+//        pDst->transmitChannelCoding.numChannels = pSrc->transmitChannelCoding.numChannels;
+//        pDst->transmitChannelCoding.pChannelMap = (int *)calloc(pDst->transmitChannelCoding.numChannels*numPulsesPerFrame, sizeof(int));
+//        if ( pDst->transmitChannelCoding.pChannelMap == NULL )
+//        {
+//            return 4<<7;
+//        }
+//        memcpy( pDst->transmitChannelCoding.pChannelMap,
+//                pSrc->transmitChannelCoding.pChannelMap,
+//                pDst->transmitChannelCoding.numChannels * numPulsesPerFrame * sizeof(int) );
+//    }
+//    else
+//    {
+//        pDst->transmitChannelCoding.numChannels = 0;
+//        pDst->transmitChannelCoding.pChannelMap = NULL;
+//    }
+//
     return 0;
 }
 
@@ -273,111 +272,111 @@ static herr_t LF_readTransElements(IusInputInstance *pInst, hid_t handle, int ve
   hsize_t       i;
   hid_t         dataset, space;
   hsize_t       dims[1];              //NOTE: pElements assumed 1D array, extra length to prevent 
-  IusPosition * pPosData;
-  IusAngle *    pAngleData;
-  IusSize *     pSizeData;
-  hid_t         position_tid; //position type id
-  hid_t         angle_tid;    //angle type id
-  hid_t         size_tid;     //size id
-
+//  IusPosition * pPosData;
+//  IusAngle *    pAngleData;
+//  IusSize *     pSizeData;
+//  hid_t         position_tid; //position type id
+//  hid_t         angle_tid;    //angle type id
+//  hid_t         size_tid;     //size id
+//
   herr_t status = 0;
-  IUS_UNUSED(verbose); // avoid compiler warning
-
-  dataset = H5Dopen(handle, "/Transducer/Elements/positions", H5P_DEFAULT);
-  space = H5Dget_space(dataset);
-  ndims = H5Sget_simple_extent_dims(space, dims, NULL); 
-  if ( ndims != 1 )
-  {
-    fprintf( stderr, "readTransElements: Only 1D array of transducer elements supported \n" );
-    return -1; 
-  }
-
-  pPosData   = (IusPosition *) malloc( (size_t)(dims[0] * sizeof (IusPosition)) );
-  pAngleData = (IusAngle *)    malloc( (size_t)(dims[0] * sizeof (IusAngle)) );
-  pSizeData  = (IusSize *)     malloc( (size_t)(dims[0] * sizeof (IusSize)) );
-  pInst->pTransducer->pElements = (IusTransducerElement *)malloc((size_t)(dims[0]*sizeof(IusTransducerElement)));
-  if (pInst->pTransducer->pElements == NULL)
-  {
-      fprintf(stderr, "Allocation failed: pInst->pTransducer->pElements\n");
-    return -1;
-  }
-
-  position_tid = H5Tcreate (H5T_COMPOUND, sizeof(IusPosition));
-  H5Tinsert(position_tid, "x", HOFFSET(IusPosition, x), H5T_NATIVE_FLOAT);
-  H5Tinsert(position_tid, "y", HOFFSET(IusPosition, y), H5T_NATIVE_FLOAT);
-  H5Tinsert(position_tid, "z", HOFFSET(IusPosition, z), H5T_NATIVE_FLOAT);
-  status = H5Dread(dataset, position_tid, H5S_ALL, H5S_ALL, H5P_DEFAULT, pPosData);
-  if (status < 0)
-  {
-    fprintf(stderr, "readTransElements: Error reading data: H5Dread returned: %d\n", status);
-    return status;
-  }
-  status = H5Dclose(dataset);
-  status = H5Sclose(space);
-  status = H5Tclose(position_tid);
-  if (status < 0)
-  {
-    fprintf(stderr, "readTransElements: Error closing position dataset: %d\n", status);
-    return status;
-  }
-
-  dataset = H5Dopen(handle, "/Transducer/Elements/angles", H5P_DEFAULT);
-  space = H5Dget_space(dataset);
-  //read the angles array
-  angle_tid = H5Tcreate (H5T_COMPOUND, sizeof(IusAngle));
-  H5Tinsert(angle_tid, "theta", HOFFSET(IusAngle, theta), H5T_NATIVE_FLOAT);
-  H5Tinsert(angle_tid, "phi",   HOFFSET(IusAngle, phi),   H5T_NATIVE_FLOAT);
-  status = H5Dread(dataset, angle_tid, H5S_ALL, H5S_ALL, H5P_DEFAULT, pAngleData);
-  if (status < 0)
-  {
-    fprintf(stderr, "readTransElements: Error reading data: H5Dread returned: %d\n", status);
-    return status;
-  }
-  status = H5Dclose(dataset);
-  status = H5Sclose(space);
-  status = H5Tclose(angle_tid);
-  if (status < 0)
-  {
-    fprintf(stderr, "readTransElements: Error closing angle dataset: %d\n", status);
-    return status;
-  }
-
-  dataset = H5Dopen(handle, "/Transducer/Elements/sizes", H5P_DEFAULT);
-  space = H5Dget_space(dataset);
-  //read the angles array
-  size_tid = H5Tcreate (H5T_COMPOUND, sizeof(IusSize));
-  H5Tinsert(size_tid, "x", HOFFSET(IusSize, x), H5T_NATIVE_FLOAT);
-  H5Tinsert(size_tid, "y", HOFFSET(IusSize, y), H5T_NATIVE_FLOAT);
-  H5Tinsert(size_tid, "z", HOFFSET(IusSize, z), H5T_NATIVE_FLOAT);
-  status = H5Dread(dataset, size_tid, H5S_ALL, H5S_ALL, H5P_DEFAULT, pSizeData);
-  if (status < 0)
-  {
-    fprintf(stderr, "readTransElements: Error reading data: H5Dread returned: %d\n", status);
-    return status;
-  }
-  status = H5Dclose(dataset);
-  status = H5Sclose(space);
-  status = H5Tclose(size_tid);
-  if (status < 0)
-  {
-    fprintf(stderr, "readTransElements: Error closing size dataset: %d\n", status);
-    return status;
-  }
-
-  for ( i = 0; i < dims[0]; i++ )
-  {
-    pInst->pTransducer->pElements[i].position.x = pPosData[i].x;
-    pInst->pTransducer->pElements[i].position.y = pPosData[i].y;
-    pInst->pTransducer->pElements[i].position.z = pPosData[i].z;
-    pInst->pTransducer->pElements[i].angle.theta= pAngleData[i].theta;
-    pInst->pTransducer->pElements[i].angle.phi  = pAngleData[i].phi;
-    pInst->pTransducer->pElements[i].size.x     = pSizeData[i].x;
-    pInst->pTransducer->pElements[i].size.y     = pSizeData[i].y;
-    pInst->pTransducer->pElements[i].size.z     = pSizeData[i].z;
-  }
-  free(pPosData);
-  free(pAngleData);
-  free(pSizeData);
+//  IUS_UNUSED(verbose); // avoid compiler warning
+//
+//  dataset = H5Dopen(handle, "/Transducer/Elements/positions", H5P_DEFAULT);
+//  space = H5Dget_space(dataset);
+//  ndims = H5Sget_simple_extent_dims(space, dims, NULL);
+//  if ( ndims != 1 )
+//  {
+//    fprintf( stderr, "readTransElements: Only 1D array of transducer elements supported \n" );
+//    return -1;
+//  }
+//
+//  pPosData   = (IusPosition *) malloc( (size_t)(dims[0] * sizeof (IusPosition)) );
+//  pAngleData = (IusAngle *)    malloc( (size_t)(dims[0] * sizeof (IusAngle)) );
+//  pSizeData  = (IusSize *)     malloc( (size_t)(dims[0] * sizeof (IusSize)) );
+//  pInst->pTransducer->pElements = (IusTransducerElement *)malloc((size_t)(dims[0]*sizeof(IusTransducerElement)));
+//  if (pInst->pTransducer->pElements == NULL)
+//  {
+//      fprintf(stderr, "Allocation failed: pInst->pTransducer->pElements\n");
+//    return -1;
+//  }
+//
+//  position_tid = H5Tcreate (H5T_COMPOUND, sizeof(IusPosition));
+//  H5Tinsert(position_tid, "x", HOFFSET(IusPosition, x), H5T_NATIVE_FLOAT);
+//  H5Tinsert(position_tid, "y", HOFFSET(IusPosition, y), H5T_NATIVE_FLOAT);
+//  H5Tinsert(position_tid, "z", HOFFSET(IusPosition, z), H5T_NATIVE_FLOAT);
+//  status = H5Dread(dataset, position_tid, H5S_ALL, H5S_ALL, H5P_DEFAULT, pPosData);
+//  if (status < 0)
+//  {
+//    fprintf(stderr, "readTransElements: Error reading data: H5Dread returned: %d\n", status);
+//    return status;
+//  }
+//  status = H5Dclose(dataset);
+//  status = H5Sclose(space);
+//  status = H5Tclose(position_tid);
+//  if (status < 0)
+//  {
+//    fprintf(stderr, "readTransElements: Error closing position dataset: %d\n", status);
+//    return status;
+//  }
+//
+//  dataset = H5Dopen(handle, "/Transducer/Elements/angles", H5P_DEFAULT);
+//  space = H5Dget_space(dataset);
+//  //read the angles array
+//  angle_tid = H5Tcreate (H5T_COMPOUND, sizeof(IusAngle));
+//  H5Tinsert(angle_tid, "theta", HOFFSET(IusAngle, theta), H5T_NATIVE_FLOAT);
+//  H5Tinsert(angle_tid, "phi",   HOFFSET(IusAngle, phi),   H5T_NATIVE_FLOAT);
+//  status = H5Dread(dataset, angle_tid, H5S_ALL, H5S_ALL, H5P_DEFAULT, pAngleData);
+//  if (status < 0)
+//  {
+//    fprintf(stderr, "readTransElements: Error reading data: H5Dread returned: %d\n", status);
+//    return status;
+//  }
+//  status = H5Dclose(dataset);
+//  status = H5Sclose(space);
+//  status = H5Tclose(angle_tid);
+//  if (status < 0)
+//  {
+//    fprintf(stderr, "readTransElements: Error closing angle dataset: %d\n", status);
+//    return status;
+//  }
+//
+//  dataset = H5Dopen(handle, "/Transducer/Elements/sizes", H5P_DEFAULT);
+//  space = H5Dget_space(dataset);
+//  //read the angles array
+//  size_tid = H5Tcreate (H5T_COMPOUND, sizeof(IusSize));
+//  H5Tinsert(size_tid, "x", HOFFSET(IusSize, x), H5T_NATIVE_FLOAT);
+//  H5Tinsert(size_tid, "y", HOFFSET(IusSize, y), H5T_NATIVE_FLOAT);
+//  H5Tinsert(size_tid, "z", HOFFSET(IusSize, z), H5T_NATIVE_FLOAT);
+//  status = H5Dread(dataset, size_tid, H5S_ALL, H5S_ALL, H5P_DEFAULT, pSizeData);
+//  if (status < 0)
+//  {
+//    fprintf(stderr, "readTransElements: Error reading data: H5Dread returned: %d\n", status);
+//    return status;
+//  }
+//  status = H5Dclose(dataset);
+//  status = H5Sclose(space);
+//  status = H5Tclose(size_tid);
+//  if (status < 0)
+//  {
+//    fprintf(stderr, "readTransElements: Error closing size dataset: %d\n", status);
+//    return status;
+//  }
+//
+//  for ( i = 0; i < dims[0]; i++ )
+//  {
+//    pInst->pTransducer->pElements[i].position.x = pPosData[i].x;
+//    pInst->pTransducer->pElements[i].position.y = pPosData[i].y;
+//    pInst->pTransducer->pElements[i].position.z = pPosData[i].z;
+//    pInst->pTransducer->pElements[i].angle.theta= pAngleData[i].theta;
+//    pInst->pTransducer->pElements[i].angle.phi  = pAngleData[i].phi;
+//    pInst->pTransducer->pElements[i].size.x     = pSizeData[i].x;
+//    pInst->pTransducer->pElements[i].size.y     = pSizeData[i].y;
+//    pInst->pTransducer->pElements[i].size.z     = pSizeData[i].z;
+//  }
+//  free(pPosData);
+//  free(pAngleData);
+//  free(pSizeData);
 
   return status;
 }
@@ -398,7 +397,7 @@ static herr_t LF_readSourceLocationsCartesian
     int           i, ndims;
     hid_t         dataset, space;
     hsize_t       dims[4];  // NOTE: pElements assumed 1D array, extra length to prevent 
-    IusPosition * pPosData;
+    Ius3DPosition * pPosData;
     hid_t         position_tid; //position type id
 
     int numLocations = pInst->pDrivingScheme->numTransmitSources;
@@ -413,8 +412,8 @@ static herr_t LF_readSourceLocationsCartesian
         fprintf( stderr, "Rank should be 1, but found %d\n", ndims );
         return 1;
     }
-    pPosData   = (IusPosition *) malloc( (size_t)(dims[0] * sizeof(IusPosition) ) );
-    pInst->pDrivingScheme->pSourceLocations = (IusPosition *)malloc( (size_t)(dims[0] * sizeof(IusPosition)) );
+    pPosData   = (Ius3DPosition *) malloc( (size_t)(dims[0] * sizeof(Ius3DPosition) ) );
+    pInst->pDrivingScheme->pSourceLocations = (Ius3DPosition *)malloc( (size_t)(dims[0] * sizeof(Ius3DPosition)) );
     if ( pInst->pDrivingScheme->pSourceLocations == NULL )
     {
         fprintf( stderr, "LF_readSourceLocationsCartesian: Error allocating data\n" );
@@ -423,10 +422,10 @@ static herr_t LF_readSourceLocationsCartesian
     }
 
     //read the positions array
-    position_tid = H5Tcreate( H5T_COMPOUND, sizeof(IusPosition));
-    H5Tinsert( position_tid, "x", HOFFSET(IusPosition, x), H5T_NATIVE_FLOAT );
-    H5Tinsert( position_tid, "y", HOFFSET(IusPosition, y), H5T_NATIVE_FLOAT );
-    H5Tinsert( position_tid, "z", HOFFSET(IusPosition, z), H5T_NATIVE_FLOAT );
+    position_tid = H5Tcreate( H5T_COMPOUND, sizeof(Ius3DPosition));
+    H5Tinsert( position_tid, "x", HOFFSET(Ius3DPosition, x), H5T_NATIVE_FLOAT );
+    H5Tinsert( position_tid, "y", HOFFSET(Ius3DPosition, y), H5T_NATIVE_FLOAT );
+    H5Tinsert( position_tid, "z", HOFFSET(Ius3DPosition, z), H5T_NATIVE_FLOAT );
     status = H5Dread( dataset, position_tid, H5S_ALL, H5S_ALL, H5P_DEFAULT, pPosData );
     if ( status < 0 )
     {
@@ -595,7 +594,6 @@ static herr_t LF_readTimeGainControls
 }
 
 
-
 int iusWriteExperiment(IusExperiment *pExperiment, hid_t handle, int verbose) {
     hid_t group_id = H5Gcreate(handle, "/Experiment", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
     herr_t status = 0;
@@ -609,6 +607,115 @@ int iusWriteExperiment(IusExperiment *pExperiment, hid_t handle, int verbose) {
     return status;
 }
 
+int iusWriteTransducer(IusTransducer *pTransducer, hid_t handle, int verbose) {
+    /* write the /Transducer data */
+    herr_t        status;
+    hsize_t dims[1] = {1};
+//    int i; //iterator
+//
+//    hid_t angle_tid;    // File datatype identifier for IusAngle
+//    hid_t position_tid; // File datatype identifier for IusPosition
+//    hid_t propList;     // Property list
+//    hid_t group_id;
+//    hid_t subgroup_id;
+//    hid_t dataset, space, dataChunkConfig;
+//    hid_t size_tid;     // File datatype identifier for IusSize
+//    IusAngle *    pAngleArray;
+//    IusPosition * pPositionArray;
+//    IusSize *     pSizeArray;
+//
+//    group_id = H5Gcreate( handle,   "/Transducer", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT );
+//    H5LTmake_dataset_string( handle,"/Transducer/transducerName",     pTransducer->pTransducerName );
+//    H5LTmake_dataset_float( handle, "/Transducer/centerFrequency", 1, dims, &(pTransducer->centerFrequency) );
+//    H5LTmake_dataset_int( handle,   "/Transducer/numElements",     1, dims, &(pTransducer->numElements) );
+//
+//    /* write the /Transducer/Elements/ positions, angles and sizes are compound types */
+//    dims[0] = pTransducer->numElements;
+//    subgroup_id = H5Gcreate( group_id, "/Transducer/Elements", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT );
+//    {
+//        //Positions
+//        space = H5Screate_simple( 1, dims, NULL );
+//        // step a:  create H5 dataset
+//        position_tid = H5Tcreate( H5T_COMPOUND, sizeof(IusPosition) );
+//        H5Tinsert( position_tid, "x", HOFFSET(IusPosition, x), H5T_NATIVE_FLOAT );
+//        H5Tinsert( position_tid, "y", HOFFSET(IusPosition, y), H5T_NATIVE_FLOAT );
+//        H5Tinsert( position_tid, "z", HOFFSET(IusPosition, z), H5T_NATIVE_FLOAT );
+//        dataset = H5Dcreate( subgroup_id,    "/Transducer/Elements/positions", position_tid, space, H5P_DEFAULT, propList, H5P_DEFAULT );
+//
+//        // step b:  create array of positions
+//        pPositionArray = (IusPosition *)calloc( pTransducer->numElements, sizeof(IusPosition) ); //three dimensions for position
+//        for ( i = 0; i < pTransducer->numElements; i++ )
+//        {
+//            pPositionArray[i] = pTransducer->pElements[i].position;
+//        }
+//
+//        // step c: write the array to the dataset
+//        status = H5Dwrite( dataset, position_tid, H5S_ALL, H5S_ALL, H5P_DEFAULT, pPositionArray );
+//
+//        free( pPositionArray );
+//        // step d: release resources
+//        H5Tclose( position_tid );
+//        H5Sclose( space );
+//        H5Dclose( dataset );
+//    }
+//
+//    { //Angles
+//        space = H5Screate_simple( 1, dims, NULL );
+//        // step a:  create H5 dataset
+//        angle_tid = H5Tcreate( H5T_COMPOUND, sizeof(IusAngle) );
+//        H5Tinsert( angle_tid, "theta", HOFFSET(IusAngle, theta), H5T_NATIVE_FLOAT );
+//        H5Tinsert( angle_tid,  "phi", HOFFSET(IusAngle, phi), H5T_NATIVE_FLOAT );
+//        dataset = H5Dcreate( subgroup_id, "/Transducer/Elements/angles", angle_tid, space, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT );
+//
+//        // step b:  create array of angles
+//        pAngleArray = (IusAngle *)calloc( pTransducer->numElements, sizeof(IusAngle) ); //two dimensions for angle
+//        for (i = 0; i < pTransducer->numElements; i++)
+//        {
+//            pAngleArray[i] = pTransducer->pElements[i].angle;
+//        }
+//
+//        // step c: write the array to the dataset
+//        status = H5Dwrite( dataset, angle_tid, H5S_ALL, H5S_ALL, H5P_DEFAULT, pAngleArray );
+//
+//        free(pAngleArray);
+//        // step d: release resources
+//        H5Tclose(angle_tid);
+//        H5Sclose(space);
+//        H5Dclose(dataset);
+//    }
+//
+//    { //Sizes
+//        space = H5Screate_simple(1, dims, NULL);
+//        // step a:  create H5 dataset
+//        size_tid = H5Tcreate(H5T_COMPOUND, sizeof(IusSize));
+//        H5Tinsert( size_tid, "x", HOFFSET(IusSize, x), H5T_NATIVE_FLOAT );
+//        H5Tinsert( size_tid, "y", HOFFSET(IusSize, y), H5T_NATIVE_FLOAT );
+//        H5Tinsert( size_tid, "z", HOFFSET(IusSize, z), H5T_NATIVE_FLOAT );
+//        dataset = H5Dcreate( subgroup_id, "/Transducer/Elements/sizes",
+//                             size_tid, space, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+//
+//        // step b:  create array of sizes
+//        pSizeArray = (IusSize *)calloc( pTransducer->numElements*3, sizeof(IusSize) ); //three dimensions for size
+//        for ( i = 0; i < pTransducer->numElements; i++ )
+//        {
+//            pSizeArray[i] = pTransducer->pElements[i].size;
+//        }
+//        // step c: write the array to the dataset
+//        status = H5Dwrite( dataset, size_tid, H5S_ALL, H5S_ALL, H5P_DEFAULT, pSizeArray );
+//        /* Close the subgroup. */
+//        status = H5Gclose( subgroup_id );
+//
+//        // step d: release resources
+//        free( pSizeArray );
+//        H5Tclose( size_tid );
+//        H5Sclose( space );
+//        H5Dclose( dataset );
+//    }
+//
+//    /* Close the group. */
+//    status = H5Gclose( group_id );
+    return status;
+}
 
 
 IusExperiment *iusReadExperiment(hid_t handle, int verbose) {
@@ -625,6 +732,17 @@ IusExperiment *iusReadExperiment(hid_t handle, int verbose) {
         return NULL;
     experiment = iusHLCreateExperiment(speedOfSound,date,pDescription);
     return experiment;
+}
+
+
+IusTransducer *iusReadTransducer(hid_t handle, int verbose) {
+    int status = 0;
+    IusTransducer * transducer;
+
+    if( status < 0 )
+        return NULL;
+    transducer = iusHLCreateTransducer(NULL, IUS_LINE, 0, 0);
+    return transducer;
 }
 
 //------------------------------------------------------------------------------
@@ -785,6 +903,7 @@ IusInputInstance * iusInputRead
 {
     IusInputInstance *pInst;
     IusExperiment *pExperiment;
+    IusTransducer *pTransducer;
     herr_t  status;
     int numElements;
   
@@ -923,11 +1042,17 @@ IusInputInstance * iusInputRead
     pExperiment = iusReadExperiment(handle, verbose);
     status |= iusHLHeaderSetExperiment(pInst,pExperiment);
 
+    // Read Transducer fields
+    pTransducer = iusReadTransducer(handle, verbose);
+    status |= iusHLHeaderSetTransducer(pInst,pTransducer);
+
+
     if( status != 0 )
         return NULL;
     else
         return pInst;
 }
+
 
 //------------------------------------------------------------------------------
 //
@@ -942,14 +1067,14 @@ int iusInputWrite
     herr_t        status;
     hsize_t dims[1] = {1};
 #if old
-    IusPosition * pPositionArray;
+    Ius3DPosition * pPositionArray;
     IusAngle *    pAngleArray;
     IusSize *     pSizeArray;
     float *       pFloatArray;
     int *         pIntArray;
     const int     libVersion = version;
 
-    hid_t position_tid; // File datatype identifier for IusPosition
+    hid_t position_tid; // File datatype identifier for Ius3DPosition
     hid_t angle_tid;    // File datatype identifier for IusAngle
     hid_t size_tid;     // File datatype identifier for IusSize
     hid_t propList;     // Property list
@@ -996,14 +1121,14 @@ int iusInputWrite
         //Positions
         space = H5Screate_simple( 1, dims, NULL );
         // step a:  create H5 dataset
-        position_tid = H5Tcreate( H5T_COMPOUND, sizeof(IusPosition) );
-        H5Tinsert( position_tid, "x", HOFFSET(IusPosition, x), H5T_NATIVE_FLOAT );
-        H5Tinsert( position_tid, "y", HOFFSET(IusPosition, y), H5T_NATIVE_FLOAT );
-        H5Tinsert( position_tid, "z", HOFFSET(IusPosition, z), H5T_NATIVE_FLOAT );
+        position_tid = H5Tcreate( H5T_COMPOUND, sizeof(Ius3DPosition) );
+        H5Tinsert( position_tid, "x", HOFFSET(Ius3DPosition, x), H5T_NATIVE_FLOAT );
+        H5Tinsert( position_tid, "y", HOFFSET(Ius3DPosition, y), H5T_NATIVE_FLOAT );
+        H5Tinsert( position_tid, "z", HOFFSET(Ius3DPosition, z), H5T_NATIVE_FLOAT );
         dataset = H5Dcreate( subgroup_id,    "/Transducer/Elements/positions", position_tid, space, H5P_DEFAULT, propList, H5P_DEFAULT );
 
         // step b:  create array of positions
-        pPositionArray = (IusPosition *)calloc( pInst->pTransducer->numElements, sizeof(IusPosition) ); //three dimensions for position 
+        pPositionArray = (Ius3DPosition *)calloc( pInst->pTransducer->numElements, sizeof(Ius3DPosition) ); //three dimensions for position
         for ( i = 0; i < pInst->pTransducer->numElements; i++ )
         {
             pPositionArray[i] = pInst->pTransducer->pElements[i].position;
@@ -1156,10 +1281,10 @@ int iusInputWrite
         dims[0] = pInst->pDrivingScheme->numTransmitSources;
         space   = H5Screate_simple( 1, dims, NULL );
         // step a:  create H5 dataset
-        position_tid = H5Tcreate( H5T_COMPOUND, sizeof(IusPosition) );
-        H5Tinsert( position_tid, "x", HOFFSET(IusPosition, x), H5T_NATIVE_FLOAT );
-        H5Tinsert( position_tid, "y", HOFFSET(IusPosition, y), H5T_NATIVE_FLOAT );
-        H5Tinsert( position_tid, "z", HOFFSET(IusPosition, z), H5T_NATIVE_FLOAT );
+        position_tid = H5Tcreate( H5T_COMPOUND, sizeof(Ius3DPosition) );
+        H5Tinsert( position_tid, "x", HOFFSET(Ius3DPosition, x), H5T_NATIVE_FLOAT );
+        H5Tinsert( position_tid, "y", HOFFSET(Ius3DPosition, y), H5T_NATIVE_FLOAT );
+        H5Tinsert( position_tid, "z", HOFFSET(Ius3DPosition, z), H5T_NATIVE_FLOAT );
         //H5Dcreate( hid_t loc_id, const char *name, hid_t type_id, hid_t space_id, hid_t create_plist_id) 
         dataset = H5Dcreate( group_id, "/DrivingScheme/sourceLocations", position_tid, space, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT );
 
@@ -1228,7 +1353,10 @@ int iusInputWrite
 
     // Make dataset for Experiment
     iusWriteExperiment(pInst->pExperiment, handle, verbose);
-    
+
+    // Make dataset for Transducer
+    iusWriteTransducer(pInst->pTransducer, handle, verbose);
+
     return 0;
 }
 
@@ -1253,7 +1381,7 @@ void iusInputDestroy
     free( pInst->pExperiment );
     
     free( pInst->pTransducer->pTransducerName );
-    free( pInst->pTransducer->pElements );
+    free( ((Ius3DTransducer *)pInst->pTransducer)->pElements );
     free( pInst->pTransducer );
 
     if ( pInst->pReceiveSettings->receiveChannelCoding.numChannels != 0 )

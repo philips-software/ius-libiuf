@@ -22,14 +22,29 @@ extern "C" {
 #define IUS_INPUT_TYPE "IUSINPUTFILETYPE_V3"
 
 
-/** \brief Transducer element description: position, orientation and size */
+
 typedef struct
 {
-     IusPosition position; /**< 3D Location of the element */
-     IusAngle    angle;    /**< orientation of the elements */
-     IusSize     size;     /**< size of the element */
-} IusTransducerElement;
+    IusTransducerElementType type;
 
+} IusBaseTransducerElement;
+
+typedef struct
+{
+     IusBaseTransducerElement base;
+     Ius3DPosition position; /**< 3D Location of the element */
+     Ius3DAngle    angle;    /**< orientation of the elements */
+     Ius3DSize     size;     /**< size of the element */
+} Ius3DTransducerElement;
+
+/** \brief 2D Transducer element description: position, orientation and size */
+typedef struct
+{
+    IusBaseTransducerElement base;
+    Ius2DPosition position; /**< 3D Location of the element */
+    float         phi;      /**< orientation of the elements */
+    Ius2DSize     size;     /**< size of the element */
+} Ius2DTransducerElement;
 
 /** \brief Time gain control point (time, gain) */
 typedef struct
@@ -75,14 +90,33 @@ typedef struct
 } IusExperiment;
 
 
+typedef enum
+{
+    IUS_2D_TRANSDUCER = 0,
+    IUS_3D_TRANSDUCER
+} IusTransducerType ;
+
 /** \brief a Transducer object */
 typedef struct
 {
+    IusTransducerType      type; /**< 2D or 3D transducer? */
     char *                 pTransducerName;   /**< descriptive name of the ultrasound probe */
     float                  centerFrequency;   /**< operating frequency of the transducer */
     int                    numElements;       /**< number of transducer Elements in the probe */
-    IusTransducerElement * pElements;         /**< an array of numElements transducer element (position, angle, size) */
+    IusTransducerShape     shape;
 } IusTransducer;
+
+typedef struct
+{
+    IusTransducer            baseTransducer;
+    Ius3DTransducerElement * pElements;         /**< an array of numElements transducer element (position, angle, size) */
+} Ius3DTransducer;
+
+typedef struct
+{
+    IusTransducer            baseTransducer;
+    Ius2DTransducerElement * pElements;         /**< an array of numElements transducer element (position, angle, size) */
+} Ius2DTransducer;
 
 /** \brief Ultrasound recording settings (TGC and Fs) */
 typedef struct
@@ -120,7 +154,7 @@ typedef struct
     int                       numTransmitSources;     /**< number of US sources (tyically these are virtual) */
     int                       numTransmitPulses;      /**< number of pulses in a frame */
     //int numFrames;                                  /**< number of repetitions of the driving pattern */
-    IusPosition *             pSourceLocations;       /**< position of the US sources in case of CARTESIAN coordinates*/
+    Ius3DPosition *           pSourceLocations;       /**< position of the US sources in case of CARTESIAN coordinates*/
     float                     sourceFNumber;          /**< distance in [m] of sources to transducer for POLAR */
     float                     sourceAngularDelta;     /**< angle in [rad] between sources */
     float                     sourceStartAngle;       /**< angle in [rad] between sources */

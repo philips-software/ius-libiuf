@@ -29,22 +29,38 @@ typedef struct
     float x; 
     float y;
     float z;
-} IusPosition;
+} Ius3DPosition;
 
-/** \brief Angle of rotation theta and phi over z and x axis */
+
+/** \brief Position in 3D in meters */
+typedef struct
+{
+    float x;
+    float z;
+} Ius2DPosition;
+
+/** \brief 3D Angle of rotation theta and phi over z and x axis */
 typedef struct 
 {
     float theta; /**< rotation over z axis */
     float phi;   /**< rotation over x axis */
-} IusAngle;
+} Ius3DAngle;
 
-/** \brief Size (of element) in x,y,z dimensions */
+/** \brief 3D Size (of element) in x,y,z dimensions */
 typedef struct 
 {
-    float x;
-    float y;
-    float z;
-} IusSize;
+    float sx;
+    float sy;
+    float sz;
+} Ius3DSize;
+
+
+/** \brief 2D Size (of element) in x,z dimensions */
+typedef struct
+{
+    float sx;
+    float sz;
+} Ius2DSize;
 
 /** \brief velocity vector in x,y,z dimensions */
 typedef struct 
@@ -130,6 +146,26 @@ typedef struct
     int startIndex;
     int numSamples;
 } IusRange;               // 1D region of interest
+
+
+enum IusTransducerShape
+{
+    IUS_LINE = 1,           /**< Todo: See Draft */
+    IUS_CIRCLE,
+    IUS_PLANE,
+    IUS_CYLINDER,
+    IUS_SPHERE
+};
+
+typedef enum IusTransducerShape IusTransducerShape;
+
+/** \brief 3D Transducer element type: 3D or 2D */
+typedef enum
+{
+    IUS_2D_TRANSDUCER_ELEMENT = 1,
+    IUS_3D_TRANSDUCER_ELEMENT
+} IusTransducerElementType ;
+
 
 #ifdef __cplusplus
 }

@@ -7,6 +7,7 @@
 
 #include <iusTypes.h>
 #include <iusHLExperiment.h>
+#include <iusHLTransducer.h>
 
 #define IUS_DEFAULT_NUM_FRAMES  1
 
@@ -42,7 +43,19 @@ int iusHLHeaderSetExperiment
 
 iue_t iusHLHeaderGetExperiment
 (
-        iuh_t pInstance
+    iuh_t pInstance
 );
+
+iut_t iusHLHeaderGetTransducer
+(
+    iuh_t pInstance
+);
+
+int iusHLHeaderSetTransducer
+(
+    iuh_t pInstance,
+    iut_t pTransducer
+);
+
 
 #endif //IUSLIBRARY_IUSHLINPUT_H

@@ -67,6 +67,23 @@ iue_t iusHLHeaderGetExperiment
     return pInstance->pExperiment;
 }
 
+int iusHLHeaderSetTransducer
+(
+    iuh_t header,
+    iut_t transducer
+)
+{
+    header->pTransducer = transducer;
+    return IUS_E_OK;
+}
+
+iut_t iusHLHeaderGetTransducer
+(
+        iuh_t pInstance
+)
+{
+    return pInstance->pTransducer;
+}
 
 
 IUS_BOOL iusHLCompareHeader(iuh_t referenceHeader, iuh_t actualHeader)
