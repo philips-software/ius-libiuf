@@ -23,10 +23,15 @@ iut_t iusHLCreateTransducer
     IusTransducerType type ;
 
     // Identify transducer type based on shape
-    if(shape == IUS_PLANE)
+    if(shape == IUS_LINE || shape == IUS_CIRCLE)
+    {
+        type = IUS_2D_TRANSDUCER;
+    }
+    else
     {
         type = IUS_3D_TRANSDUCER;
     }
+
 
     if(type == IUS_3D_TRANSDUCER)
     {
@@ -34,6 +39,14 @@ iut_t iusHLCreateTransducer
         Ius3DTransducer * _3DTransducer = (Ius3DTransducer *)calloc(1,sizeof(Ius3DTransducer));
         _3DTransducer->pElements = (Ius3DTransducerElement *)calloc(numElements,sizeof(Ius3DTransducerElement));
         baseTransducer = (IusTransducer *)_3DTransducer;
+    }
+
+    if(type == IUS_2D_TRANSDUCER)
+    {
+        // Create 3D transducer
+        Ius2DTransducer * _2DTransducer = (Ius2DTransducer *)calloc(1,sizeof(Ius3DTransducer));
+        _2DTransducer->pElements = (Ius2DTransducerElement *)calloc(numElements,sizeof(Ius2DTransducerElement));
+        baseTransducer = (IusTransducer *)_2DTransducer;
     }
 
     baseTransducer->type = type;
