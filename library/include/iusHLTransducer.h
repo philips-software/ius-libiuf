@@ -67,7 +67,7 @@ IUS_BOOL iusTransducerCompareElement
         IusBaseTransducerElement *actual
     );
 
-IUS_BOOL iusCompareTransducer
+IUS_BOOL iusHLCompareTransducer
     (
         iut_t reference,
         iut_t actual
@@ -88,7 +88,7 @@ char *iusHLTransducerGetName
         iut_t transducer
     );
 
-IusTransducerShape iusHLTransducerShape
+IusTransducerShape iusHLGetTransducerShape
     (
         iut_t transducer
     );

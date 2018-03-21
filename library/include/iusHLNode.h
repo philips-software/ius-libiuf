@@ -5,6 +5,8 @@
 #ifndef IUSLIBRARY_IUSHLNODE_H
 #define IUSLIBRARY_IUSHLNODE_H
 
+#include "iusTypes.h"
+
 #ifndef IUSLIBRARY_IMPLEMENTATION
 struct IusNode;
 typedef struct IusNode IusNode;

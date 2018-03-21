@@ -423,5 +423,5 @@ herr_t iusHdf5WriteGrid
 herr_t iusHdf5DisableMessages()
 {
     // Turn off error handling permanently
-    H5Eset_auto (H5E_DEFAULT, NULL, NULL);
+    return H5Eset_auto (H5E_DEFAULT, NULL, NULL);
 }

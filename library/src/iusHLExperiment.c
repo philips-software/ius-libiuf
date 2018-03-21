@@ -18,7 +18,7 @@ IUS_BOOL iusCompareExperiment(iue_t reference, iue_t actual) {
         return IUS_FALSE;
 
     if( reference->date != actual->date ) return IUS_FALSE;
-    if( reference->speedOfSound != actual->speedOfSound)  return IUS_FALSE;
+    if( IUS_EQUAL_FLOAT(reference->speedOfSound, actual->speedOfSound) == IUS_FALSE )  return IUS_FALSE;
     return IUS_TRUE;
 }
 

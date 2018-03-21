@@ -1,10 +1,12 @@
 cmake_minimum_required(VERSION 3.6)
 add_library(Unity STATIC
         Unity/src/unity.c
+        Unity/extras/fixture/src/unity_fixture.c
         )
 
 target_include_directories(Unity PUBLIC
         Unity/src
+        Unity/extras/fixture/src
         )
 
 # the option is here so that we can plug it into other

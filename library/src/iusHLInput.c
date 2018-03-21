@@ -103,7 +103,11 @@ IUS_BOOL iusHLCompareHeader(iuh_t referenceHeader, iuh_t actualHeader)
     if( iusCompareExperiment(referenceHeader->pExperiment,actualHeader->pExperiment) == IUS_FALSE ){
         return IUS_FALSE;
     }
-    // Todo: Add , transducer, receivesettings, drivingscheme
+
+    if(iusHLCompareTransducer(referenceHeader->pTransducer, actualHeader->pTransducer) == IUS_FALSE ){
+        return IUS_FALSE;
+    }
+    // Todo: Add  receivesettings, drivingscheme
     return IUS_TRUE;
 }
 

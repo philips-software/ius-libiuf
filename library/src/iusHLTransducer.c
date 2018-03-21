@@ -9,6 +9,9 @@
 #include <memory.h>
 #include <include/iusTypes.h>
 #include <include/iusError.h>
+#include <math.h>
+#include <float.h>
+#include <include/iusUtil.h>
 
 
 iut_t iusHLCreateTransducer
@@ -70,15 +73,6 @@ int iusHLDeleteTransducer
     return 0;
 }
 
-IUS_BOOL iusCompareTransducer
-(
-    iut_t reference,
-    iut_t actual
-)
-{
-    return IUS_FALSE;
-}
-
 float iusHLTransducerGetCenterFrequency
 (
         iut_t transducer
@@ -104,10 +98,10 @@ char *iusHLTransducerGetName
 }
 
 
-IusTransducerShape iusHLTransducerShape
-(
-    iut_t transducer
-)
+IusTransducerShape iusHLGetTransducerShape
+    (
+        iut_t transducer
+    )
 {
     return transducer->shape;
 }
@@ -319,11 +313,30 @@ IusBaseTransducerElement * iusTransducerGetElement
     return NULL;
 }
 
+IUS_BOOL almostEqual(float a, float b)
+{
+    return fabs(a - b) <= FLT_EPSILON;
+}
+
+
+//IUS_BOOL equalFloat(float a, float b)
+//{
+//    typedef union  {
+//        float f;
+//        int32_t i;
+//    } floatPun;
+//
+//    floatPun aa,bb;
+//    aa.f = a;
+//    bb.f = b;
+//    return aa.i == bb.i;
+//}
+
 IUS_BOOL iusCompare3DPosition(Ius3DPosition *reference,Ius3DPosition *actual)
 {
-    if (reference->x == actual->x &&
-        reference->y == actual->y &&
-        reference->z == actual->z )
+    if (IUS_EQUAL_FLOAT(reference->x, actual->x) &&
+        IUS_EQUAL_FLOAT(reference->y, actual->y) &&
+        IUS_EQUAL_FLOAT(reference->z, actual->z) )
         return IUS_TRUE;
     else
         return IUS_FALSE;
@@ -331,9 +344,9 @@ IUS_BOOL iusCompare3DPosition(Ius3DPosition *reference,Ius3DPosition *actual)
 
 IUS_BOOL iusCompare3DSize(Ius3DSize *reference,Ius3DSize *actual)
 {
-    if (reference->sx == actual->sx &&
-        reference->sy == actual->sy &&
-        reference->sz == actual->sz )
+    if (IUS_EQUAL_FLOAT(reference->sx, actual->sx) &&
+        IUS_EQUAL_FLOAT(reference->sy, actual->sy) &&
+        IUS_EQUAL_FLOAT(reference->sz, actual->sz) )
         return IUS_TRUE;
     else
         return IUS_FALSE;
@@ -342,8 +355,8 @@ IUS_BOOL iusCompare3DSize(Ius3DSize *reference,Ius3DSize *actual)
 
 IUS_BOOL iusCompare3DAngle(Ius3DAngle *reference,Ius3DAngle *actual)
 {
-    if (reference->phi == actual->phi &&
-        reference->theta == actual->theta )
+    if (IUS_EQUAL_FLOAT(reference->phi, actual->phi) &&
+        IUS_EQUAL_FLOAT(reference->theta, actual->theta) )
         return IUS_TRUE;
     else
         return IUS_FALSE;
@@ -355,7 +368,7 @@ IUS_BOOL iusCompare3DElement
     Ius3DTransducerElement *actual
 )
 {
-    if(iusCompare3DPosition(&reference->position,&actual->position) != IUS_TRUE)
+    if(iusCompare3DPosition(&(reference->position),&(actual->position)) != IUS_TRUE)
         return IUS_FALSE;
     if(iusCompare3DSize(&reference->size,&actual->size) != IUS_TRUE)
         return IUS_FALSE;
@@ -368,8 +381,8 @@ IUS_BOOL iusCompare3DElement
 
 IUS_BOOL iusCompare2DPosition(Ius2DPosition *reference,Ius2DPosition *actual)
 {
-    if (reference->x == actual->x &&
-        reference->z == actual->z )
+    if (IUS_EQUAL_FLOAT(reference->x, actual->x) &&
+        IUS_EQUAL_FLOAT(reference->z, actual->z) )
         return IUS_TRUE;
     else
         return IUS_FALSE;
@@ -377,8 +390,8 @@ IUS_BOOL iusCompare2DPosition(Ius2DPosition *reference,Ius2DPosition *actual)
 
 IUS_BOOL iusCompare2DSize(Ius2DSize *reference,Ius2DSize *actual)
 {
-    if (reference->sx == actual->sx &&
-        reference->sz == actual->sz )
+    if (IUS_EQUAL_FLOAT(reference->sx, actual->sx) &&
+        IUS_EQUAL_FLOAT(reference->sz, actual->sz) )
         return IUS_TRUE;
     else
         return IUS_FALSE;
@@ -426,4 +439,49 @@ IusTransducerElementType iusHLTransducerGetElementType
 )
 {
     return baseElement->type;
+}
+
+IUS_BOOL iusHLCompare3DTransducer(Ius3DTransducer *pReference, Ius3DTransducer *pActual)
+{
+    IUS_BOOL isEqual=IUS_TRUE;
+    for (int i = 0; i < pReference->baseTransducer.numElements ; ++i)
+    {
+        IUS_BOOL isEqual = iusCompare3DElement(&pReference->pElements[i], &pActual->pElements[i]);
+        if( isEqual == IUS_FALSE ) break;
+    }
+    return isEqual;
+}
+
+IUS_BOOL iusHLCompare2DTransducer(Ius2DTransducer *pReference, Ius2DTransducer *pActual)
+{
+    IUS_BOOL isEqual=IUS_TRUE;
+    for (int i = 0; i < pReference->baseTransducer.numElements ; ++i)
+    {
+        IUS_BOOL isEqual = iusCompare2DElement(&pReference->pElements[i], &pActual->pElements[i]);
+        if( isEqual == IUS_FALSE ) break;
+    }
+    return isEqual;
+}
+
+IUS_BOOL iusHLCompareTransducer
+    (
+        iut_t reference,
+        iut_t actual
+    )
+{
+    IUS_BOOL isEqual = IUS_FALSE;
+    if( reference == actual ) return IUS_TRUE;
+    if( reference == NULL || actual == NULL )
+        return IUS_FALSE;
+
+    if( reference->type != actual->type ) return IUS_FALSE;
+    if( reference->shape != actual->shape ) return IUS_FALSE;
+    if( IUS_EQUAL_FLOAT(reference->centerFrequency, actual->centerFrequency) == IUS_FALSE ) return IUS_FALSE;
+    if( reference->numElements != actual->numElements)  return IUS_FALSE;
+    if( strcmp(reference->pTransducerName, actual->pTransducerName) != 0)  return IUS_FALSE;
+    if( reference->type == IUS_3D_TRANSDUCER  )
+        return iusHLCompare3DTransducer((Ius3DTransducer *)reference, (Ius3DTransducer *)actual);
+    if( reference->type == IUS_2D_TRANSDUCER  )
+        return iusHLCompare2DTransducer((Ius2DTransducer *)reference, (Ius2DTransducer *)actual);
+    return isEqual;
 }

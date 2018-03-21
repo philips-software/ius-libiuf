@@ -1,8 +1,12 @@
 include_directories(include)
 
 add_executable(unitTests
-        src/uniTests.c
-        )
+        src/unitTests.c
+        src/testNode.c
+        src/testTransducer.c
+        src/util.c
+        src/testMisc.c
+        src/testInputFile.c)
 
 target_link_libraries(unitTests
         ius
