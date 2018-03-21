@@ -122,7 +122,6 @@ TEST(Inputfile, testInputFileHeader)
     equal = iusHLCompareHeader(iuhReferenceHeader, iuhActualHeader);
     TEST_ASSERT(equal == IUS_TRUE);
 
-
 }
 
 

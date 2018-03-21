@@ -157,6 +157,12 @@ enum IusTransducerShape
     IUS_SPHERE
 };
 
+#define TRANSDUCER_SHAPE_LINE "LINE"
+#define TRANSDUCER_SHAPE_CIRCLE "CIRCLE"
+#define TRANSDUCER_SHAPE_PLANE "PLANE"
+#define TRANSDUCER_SHAPE_CYLINDER "CYLINDER"
+#define TRANSDUCER_SHAPE_SPHERE "SPHERE"
+
 typedef enum IusTransducerShape IusTransducerShape;
 
 /** \brief 3D Transducer element type: 3D or 2D */

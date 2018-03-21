@@ -21,6 +21,7 @@ static void RunAllTests(void)
     RUN_TEST_GROUP(Misc);
     RUN_TEST_GROUP(InputfileTransducer);
     RUN_TEST_GROUP(InputfileNode);
+    RUN_TEST_GROUP(Inputfile);
     RUN_TEST_GROUP(Misc);
 }
 

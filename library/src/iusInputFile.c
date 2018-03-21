@@ -31,34 +31,37 @@ IusInputFileInstance *iusInputFileCreate
     const char *pFullFileName
 )
 {
-  hsize_t chunkDims[4];
-  hsize_t rfDataDims[4];
-  hid_t space;
-  hid_t dataset;
-  
-  IusInputFileInstance *pFileInst;
+    hsize_t chunkDims[4];
+    hsize_t rfDataDims[4];
+    hid_t space;
+    hid_t dataset;
 
-  if (pFullFileName == NULL)
-  {
+    IusInputFileInstance *pFileInst;
+
+    if (pFullFileName == NULL)
+    {
     fprintf( stderr, "iusInputFileCreate: Input arguments can not be NULL \n");
     return NULL;
-  }
+    }
 
-  /*------------------------------------------------------------------------*/
-  /* alloc instance ; using calloc to clear all state.                      */
-  /*------------------------------------------------------------------------*/
-  pFileInst = (IusInputFileInstance *)calloc( 1, sizeof(IusInputFileInstance) );
-  if( pFileInst == NULL )
-  {
+    /*------------------------------------------------------------------------*/
+    /* alloc instance ; using calloc to clear all state.                      */
+    /*------------------------------------------------------------------------*/
+    pFileInst = (IusInputFileInstance *)calloc( 1, sizeof(IusInputFileInstance) );
+    if( pFileInst == NULL )
+    {
     fprintf( stderr, "iusInputFileCreate: calloc of instance failed\n" );
     return NULL;
-  }
+    }
 
-  pFileInst->handle = H5Fcreate( pFullFileName, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT );
-  if ( pFileInst->handle < 0 )
-  {
-    return NULL;
-  }
+
+    pFileInst->handle = H5Fcreate( pFullFileName, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT );
+    if ( pFileInst->handle < 0 )
+    {
+        return NULL;
+    }
+
+
 
 #ifdef old
   chunkDims[0] = pInst->pTransducer->numElements;
@@ -420,19 +423,13 @@ int iusInputFileClose
     int success=0;
     IUS_ASSERT_MEMORY(pFileInst);
 
-    if (pFileInst->fileChunkConfig)
-    {
-        success = H5Pclose(pFileInst->fileChunkConfig);
-    }
-
-    if( pFileInst->rfDataset != 0 )
-    {
+    if( pFileInst->fileChunkConfig )
+        success |= H5Pclose(pFileInst->fileChunkConfig);
+    if( pFileInst->rfDataset )
         success |= H5Dclose(pFileInst->rfDataset);
-    }
-
     /* Terminate access to the file. */
-    success |= H5Fclose(pFileInst->handle);
-
+    if( pFileInst->handle )
+        success |= H5Fclose(pFileInst->handle);
     if (success == 0)
     {
       free(pFileInst);

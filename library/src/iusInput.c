@@ -595,15 +595,56 @@ static herr_t LF_readTimeGainControls
 
 
 int iusWriteExperiment(IusExperiment *pExperiment, hid_t handle, int verbose) {
-    hid_t group_id = H5Gcreate(handle, "/Experiment", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
     herr_t status = 0;
-
     /* write the /Experiment data */
     status |= iusHdf5WriteFloat( handle , "/Experiment/speedOfSound",    &(pExperiment->speedOfSound), 1,   verbose );
     status |= iusHdf5WriteInt( handle , "/Experiment/date", &(pExperiment->date), 1,   verbose );
     status |= iusHdf5WriteString( handle , "/Experiment/description", pExperiment->pDescription, 1,   verbose );
-    /* Close the group. */
-    status |= H5Gclose(group_id );
+    return status;
+}
+
+int iusWrite3DTransducer(Ius3DTransducer *pTransducer, hid_t group_id, int verbose)
+{
+    return IUS_E_OK;
+}
+
+int iusWrite2DTransducer(Ius2DTransducer *pTransducer,  hid_t group_id, int verbose)
+{
+    return IUS_E_OK;
+}
+
+herr_t iusWriteShape(hid_t handle, char *pVariableString, IusTransducerShape shape, int verbose)
+{
+    herr_t status=0;
+    char *pShape="Unknownshape";
+    switch(shape){
+        case IUS_LINE:
+            pShape=TRANSDUCER_SHAPE_LINE;
+            break;
+        case IUS_CIRCLE:
+            pShape=TRANSDUCER_SHAPE_CIRCLE;
+            break;
+        case IUS_PLANE:
+            pShape=TRANSDUCER_SHAPE_PLANE;
+            break;
+        case IUS_CYLINDER:
+            pShape=TRANSDUCER_SHAPE_CYLINDER;
+            break;
+        case IUS_SPHERE:
+            pShape=TRANSDUCER_SHAPE_SPHERE;
+            break;
+    }
+    status |= iusHdf5WriteString( handle,pVariableString, pShape,1,verbose);
+    return status;
+}
+
+int iusWriteBaseTransducer(IusTransducer *pTransducer, hid_t handle, int verbose)
+{
+    herr_t status=0;
+    status |= iusWriteShape(handle,"/Transducer/shape", pTransducer->shape,verbose);
+    status |= iusHdf5WriteString( handle,"/Transducer/transducerName", pTransducer->pTransducerName,1,verbose);
+    status |= iusHdf5WriteFloat( handle, "/Transducer/centerFrequency", &(pTransducer->centerFrequency),1,verbose);
+    status |= iusHdf5WriteInt( handle, "/Transducer/numElements", &(pTransducer->numElements),1,verbose);
     return status;
 }
 
@@ -611,6 +652,28 @@ int iusWriteTransducer(IusTransducer *pTransducer, hid_t handle, int verbose) {
     /* write the /Transducer data */
     herr_t        status;
     hsize_t dims[1] = {1};
+
+
+    status = iusWriteBaseTransducer(pTransducer,handle,verbose);
+    if( status < 0 )
+    {
+        return status;
+    }
+
+    if( pTransducer->type == IUS_3D_TRANSDUCER )
+    {
+        Ius3DTransducer *p3DTransducer = (Ius3DTransducer *) pTransducer;
+        return iusWrite3DTransducer(p3DTransducer,handle,verbose);
+    }
+
+    if( pTransducer->type == IUS_2D_TRANSDUCER )
+    {
+        Ius2DTransducer *p2DTransducer = (Ius2DTransducer *) pTransducer;
+        return iusWrite2DTransducer(p2DTransducer,handle,verbose);
+    }
+    return status;
+
+
 //    int i; //iterator
 //
 //    hid_t angle_tid;    // File datatype identifier for IusAngle
@@ -714,7 +777,6 @@ int iusWriteTransducer(IusTransducer *pTransducer, hid_t handle, int verbose) {
 //
 //    /* Close the group. */
 //    status = H5Gclose( group_id );
-    return status;
 }
 
 
@@ -734,14 +796,57 @@ IusExperiment *iusReadExperiment(hid_t handle, int verbose) {
     return experiment;
 }
 
+herr_t iusReadShape(hid_t handle, char *pVariableString, IusTransducerShape *pShape, int verbose)
+{
+    herr_t status = 0;
+    char *pShapeString;
+    status |= iusHdf5ReadString( handle, pVariableString,  &pShapeString, verbose );
+    if( status < 0 )
+        return status;
+
+    if( strcmp(pShapeString,TRANSDUCER_SHAPE_SPHERE) == 0 )
+    {
+        *pShape = IUS_SPHERE;
+    }
+
+    if( strcmp(pShapeString,TRANSDUCER_SHAPE_LINE) == 0 )
+    {
+        *pShape = IUS_LINE;
+    }
+
+    if( strcmp(pShapeString,TRANSDUCER_SHAPE_CYLINDER) == 0 )
+    {
+        *pShape = IUS_CYLINDER;
+    }
+
+    if( strcmp(pShapeString,TRANSDUCER_SHAPE_PLANE) == 0 )
+    {
+        *pShape = IUS_PLANE;
+    }
+
+    if( strcmp(pShapeString,TRANSDUCER_SHAPE_CIRCLE) == 0 )
+    {
+        *pShape = IUS_CIRCLE;
+    }
+    return status;
+}
 
 IusTransducer *iusReadTransducer(hid_t handle, int verbose) {
     int status = 0;
+    float centerFrequency;
+    int numElements;
+    char *pTransducerName;
+    IusTransducerShape shape;
+
     IusTransducer * transducer;
+    status |= iusReadShape( handle, "/Transducer/shape",  &(shape), verbose );
+    status |= iusHdf5ReadString( handle, "/Transducer/transducerName",  &(pTransducerName), verbose );
+    status |= iusHdf5ReadFloat( handle,  "/Transducer/centerFrequency", &(centerFrequency), verbose );
+    status |= iusHdf5ReadInt( handle,    "/Transducer/numElements",     &(numElements),     verbose );
 
     if( status < 0 )
         return NULL;
-    transducer = iusHLCreateTransducer(NULL, IUS_LINE, 0, 0);
+    transducer = iusHLCreateTransducer(pTransducerName, shape, centerFrequency, numElements);
     return transducer;
 }
 
@@ -1064,8 +1169,6 @@ int iusInputWrite
     int verbose
 )
 {
-    herr_t        status;
-    hsize_t dims[1] = {1};
 #if old
     Ius3DPosition * pPositionArray;
     IusAngle *    pAngleArray;
@@ -1338,6 +1441,8 @@ int iusInputWrite
   
     H5Gclose( group_id );
 #endif // old
+    herr_t        status=0;
+    hsize_t dims[1] = {1};
     if ( handle == 0 || pInst == NULL )
     {
         fprintf( stderr, "iusInputWrite: Input arguments can not be NULL \n");
@@ -1345,17 +1450,21 @@ int iusInputWrite
     }
 
     // Make dataset for Node
-    iusWriteNode(&pInst->iusNode, handle, verbose);
+    status |=iusWriteNode(&pInst->iusNode, handle, verbose);
 
     // Make dataset for input type
-    H5LTmake_dataset_int( handle,    "/IusVersion", 1, dims, &(pInst->IusVersion));
-    H5LTmake_dataset_int( handle,    "/numFrames",  1, dims, &(pInst->numFrames) );
+    status |=H5LTmake_dataset_int( handle,    "/IusVersion", 1, dims, &(pInst->IusVersion));
+    status |=H5LTmake_dataset_int( handle,    "/numFrames",  1, dims, &(pInst->numFrames) );
 
     // Make dataset for Experiment
-    iusWriteExperiment(pInst->pExperiment, handle, verbose);
+    hid_t group_id = H5Gcreate(handle, "/Experiment", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+    status |= iusWriteExperiment(pInst->pExperiment, handle, verbose);
+    status |= H5Gclose(group_id );
 
     // Make dataset for Transducer
-    iusWriteTransducer(pInst->pTransducer, handle, verbose);
+    group_id = H5Gcreate(handle, "/Transducer", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+    iusWriteTransducer(pInst->pTransducer, group_id, verbose);
+    status |= H5Gclose(group_id );
 
     return 0;
 }

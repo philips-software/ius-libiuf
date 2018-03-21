@@ -313,24 +313,6 @@ IusBaseTransducerElement * iusTransducerGetElement
     return NULL;
 }
 
-IUS_BOOL almostEqual(float a, float b)
-{
-    return fabs(a - b) <= FLT_EPSILON;
-}
-
-
-//IUS_BOOL equalFloat(float a, float b)
-//{
-//    typedef union  {
-//        float f;
-//        int32_t i;
-//    } floatPun;
-//
-//    floatPun aa,bb;
-//    aa.f = a;
-//    bb.f = b;
-//    return aa.i == bb.i;
-//}
 
 IUS_BOOL iusCompare3DPosition(Ius3DPosition *reference,Ius3DPosition *actual)
 {
