@@ -121,7 +121,6 @@ TEST(Inputfile, testInputFileHeader)
     // validate / compare reference with actual header
     equal = iusHLCompareHeader(iuhReferenceHeader, iuhActualHeader);
     TEST_ASSERT(equal == IUS_TRUE);
-
 }
 
 

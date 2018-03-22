@@ -151,10 +151,15 @@ TEST(InputfileTransducer,  testIusHLCompareTransducer)
     char *pTransducerName = "created in testIusHLCompareTransducer";
     char *pDifferentTransducerName = "different transducer, created in testIusHLCompareTransducer";
     float centerFrequency = 8000000;   /**< operating frequency of the transducer */
+    float x, y, z;
+    float sx, sy, sz;
+    float theta, phi;
     int numElements = 1;          /**< number of transducer Elements in the probe */
     IusTransducerShape shape = IUS_PLANE;
     iut_t transducer, transducerDuplicate, differentTransducer;
     IUS_BOOL isEqual;
+
+
 
     transducer = iusHLCreateTransducer(pTransducerName, IUS_PLANE, centerFrequency, numElements);
     TEST_ASSERT(transducer != IUT_INVALID);
@@ -197,6 +202,24 @@ TEST(InputfileTransducer,  testIusHLCompareTransducer)
     differentTransducer = iusHLCreateTransducer(pDifferentTransducerName, IUS_PLANE, centerFrequency, numElements);
     isEqual = iusHLCompareTransducer(transducer, differentTransducer);
     TEST_ASSERT(isEqual == IUS_FALSE);
+    iusHLDeleteTransducer(differentTransducer);
+
+    x = y = z = 0.0f;
+    theta = phi = 0.0f;
+    sx = 0.150 / 1000.0; // meter
+    sy = 0.0f;
+    sz = 6.0 / 1000.0;
+    iu3dte_t _3dElement = iusUtilCreate3DElement(x, y, z, sx, sy, sz, theta, phi);
+
+    differentTransducer = iusHLCreateTransducer(pTransducerName, IUS_PLANE, centerFrequency, numElements);
+    isEqual = iusHLCompareTransducer(transducer, differentTransducer);
+    TEST_ASSERT(isEqual == IUS_TRUE);
+
+    int status = iusTransducerSetElement(differentTransducer, 0, _3dElement);
+    TEST_ASSERT(status == IUS_E_OK);
+    isEqual = iusHLCompareTransducer(transducer, differentTransducer);
+    TEST_ASSERT(isEqual == IUS_FALSE);
+
     iusHLDeleteTransducer(differentTransducer);
 }
 

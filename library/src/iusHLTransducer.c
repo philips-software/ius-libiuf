@@ -428,7 +428,7 @@ IUS_BOOL iusHLCompare3DTransducer(Ius3DTransducer *pReference, Ius3DTransducer *
     IUS_BOOL isEqual=IUS_TRUE;
     for (int i = 0; i < pReference->baseTransducer.numElements ; ++i)
     {
-        IUS_BOOL isEqual = iusCompare3DElement(&pReference->pElements[i], &pActual->pElements[i]);
+        isEqual = iusCompare3DElement(&pReference->pElements[i], &pActual->pElements[i]);
         if( isEqual == IUS_FALSE ) break;
     }
     return isEqual;
