@@ -40,13 +40,42 @@ herr_t iusHdf5ReadFloat
 //------------------------------------------------------------------------------
 // 
 //------------------------------------------------------------------------------
-herr_t iusHdf5ReadInt
+herr_t iusHdf5ReadShort
 (
     hid_t        handle,
     const char * pVariableString,
-    int *        pValue,
+    short *      pValue,
     int          verbose
 )
+{
+    herr_t status = -1;
+
+    IUS_ASSERT_MEMORY( pVariableString && pValue );
+
+    status = H5LTread_dataset_short( handle, pVariableString, pValue );
+    if ( status < 0 )
+    {
+        fprintf( stderr, "H5LTread_dataset_short %s failed\n", pVariableString );
+        return status;
+    }
+    if ( verbose )
+    {
+        fprintf( stdout, "read: %s %d\n", pVariableString, *pValue );
+    }
+
+    return status;
+}
+
+//------------------------------------------------------------------------------
+// 
+//------------------------------------------------------------------------------
+herr_t iusHdf5ReadInt
+    (
+        hid_t        handle,
+        const char * pVariableString,
+        int *        pValue,
+        int          verbose
+    )
 {
     herr_t status = -1;
 

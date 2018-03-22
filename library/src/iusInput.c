@@ -21,6 +21,7 @@
 #include <include/ius.h>
 #include <include/iusHLExperiment.h>
 #include <include/iusHLInput.h>
+#include <assert.h>
 
 //------------------------------------------------------------------------------
 //
@@ -733,38 +734,32 @@ int iusWrite2DTransducer(Ius2DTransducer *pTransducer,  hid_t group_id, int verb
     return IUS_E_OK;
 }
 
-herr_t iusWriteShape(hid_t handle, char *pVariableString, IusTransducerShape shape, int verbose)
+herr_t iusWriteShape(hid_t group_id, char *pVariableString, IusTransducerShape shape, int verbose)
 {
     herr_t status=0;
-    char *pShape="Unknownshape";
-    switch(shape){
-        case IUS_LINE:
-            pShape=TRANSDUCER_SHAPE_LINE;
-            break;
-        case IUS_CIRCLE:
-            pShape=TRANSDUCER_SHAPE_CIRCLE;
-            break;
-        case IUS_PLANE:
-            pShape=TRANSDUCER_SHAPE_PLANE;
-            break;
-        case IUS_CYLINDER:
-            pShape=TRANSDUCER_SHAPE_CYLINDER;
-            break;
-        case IUS_SPHERE:
-            pShape=TRANSDUCER_SHAPE_SPHERE;
-            break;
-    }
-    status |= iusHdf5WriteString( handle,pVariableString, pShape,1,verbose);
+    hsize_t dims[1] = {1};
+    printf("%s:%d\n", __FILE__,__LINE__);
+
+    /* Based on a native signed short */
+    hid_t hdf_shapeType = H5Tcreate( H5T_ENUM, sizeof(short) );
+    short enumValue;
+    status |= H5Tenum_insert( hdf_shapeType, TRANSDUCER_SHAPE_LINE,     (enumValue=IUS_LINE,     &enumValue) );
+    status |= H5Tenum_insert( hdf_shapeType, TRANSDUCER_SHAPE_CIRCLE,   (enumValue=IUS_CIRCLE,   &enumValue) );
+    status |= H5Tenum_insert( hdf_shapeType, TRANSDUCER_SHAPE_PLANE,    (enumValue=IUS_PLANE,    &enumValue) );
+    status |= H5Tenum_insert( hdf_shapeType, TRANSDUCER_SHAPE_CYLINDER, (enumValue=IUS_CYLINDER, &enumValue) );
+    status |= H5Tenum_insert( hdf_shapeType, TRANSDUCER_SHAPE_SPHERE,   (enumValue=IUS_SPHERE,   &enumValue) );
+    enumValue = shape;
+    status |= H5LTmake_dataset( group_id, pVariableString, 1, dims, hdf_shapeType, &enumValue );
     return status;
 }
 
-int iusWriteBaseTransducer(IusTransducer *pTransducer, hid_t handle, int verbose)
+int iusWriteBaseTransducer(IusTransducer *pTransducer, hid_t groupd_id, int verbose)
 {
     herr_t status=0;
-    status |= iusWriteShape(handle,"/Transducer/shape", pTransducer->shape,verbose);
-    status |= iusHdf5WriteString( handle,"/Transducer/transducerName", pTransducer->pTransducerName,1,verbose);
-    status |= iusHdf5WriteFloat( handle, "/Transducer/centerFrequency", &(pTransducer->centerFrequency),1,verbose);
-    status |= iusHdf5WriteInt( handle, "/Transducer/numElements", &(pTransducer->numElements),1,verbose);
+    status |= iusWriteShape(groupd_id,"/Transducer/shape", pTransducer->shape,verbose);
+    status |= iusHdf5WriteString( groupd_id,"/Transducer/transducerName", pTransducer->pTransducerName,1,verbose);
+    status |= iusHdf5WriteFloat( groupd_id, "/Transducer/centerFrequency", &(pTransducer->centerFrequency),1,verbose);
+    status |= iusHdf5WriteInt( groupd_id, "/Transducer/numElements", &(pTransducer->numElements),1,verbose);
     return status;
 }
 
@@ -923,35 +918,15 @@ IusExperiment *iusReadExperiment(hid_t handle, int verbose) {
 herr_t iusReadShape(hid_t handle, char *pVariableString, IusTransducerShape *pShape, int verbose)
 {
     herr_t status = 0;
-    char *pShapeString;
-    status |= iusHdf5ReadString( handle, pVariableString,  &pShapeString, verbose );
-    if( status < 0 )
-        return status;
+    hid_t hdf_shapeType = H5Tcreate( H5T_ENUM, sizeof(short) );
+    short enumValue;
+    status |= H5Tenum_insert( hdf_shapeType, TRANSDUCER_SHAPE_LINE,     (enumValue=IUS_LINE,     &enumValue) );
+    status |= H5Tenum_insert( hdf_shapeType, TRANSDUCER_SHAPE_CIRCLE,   (enumValue=IUS_CIRCLE,   &enumValue) );
+    status |= H5Tenum_insert( hdf_shapeType, TRANSDUCER_SHAPE_PLANE,    (enumValue=IUS_PLANE,    &enumValue) );
+    status |= H5Tenum_insert( hdf_shapeType, TRANSDUCER_SHAPE_CYLINDER, (enumValue=IUS_CYLINDER, &enumValue) );
+    status |= H5Tenum_insert( hdf_shapeType, TRANSDUCER_SHAPE_SPHERE,   (enumValue=IUS_SPHERE,   &enumValue) );
+    status |= H5LTread_dataset( handle, pVariableString , hdf_shapeType, pShape );
 
-    if( strcmp(pShapeString,TRANSDUCER_SHAPE_SPHERE) == 0 )
-    {
-        *pShape = IUS_SPHERE;
-    }
-
-    if( strcmp(pShapeString,TRANSDUCER_SHAPE_LINE) == 0 )
-    {
-        *pShape = IUS_LINE;
-    }
-
-    if( strcmp(pShapeString,TRANSDUCER_SHAPE_CYLINDER) == 0 )
-    {
-        *pShape = IUS_CYLINDER;
-    }
-
-    if( strcmp(pShapeString,TRANSDUCER_SHAPE_PLANE) == 0 )
-    {
-        *pShape = IUS_PLANE;
-    }
-
-    if( strcmp(pShapeString,TRANSDUCER_SHAPE_CIRCLE) == 0 )
-    {
-        *pShape = IUS_CIRCLE;
-    }
     return status;
 }
 

@@ -40,6 +40,30 @@ herr_t iusHdf5ReadFloat
 );
 
 /** 
+ * \brief Reads one or an array of shorts from file stored in the variable
+ * pVariableString
+ *
+ * In-place:   n.a.
+ * \pre         Memory is allocated for pValue, the Hdf5 file has been opened
+ * \post        pValue contains the int(s)
+ * \param[in]   handle          : the file or group handle containing the
+ *                                variable to be read
+ * \param[in]   pVariableString : the name of the variable to be read
+ * \param[out]  pValue          : the short value or array that is read from file
+ * \param[in]   verbose         : (0/1) print file information to stdout
+ * \return      the result of H5LTread_dataset_float()
+ */
+herr_t iusHdf5ReadShort
+(
+    hid_t        handle,
+    const char * pVariableString,
+    short *        pValue,
+    int          verbose
+);
+
+
+
+/** 
  * \brief Reads one or an array of ints from file stored in the variable
  * pVariableString
  *
@@ -54,12 +78,13 @@ herr_t iusHdf5ReadFloat
  * \return      the result of H5LTread_dataset_float()
  */
 herr_t iusHdf5ReadInt
-(
-    hid_t        handle,
-    const char * pVariableString,
-    int *        pValue,
-    int          verbose
-);
+    (
+        hid_t        handle,
+        const char * pVariableString,
+        int *        pValue,
+        int          verbose
+    );
+
 
 /** 
  * \brief Reads one or an array of longs from file stored in the variable
