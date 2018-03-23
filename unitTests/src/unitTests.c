@@ -27,6 +27,6 @@ static void RunAllTests(void)
 
 int main(int argc, const char * argv[])
 {
-//    iusHLDiagDisable();
+    iusHLDiagDisable();
     return UnityMain(argc, argv, RunAllTests);
 }

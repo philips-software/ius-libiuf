@@ -42,7 +42,7 @@ typedef struct
 {
     IusBaseTransducerElement base;
     Ius2DPosition position; /**< 3D Location of the element */
-    float         phi;      /**< orientation of the elements */
+    float         theta;      /**< orientation of the elements */
     Ius2DSize     size;     /**< size of the element */
 } Ius2DTransducerElement;
 

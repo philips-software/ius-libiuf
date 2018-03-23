@@ -49,7 +49,7 @@ int iusHLDeleteTransducer
 
 int iusTransducerSetElement
     (
-        IusTransducer *transducer,
+        IusTransducer *pTransducer,
         int elementIndex,
         void *transducerElement
     );

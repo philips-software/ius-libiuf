@@ -729,17 +729,132 @@ int iusWrite3DTransducer(Ius3DTransducer *pTransducer, hid_t subgroup_id, int ve
     return status;
 }
 
-int iusWrite2DTransducer(Ius2DTransducer *pTransducer,  hid_t group_id, int verbose)
+
+
+int iusWrite2DTransducerElementPositions(Ius2DTransducer *pTransducer, hid_t subgroup_id, int verbose)
 {
-    return IUS_E_OK;
+    herr_t        status=0;
+    hid_t position_tid; // File datatype identifier for IusPosition
+    hid_t dataset, space, dataChunkConfig;
+    hsize_t dims[1] = {1};
+    Ius2DPosition * pPositionArray;
+    int numElements = pTransducer->baseTransducer.numElements;
+    int i; //iterator
+    hid_t propList;     // Property list
+
+    /* write the /Transducer/Elements/ positions, angles and sizes are compound types */
+    dims[0] = numElements;
+
+    //Positions
+    space = H5Screate_simple( 1, dims, NULL );
+    // step a:  create H5 dataset
+    position_tid = H5Tcreate( H5T_COMPOUND, sizeof(Ius2DPosition) );
+    status |= H5Tinsert( position_tid, "x", HOFFSET(Ius2DPosition, x), H5T_NATIVE_FLOAT );
+    status |= H5Tinsert( position_tid, "z", HOFFSET(Ius2DPosition, z), H5T_NATIVE_FLOAT );
+    dataset = H5Dcreate( subgroup_id,    "/Transducer/Elements/positions", position_tid, space, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT );
+
+    // step b:  create array of positions
+    pPositionArray = (Ius2DPosition *)calloc( numElements, sizeof(Ius2DPosition) ); //three dimensions for position
+    for ( i = 0; i < numElements; i++ )
+    {
+        pPositionArray[i] = pTransducer->pElements[i].position;
+    }
+
+    // step c: write the array to the dataset
+    status |= H5Dwrite( dataset, position_tid, H5S_ALL, H5S_ALL, H5P_DEFAULT, pPositionArray );
+
+    free( pPositionArray );
+
+    // step d: release resources
+    status |= H5Tclose( position_tid );
+    status |= H5Sclose( space );
+    status |= H5Dclose( dataset );
+    return status;
+}
+
+int iusWrite2DTransducerElementSizes(Ius2DTransducer *pTransducer, hid_t subgroup_id, int verbose)
+{
+    herr_t        status=0;
+    hid_t size_tid; // File datatype identifier for IusPosition
+    hid_t dataset, space, dataChunkConfig;
+    hsize_t dims[1] = {1};
+    Ius2DSize * pSizeArray;
+    int numElements = pTransducer->baseTransducer.numElements;
+    int i; //iterator
+
+    //
+    space = H5Screate_simple(1, dims, NULL);
+
+    // step a:  create H5 dataset
+    size_tid = H5Tcreate(H5T_COMPOUND, sizeof(Ius2DSize));
+    status |= H5Tinsert( size_tid, "sx", HOFFSET(Ius2DSize, sx), H5T_NATIVE_FLOAT );
+    status |= H5Tinsert( size_tid, "sz", HOFFSET(Ius2DSize, sz), H5T_NATIVE_FLOAT );
+    dataset = H5Dcreate( subgroup_id, "/Transducer/Elements/sizes",
+                         size_tid, space, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+
+    // step b:  create array of sizes
+    pSizeArray = (Ius2DSize *)calloc( numElements, sizeof(Ius2DSize) ); //three dimensions for size
+    for ( i = 0; i < numElements; i++ )
+    {
+        pSizeArray[i] = pTransducer->pElements[i].size;
+    }
+    // step c: write the array to the dataset
+    status |= H5Dwrite( dataset, size_tid, H5S_ALL, H5S_ALL, H5P_DEFAULT, pSizeArray );
+
+    // step d: release resources
+    free( pSizeArray );
+    status |= H5Tclose( size_tid );
+    status |= H5Sclose( space );
+    status |= H5Dclose( dataset );
+    return status;
+}
+
+int iusWrite2DTransducerElementAngles(Ius2DTransducer *pTransducer, hid_t subgroup_id, int verbose)
+{
+    herr_t        status=0;
+    hid_t angle_tid; // File datatype identifier for IusAngle
+    hid_t dataset, space;
+    float * pAngleArray;
+    int numElements = pTransducer->baseTransducer.numElements;
+    hsize_t dims[1] = {numElements};
+    int i; //iterator
+
+    // Angles
+    space = H5Screate_simple( 1, dims, NULL );
+    // step a:  create H5 dataset
+    dataset = H5Dcreate( subgroup_id, "/Transducer/Elements/theta", H5T_NATIVE_FLOAT, space, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT );
+
+    // step b:  create array of angles
+    pAngleArray = (float *)calloc( numElements, sizeof(float) ); //two dimensions for angle
+    for (i = 0; i < numElements; i++)
+    {
+        pAngleArray[i] = pTransducer->pElements[i].theta;
+    }
+
+    // step c: write the array to the dataset
+    status |= H5Dwrite( dataset, H5T_NATIVE_FLOAT, H5S_ALL, H5S_ALL, H5P_DEFAULT, pAngleArray );
+
+    free(pAngleArray);
+    // step d: release resources
+    status |= H5Tclose(angle_tid);
+    status |= H5Sclose(space);
+    status |= H5Dclose(dataset);
+    return status;
+}
+
+int iusWrite2DTransducer(Ius2DTransducer *pTransducer,  hid_t subgroup_id, int verbose)
+{
+    herr_t        status=0;
+    status |= iusWrite2DTransducerElementPositions(pTransducer,subgroup_id,verbose);
+    status |= iusWrite2DTransducerElementSizes(pTransducer,subgroup_id,verbose);
+    status |= iusWrite2DTransducerElementAngles(pTransducer,subgroup_id,verbose);
+    return status;
 }
 
 herr_t iusWriteShape(hid_t group_id, char *pVariableString, IusTransducerShape shape, int verbose)
 {
     herr_t status=0;
     hsize_t dims[1] = {1};
-    printf("%s:%d\n", __FILE__,__LINE__);
-
     /* Based on a native signed short */
     hid_t hdf_shapeType = H5Tcreate( H5T_ENUM, sizeof(short) );
     short enumValue;
@@ -1110,10 +1225,159 @@ int iusRead3DTransducer(Ius3DTransducer * pTransducer, hid_t handle, int verbose
     return status;
 }
 
+
+int iusRead2DTransducerElementPositions(Ius2DTransducer *pTransducer, hid_t handle, int verbose)
+{
+    int status = 0;
+    hsize_t       dims[1];              //NOTE: pElements assumed 1D array, extra length to prevent
+
+    hid_t dataset;
+    dataset = H5Dopen(handle, "/Transducer/Elements/positions", H5P_DEFAULT);
+    hid_t space = H5Dget_space(dataset);
+    hid_t position_tid;
+    Ius2DPosition * pPositionArray;
+    int numElements = pTransducer->baseTransducer.numElements;
+
+    int ndims = H5Sget_simple_extent_dims(space, dims, NULL);
+    if ( ndims != 1 )
+    {
+        fprintf( stderr, "iusRead2DTransducerElementPositions: Only 1D array of transducer elements supported \n" );
+        return -1;
+    }
+
+    pPositionArray = (Ius2DPosition *) calloc(numElements,sizeof(Ius2DPosition));
+    position_tid = H5Tcreate (H5T_COMPOUND, sizeof(Ius2DPosition));
+    H5Tinsert(position_tid, "x", HOFFSET(Ius2DPosition, x), H5T_NATIVE_FLOAT);
+    H5Tinsert(position_tid, "z", HOFFSET(Ius2DPosition, z), H5T_NATIVE_FLOAT);
+
+    // read positions
+    status = H5Dread(dataset, position_tid, H5S_ALL, H5S_ALL, H5P_DEFAULT,  pPositionArray);
+    if (status < 0)
+    {
+        fprintf(stderr, "iusRead3DTransducerElementPositions: Error reading data: H5Dread returned: %d\n", status);
+        return status;
+    }
+
+    // copy positions
+    for (int i = 0; i < dims[0]; i++ )
+    {
+        pTransducer->pElements[i].position = pPositionArray[i];
+    }
+
+    free(pPositionArray);
+    status |= H5Dclose(dataset);
+    status |= H5Sclose(space);
+    status |= H5Tclose(position_tid);
+    if (status < 0)
+    {
+        fprintf(stderr, "iusRead3DTransducerElementPositions: Error closing position dataset: %d\n", status);
+        return status;
+    }
+
+    return status;
+}
+
+int iusRead2DTransducerElementSizes(Ius2DTransducer *pTransducer, hid_t handle, int verbose)
+{
+    int status = 0;
+    hsize_t       dims[1];              //NOTE: pElements assumed 1D array, extra length to prevent
+
+    hid_t dataset;
+    dataset = H5Dopen(handle, "/Transducer/Elements/sizes", H5P_DEFAULT);
+    hid_t space = H5Dget_space(dataset);
+    hid_t size_tid;
+    Ius2DSize * pSizeArray;
+    int numElements = pTransducer->baseTransducer.numElements;
+
+    int ndims = H5Sget_simple_extent_dims(space, dims, NULL);
+    if ( ndims != 1 )
+    {
+        fprintf( stderr, "iusRead2DTransducerElementSizes: Only 1D array of transducer elements supported \n" );
+        return -1;
+    }
+
+    pSizeArray = (Ius2DSize *) calloc(numElements,sizeof(Ius2DSize));
+    size_tid = H5Tcreate (H5T_COMPOUND, sizeof(Ius2DSize));
+    H5Tinsert(size_tid, "sx", HOFFSET(Ius2DSize, sx), H5T_NATIVE_FLOAT);
+    H5Tinsert(size_tid, "sz", HOFFSET(Ius2DSize, sz), H5T_NATIVE_FLOAT);
+    status = H5Dread(dataset, size_tid, H5S_ALL, H5S_ALL, H5P_DEFAULT,  pSizeArray);
+    if (status < 0)
+    {
+        fprintf(stderr, "iusRead3DTransducerElementSizes: Error reading data: H5Dread returned: %d\n", status);
+        return status;
+    }
+
+    // copy positions
+    for (int i = 0; i < dims[0]; i++ )
+    {
+        pTransducer->pElements[i].size = pSizeArray[i];
+    }
+
+    free(pSizeArray);
+    status |= H5Dclose(dataset);
+    status |= H5Sclose(space);
+    status |= H5Tclose(size_tid);
+    if (status < 0)
+    {
+        fprintf(stderr, "iusRead3DTransducerElementSizes: Error closing size dataset: %d\n", status);
+        return status;
+    }
+
+    return status;
+}
+
+int iusRead2DTransducerElementAngles(Ius2DTransducer *pTransducer, hid_t handle, int verbose)
+{
+    int status = 0;
+
+    hid_t dataset;
+    dataset = H5Dopen(handle, "/Transducer/Elements/theta", H5P_DEFAULT);
+    hid_t space = H5Dget_space(dataset);
+
+    float * pAngleArray;
+    int numElements = pTransducer->baseTransducer.numElements;
+    hsize_t       dims[1];              //NOTE: pElements assumed 1D array, extra length to prevent
+
+    int ndims = H5Sget_simple_extent_dims(space, dims, NULL);
+    if ( ndims != 1 )
+    {
+        fprintf( stderr, "iusRead3DTransducerElementAngles: Only 1D array of transducer elements supported \n" );
+        return -1;
+    }
+
+    pAngleArray = (float *) calloc(numElements,sizeof(float));
+    status = H5Dread(dataset, H5T_NATIVE_FLOAT, H5S_ALL, H5S_ALL, H5P_DEFAULT,  pAngleArray);
+    if (status < 0)
+    {
+        fprintf(stderr, "iusRead3DTransducerElementAngles: Error reading data: H5Dread returned: %d\n", status);
+        return status;
+    }
+
+    // copy positions
+    for (int i = 0; i < dims[0]; i++ )
+    {
+        pTransducer->pElements[i].theta = pAngleArray[i];
+    }
+
+    free(pAngleArray);
+    status |= H5Dclose(dataset);
+    status |= H5Sclose(space);
+    if (status < 0)
+    {
+        fprintf(stderr, "iusRead3DTransducerElementAngles: Error closing angle dataset: %d\n", status);
+        return status;
+    }
+
+    return status;
+}
+
 int iusRead2DTransducer(Ius2DTransducer * pTransducer, hid_t handle, int verbose)
 {
     int status = 0;
-    return IUS_ERR_VALUE;
+    status |= iusRead2DTransducerElementPositions(pTransducer, handle, verbose);
+    status |= iusRead2DTransducerElementSizes(pTransducer, handle, verbose);
+    status |= iusRead2DTransducerElementAngles(pTransducer, handle, verbose);
+    return status;
 }
 
 IusTransducer *iusReadTransducer(hid_t handle, int verbose) {
@@ -1545,7 +1809,7 @@ int iusInputWrite
         // step a:  create H5 dataset
         angle_tid = H5Tcreate( H5T_COMPOUND, sizeof(IusAngle) );
         H5Tinsert( angle_tid, "theta", HOFFSET(IusAngle, theta), H5T_NATIVE_FLOAT );
-        H5Tinsert( angle_tid,  "phi", HOFFSET(IusAngle, phi), H5T_NATIVE_FLOAT );
+        H5Tinsert( angle_tid,  "theta", HOFFSET(IusAngle, theta), H5T_NATIVE_FLOAT );
         dataset = H5Dcreate( subgroup_id, "/Transducer/Elements/angles", angle_tid, space, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT );
 
         // step b:  create array of angles
