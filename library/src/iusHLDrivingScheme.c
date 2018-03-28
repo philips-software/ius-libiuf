@@ -9,6 +9,7 @@
 #include <include/iusInput.h>
 #include <include/iusError.h>
 #include <math.h>
+#include <include/iusHLPosition.h>
 #include "iusInput.h"
 #include "iusHLDrivingScheme.h"
 
@@ -34,41 +35,92 @@ IUS_BOOL isValidShape(IusShape shape)
     return (shape == IUS_2D_SHAPE || shape == IUS_3D_SHAPE);
 }
 
+IusDrivingScheme * iusCreate2DDrivingScheme
+(
+    int numTransmitSources
+)
+{
+    Ius2DDrivingScheme *_2DDrivingScheme = (Ius2DDrivingScheme *)calloc( 1, sizeof( Ius2DDrivingScheme ) );
+    if( _2DDrivingScheme == NULL ) return NULL;
+
+    _2DDrivingScheme->pSourceLocations = (Ius2DPosition *)calloc(numTransmitSources, sizeof(Ius2DPosition));
+    if( _2DDrivingScheme->pSourceLocations == NULL )
+    {
+        free(_2DDrivingScheme);
+        return NULL;
+    }
+    return (IusDrivingScheme *)_2DDrivingScheme;
+}
+
+IusDrivingScheme * iusCreate3DDrivingScheme
+(
+    int numTransmitSources
+)
+{
+    Ius3DDrivingScheme *_3DDrivingScheme = (Ius3DDrivingScheme *)calloc( 1, sizeof( Ius3DDrivingScheme ) );
+    if( _3DDrivingScheme == NULL ) return NULL;
+
+    _3DDrivingScheme->pSourceLocations = (Ius3DPosition *)calloc(numTransmitSources, sizeof(Ius3DPosition));
+    if( _3DDrivingScheme->pSourceLocations == NULL )
+    {
+        free(_3DDrivingScheme);
+        return NULL;
+    }
+    return (IusDrivingScheme *)_3DDrivingScheme;
+}
+
+float *iusCreateTransmitApodization(int numTransmitPulses,int numElements)
+{
+    // 2D array: per transmitted pulse we have numElement gains
+    // (which are numTransducerElements or numChannelElements)
+    float *pTransmitApodization = (float *)calloc( numTransmitPulses * numElements, sizeof(float) );
+    if( pTransmitApodization == NULL ) return NULL;
+    for (int i = 0; i < numElements; ++i)
+    {
+        pTransmitApodization[i] = 1.0f;
+    }
+    return pTransmitApodization;
+};
 
 IusDrivingScheme *iusHLCreateDrivingScheme
 (
     IusDrivingSchemeType type,
     IusShape shape,       // determines whether to use 2D or 3D positions/Angles
     int numTransmitPulses,
-    int numTransmitSources
+    int numTransmitSources,
+    int numElements
 )
 {
     if( !isValidSchemeType(type) ) return IUDS_INVALID;
     if( !isValidShape(shape) ) return IUDS_INVALID;
     if( numTransmitPulses <= 0 ) return IUDS_INVALID;
+    if( numElements <= 0 ) return IUDS_INVALID;
 
     IusDrivingScheme *baseDrivingScheme = NULL;
     if( shape == IUS_2D_SHAPE )
     {
-        Ius2DDrivingScheme *_2DDrivingScheme = (Ius2DDrivingScheme *)calloc( 1, sizeof( Ius2DDrivingScheme ) );
-        _2DDrivingScheme->pSourceLocations = (Ius2DPosition *)calloc(numTransmitSources, sizeof(Ius2DPosition));
-        baseDrivingScheme = (IusDrivingScheme *)_2DDrivingScheme;
+        baseDrivingScheme = iusCreate2DDrivingScheme(numTransmitSources);
     }
 
     if( shape == IUS_3D_SHAPE )
     {
-        Ius3DDrivingScheme *_3DDrivingScheme = (Ius3DDrivingScheme *)calloc( 1, sizeof( Ius3DDrivingScheme ) );
-        _3DDrivingScheme->pSourceLocations = (Ius3DPosition *)calloc(numTransmitSources, sizeof(Ius3DPosition));
-        baseDrivingScheme = (IusDrivingScheme *)_3DDrivingScheme;
+        baseDrivingScheme = iusCreate3DDrivingScheme(numTransmitSources);
     }
 
+    if( baseDrivingScheme == NULL ) return NULL;
+    baseDrivingScheme->pTransmitApodization = iusCreateTransmitApodization(numTransmitPulses , numElements);
+
+    if ( baseDrivingScheme->pTransmitApodization == NULL )
+    {
+        iusHLDeleteDrivingScheme(baseDrivingScheme);
+        return NULL;
+    }
+
+    baseDrivingScheme->numElements = numElements;
     baseDrivingScheme->numTransmitSources = numTransmitSources;
     baseDrivingScheme->numTransmitPulses = numTransmitPulses;
     baseDrivingScheme->shape = shape;
     baseDrivingScheme->type = type;
-    baseDrivingScheme->pTransmitPattern = (IusTransmitPattern *)calloc( numTransmitPulses, sizeof(IusTransmitPattern) );
-
-
     return baseDrivingScheme;
 }
 
@@ -85,7 +137,48 @@ int iusHLDeleteDrivingScheme
     return IUS_ERR_VALUE;
 }
 
-// Setters
+int iusHLDrivingSchemeSet3DSourceLocation
+(
+    IusDrivingScheme *drivingScheme,
+    Ius3DPosition *position,
+    int index
+)
+{
+    Ius3DDrivingScheme *castedScheme = (Ius3DDrivingScheme *)drivingScheme;
+    if( index >= castedScheme->base.numTransmitSources || index < 0 )
+        return IUS_ERR_VALUE;
+    castedScheme->pSourceLocations[index]=*position;
+    return IUS_E_OK;
+}
+
+int iusHLDrivingSchemeSet2DSourceLocation
+(
+    IusDrivingScheme *drivingScheme,
+    Ius2DPosition *position,
+    int index
+)
+{
+    Ius2DDrivingScheme *castedScheme = (Ius2DDrivingScheme *)drivingScheme;
+    if( index >= castedScheme->base.numTransmitSources || index < 0 )
+        return IUS_ERR_VALUE;
+    castedScheme->pSourceLocations[index]=*position;
+    return IUS_E_OK;
+}
+
+
+int iusDrivingSchemeSetTransmitApodization
+    (
+        iuds_t drivingScheme,
+        float apodization,
+        int elementIndex
+    )
+{
+    if( elementIndex >= drivingScheme->numElements || elementIndex < 0 )
+        return IUS_ERR_VALUE;
+    drivingScheme->pTransmitApodization[elementIndex]=apodization;
+    return IUS_E_OK;
+}
+
 int iusDrivingSchemeSetNumSamplesPerLine
 (
     IusDrivingScheme * drivingScheme,
@@ -170,6 +263,15 @@ int iusHLDrivingSchemeGetNumTransmitSources
     return drivingScheme->numTransmitSources;
 }
 
+
+int iusHLDrivingSchemeGetNumElements
+(
+    iuds_t drivingScheme
+)
+{
+    return drivingScheme->numElements;
+}
+
 float iusDrivingSchemeGetSourceAngularDelta
 (
     iuds_t drivingScheme
@@ -198,4 +300,27 @@ float iusDrivingSchemeGetSourceStartAngle
     if( drivingScheme->shape != IUS_2D_SHAPE )
         return NAN;
     return ((Ius2DDrivingScheme *)drivingScheme)->sourceStartAngle;
+}
+
+float iusDrivingSchemeGetTransmitApodization
+(
+    iuds_t drivingScheme,
+    int elementIndex
+)
+{
+    if( elementIndex >= drivingScheme->numElements || elementIndex < 0 )
+        return NAN;
+    return drivingScheme->pTransmitApodization[elementIndex];
+}
+
+iu3dp_t iusHLDrivingSchemeGet3DSourceLocation
+(
+    iuds_t drivingScheme,
+    int elementIndex
+)
+{
+    Ius3DDrivingScheme *castedScheme = (Ius3DDrivingScheme *) drivingScheme;
+    if( elementIndex >= castedScheme->base.numTransmitSources || elementIndex < 0 )
+        return NULL;
+    return &castedScheme->pSourceLocations[elementIndex];
 }

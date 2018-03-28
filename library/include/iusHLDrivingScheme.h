@@ -9,6 +9,7 @@
 #ifndef IUSLIBRARY_IMPLEMENTATION
 #include <stddef.h>
 #include "iusTypes.h"
+#include "iusHLPosition.h"
 
 struct IusDrivingScheme;
 typedef  struct IusDrivingScheme IusDrivingScheme;
@@ -23,7 +24,8 @@ iuds_t iusHLCreateDrivingScheme
     IusDrivingSchemeType param,
     IusShape shape, // determines whether to use 2D or 3D positions/Angles
     int numTransmitPulses,
-    int numTransmitSources
+    int numTransmitSources,
+    int numElements
 );
 
 int iusHLDeleteDrivingScheme
@@ -51,6 +53,26 @@ int iusDrivingSchemeSetSourceStartAngle
     float startAngle
 );
 
+int iusDrivingSchemeSetTransmitApodization
+(
+    iuds_t drivingScheme,
+    float Apodization,
+    int index
+);
+
+int iusHLDrivingSchemeSet3DSourceLocation
+(
+    IusDrivingScheme * drivingScheme,
+    iu3dp_t position,
+    int index
+);
+
+int iusHLDrivingSchemeSet2DSourceLocation
+(
+    IusDrivingScheme * drivingScheme,
+    iu2dp_t position,
+    int index
+);
 
 // getters
 IusShape iusHLDrivingSchemeGetShape
@@ -73,6 +95,11 @@ int iusHLDrivingSchemeGetNumTransmitSources
     iuds_t drivingScheme
 );
 
+int iusHLDrivingSchemeGetNumElements
+(
+    iuds_t drivingScheme
+);
+
 float iusDrivingSchemeGetSourceAngularDelta
 (
     iuds_t drivingScheme
@@ -86,6 +113,18 @@ float iusDrivingSchemeGetSourceFNumber
 float iusDrivingSchemeGetSourceStartAngle
 (
     iuds_t drivingScheme
+);
+
+float iusDrivingSchemeGetTransmitApodization
+(
+    iuds_t drivingScheme,
+    int elementIndex
+);
+
+iu3dp_t iusHLDrivingSchemeGet3DSourceLocation
+(
+    iuds_t drivingScheme,
+    int elementIndex
 );
 
 #endif //IUSLIBRARY_IUSHLDRIVINGSCHEME_H

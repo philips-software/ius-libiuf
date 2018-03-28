@@ -137,6 +137,7 @@ typedef struct
     int                       numSamplesPerLine;      /**< length of an acquisition line */
     int                       numTransmitSources;     /**< number of US sources (tyically these are virtual) */
     int                       numTransmitPulses;      /**< number of pulses in a frame == numPulsesPerFrame */
+    int                       numElements;
     //int numFrames;                                  /**< number of repetitions of the driving pattern */
     float                     transmitPatternDelay;   /**< extra delay at the end of a transmit pattern */
     IusTransmitPattern *      pTransmitPattern;       /**< array (time, index) of length numTransmitPulses */

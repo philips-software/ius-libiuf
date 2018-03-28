@@ -6,7 +6,7 @@
 #define IUSLIBRARY_IUSHLTRANSDUCER_H
 
 #include <include/iusTypes.h>
-
+#include <iusHLPosition.h>
 
 #ifndef IUSLIBRARY_IMPLEMENTATION
 
@@ -23,8 +23,6 @@ typedef struct Ius3DTransducerElement Ius3DTransducerElement;
 
 // ADT
 typedef IusTransducer *iut_t;
-typedef Ius3DPosition *iu3dp_t;
-typedef Ius2DPosition *iu2dp_t;
 typedef Ius3DAngle *iu3da_t;
 typedef Ius3DSize *iu3ds_t;
 typedef Ius2DSize *iu2ds_t;
@@ -93,7 +91,7 @@ IusTransducerShape iusHLGetTransducerShape
         iut_t transducer
     );
 
-Ius2DPosition *iusHLCreate2DElementPosition
+Ius2DPosition *iusHLCreate2DPosition
     (
         float x,
         float z
@@ -110,13 +108,6 @@ Ius2DTransducerElement *iusHLCreate2DElement
         iu2dp_t pos,
         float phi,
         iu2ds_t siz
-    );
-
-iu3dp_t iusHLCreate3DElementPosition
-    (
-        float x,
-        float y,
-        float z
     );
 
 iu3da_t iusHLCreate3DElementAngle

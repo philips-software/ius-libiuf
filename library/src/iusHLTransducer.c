@@ -12,6 +12,7 @@
 #include <math.h>
 #include <float.h>
 #include <include/iusUtil.h>
+#include <include/iusHLPosition.h>
 
 
 iut_t iusHLCreateTransducer
@@ -106,37 +107,6 @@ IusTransducerShape iusHLGetTransducerShape
     return transducer->shape;
 }
 
-Ius3DPosition *iusHLCreate3DElementPosition
-(
-    float x,
-    float y,
-    float z
-)
-{
-    Ius3DPosition *iusPos = calloc(1, sizeof(Ius3DPosition));
-    iusPos->x=x;
-    iusPos->y=y;
-    iusPos->z=z;
-    return iusPos;
-}
-
-
-Ius2DPosition *iusHLCreate2DElementPosition
-(
-    float x,
-    float z
-)
-{
-    Ius2DPosition *iusPos = calloc(1, sizeof(Ius2DPosition));
-    iusPos->x=x;
-    iusPos->z=z;
-    return iusPos;
-}
-
-void iusHLDelete3DElementPosition(Ius3DPosition *iusPos)
-{
-    free(iusPos);
-}
 
 Ius3DAngle *iusHLCreate3DElementAngle
 (
@@ -314,16 +284,6 @@ IusBaseTransducerElement * iusTransducerGetElement
 }
 
 
-IUS_BOOL iusCompare3DPosition(Ius3DPosition *reference,Ius3DPosition *actual)
-{
-    if (IUS_EQUAL_FLOAT(reference->x, actual->x) &&
-        IUS_EQUAL_FLOAT(reference->y, actual->y) &&
-        IUS_EQUAL_FLOAT(reference->z, actual->z) )
-        return IUS_TRUE;
-    else
-        return IUS_FALSE;
-}
-
 IUS_BOOL iusCompare3DSize(Ius3DSize *reference,Ius3DSize *actual)
 {
     if (IUS_EQUAL_FLOAT(reference->sx, actual->sx) &&
@@ -361,14 +321,6 @@ IUS_BOOL iusCompare3DElement
 
 
 
-IUS_BOOL iusCompare2DPosition(Ius2DPosition *reference,Ius2DPosition *actual)
-{
-    if (IUS_EQUAL_FLOAT(reference->x, actual->x) &&
-        IUS_EQUAL_FLOAT(reference->z, actual->z) )
-        return IUS_TRUE;
-    else
-        return IUS_FALSE;
-}
 
 IUS_BOOL iusCompare2DSize(Ius2DSize *reference,Ius2DSize *actual)
 {

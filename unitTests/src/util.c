@@ -3,6 +3,7 @@
 //
 
 #include <include/iusHLTransducer.h>
+#include <include/iusHLPosition.h>
 #include "util.h"
 
 iu3dte_t iusUtilCreate3DElement
@@ -17,7 +18,7 @@ iu3dte_t iusUtilCreate3DElement
         float phi
     )
 {
-    iu3dp_t pos = iusHLCreate3DElementPosition(
+    iu3dp_t pos = iusHLCreate3DPosition(
         x,
         y,
         z
@@ -48,7 +49,7 @@ iu2dte_t iusUtilCreate2DElement
         float phi
     )
 {
-    iu2dp_t pos = iusHLCreate2DElementPosition(x,z);
+    iu2dp_t pos = iusHLCreate2DPosition(x, z);
     iu2ds_t siz = iusHLCreate2DElementSize(sx, sz);
     iu2dte_t ele = iusHLCreate2DElement(pos, phi, siz);
     return ele;
