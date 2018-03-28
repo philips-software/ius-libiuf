@@ -132,21 +132,39 @@ typedef struct
 /** \brief the driving scheme for an experiment */
 typedef struct
 {
-    IusDrivingSchemeType      drivingSchemeType;      /**< driving scheme: e.g. diveringwaves, planeswaves, ... */
+    IusDrivingSchemeType      type;      /**< driving scheme: e.g. diveringwaves, planeswaves, ... */
+    IusShape                  shape;
     int                       numSamplesPerLine;      /**< length of an acquisition line */
     int                       numTransmitSources;     /**< number of US sources (tyically these are virtual) */
-    int                       numTransmitPulses;      /**< number of pulses in a frame */
+    int                       numTransmitPulses;      /**< number of pulses in a frame == numPulsesPerFrame */
     //int numFrames;                                  /**< number of repetitions of the driving pattern */
-    Ius3DPosition *           pSourceLocations;       /**< position of the US sources in case of CARTESIAN coordinates*/
-    float                     sourceFNumber;          /**< distance in [m] of sources to transducer for POLAR */
-    float                     sourceAngularDelta;     /**< angle in [rad] between sources */
-    float                     sourceStartAngle;       /**< angle in [rad] between sources */
     float                     transmitPatternDelay;   /**< extra delay at the end of a transmit pattern */
     IusTransmitPattern *      pTransmitPattern;       /**< array (time, index) of length numTransmitPulses */
     IusTransmitPulse          transmitPulse;          /**< waveform of the transmit pulse */
     float *                   pTransmitApodization;   /**< 2D array: per transmit event we have numElements gains */
-    IusChannelCoding          transmitChannelCoding;  /**< Describes the mapping between transducer elemenents and transmit pulses */
 } IusDrivingScheme;
+
+typedef struct
+{
+    IusDrivingScheme          base;                   /**< driving scheme: e.g. diveringwaves, planeswaves, ... */
+    Ius2DPosition *           pSourceLocations;       /**< position of the US sources in case of CARTESIAN coordinates*/
+    float                     sourceFNumber;          /**< distance in [m] of sources to transducer for POLAR */
+    float                     sourceAngularDelta;     /**< angle in [rad] between sources */
+    float                     sourceStartAngle;       /**< angle in [rad] between sources */
+
+} Ius2DDrivingScheme;
+
+typedef struct
+{
+    IusDrivingScheme          base;                   /**< driving scheme: e.g. diveringwaves, planeswaves, ... */
+    Ius3DPosition *           pSourceLocations;       /**< position of the US sources in case of CARTESIAN coordinates*/
+    float                     sourceFNumber;          /**< distance in [m] of sources to transducer for POLAR */
+    float                     sourceDeltaTheta;     /**< angle in [rad] between sources */
+    float                     sourceStartTheta;       /**< angle in [rad] between sources */
+    float                     sourceDeltaPhi;     /**< angle in [rad] between sources */
+    float                     sourceStartPhi;       /**< angle in [rad] between sources */
+} Ius3DDrivingScheme;
+
 
 
 /** \brief An Ultrasound experiment is identified by a date and a description, also the speed of sound has been determined */
