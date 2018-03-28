@@ -101,7 +101,6 @@ iuh_t create2DTransducerHeader()
     status = iusHLHeaderSetExperiment(iuhHeader, ex);
     if (status != IUS_E_OK) return IUH_INVALID;
 
-
     tra = create2DTransducer();
     status = iusHLHeaderSetTransducer(iuhHeader, tra);
     if (status != IUS_E_OK) return IUH_INVALID;

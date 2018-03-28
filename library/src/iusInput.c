@@ -40,27 +40,6 @@ int LF_GetNumberOfElements(IusInputInstance* pInst)
     }
 }
 
-int LF_copyExperimentData
-(
-    IusExperiment * pDst,
-    IusExperiment * pSrc
-)
-{
-    // speed of sound in m/s
-    // int concatenation of <year><month><day> e.g. 20160123 for 23th Jan 2016
-    pDst->speedOfSound = pSrc->speedOfSound;
-    pDst->date         = pSrc->date;
-
-    pDst->pDescription  =
-        (char *)calloc( strlen( pSrc->pDescription ) + 1, sizeof( char ) );
-    if ( pDst->pDescription == NULL )
-    {
-        return 1;
-    }
-    strcpy( pDst->pDescription, pSrc->pDescription );
-
-    return 0;
-}
 
 
 //------------------------------------------------------------------------------

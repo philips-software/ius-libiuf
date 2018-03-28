@@ -70,24 +70,7 @@ typedef struct
 } IusChannelCoding;
 
 
-/** \brief Possible driving patterns */
-enum IusDrivingSchemeType
-{
-    IUS_DIVERGING_WAVES = 0, /**< focus point has negative z value */
-    IUS_FOCUSED_WAVES,       /**< focus point has positive z value */
-    IUS_PLANE_WAVES,         /**< neighbouring elements fire consecutively with constant inter-element delay */
-    IUS_SINGLE_ELEMENT,      /**< simplified case where there is only one element */
-    IUS_CUSTOM_WAVES         /**< non-specified driving scheme category, the transmit pattern and transmit delays of elements can be anything */
-};
 
-
-/** \brief An Ultrasound experiment is identified by a date and a description, also the speed of sound has been determined */
-typedef struct
-{
-    float  speedOfSound;    /**< speed of sound in m/s */
-    int    date;            /**< interger concatenation of year-month-day e.g. 20160123 for 23th Jan 2016 */
-    char * pDescription;    /**< Experiment notes */
-} IusExperiment;
 
 
 typedef enum
@@ -149,7 +132,7 @@ typedef struct
 /** \brief the driving scheme for an experiment */
 typedef struct
 {
-    enum IusDrivingSchemeType drivingSchemeType;      /**< driving scheme: e.g. diveringwaves, planeswaves, ... */
+    IusDrivingSchemeType      drivingSchemeType;      /**< driving scheme: e.g. diveringwaves, planeswaves, ... */
     int                       numSamplesPerLine;      /**< length of an acquisition line */
     int                       numTransmitSources;     /**< number of US sources (tyically these are virtual) */
     int                       numTransmitPulses;      /**< number of pulses in a frame */
@@ -164,7 +147,16 @@ typedef struct
     float *                   pTransmitApodization;   /**< 2D array: per transmit event we have numElements gains */
     IusChannelCoding          transmitChannelCoding;  /**< Describes the mapping between transducer elemenents and transmit pulses */
 } IusDrivingScheme;
- 
+
+
+/** \brief An Ultrasound experiment is identified by a date and a description, also the speed of sound has been determined */
+typedef struct
+{
+    float  speedOfSound;    /**< speed of sound in m/s */
+    int    date;            /**< interger concatenation of year-month-day e.g. 20160123 for 23th Jan 2016 */
+    char * pDescription;    /**< Experiment notes */
+} IusExperiment;
+
 
 /**
  * \brief IusInput internal data structure

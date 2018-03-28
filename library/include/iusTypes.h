@@ -163,6 +163,28 @@ enum IusTransducerShape
 #define TRANSDUCER_SHAPE_CYLINDER "CYLINDER"
 #define TRANSDUCER_SHAPE_SPHERE "SPHERE"
 
+/** \brief Possible driving patterns */
+typedef enum
+{
+    IUS_DIVERGING_WAVES_PARAMETRIZED = 0, /**< focus point has negative z value (parametrized) */
+    IUS_DIVERGING_WAVES,                 /**< focus point has negative z value */
+    IUS_FOCUSED_WAVES_PARAMETRIZED,      /**< focus point has positive z value */
+    IUS_FOCUSED_WAVES,       /**< focus point has positive z value */
+    IUS_PLANE_WAVES,         /**< neighbouring elements fire consecutively with constant inter-element delay */
+    IUS_SINGLE_ELEMENT,      /**< simplified case where there is only one element */
+    IUS_CUSTOM_WAVES         /**< non-specified driving scheme category, the transmit pattern and transmit delays of elements can be anything */
+} IusDrivingSchemeType ;
+
+#define DRIVINGSCHEME_DIVERGING_WAVES_PARAMETRIZED   "DIVERGING_WAVES_PARAMETRIZED"
+#define DRIVINGSCHEME_DIVERGING_WAVES                "DIVERGING_WAVES"
+#define DRIVINGSCHEME_FOCUSED_WAVES_PARAMETRIZED     "FOCUSED_WAVES_PARAMETRIZED"
+#define DRIVINGSCHEME_FOCUSED_WAVES                  "FOCUSED_WAVES"
+#define DRIVINGSCHEME_PLANE_WAVES                    "PLANE_WAVES"
+#define DRIVINGSCHEME_SINGLE_ELEMENT                 "SINGLE_ELEMENT"
+#define DRIVINGSCHEME_CUSTOM_WAVES                   "CUSTOM_WAVES"
+
+
+
 typedef enum IusTransducerShape IusTransducerShape;
 
 /** \brief 3D Transducer element type: 3D or 2D */

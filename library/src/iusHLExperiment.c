@@ -10,8 +10,6 @@
 #include <iusInput.h>
 #include <include/iusHLInput.h>
 
-
-
 IUS_BOOL iusCompareExperiment(iue_t reference, iue_t actual) {
     if( reference == actual ) return IUS_TRUE;
     if( reference == NULL || actual == NULL )
@@ -75,3 +73,27 @@ char * iusHLExperimentGetDescription
     return experiment->pDescription;
 }
 
+
+
+// old routines
+int LF_copyExperimentData
+    (
+        IusExperiment * pDst,
+        IusExperiment * pSrc
+    )
+{
+    // speed of sound in m/s
+    // int concatenation of <year><month><day> e.g. 20160123 for 23th Jan 2016
+    pDst->speedOfSound = pSrc->speedOfSound;
+    pDst->date         = pSrc->date;
+
+    pDst->pDescription  =
+        (char *)calloc( strlen( pSrc->pDescription ) + 1, sizeof( char ) );
+    if ( pDst->pDescription == NULL )
+    {
+        return 1;
+    }
+    strcpy( pDst->pDescription, pSrc->pDescription );
+
+    return 0;
+}

@@ -11,7 +11,6 @@
 #include <iusHLNode.h>
 #include <iusHLInput.h>
 #include <iusHLInputFile.h>
-#include <include/iusInputFile.h>
 #include <stdlib.h>
 #include <include/iusInput.h>
 #include <memory.h>
