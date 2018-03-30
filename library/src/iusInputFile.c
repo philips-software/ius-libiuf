@@ -13,6 +13,7 @@
 #include "iusError.h"
 #include <stdlib.h>    // for calloc
 #include <include/iusInputFile.h>
+#include <include/iusInput.h>
 
 
 int iusInputFileSave(IusInputFileInstance *pIFI, int verbose)
@@ -191,7 +192,7 @@ int iusInputFileWriteNextPulse
   herr_t  status;
 
   memdim[0] = pInst->pIusInput->pTransducer->numElements;
-  memdim[1] = pInst->pIusInput->pDrivingScheme->numSamplesPerLine;
+  memdim[1] = pInst->pIusInput->pReceiveSettings->numSamplesPerLine;
   memspace = H5Screate_simple(2, memdim, NULL);
 
   if (pInst->pIusInput->numFrames == 1)
@@ -201,7 +202,7 @@ int iusInputFileWriteNextPulse
       offset[2] = pInst->currentPulse;
 
       count[0] = pInst->pIusInput->pTransducer->numElements;
-      count[1] = pInst->pIusInput->pDrivingScheme->numSamplesPerLine;
+      count[1] = pInst->pIusInput->pReceiveSettings->numSamplesPerLine;
       count[2] = 1;
   }
   else
@@ -262,7 +263,7 @@ int iusInputFileReadNextPulse
         fprintf(stderr, "iusInputRedNextPulse: input arguments can not be NULL\n");
         return -1;
     }
-    float *pPage = (float *)calloc(pInst->pIusInput->pDrivingScheme->numSamplesPerLine *
+    float *pPage = (float *)calloc(pInst->pIusInput->pReceiveSettings->numSamplesPerLine *
             pInst->pIusInput->pTransducer->numElements, sizeof(float)) ;
     if (pPage == NULL)
     {
@@ -275,13 +276,13 @@ int iusInputFileReadNextPulse
     offset[2] = pInst->currentPulse;
     offset[3] = pInst->currentFrame;
 
-    count[1] = pInst->pIusInput->pDrivingScheme->numSamplesPerLine;
+    count[1] = pInst->pIusInput->pReceiveSettings->numSamplesPerLine;
     count[0] = pInst->pIusInput->pTransducer->numElements;
     count[2] = 1;
     count[3] = 1;
 
     memdim[0] = pInst->pIusInput->pTransducer->numElements;
-    memdim[1] = pInst->pIusInput->pDrivingScheme->numSamplesPerLine;
+    memdim[1] = pInst->pIusInput->pReceiveSettings->numSamplesPerLine;
     memspace = H5Screate_simple(2, memdim, NULL);
     dataspace = H5Dget_space(pInst->rfDataset);
     status = H5Sselect_hyperslab(dataspace, H5S_SELECT_SET, offset, NULL, count, NULL);
@@ -360,7 +361,7 @@ int iusInputFileReadNextPulseDepthRange
         fprintf(stderr, "iusInputRedNextPulse: input arguments can not be NULL\n");
         return -1;
     }
-    float *pPage = (float *)calloc(pInst->pIusInput->pDrivingScheme->numSamplesPerLine *
+    float *pPage = (float *)calloc(pInst->pIusInput->pReceiveSettings->numSamplesPerLine *
             pInst->pIusInput->pTransducer->numElements, sizeof(float));
     if (pPage == NULL)
     {

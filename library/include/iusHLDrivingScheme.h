@@ -6,6 +6,8 @@
 #define IUSLIBRARY_IUSHLDRIVINGSCHEME_H
 
 
+#include "iusHLTransmitPulse.h"
+
 #ifndef IUSLIBRARY_IMPLEMENTATION
 #include <stddef.h>
 #include "iusTypes.h"
@@ -28,18 +30,20 @@ iuds_t iusHLCreateDrivingScheme
     int numElements
 );
 
-int iusHLDeleteDrivingScheme
-    (
-        iuds_t drivingScheme
-    );
 
-// setters
-int iusDrivingSchemeSetSourceAngularDelta
+int iusHLDeleteDrivingScheme
 (
-    iuds_t drivingScheme,
-    float angulatDelta
+    iuds_t drivingScheme
 );
 
+// setters
+
+
+int iusHLDrivingSchemeSetTransmitPulse
+    (
+        iuds_t drivingScheme,
+        iutp_t transmitPulse
+    );
 
 int iusDrivingSchemeSetSourceFNumber
 (
@@ -47,17 +51,38 @@ int iusDrivingSchemeSetSourceFNumber
     float FNumber
 );
 
-int iusDrivingSchemeSetSourceStartAngle
+
+int iusDrivingSchemeSetSourceStartPhi
 (
     iuds_t drivingScheme,
-    float startAngle
+    float startPhi
+);
+
+int iusDrivingSchemeSetSourceDeltaPhi
+(
+    iuds_t drivingScheme,
+    float deltaPhi
+);
+
+
+int iusDrivingSchemeSetSourceStartTheta
+(
+    iuds_t drivingScheme,
+    float startTheta
+);
+
+int iusDrivingSchemeSetSourceDeltaTheta
+(
+    iuds_t drivingScheme,
+    float deltaTheta
 );
 
 int iusDrivingSchemeSetTransmitApodization
 (
     iuds_t drivingScheme,
     float Apodization,
-    int index
+    int pulseIndex,
+    int elementIndex
 );
 
 int iusHLDrivingSchemeSet3DSourceLocation
@@ -75,6 +100,8 @@ int iusHLDrivingSchemeSet2DSourceLocation
 );
 
 // getters
+
+
 IusShape iusHLDrivingSchemeGetShape
 (
     iuds_t drivingScheme
@@ -100,24 +127,17 @@ int iusHLDrivingSchemeGetNumElements
     iuds_t drivingScheme
 );
 
-float iusDrivingSchemeGetSourceAngularDelta
-(
-    iuds_t drivingScheme
-);
 
 float iusDrivingSchemeGetSourceFNumber
 (
     iuds_t drivingScheme
 );
 
-float iusDrivingSchemeGetSourceStartAngle
-(
-    iuds_t drivingScheme
-);
 
 float iusDrivingSchemeGetTransmitApodization
 (
     iuds_t drivingScheme,
+    int pulseIndex,
     int elementIndex
 );
 
@@ -126,5 +146,27 @@ iu3dp_t iusHLDrivingSchemeGet3DSourceLocation
     iuds_t drivingScheme,
     int elementIndex
 );
+
+float iusDrivingSchemeGetSourceStartPhi
+(
+    iuds_t drivingScheme
+);
+
+float iusDrivingSchemeGetSourceDeltaPhi
+(
+    iuds_t drivingScheme
+);
+
+
+float iusDrivingSchemeGetSourceStartTheta
+(
+    iuds_t drivingScheme
+);
+
+float iusDrivingSchemeGetSourceDeltaTheta
+(
+    iuds_t drivingScheme
+);
+
 
 #endif //IUSLIBRARY_IUSHLDRIVINGSCHEME_H

@@ -35,6 +35,22 @@ IUS_BOOL isValidShape(IusShape shape)
     return (shape == IUS_2D_SHAPE || shape == IUS_3D_SHAPE);
 }
 
+IusTransmitPulse *iusHLCreateParametricPulse
+(
+    float pulseFrequency,
+    float pulseAmplitude,
+    int   pulseCount
+)
+{
+    IusParametricTransmitPulse *pulse = (IusParametricTransmitPulse *) calloc (1,sizeof(IusParametricTransmitPulse));
+    pulse->pulseAmplitude = pulseAmplitude;
+    pulse->pulseCount = pulseCount;
+    pulse->pulseFrequency = pulseFrequency;
+    pulse->base.type = IUS_PARAMETRIC_PULSETYPE;
+    return (IusTransmitPulse *)pulse;
+}
+
+
 IusDrivingScheme * iusCreate2DDrivingScheme
 (
     int numTransmitSources
@@ -75,7 +91,7 @@ float *iusCreateTransmitApodization(int numTransmitPulses,int numElements)
     // (which are numTransducerElements or numChannelElements)
     float *pTransmitApodization = (float *)calloc( numTransmitPulses * numElements, sizeof(float) );
     if( pTransmitApodization == NULL ) return NULL;
-    for (int i = 0; i < numElements; ++i)
+    for (int i = 0; i < numElements*numTransmitPulses; ++i)
     {
         pTransmitApodization[i] = 1.0f;
     }
@@ -137,6 +153,17 @@ int iusHLDeleteDrivingScheme
     return IUS_ERR_VALUE;
 }
 
+int iusHLDrivingSchemeSetTransmitPulse
+(
+    iuds_t drivingScheme,
+    iutp_t transmitPulse
+)
+{
+    drivingScheme->transmitPulse = transmitPulse;
+    return IUS_E_OK;
+}
+
+
 int iusHLDrivingSchemeSet3DSourceLocation
 (
     IusDrivingScheme *drivingScheme,
@@ -170,37 +197,80 @@ int iusDrivingSchemeSetTransmitApodization
     (
         iuds_t drivingScheme,
         float apodization,
+        int pulseIndex,
         int elementIndex
     )
 {
+    if( pulseIndex >= drivingScheme->numTransmitPulses || pulseIndex < 0 )
+        return IUS_ERR_VALUE;
     if( elementIndex >= drivingScheme->numElements || elementIndex < 0 )
         return IUS_ERR_VALUE;
-    drivingScheme->pTransmitApodization[elementIndex]=apodization;
+    if( apodization < 0.0f || apodization > 1.0f )
+        return IUS_ERR_VALUE;
+    drivingScheme->pTransmitApodization[pulseIndex*drivingScheme->numElements+elementIndex]=apodization;
     return IUS_E_OK;
 }
 
-int iusDrivingSchemeSetNumSamplesPerLine
-(
-    IusDrivingScheme * drivingScheme,
-    int numSamplesPerLine
-)
-{
-    drivingScheme->numSamplesPerLine = numSamplesPerLine;
-    return IUS_E_OK;
-}
-
-
-
-int iusDrivingSchemeSetSourceAngularDelta
+int iusDrivingSchemeSetSourceStartPhi
 (
     iuds_t drivingScheme,
-    float angularDelta
+    float startPhi
 )
 {
-    if( drivingScheme->shape != IUS_2D_SHAPE )
+    if( drivingScheme->shape != IUS_3D_SHAPE )
         return IUS_ERR_VALUE;
-    ((Ius2DDrivingScheme *)drivingScheme)->sourceAngularDelta = angularDelta;
+    ((Ius3DDrivingScheme *)drivingScheme)->sourceStartPhi = startPhi;
     return IUS_E_OK;
+}
+
+int iusDrivingSchemeSetSourceDeltaPhi
+(
+    iuds_t drivingScheme,
+    float deltaPhi
+)
+{
+    if( drivingScheme->shape != IUS_3D_SHAPE )
+        return IUS_ERR_VALUE;
+    ((Ius3DDrivingScheme *)drivingScheme)->sourceDeltaPhi = deltaPhi;
+    return IUS_E_OK;
+}
+
+int iusDrivingSchemeSetSourceStartTheta
+(
+    iuds_t drivingScheme,
+    float startTheta
+)
+{
+    if( drivingScheme->shape == IUS_3D_SHAPE )
+    {
+        ((Ius3DDrivingScheme *)drivingScheme)->sourceStartTheta = startTheta;
+    }
+
+    if( drivingScheme->shape == IUS_2D_SHAPE )
+    {
+        ((Ius2DDrivingScheme *)drivingScheme)->sourceStartTheta = startTheta;
+        return IUS_E_OK;
+    }
+    return IUS_ERR_VALUE;
+}
+
+int iusDrivingSchemeSetSourceDeltaTheta
+(
+    iuds_t drivingScheme,
+    float deltaTheta
+)
+{
+    if( drivingScheme->shape == IUS_3D_SHAPE )
+    {
+        ((Ius3DDrivingScheme *)drivingScheme)->sourceDeltaTheta = deltaTheta;
+    }
+
+    if( drivingScheme->shape == IUS_2D_SHAPE )
+    {
+        ((Ius2DDrivingScheme *)drivingScheme)->sourceDeltaTheta = deltaTheta;
+        return IUS_E_OK;
+    }
+    return IUS_ERR_VALUE;
 }
 
 int iusDrivingSchemeSetSourceFNumber
@@ -215,20 +285,12 @@ int iusDrivingSchemeSetSourceFNumber
     return IUS_E_OK;
 }
 
-int iusDrivingSchemeSetSourceStartAngle
-(
-    iuds_t drivingScheme,
-    float startAngle
-)
-{
-    if( drivingScheme->shape != IUS_2D_SHAPE )
-        return NAN;
-    ((Ius2DDrivingScheme *)drivingScheme)->sourceStartAngle = startAngle;
-    return IUS_E_OK;
-}
 
 
 // getters
+
+
+
 IusShape iusHLDrivingSchemeGetShape
 (
     iuds_t drivingScheme
@@ -272,15 +334,6 @@ int iusHLDrivingSchemeGetNumElements
     return drivingScheme->numElements;
 }
 
-float iusDrivingSchemeGetSourceAngularDelta
-(
-    iuds_t drivingScheme
-)
-{
-    if( drivingScheme->shape != IUS_2D_SHAPE )
-        return NAN;
-    return ((Ius2DDrivingScheme *)drivingScheme)->sourceAngularDelta;
-}
 
 float iusDrivingSchemeGetSourceFNumber
 (
@@ -292,25 +345,19 @@ float iusDrivingSchemeGetSourceFNumber
     return ((Ius2DDrivingScheme *)drivingScheme)->sourceFNumber;
 }
 
-float iusDrivingSchemeGetSourceStartAngle
-(
-    iuds_t drivingScheme
-)
-{
-    if( drivingScheme->shape != IUS_2D_SHAPE )
-        return NAN;
-    return ((Ius2DDrivingScheme *)drivingScheme)->sourceStartAngle;
-}
 
 float iusDrivingSchemeGetTransmitApodization
 (
     iuds_t drivingScheme,
+    int pulseIndex,
     int elementIndex
 )
 {
+    if( pulseIndex >= drivingScheme->numTransmitPulses || pulseIndex < 0 )
+        return NAN;
     if( elementIndex >= drivingScheme->numElements || elementIndex < 0 )
         return NAN;
-    return drivingScheme->pTransmitApodization[elementIndex];
+    return drivingScheme->pTransmitApodization[pulseIndex*drivingScheme->numElements+elementIndex];
 }
 
 iu3dp_t iusHLDrivingSchemeGet3DSourceLocation
@@ -323,4 +370,28 @@ iu3dp_t iusHLDrivingSchemeGet3DSourceLocation
     if( elementIndex >= castedScheme->base.numTransmitSources || elementIndex < 0 )
         return NULL;
     return &castedScheme->pSourceLocations[elementIndex];
+}
+
+float iusDrivingSchemeGetSourceStartTheta
+(
+    iuds_t drivingScheme
+)
+{
+    if( drivingScheme->shape == IUS_3D_SHAPE )
+        return ((Ius3DDrivingScheme *)drivingScheme)->sourceStartTheta;
+    if( drivingScheme->shape == IUS_2D_SHAPE )
+        return ((Ius2DDrivingScheme *)drivingScheme)->sourceStartTheta;
+    return NAN;
+}
+
+float iusDrivingSchemeGetSourceDeltaTheta
+(
+    iuds_t drivingScheme
+)
+{
+    if( drivingScheme->shape == IUS_3D_SHAPE )
+        return ((Ius3DDrivingScheme *)drivingScheme)->sourceDeltaTheta;
+    if( drivingScheme->shape == IUS_2D_SHAPE )
+        return ((Ius2DDrivingScheme *)drivingScheme)->sourceDeltaTheta;
+    return NAN;
 }

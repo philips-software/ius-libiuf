@@ -186,8 +186,8 @@ int LF_copyDrivingSchemeData
 //    }
 //
 //    pDst->sourceFNumber        = pSrc->sourceFNumber;        // distance in [m] of sources to transducer for POLAR
-//    pDst->sourceAngularDelta   = pSrc->sourceAngularDelta;   // angle in [rad] between sources
-//    pDst->sourceStartAngle     = pSrc->sourceStartAngle;     // starting angle in [rad] for the sources
+//    pDst->sourceDeltaTheta   = pSrc->sourceDeltaTheta;   // angle in [rad] between sources
+//    pDst->sourceStartTheta     = pSrc->sourceStartTheta;     // starting angle in [rad] for the sources
 //    pDst->transmitPatternDelay = pSrc->transmitPatternDelay; // extra delay at the end of a transmit pattern
 //
 //    pDst->pTransmitPattern = (IusTransmitPattern *)calloc( numPulsesPerFrame, sizeof(IusTransmitPattern) );
@@ -1388,8 +1388,8 @@ int iusInputWrite
     if (enumValue == IUS_DIVERGING_WAVES) //use radial info
     {
         H5LTmake_dataset_float( group_id, "/DrivingScheme/sourceFNumber",      1, dims, &(pInst->pDrivingScheme->sourceFNumber) );
-        H5LTmake_dataset_float( group_id, "/DrivingScheme/sourceAngularDelta", 1, dims, &(pInst->pDrivingScheme->sourceAngularDelta) );
-        H5LTmake_dataset_float( group_id, "/DrivingScheme/sourceStartAngle",   1, dims, &(pInst->pDrivingScheme->sourceStartAngle) );
+        H5LTmake_dataset_float( group_id, "/DrivingScheme/sourceDeltaTheta", 1, dims, &(pInst->pDrivingScheme->sourceDeltaTheta) );
+        H5LTmake_dataset_float( group_id, "/DrivingScheme/sourceStartTheta",   1, dims, &(pInst->pDrivingScheme->sourceStartTheta) );
     }
     else
     {
@@ -1992,9 +1992,9 @@ IusInputInstance * iusInputRead
 
     if ( pInst->pDrivingScheme->drivingSchemeType == IUS_DIVERGING_WAVES )
     {
-        status = iusHdf5ReadFloat(handle, "/DrivingScheme/sourceAngularDelta", &(pInst->pDrivingScheme->sourceAngularDelta), verbose );
+        status = iusHdf5ReadFloat(handle, "/DrivingScheme/sourceDeltaTheta", &(pInst->pDrivingScheme->sourceDeltaTheta), verbose );
         status = iusHdf5ReadFloat(handle, "/DrivingScheme/sourceFNumber",      &(pInst->pDrivingScheme->sourceFNumber), verbose );
-        status = iusHdf5ReadFloat(handle, "/DrivingScheme/sourceStartAngle",   &(pInst->pDrivingScheme->sourceStartAngle), verbose );
+        status = iusHdf5ReadFloat(handle, "/DrivingScheme/sourceStartTheta",   &(pInst->pDrivingScheme->sourceStartTheta), verbose );
     }
     else
     {

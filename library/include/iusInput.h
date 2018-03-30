@@ -105,12 +105,18 @@ typedef struct
 typedef struct
 {
     IusChannelCoding     receiveChannelCoding;      /**< Describes the mapping between transducer elemenents and receive pulses */
+    int                  numSamplesPerLine;         /**< length of an acquisition line */
     float                sampleFrequency;           /**< The sampling frequency that was used */
     float *              pStartDepth;               /**< The start depths of RFlines, array length is the number of pulses per frame, values are in seconds */
     float *              pEndDepth;                 /**< The end depths of RFLines, this data can be considered redundant as it is startDepth+(sampleFrequency*numSamplesPerLine)  */
     int                  numTimeGainControlValues;  /**< number of control points that describe the TGC */
     IusTimeGainControl * pTimeGainControl;          /**< TimeGainControl points (time,gain) */
 } IusReceiveSettings;
+
+typedef enum {
+    IUS_PARAMETRIC_PULSETYPE = 1,
+    IUS_NON_PARAMETRIC_PULSETYPE
+} IusTransmitPulseType;
 
 /** \brief Transmit wave object
  *  \details The Transmitwave function is described by a set of points
@@ -120,28 +126,37 @@ typedef struct
  */
 typedef struct
 {
-    int     numPulseValues;       /**< number of points to describe waveform, 0 implies a parametric description only */
-    float * pRawPulseAmplitudes;  /**< shape of waveform [in Volts] */
-    float * pRawPulseTimes;       /**< corresponding timestamps of amplitudes [in seconds] */
+    IusTransmitPulseType type;
+} IusTransmitPulse;
+
+typedef struct
+{
+    IusTransmitPulse base;
     float   pulseFrequency;       /**< frequency that the pulse represents in Hz */
     float   pulseAmplitude;       /**< (max) amplitude of the pulse in Volts */
     int     pulseCount;           /**< number of cycles that the pulse represents */
-} IusTransmitPulse;
+} IusParametricTransmitPulse;
 
+typedef struct
+{
+    IusTransmitPulse base;
+    int     numPulseValues;       /**< number of points to describe waveform, 0 implies a parametric description only */
+    float * pRawPulseAmplitudes;  /**< shape of waveform [in Volts] */
+    float * pRawPulseTimes;       /**< corresponding timestamps of amplitudes [in seconds] */
+} IusNonParametricTransmitPulse;
 
 /** \brief the driving scheme for an experiment */
 typedef struct
 {
     IusDrivingSchemeType      type;      /**< driving scheme: e.g. diveringwaves, planeswaves, ... */
     IusShape                  shape;
-    int                       numSamplesPerLine;      /**< length of an acquisition line */
     int                       numTransmitSources;     /**< number of US sources (tyically these are virtual) */
     int                       numTransmitPulses;      /**< number of pulses in a frame == numPulsesPerFrame */
     int                       numElements;
     //int numFrames;                                  /**< number of repetitions of the driving pattern */
     float                     transmitPatternDelay;   /**< extra delay at the end of a transmit pattern */
     IusTransmitPattern *      pTransmitPattern;       /**< array (time, index) of length numTransmitPulses */
-    IusTransmitPulse          transmitPulse;          /**< waveform of the transmit pulse */
+    IusTransmitPulse *        transmitPulse;          /**< waveform of the transmit pulse */
     float *                   pTransmitApodization;   /**< 2D array: per transmit event we have numElements gains */
 } IusDrivingScheme;
 
@@ -150,8 +165,8 @@ typedef struct
     IusDrivingScheme          base;                   /**< driving scheme: e.g. diveringwaves, planeswaves, ... */
     Ius2DPosition *           pSourceLocations;       /**< position of the US sources in case of CARTESIAN coordinates*/
     float                     sourceFNumber;          /**< distance in [m] of sources to transducer for POLAR */
-    float                     sourceAngularDelta;     /**< angle in [rad] between sources */
-    float                     sourceStartAngle;       /**< angle in [rad] between sources */
+    float                     sourceDeltaTheta;     /**< angle in [rad] between sources */
+    float                     sourceStartTheta;       /**< angle in [rad] between sources */
 
 } Ius2DDrivingScheme;
 

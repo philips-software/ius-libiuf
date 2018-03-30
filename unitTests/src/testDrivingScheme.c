@@ -40,14 +40,14 @@ TEST(InputfileDrivingScheme, testIusHLCreateDrivingScheme)
     int status = 0;
 
 #define CREATE_TEST_AND_DELETE_SCHEME(typ,shpe,nt,ns,ne,stat) drivingScheme = iusHLCreateDrivingScheme(typ,shpe,nt,ns,ne); \
-                                                            TEST_ASSERT(drivingScheme != IUDS_INVALID); \
-                                                            TEST_ASSERT(shpe == iusHLDrivingSchemeGetShape(drivingScheme)); \
-                                                            TEST_ASSERT(typ == iusHLDrivingSchemeGetType(drivingScheme)); \
-                                                            TEST_ASSERT(nt == iusHLDrivingSchemeGetNumTransmitPulses(drivingScheme)); \
-                                                            TEST_ASSERT(ns == iusHLDrivingSchemeGetNumTransmitSources(drivingScheme)); \
-                                                            TEST_ASSERT(ne == iusHLDrivingSchemeGetNumElements(drivingScheme)); \
-                                                            status = iusHLDeleteDrivingScheme(drivingScheme); \
-                                                            TEST_ASSERT(status == stat)
+                                            TEST_ASSERT(drivingScheme != IUDS_INVALID); \
+                                            TEST_ASSERT(shpe == iusHLDrivingSchemeGetShape(drivingScheme)); \
+                                            TEST_ASSERT(typ == iusHLDrivingSchemeGetType(drivingScheme)); \
+                                            TEST_ASSERT(nt == iusHLDrivingSchemeGetNumTransmitPulses(drivingScheme)); \
+                                            TEST_ASSERT(ns == iusHLDrivingSchemeGetNumTransmitSources(drivingScheme)); \
+                                            TEST_ASSERT(ne == iusHLDrivingSchemeGetNumElements(drivingScheme)); \
+                                            status = iusHLDeleteDrivingScheme(drivingScheme); \
+                                            TEST_ASSERT(status == stat)
 
     CREATE_TEST_AND_DELETE_SCHEME(IUS_DIVERGING_WAVES_PARAMETRIZED, IUS_2D_SHAPE, numTransmitPulses,numTransmitSources,numElements,IUS_E_OK);
     CREATE_TEST_AND_DELETE_SCHEME(IUS_DIVERGING_WAVES_PARAMETRIZED, IUS_3D_SHAPE, numTransmitPulses,numTransmitSources,numElements,IUS_E_OK);
@@ -82,23 +82,32 @@ TEST(InputfileDrivingScheme, testSchemeGetTransmitApodization)
 
     iuds_t drivingScheme;
     IusShape shape = IUS_2D_SHAPE;
-    drivingScheme = iusHLCreateDrivingScheme(IUS_DIVERGING_WAVES_PARAMETRIZED, shape, numTransmitPulses, numTransmitSources,numElements);
+    drivingScheme = iusHLCreateDrivingScheme( IUS_DIVERGING_WAVES_PARAMETRIZED,
+                                              shape,
+                                              numTransmitPulses,
+                                              numTransmitSources,
+                                              numElements );
 
     // By default, apodization should be initialized to 1.0f for all elements.
     float elementApodization = NAN;
-    int index;
-    for(index=0;index < numElements ; index++)
+    int pulseIndex;
+    int elementIndex;
+    for(pulseIndex=0;pulseIndex < numTransmitPulses ; pulseIndex++)
     {
-        elementApodization = iusDrivingSchemeGetTransmitApodization(drivingScheme,index);
-        TEST_ASSERT_EQUAL_FLOAT(1.0f,elementApodization);
+        for(elementIndex=0; elementIndex < numElements; elementIndex++)
+        {
+            elementApodization = iusDrivingSchemeGetTransmitApodization(drivingScheme,pulseIndex,elementIndex);
+            TEST_ASSERT_EQUAL_FLOAT(1.0f,elementApodization);
+        }
     }
 
     // Invalid params
-    elementApodization=iusDrivingSchemeGetTransmitApodization(drivingScheme,numElements);
+    elementApodization=iusDrivingSchemeGetTransmitApodization(drivingScheme,numTransmitPulses,numElements);
     TEST_ASSERT_EQUAL_FLOAT(NAN,elementApodization);
 
-    elementApodization=iusDrivingSchemeGetTransmitApodization(drivingScheme,-10);
+    elementApodization=iusDrivingSchemeGetTransmitApodization(drivingScheme,-1,-10);
     TEST_ASSERT_EQUAL_FLOAT(NAN,elementApodization);
+
 
     status = iusHLDeleteDrivingScheme(drivingScheme);
     TEST_ASSERT(status == IUS_E_OK);
@@ -114,43 +123,67 @@ TEST(InputfileDrivingScheme, testSchemeSetTransmitApodization)
 
     iuds_t drivingScheme;
     IusShape shape = IUS_2D_SHAPE;
-    drivingScheme = iusHLCreateDrivingScheme(IUS_DIVERGING_WAVES_PARAMETRIZED, shape, numTransmitPulses, numTransmitSources,numElements);
+    drivingScheme = iusHLCreateDrivingScheme( IUS_DIVERGING_WAVES_PARAMETRIZED,
+                                              shape,
+                                              numTransmitPulses,
+                                              numTransmitSources,
+                                              numElements );
 
     // By default, apodization should be initialized to 1.0f for all elements.
     float elementApodization = NAN;
-    int index;
-    for(index=0 ;index < numElements ; index++)
+    int pulseIndex;
+    int elementIndex;
+    for(pulseIndex=0 ;pulseIndex < numTransmitPulses ; pulseIndex++)
     {
-        elementApodization = 1.0/(index%10);
-        status = iusDrivingSchemeSetTransmitApodization(drivingScheme,elementApodization,index);
-        TEST_ASSERT(status == IUS_E_OK);
-        TEST_ASSERT_EQUAL_FLOAT(elementApodization,iusDrivingSchemeGetTransmitApodization(drivingScheme,index));
+        for(elementIndex=0 ;elementIndex < numElements ; elementIndex++)
+        {
+            elementApodization = 1.0/((pulseIndex%10)+1);
+            status = iusDrivingSchemeSetTransmitApodization(drivingScheme,elementApodization,pulseIndex,elementIndex);
+            TEST_ASSERT(status == IUS_E_OK);
+            TEST_ASSERT_EQUAL_FLOAT(elementApodization,iusDrivingSchemeGetTransmitApodization(drivingScheme,pulseIndex,elementIndex));
+        }
     }
 
     // Invalid params
-    status=iusDrivingSchemeSetTransmitApodization(drivingScheme,0.1f,numElements);
+    status=iusDrivingSchemeSetTransmitApodization(drivingScheme,-0.1f,0,0);
     TEST_ASSERT(status == IUS_ERR_VALUE);
 
-    status=iusDrivingSchemeSetTransmitApodization(drivingScheme,0.1f,-10);
+    status=iusDrivingSchemeSetTransmitApodization(drivingScheme,1.001f,0,0);
+    TEST_ASSERT(status == IUS_ERR_VALUE);
+
+    status=iusDrivingSchemeSetTransmitApodization(drivingScheme,0.1f,numTransmitPulses,numElements);
+    TEST_ASSERT(status == IUS_ERR_VALUE);
+
+    status=iusDrivingSchemeSetTransmitApodization(drivingScheme,0.1f,-1,-10);
     TEST_ASSERT(status == IUS_ERR_VALUE);
 
     status = iusHLDeleteDrivingScheme(drivingScheme);
     TEST_ASSERT(status == IUS_E_OK);
 }
 
-TEST(InputfileDrivingScheme, testIUS_DIVERGING_WAVES)
+
+TEST(InputfileDrivingScheme, testDivergingWaves3DShape)
 {
     iuds_t drivingScheme;
     int numElements = 32;
     int numTransmitPulses = 13;
     int numTransmitSources = 13;
     int status = 0;
+    int index;
+    float x,y,z;
+    float angularDelta = 0.13f;
+    float FNumber = -0.955f;
+    float startAngle = 3.14f;
 
-    drivingScheme = iusHLCreateDrivingScheme(IUS_DIVERGING_WAVES, IUS_3D_SHAPE, numTransmitPulses, numTransmitSources,numElements);
+
+    // Diverging waves type is not parametrized
+    // but specified by source locations.
+    drivingScheme = iusHLCreateDrivingScheme( IUS_DIVERGING_WAVES, IUS_3D_SHAPE,
+                                              numTransmitPulses,
+                                              numTransmitSources,
+                                              numElements );
 
     TEST_ASSERT(numTransmitSources == iusHLDrivingSchemeGetNumTransmitSources(drivingScheme));
-    float x,y,z;
-    int index;
     for(index = 0; index < numTransmitSources; index++)
     {
         x=1.0/(index%10);
@@ -167,62 +200,72 @@ TEST(InputfileDrivingScheme, testIUS_DIVERGING_WAVES)
         TEST_ASSERT(iusCompare3DPosition(pos,actual) == IUS_TRUE);
     }
 
-    // invalid params
-    // Driving scheme specific params
-    float angularDelta = 0.13f;
-    float FNumber = -0.955f;
-    float startAngle = 3.14f;
 
-    status |= iusDrivingSchemeSetSourceAngularDelta(drivingScheme,angularDelta);
+    // invalid params/operations
+
+    // 3D shape transducer, should not alow 2d source positions
+    iu2dp_t _2dpos = iusHLCreate2DPosition(x, z);
+    status=iusHLDrivingSchemeSet2DSourceLocation(drivingScheme,_2dpos,index);
+    TEST_ASSERT(status == IUS_ERR_VALUE);
+
+
+    // Driving scheme specific params
+    // Setting Parametric values should result in errors for
+    // a non parametric driver scheme
+    status |= iusDrivingSchemeSetSourceDeltaTheta(drivingScheme,angularDelta);
     TEST_ASSERT(status == IUS_ERR_VALUE);
     status |= iusDrivingSchemeSetSourceFNumber(drivingScheme,FNumber);
     TEST_ASSERT(status == IUS_ERR_VALUE);
-    status |= iusDrivingSchemeSetSourceStartAngle(drivingScheme,startAngle);
+    status |= iusDrivingSchemeSetSourceStartTheta(drivingScheme,startAngle);
     TEST_ASSERT(status == IUS_ERR_VALUE);
     status = iusHLDeleteDrivingScheme(drivingScheme);
     TEST_ASSERT(status == IUS_E_OK);
 }
 
-TEST(InputfileDrivingScheme, testIUS_DIVERGING_WAVES_PARAMETRIZED)
+
+
+
+TEST(InputfileDrivingScheme, testDivergingWavesParametrized2DShape)
 {
     iuds_t parametrizedDrivingScheme;
     int numElements = 32;
     int numTransmitPulses = 13;
     int numTransmitSources = 13;
     int status = 0;
-
-    IusShape shape = IUS_2D_SHAPE;
-    parametrizedDrivingScheme = iusHLCreateDrivingScheme(IUS_DIVERGING_WAVES_PARAMETRIZED, shape, numTransmitPulses, numTransmitSources,numElements);
-
-    // Driving scheme specific params
     float angularDelta = 0.13f;
     float FNumber = -0.955f;
     float startAngle = 3.14f;
+    float startPhi = startAngle;
+    float deltaPhi = angularDelta;
 
-    status |= iusDrivingSchemeSetSourceAngularDelta(parametrizedDrivingScheme,angularDelta);
+
+    IusShape shape = IUS_2D_SHAPE;
+    parametrizedDrivingScheme = iusHLCreateDrivingScheme( IUS_DIVERGING_WAVES_PARAMETRIZED,
+                                                          shape,
+                                                          numTransmitPulses,
+                                                          numTransmitSources,
+                                                          numElements );
+    // Driving scheme specific params
+    status |= iusDrivingSchemeSetSourceDeltaTheta(parametrizedDrivingScheme,angularDelta);
     TEST_ASSERT(status == IUS_E_OK);
-    TEST_ASSERT_EQUAL_FLOAT(angularDelta,iusDrivingSchemeGetSourceAngularDelta(parametrizedDrivingScheme));
+    TEST_ASSERT_EQUAL_FLOAT(angularDelta,iusDrivingSchemeGetSourceDeltaTheta(parametrizedDrivingScheme));
     status |= iusDrivingSchemeSetSourceFNumber(parametrizedDrivingScheme,FNumber);
     TEST_ASSERT(status == IUS_E_OK);
     TEST_ASSERT_EQUAL_FLOAT(FNumber,iusDrivingSchemeGetSourceFNumber(parametrizedDrivingScheme));
-    status |= iusDrivingSchemeSetSourceStartAngle(parametrizedDrivingScheme,startAngle);
+    status |= iusDrivingSchemeSetSourceStartTheta(parametrizedDrivingScheme,startAngle);
     TEST_ASSERT(status == IUS_E_OK);
-    TEST_ASSERT_EQUAL_FLOAT(startAngle,iusDrivingSchemeGetSourceStartAngle(parametrizedDrivingScheme));
+    TEST_ASSERT_EQUAL_FLOAT(startAngle,iusDrivingSchemeGetSourceStartTheta(parametrizedDrivingScheme));
+
+
     status = iusHLDeleteDrivingScheme(parametrizedDrivingScheme);
     TEST_ASSERT(status == IUS_E_OK);
 
-
-
-    // invalid params
-    parametrizedDrivingScheme = iusHLCreateDrivingScheme(IUS_DIVERGING_WAVES_PARAMETRIZED, IUS_3D_SHAPE, numTransmitPulses, numTransmitSources,numElements);
-    status |= iusDrivingSchemeSetSourceAngularDelta(parametrizedDrivingScheme,angularDelta);
+    // invalid params/operations
+    // 2D driving scheme does not support setting 3D parameters
+    status |= iusDrivingSchemeSetSourceStartPhi(parametrizedDrivingScheme,startPhi);
     TEST_ASSERT(status == IUS_ERR_VALUE);
-    status |= iusDrivingSchemeSetSourceFNumber(parametrizedDrivingScheme,FNumber);
+    status |= iusDrivingSchemeSetSourceDeltaPhi(parametrizedDrivingScheme,deltaPhi);
     TEST_ASSERT(status == IUS_ERR_VALUE);
-    status |= iusDrivingSchemeSetSourceStartAngle(parametrizedDrivingScheme,startAngle);
-    TEST_ASSERT(status == IUS_ERR_VALUE);
-    status = iusHLDeleteDrivingScheme(parametrizedDrivingScheme);
-    TEST_ASSERT(status == IUS_E_OK);
 
 
 
@@ -272,10 +315,9 @@ TEST(InputfileDrivingScheme, testIUS_DIVERGING_WAVES_PARAMETRIZED)
 TEST_GROUP_RUNNER(InputfileDrivingScheme)
 {
     RUN_TEST_CASE(InputfileDrivingScheme, testIusHLCreateDrivingScheme);
-    RUN_TEST_CASE(InputfileDrivingScheme, testIUS_DIVERGING_WAVES_PARAMETRIZED);
-    RUN_TEST_CASE(InputfileDrivingScheme, testIUS_DIVERGING_WAVES);
+    RUN_TEST_CASE(InputfileDrivingScheme, testDivergingWavesParametrized2DShape);
+    RUN_TEST_CASE(InputfileDrivingScheme, testDivergingWaves3DShape);
     RUN_TEST_CASE(InputfileDrivingScheme, testSchemeGetTransmitApodization);
     RUN_TEST_CASE(InputfileDrivingScheme, testSchemeSetTransmitApodization);
-
 }
 

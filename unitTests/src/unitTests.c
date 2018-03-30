@@ -22,6 +22,7 @@ static void RunAllTests(void)
     RUN_TEST_GROUP(InputfileTransducer);
     RUN_TEST_GROUP(InputfileReceiveSettings);
     RUN_TEST_GROUP(InputfileDrivingScheme);
+    RUN_TEST_GROUP(InputfileTransmitPulse);
     RUN_TEST_GROUP(InputfileNode);
     RUN_TEST_GROUP(Inputfile);
     RUN_TEST_GROUP(Misc);
