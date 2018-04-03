@@ -62,13 +62,6 @@ typedef struct
 } IusTransmitPattern;
 
 
-/** \brief ... */
-typedef struct
-{
-    int   numChannels;  /**< The number of simultaneous active elements per pulse */
-    int * pChannelMap;  /**< A table of size numTransmitPulses x numChannels  at each index the transducer element that is mapped to a (channel,transmitPulse) */
-} IusChannelCoding;
-
 
 
 
@@ -104,11 +97,16 @@ typedef struct
 /** \brief Ultrasound recording settings (TGC and Fs) */
 typedef struct
 {
-    IusChannelCoding     receiveChannelCoding;      /**< Describes the mapping between transducer elemenents and receive pulses */
+    /**< Describes the mapping between transducer elemenents and receive pulses */
+    int   numChannels;                              /**< The number of simultaneous active elements per pulse */
+    // for indeces, see transmit apodization
+    // size should be addressed like pChannelMap[numDelays][numChannels]
+    int * pChannelMap;                              /**< A table of size numTransmitPulses x numChannels  at each index the transducer element that is mapped to a (channel,transmitPulse) */
     int                  numSamplesPerLine;         /**< length of an acquisition line */
     float                sampleFrequency;           /**< The sampling frequency that was used */
-    float *              pStartDepth;               /**< The start depths of RFlines, array length is the number of pulses per frame, values are in seconds */
-    float *              pEndDepth;                 /**< The end depths of RFLines, this data can be considered redundant as it is startDepth+(sampleFrequency*numSamplesPerLine)  */
+    int                  numDelays ;                // should be identical to drivingscheme.numtransmitpulses
+    float *              pStartDelay;               /**< The start delay of RFlines, array length is the number of pulses per frame, values are in seconds */
+    float *              pEndDelay;                 /**< The end delay of RFLines, this data can be considered redundant as it is startDepth+(sampleFrequency*numSamplesPerLine)  */
     int                  numTimeGainControlValues;  /**< number of control points that describe the TGC */
     IusTimeGainControl * pTimeGainControl;          /**< TimeGainControl points (time,gain) */
 } IusReceiveSettings;

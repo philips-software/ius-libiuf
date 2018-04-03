@@ -123,12 +123,12 @@ int LF_copyReceiveSettingsData
 
     pDst->sampleFrequency = pSrc->sampleFrequency;                                   /* The sampling frequency that was used */
 
-    pDst->pStartDepth      = (float *)calloc( numPulsesPerFrame, sizeof(float) );
-    if ( pDst->pStartDepth == NULL )
+    pDst->pStartDelay      = (float *)calloc( numPulsesPerFrame, sizeof(float) );
+    if ( pDst->pStartDelay == NULL )
     {
         return 2 << 4;
     }
-    memcpy( pDst->pStartDepth, pSrc->pStartDepth,
+    memcpy( pDst->pStartDelay, pSrc->pStartDelay,
         numPulsesPerFrame * sizeof(float) );            /* The start depths of RFlines, array length is the number of pulses per frame,
                                                                                              values are in seconds */
     pDst->pEndDepth = (float *)calloc( numPulsesPerFrame, sizeof(float) );
@@ -729,7 +729,7 @@ void iusInputDestroy
     {
         free( pInst->pReceiveSettings->receiveChannelCoding.pChannelMap );
     }
-    free( pInst->pReceiveSettings->pStartDepth );
+    free( pInst->pReceiveSettings->pStartDelay );
     free( pInst->pReceiveSettings->pEndDepth );
     free( pInst->pReceiveSettings->pTimeGainControl );
     free( pInst->pReceiveSettings );
@@ -1317,7 +1317,7 @@ int iusInputWrite
 
       dims[0] = 1;
       //float *endDepths = (float *)calloc()
-      //  pReceiveSettings->pStartDepth + (pDrivingScheme->numSamplesPerLine * pReceiveSettings->sampleFrequency);
+      //  pReceiveSettings->pStartDelay + (pDrivingScheme->numSamplesPerLine * pReceiveSettings->sampleFrequency);
       group_id = H5Gcreate( handle, "/ReceiveSettings", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT );
       // write channel map
       H5LTmake_dataset_int(group_id, "/ReceiveSettings/numChannels", 1, dims, &(pInst->pReceiveSettings->receiveChannelCoding.numChannels));
@@ -1329,7 +1329,7 @@ int iusInputWrite
 
       H5LTmake_dataset_float( group_id,    "/ReceiveSettings/sampleFrequency", 1, dims, &(pInst->pReceiveSettings->sampleFrequency) );
       dims[0] = pInst->pDrivingScheme->numTransmitPulses;
-      H5LTmake_dataset_float( group_id,    "/ReceiveSettings/startDepth", 1, dims, pInst->pReceiveSettings->pStartDepth );
+      H5LTmake_dataset_float( group_id,    "/ReceiveSettings/startDepth", 1, dims, pInst->pReceiveSettings->pStartDelay );
       H5LTmake_dataset_float( group_id,    "/ReceiveSettings/endDepth"  , 1, dims, pInst->pReceiveSettings->pEndDepth );
       subgroup_id = H5Gcreate( group_id,   "/ReceiveSettings/TimeGainControl", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT );
       dims[0] = 1;
@@ -2025,9 +2025,9 @@ IusInputInstance * iusInputRead
     status = iusHdf5ReadFloat( handle, "/ReceiveSettings/sampleFrequency", &(pInst->pReceiveSettings->sampleFrequency),verbose );
     status = iusHdf5ReadInt( handle,   "/ReceiveSettings/TimeGainControl/numValues", &(pInst->pReceiveSettings->numTimeGainControlValues), verbose );
     status = LF_readTimeGainControls( pInst, handle, verbose );
-    pInst->pReceiveSettings->pStartDepth = (float *)calloc(pInst->pDrivingScheme->numTransmitPulses, sizeof(float));
+    pInst->pReceiveSettings->pStartDelay = (float *)calloc(pInst->pDrivingScheme->numTransmitPulses, sizeof(float));
     pInst->pReceiveSettings->pEndDepth   = (float *)calloc(pInst->pDrivingScheme->numTransmitPulses, sizeof(float));
-    status = H5LTread_dataset_float(handle, "/ReceiveSettings/startDepth", pInst->pReceiveSettings->pStartDepth);
+    status = H5LTread_dataset_float(handle, "/ReceiveSettings/startDepth", pInst->pReceiveSettings->pStartDelay);
     status = H5LTread_dataset_float(handle, "/ReceiveSettings/endDepth", pInst->pReceiveSettings->pEndDepth);
 
     status = iusHdf5ReadInt(handle,  "/DrivingScheme/numChannels", &(pInst->pDrivingScheme->transmitChannelCoding.numChannels), verbose);

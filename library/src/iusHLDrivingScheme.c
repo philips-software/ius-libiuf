@@ -123,6 +123,7 @@ IusDrivingScheme *iusHLCreateDrivingScheme
         baseDrivingScheme = iusCreate3DDrivingScheme(numTransmitSources);
     }
 
+    // Apodization
     if( baseDrivingScheme == NULL ) return NULL;
     baseDrivingScheme->pTransmitApodization = iusCreateTransmitApodization(numTransmitPulses , numElements);
 
@@ -131,6 +132,8 @@ IusDrivingScheme *iusHLCreateDrivingScheme
         iusHLDeleteDrivingScheme(baseDrivingScheme);
         return NULL;
     }
+
+    // Apodization
 
     baseDrivingScheme->numElements = numElements;
     baseDrivingScheme->numTransmitSources = numTransmitSources;
