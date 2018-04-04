@@ -2007,7 +2007,7 @@ IusDrivingScheme *iusReadDrivingScheme(hid_t handle, IusShape shape,  int verbos
     }
 
     // TransmitPattern
-
+//    status = iusReadTransmitPattern(pDrivingScheme);
     pDrivingScheme->numElements = numElements;
     pDrivingScheme->numTransmitSources = numTransmitSources;
     pDrivingScheme->numTransmitPulses = numTransmitPulses;
