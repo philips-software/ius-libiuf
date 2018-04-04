@@ -12,9 +12,10 @@
 #include <iusHLNode.h>
 #include <iusHLInput.h>
 #include <iusHLInputFile.h>
-#include <include/iusInput.h>
+#include <include/iusHLDrivingScheme.h>
 #include <memory.h>
 #include <stdlib.h>
+#include <include/iusInput.h>
 
 
 int iusHLGetNumFrames(iuh_t header)
@@ -85,6 +86,24 @@ iut_t iusHLHeaderGetTransducer
     return pInstance->pTransducer;
 }
 
+int iusHLHeaderSetDrivingScheme
+(
+    iuh_t header,
+    iuds_t scheme
+)
+{
+    header->pDrivingScheme = scheme;
+    return IUS_E_OK;
+}
+
+iuds_t iusHLHeaderGetDrivingScheme
+    (
+        iuh_t pInstance
+    )
+{
+    return pInstance->pDrivingScheme;
+}
+
 
 IUS_BOOL iusHLCompareHeader(iuh_t referenceHeader, iuh_t actualHeader)
 {
@@ -96,18 +115,23 @@ IUS_BOOL iusHLCompareHeader(iuh_t referenceHeader, iuh_t actualHeader)
         fprintf(stderr, "iusHLCompareHeader numFrames match %s@%d\n", __FILE__, __LINE__);
         return IUS_FALSE;
     }
-    if( iusCompareNode(&referenceHeader->iusNode, &actualHeader->iusNode) == IUS_FALSE ){
+    if(iuHLNodeCompare(&referenceHeader->iusNode, &actualHeader->iusNode) == IUS_FALSE ){
         return IUS_FALSE;
     }
 
-    if( iusCompareExperiment(referenceHeader->pExperiment,actualHeader->pExperiment) == IUS_FALSE ){
+    if(iusHLExperimentCompare(referenceHeader->pExperiment, actualHeader->pExperiment) == IUS_FALSE ){
         return IUS_FALSE;
     }
 
-    if(iusHLCompareTransducer(referenceHeader->pTransducer, actualHeader->pTransducer) == IUS_FALSE ){
+    if(iusHLTransducerCompare(referenceHeader->pTransducer, actualHeader->pTransducer) == IUS_FALSE ){
         return IUS_FALSE;
     }
-    // Todo: Add  receivesettings, drivingscheme
+
+    if(iusHLCompareDrivingScheme(referenceHeader->pDrivingScheme, actualHeader->pDrivingScheme) == IUS_FALSE ){
+        return IUS_FALSE;
+    }
+
+    // Todo: Add  receivesettings
     return IUS_TRUE;
 }
 

@@ -20,7 +20,7 @@ iun_t iusHLCreateNode(char *pNodeType, int parents) {
     return pIusNode;
 }
 
-IUS_BOOL iusCompareNode(IusNode *pReferenceNode, IusNode *pActualNode)
+IUS_BOOL iuHLNodeCompare(IusNode *pReferenceNode, IusNode *pActualNode)
 {
     if( pReferenceNode->numberOfParents != pActualNode->numberOfParents ){
         return IUS_FALSE;

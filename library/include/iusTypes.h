@@ -148,14 +148,14 @@ typedef struct
 } IusRange;               // 1D region of interest
 
 
-enum IusTransducerShape
+typedef enum
 {
     IUS_LINE = 1,           /**< Todo: See Draft */
     IUS_CIRCLE,
     IUS_PLANE,
     IUS_CYLINDER,
     IUS_SPHERE
-};
+} IusTransducerShape;
 
 #define TRANSDUCER_SHAPE_LINE "LINE"
 #define TRANSDUCER_SHAPE_CIRCLE "CIRCLE"
@@ -163,15 +163,6 @@ enum IusTransducerShape
 #define TRANSDUCER_SHAPE_CYLINDER "CYLINDER"
 #define TRANSDUCER_SHAPE_SPHERE "SPHERE"
 
-
-typedef enum IusTransducerShape IusTransducerShape;
-
-/** \brief 3D Transducer element type: 3D or 2D */
-typedef enum
-{
-    IUS_2D_TRANSDUCER_ELEMENT = 1,
-    IUS_3D_TRANSDUCER_ELEMENT
-} IusTransducerElementType ;
 
 typedef enum
 {

@@ -25,7 +25,7 @@ extern "C" {
 
 typedef struct
 {
-    IusTransducerElementType type;
+    IusShape shape;
 
 } IusBaseTransducerElement;
 
@@ -62,20 +62,10 @@ typedef struct
 } IusTransmitPattern;
 
 
-
-
-
-
-typedef enum
-{
-    IUS_2D_TRANSDUCER = 0,
-    IUS_3D_TRANSDUCER
-} IusTransducerType ;
-
 /** \brief a Transducer object */
 typedef struct
 {
-    IusTransducerType      type; /**< 2D or 3D transducer? */
+    IusShape               type; /**< 2D or 3D transducer? */
     char *                 pTransducerName;   /**< descriptive name of the ultrasound probe */
     float                  centerFrequency;   /**< operating frequency of the transducer */
     int                    numElements;       /**< number of transducer Elements in the probe */
@@ -143,6 +133,19 @@ typedef struct
     float * pRawPulseTimes;       /**< corresponding timestamps of amplitudes [in seconds] */
 } IusNonParametricTransmitPulse;
 
+
+typedef struct
+{
+    int count;
+    IusTransmitPattern *      pTransmitPattern;       /**< array (time, index) of length numTransmitPulses */
+} IusTransmitPatternList;
+
+typedef struct
+{
+    int count;
+    IusTransmitPulse *        pTransmitPulse;          /**< waveform of the transmit pulse */
+} IusTransmitPulseList;
+
 /** \brief the driving scheme for an experiment */
 typedef struct
 {
@@ -153,8 +156,8 @@ typedef struct
     int                       numElements;
     //int numFrames;                                  /**< number of repetitions of the driving pattern */
     float                     transmitPatternDelay;   /**< extra delay at the end of a transmit pattern */
-    IusTransmitPattern *      pTransmitPattern;       /**< array (time, index) of length numTransmitPulses */
-    IusTransmitPulse *        transmitPulse;          /**< waveform of the transmit pulse */
+    IusTransmitPatternList *  pTransmitPatterns;       /**< array (time, index) of length numTransmitPulses */
+    IusTransmitPulseList *    pTransmitPulses;          /**< waveform of the transmit pulse */
     float *                   pTransmitApodization;   /**< 2D array: per transmit event we have numElements gains */
 } IusDrivingScheme;
 

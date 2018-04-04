@@ -55,8 +55,8 @@ TEST(InputfileTransmitPulse, testCreateTransmitPulse)
 
 
     TEST_ASSERT_EQUAL_FLOAT( iusHLParametricPulseGetFrequency(parametricPulse), pulseFrequency);
-    TEST_ASSERT_EQUAL_FLOAT(iusHLParametricPulseGetPulseAmplitude(parametricPulse), pulseAmplitude);
-    TEST_ASSERT_EQUAL_FLOAT(iusHLParametricPulseGetCount(parametricPulse),pulseCount);
+    TEST_ASSERT_EQUAL_FLOAT( iusHLParametricPulseGetPulseAmplitude(parametricPulse), pulseAmplitude);
+    TEST_ASSERT_EQUAL_FLOAT( iusHLParametricPulseGetCount(parametricPulse),pulseCount);
 
     // Non Parametric transmit pulse
     // alloc mem

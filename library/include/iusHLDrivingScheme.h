@@ -7,6 +7,7 @@
 
 
 #include "iusHLTransmitPulse.h"
+#include "iusHLTransmitPattern.h"
 
 #ifndef IUSLIBRARY_IMPLEMENTATION
 #include <stddef.h>
@@ -36,14 +37,24 @@ int iusHLDeleteDrivingScheme
     iuds_t drivingScheme
 );
 
+iuds_t iusCreate3DDrivingScheme
+(
+    int numTransmitSources
+);
+
+
+iuds_t iusCreate2DDrivingScheme
+(
+    int numTransmitSources
+);
+
 // setters
 
-
 int iusHLDrivingSchemeSetTransmitPulse
-    (
-        iuds_t drivingScheme,
-        iutp_t transmitPulse
-    );
+(
+    iuds_t drivingScheme,
+    iutp_t transmitPulse
+);
 
 int iusDrivingSchemeSetSourceFNumber
 (
@@ -100,7 +111,10 @@ int iusHLDrivingSchemeSet2DSourceLocation
 );
 
 // getters
-
+iutpal_t iusHLDrivingSchemeGetTransmitPatternList
+    (
+        iuds_t drivingScheme
+    );
 
 IusShape iusHLDrivingSchemeGetShape
 (
@@ -168,5 +182,16 @@ float iusDrivingSchemeGetSourceDeltaTheta
     iuds_t drivingScheme
 );
 
+IUS_BOOL iusHLCompareDrivingScheme
+(
+    iuds_t reference,
+    iuds_t actual
+);
 
+
+float *iusCreateTransmitApodization
+(
+    int numTransmitPulses,
+    int numElements
+);
 #endif //IUSLIBRARY_IUSHLDRIVINGSCHEME_H

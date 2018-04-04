@@ -33,105 +33,107 @@ typedef IusBaseTransducerElement *iudte_t;
 #define IUTE_INVALID (iudte_t) NULL
 
 iut_t iusHLCreateTransducer
-    (
-        char *name,
-        IusTransducerShape shape,
-        float centerFrequency,
-        int numElements
-    );
+(
+    char *name,
+    IusTransducerShape shape,
+    float centerFrequency,
+    int numElements
+);
 
 int iusHLDeleteTransducer
-    (
-        iut_t transducer
-    );
+(
+    iut_t transducer
+);
 
-int iusTransducerSetElement
-    (
-        IusTransducer *pTransducer,
-        int elementIndex,
-        void *transducerElement
-    );
+int iusHLTransducerSetElement
+(
+    IusTransducer *pTransducer,
+    int elementIndex,
+    void *transducerElement
+);
 
-iudte_t iusTransducerGetElement
+iudte_t iusHLTransducerGetElement
 (
     IusTransducer
     *transducer,
     int elementIndex
 );
 
-IUS_BOOL iusTransducerCompareElement
-    (
-        IusBaseTransducerElement *reference,
-        IusBaseTransducerElement *actual
-    );
+IUS_BOOL iusHLTransducerCompareElement
+(
+    IusBaseTransducerElement *reference,
+    IusBaseTransducerElement *actual
+);
 
-IUS_BOOL iusHLCompareTransducer
-    (
-        iut_t reference,
-        iut_t actual
-    );
+IUS_BOOL iusHLTransducerCompare
+(
+    iut_t reference,
+    iut_t actual
+);
 
 float iusHLTransducerGetCenterFrequency
-    (
-        iut_t transducer
-    );
+(
+    iut_t transducer
+);
 
 int iusHLTransducerGetNumElements
-    (
-        iut_t transducer
-    );
+(
+    iut_t transducer
+);
 
 char *iusHLTransducerGetName
-    (
-        iut_t transducer
-    );
+(
+    iut_t transducer
+);
 
-IusTransducerShape iusHLGetTransducerShape
-    (
-        iut_t transducer
-    );
+IusTransducerShape iusHLTransducerGetShape
+(
+    iut_t transducer
+);
 
-Ius2DPosition *iusHLCreate2DPosition
-    (
-        float x,
-        float z
-    );
+
 
 Ius2DSize *iusHLCreate2DElementSize
-    (
-        float sx,
-        float sz
-    );
+(
+    float sx,
+    float sz
+);
 
 Ius2DTransducerElement *iusHLCreate2DElement
-    (
-        iu2dp_t pos,
-        float phi,
-        iu2ds_t siz
-    );
+(
+    iu2dp_t pos,
+    float phi,
+    iu2ds_t siz
+);
 
 iu3da_t iusHLCreate3DElementAngle
-    (
-        float theta,
-        float phi
-    );
+(
+    float theta,
+    float phi
+);
 
 iu3ds_t iusHLCreate3DElementSize
-    (
-        float sx,
-        float sy,
-        float sz
-    );
+(
+    float sx,
+    float sy,
+    float sz
+);
 
 iu3dte_t iusHLCreate3DElement
-    (
-        iu3dp_t pos,
-        iu3da_t ang,
-        iu3ds_t siz
-    );
+(
+    iu3dp_t pos,
+    iu3da_t ang,
+    iu3ds_t siz
+);
 
-IusTransducerElementType iusHLTransducerGetElementType
-    (
-        iudte_t baseElement
-    );
+IusShape iusHLTransducerGetElementShape
+(
+    iudte_t baseElement
+);
+
+IusShape iusHLTransducerGetShapeType
+(
+    iut_t baseElement
+);
+
 #endif //IUSLIBRARY_IUSHLTRANSDUCER_H

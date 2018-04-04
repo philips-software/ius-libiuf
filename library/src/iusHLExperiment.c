@@ -10,7 +10,7 @@
 #include <iusInput.h>
 #include <include/iusHLInput.h>
 
-IUS_BOOL iusCompareExperiment(iue_t reference, iue_t actual) {
+IUS_BOOL iusHLExperimentCompare(iue_t reference, iue_t actual) {
     if( reference == actual ) return IUS_TRUE;
     if( reference == NULL || actual == NULL )
         return IUS_FALSE;

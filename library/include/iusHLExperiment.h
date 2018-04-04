@@ -43,7 +43,7 @@ char *iusHLExperimentGetDescription
     iue_t experiment
 );
 
-IUS_BOOL iusCompareExperiment
+IUS_BOOL iusHLExperimentCompare
 (
     iue_t reference,
     iue_t actual

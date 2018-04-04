@@ -23,9 +23,9 @@ static void RunAllTests(void)
     RUN_TEST_GROUP(InputfileReceiveSettings);
     RUN_TEST_GROUP(InputfileDrivingScheme);
     RUN_TEST_GROUP(InputfileTransmitPulse);
+    RUN_TEST_GROUP(InputfileTransmitPattern);
     RUN_TEST_GROUP(InputfileNode);
-    RUN_TEST_GROUP(Inputfile);
-    RUN_TEST_GROUP(Misc);
+//    RUN_TEST_GROUP(Inputfile);
 }
 
 int main(int argc, const char * argv[])

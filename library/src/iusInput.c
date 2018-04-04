@@ -198,21 +198,21 @@ int LF_copyDrivingSchemeData
 //    memcpy( pDst->pTransmitPattern, pSrc->pTransmitPattern,
 //            numPulsesPerFrame * sizeof( IusTransmitPattern ) );  // array (time, index) of length numTransmitPulses
 //
-//    pDst->transmitPulse.numPulseValues = pSrc->transmitPulse.numPulseValues;  // waveform of the transmit pulse
-//    if ( pDst->transmitPulse.numPulseValues != 0 )
+//    pDst->pTransmitPulse.numPulseValues = pSrc->pTransmitPulse.numPulseValues;  // waveform of the transmit pulse
+//    if ( pDst->pTransmitPulse.numPulseValues != 0 )
 //    {
-//        pDst->transmitPulse.pRawPulseAmplitudes = (float *)calloc( pDst->transmitPulse.numPulseValues, sizeof(float));       /* shape of waveform [in Volts] */
-//        pDst->transmitPulse.pRawPulseTimes      = (float *)calloc( pDst->transmitPulse.numPulseValues, sizeof(float));            /* corresponding timestamps of amplitudes [in seconds] */
-//        if ( pDst->transmitPulse.pRawPulseAmplitudes == NULL || pDst->transmitPulse.pRawPulseTimes == 0)
+//        pDst->pTransmitPulse.pRawPulseAmplitudes = (float *)calloc( pDst->pTransmitPulse.numPulseValues, sizeof(float));       /* shape of waveform [in Volts] */
+//        pDst->pTransmitPulse.pRawPulseTimes      = (float *)calloc( pDst->pTransmitPulse.numPulseValues, sizeof(float));            /* corresponding timestamps of amplitudes [in seconds] */
+//        if ( pDst->pTransmitPulse.pRawPulseAmplitudes == NULL || pDst->pTransmitPulse.pRawPulseTimes == 0)
 //        {
 //            return 2 << 7;
 //        }
-//        memcpy( pDst->transmitPulse.pRawPulseAmplitudes, pSrc->transmitPulse.pRawPulseAmplitudes, pDst->transmitPulse.numPulseValues*sizeof(float));
-//        memcpy( pDst->transmitPulse.pRawPulseTimes,      pSrc->transmitPulse.pRawPulseTimes,      pDst->transmitPulse.numPulseValues*sizeof(float));
+//        memcpy( pDst->pTransmitPulse.pRawPulseAmplitudes, pSrc->pTransmitPulse.pRawPulseAmplitudes, pDst->pTransmitPulse.numPulseValues*sizeof(float));
+//        memcpy( pDst->pTransmitPulse.pRawPulseTimes,      pSrc->pTransmitPulse.pRawPulseTimes,      pDst->pTransmitPulse.numPulseValues*sizeof(float));
 //    }
-//    pDst->transmitPulse.pulseFrequency = pSrc->transmitPulse.pulseFrequency;
-//    pDst->transmitPulse.pulseAmplitude = pSrc->transmitPulse.pulseAmplitude;
-//    pDst->transmitPulse.pulseCount     = pSrc->transmitPulse.pulseCount;
+//    pDst->pTransmitPulse.pulseFrequency = pSrc->pTransmitPulse.pulseFrequency;
+//    pDst->pTransmitPulse.pulseAmplitude = pSrc->pTransmitPulse.pulseAmplitude;
+//    pDst->pTransmitPulse.pulseCount     = pSrc->pTransmitPulse.pulseCount;
 //
 //    pDst->pTransmitApodization = (float *)calloc( numPulsesPerFrame * numElements, sizeof(float) );   // 2D array: per transmitted pulse we have numElement gains
 //                                                                                                      // (which are numTransducerElements or numChannelElements)
@@ -447,20 +447,20 @@ static herr_t LF_readPulseRaw
 
     IUS_UNUSED(verbose); // avoid compiler warnings
 
-    pInst->pDrivingScheme->transmitPulse.pRawPulseAmplitudes = (float *) malloc(numAmplitudes * sizeof(float));
-    pInst->pDrivingScheme->transmitPulse.pRawPulseTimes = (float *) malloc(numAmplitudes * sizeof(float));
-    if ( pInst->pDrivingScheme->transmitPulse.pRawPulseAmplitudes == NULL ||
-         pInst->pDrivingScheme->transmitPulse.pRawPulseTimes == NULL )
+    pInst->pDrivingScheme->pTransmitPulse.pRawPulseAmplitudes = (float *) malloc(numAmplitudes * sizeof(float));
+    pInst->pDrivingScheme->pTransmitPulse.pRawPulseTimes = (float *) malloc(numAmplitudes * sizeof(float));
+    if ( pInst->pDrivingScheme->pTransmitPulse.pRawPulseAmplitudes == NULL ||
+         pInst->pDrivingScheme->pTransmitPulse.pRawPulseTimes == NULL )
     {
         fprintf( stderr, "LF_readPulseRaw: Error allocating data\n" );
         return -1;
     }
 
-    status = H5LTread_dataset_float( handle, "/DrivingScheme/TransmitPulse/rawPulseAmplitudes", pInst->pDrivingScheme->transmitPulse.pRawPulseAmplitudes );
-    status = H5LTread_dataset_float( handle, "/DrivingScheme/TransmitPulse/rawPulseTimes", pInst->pDrivingScheme->transmitPulse.pRawPulseTimes );
-    status = H5LTread_dataset_float( handle, "/DrivingScheme/TransmitPulse/pulseFrequency", &(pInst->pDrivingScheme->transmitPulse.pulseFrequency) );
-    status = H5LTread_dataset_float( handle, "/DrivingScheme/TransmitPulse/pulseAmplitude", &(pInst->pDrivingScheme->transmitPulse.pulseAmplitude) );
-    status = H5LTread_dataset_int( handle, "/DrivingScheme/TransmitPulse/pulseCount", &(pInst->pDrivingScheme->transmitPulse.pulseCount) );
+    status = H5LTread_dataset_float( handle, "/DrivingScheme/TransmitPulse/rawPulseAmplitudes", pInst->pDrivingScheme->pTransmitPulse.pRawPulseAmplitudes );
+    status = H5LTread_dataset_float( handle, "/DrivingScheme/TransmitPulse/rawPulseTimes", pInst->pDrivingScheme->pTransmitPulse.pRawPulseTimes );
+    status = H5LTread_dataset_float( handle, "/DrivingScheme/TransmitPulse/pulseFrequency", &(pInst->pDrivingScheme->pTransmitPulse.pulseFrequency) );
+    status = H5LTread_dataset_float( handle, "/DrivingScheme/TransmitPulse/pulseAmplitude", &(pInst->pDrivingScheme->pTransmitPulse.pulseAmplitude) );
+    status = H5LTread_dataset_int( handle, "/DrivingScheme/TransmitPulse/pulseCount", &(pInst->pDrivingScheme->pTransmitPulse.pulseCount) );
     if ( status < 0 )
     {
         fprintf( stderr, "LF_readPulseRaw: Error reading dataset: H5Dread returned: %d\n", status );
@@ -735,8 +735,8 @@ void iusInputDestroy
     free( pInst->pReceiveSettings );
 
     free( pInst->pDrivingScheme->pTransmitPattern );
-    free( pInst->pDrivingScheme->transmitPulse.pRawPulseAmplitudes );
-    free( pInst->pDrivingScheme->transmitPulse.pRawPulseTimes );
+    free( pInst->pDrivingScheme->pTransmitPulse.pRawPulseAmplitudes );
+    free( pInst->pDrivingScheme->pTransmitPulse.pRawPulseTimes );
     free( pInst->pDrivingScheme->pTransmitApodization );
     free( pInst->pDrivingScheme->pSourceLocations );
     if ( pInst->pDrivingScheme->transmitChannelCoding.numChannels != 0 )
@@ -1048,13 +1048,13 @@ int iusWriteTransducer(IusTransducer *pTransducer, hid_t group_id, int verbose) 
     }
 
     subgroup_id = H5Gcreate(group_id, "/Transducer/Elements", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT );
-    if( pTransducer->type == IUS_3D_TRANSDUCER )
+    if( pTransducer->type == IUS_3D_SHAPE )
     {
         Ius3DTransducer *p3DTransducer = (Ius3DTransducer *) pTransducer;
         status |= iusWrite3DTransducer(p3DTransducer,subgroup_id,verbose);
     }
 
-    if( pTransducer->type == IUS_2D_TRANSDUCER )
+    if( pTransducer->type == IUS_2D_SHAPE )
     {
         Ius2DTransducer *p2DTransducer = (Ius2DTransducer *) pTransducer;
         status |= iusWrite2DTransducer(p2DTransducer,subgroup_id,verbose);
@@ -1063,113 +1063,100 @@ int iusWriteTransducer(IusTransducer *pTransducer, hid_t group_id, int verbose) 
 
     return status;
 
-
-//    int i; //iterator
-//
-//    hid_t angle_tid;    // File datatype identifier for IusAngle
-//    hid_t position_tid; // File datatype identifier for IusPosition
-//    hid_t propList;     // Property list
-//    hid_t group_id;
-//    hid_t subgroup_id;
-//    hid_t dataset, space, dataChunkConfig;
-//    hid_t size_tid;     // File datatype identifier for IusSize
-//    IusAngle *    pAngleArray;
-//    IusPosition * pPositionArray;
-//    IusSize *     pSizeArray;
-//
-//    group_id = H5Gcreate( handle,   "/Transducer", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT );
-//    H5LTmake_dataset_string( handle,"/Transducer/transducerName",     pTransducer->pTransducerName );
-//    H5LTmake_dataset_float( handle, "/Transducer/centerFrequency", 1, dims, &(pTransducer->centerFrequency) );
-//    H5LTmake_dataset_int( handle,   "/Transducer/numElements",     1, dims, &(pTransducer->numElements) );
-//
-//    /* write the /Transducer/Elements/ positions, angles and sizes are compound types */
-//    dims[0] = pTransducer->numElements;
-//    subgroup_id = H5Gcreate( group_id, "/Transducer/Elements", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT );
-//    {
-//        //Positions
-//        space = H5Screate_simple( 1, dims, NULL );
-//        // step a:  create H5 dataset
-//        position_tid = H5Tcreate( H5T_COMPOUND, sizeof(IusPosition) );
-//        H5Tinsert( position_tid, "x", HOFFSET(IusPosition, x), H5T_NATIVE_FLOAT );
-//        H5Tinsert( position_tid, "y", HOFFSET(IusPosition, y), H5T_NATIVE_FLOAT );
-//        H5Tinsert( position_tid, "z", HOFFSET(IusPosition, z), H5T_NATIVE_FLOAT );
-//        dataset = H5Dcreate( subgroup_id,    "/Transducer/Elements/positions", position_tid, space, H5P_DEFAULT, propList, H5P_DEFAULT );
-//
-//        // step b:  create array of positions
-//        pPositionArray = (IusPosition *)calloc( pTransducer->numElements, sizeof(IusPosition) ); //three dimensions for position
-//        for ( i = 0; i < pTransducer->numElements; i++ )
-//        {
-//            pPositionArray[i] = pTransducer->pElements[i].position;
-//        }
-//
-//        // step c: write the array to the dataset
-//        status = H5Dwrite( dataset, position_tid, H5S_ALL, H5S_ALL, H5P_DEFAULT, pPositionArray );
-//
-//        free( pPositionArray );
-//        // step d: release resources
-//        H5Tclose( position_tid );
-//        H5Sclose( space );
-//        H5Dclose( dataset );
-//    }
-//
-//    { //Angles
-//        space = H5Screate_simple( 1, dims, NULL );
-//        // step a:  create H5 dataset
-//        angle_tid = H5Tcreate( H5T_COMPOUND, sizeof(IusAngle) );
-//        H5Tinsert( angle_tid, "theta", HOFFSET(IusAngle, theta), H5T_NATIVE_FLOAT );
-//        H5Tinsert( angle_tid,  "phi", HOFFSET(IusAngle, phi), H5T_NATIVE_FLOAT );
-//        dataset = H5Dcreate( subgroup_id, "/Transducer/Elements/angles", angle_tid, space, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT );
-//
-//        // step b:  create array of angles
-//        pAngleArray = (IusAngle *)calloc( pTransducer->numElements, sizeof(IusAngle) ); //two dimensions for angle
-//        for (i = 0; i < pTransducer->numElements; i++)
-//        {
-//            pAngleArray[i] = pTransducer->pElements[i].angle;
-//        }
-//
-//        // step c: write the array to the dataset
-//        status = H5Dwrite( dataset, angle_tid, H5S_ALL, H5S_ALL, H5P_DEFAULT, pAngleArray );
-//
-//        free(pAngleArray);
-//        // step d: release resources
-//        H5Tclose(angle_tid);
-//        H5Sclose(space);
-//        H5Dclose(dataset);
-//    }
-//
-//    { //Sizes
-//        space = H5Screate_simple(1, dims, NULL);
-//        // step a:  create H5 dataset
-//        size_tid = H5Tcreate(H5T_COMPOUND, sizeof(IusSize));
-//        H5Tinsert( size_tid, "x", HOFFSET(IusSize, x), H5T_NATIVE_FLOAT );
-//        H5Tinsert( size_tid, "y", HOFFSET(IusSize, y), H5T_NATIVE_FLOAT );
-//        H5Tinsert( size_tid, "z", HOFFSET(IusSize, z), H5T_NATIVE_FLOAT );
-//        dataset = H5Dcreate( subgroup_id, "/Transducer/Elements/sizes",
-//                             size_tid, space, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-//
-//        // step b:  create array of sizes
-//        pSizeArray = (IusSize *)calloc( pTransducer->numElements*3, sizeof(IusSize) ); //three dimensions for size
-//        for ( i = 0; i < pTransducer->numElements; i++ )
-//        {
-//            pSizeArray[i] = pTransducer->pElements[i].size;
-//        }
-//        // step c: write the array to the dataset
-//        status = H5Dwrite( dataset, size_tid, H5S_ALL, H5S_ALL, H5P_DEFAULT, pSizeArray );
-//        /* Close the subgroup. */
-//        status = H5Gclose( subgroup_id );
-//
-//        // step d: release resources
-//        free( pSizeArray );
-//        H5Tclose( size_tid );
-//        H5Sclose( space );
-//        H5Dclose( dataset );
-//    }
-//
-//    /* Close the group. */
-//    status = H5Gclose( group_id );
 }
 
 
+herr_t iusWriteDrivingSchemeType(hid_t group_id, char *pVariableString, IusDrivingSchemeType type, int verbose)
+{
+    herr_t status=0;
+    hsize_t dims[1] = {1};
+    /* Based on a native signed short */
+    hid_t hdf_drivingSchemeType = H5Tcreate( H5T_ENUM, sizeof(short) );
+    short enumValue;
+    status |= H5Tenum_insert( hdf_drivingSchemeType,  DRIVINGSCHEME_DIVERGING_WAVES_PARAMETRIZED,
+                              (enumValue=IUS_DIVERGING_WAVES_PARAMETRIZED, &enumValue) );
+    status |= H5Tenum_insert( hdf_drivingSchemeType, DRIVINGSCHEME_DIVERGING_WAVES,
+                              (enumValue=IUS_DIVERGING_WAVES, &enumValue) );
+    status |= H5Tenum_insert( hdf_drivingSchemeType, DRIVINGSCHEME_FOCUSED_WAVES_PARAMETRIZED,
+                              (enumValue=IUS_FOCUSED_WAVES_PARAMETRIZED, &enumValue) );
+    status |= H5Tenum_insert( hdf_drivingSchemeType, DRIVINGSCHEME_FOCUSED_WAVES,
+                              (enumValue=IUS_FOCUSED_WAVES, &enumValue) );
+    status |= H5Tenum_insert( hdf_drivingSchemeType, DRIVINGSCHEME_PLANE_WAVES,
+                              (enumValue=IUS_PLANE_WAVES, &enumValue) );
+    status |= H5Tenum_insert( hdf_drivingSchemeType, DRIVINGSCHEME_SINGLE_ELEMENT,
+                              (enumValue=IUS_SINGLE_ELEMENT, &enumValue) );
+    status |= H5Tenum_insert( hdf_drivingSchemeType, DRIVINGSCHEME_CUSTOM_WAVES,
+                              (enumValue=IUS_CUSTOM_WAVES, &enumValue) );
+
+    enumValue = type;
+    status |= H5LTmake_dataset( group_id, pVariableString, 1, dims, hdf_drivingSchemeType, &enumValue );
+    return status;
+}
+
+herr_t iusWriteTransmitPattern(IusDrivingScheme *pDrivingScheme, hid_t subgroup_id, int verbose)
+{
+    int i;
+    int status = 0;
+    hsize_t dims[1] = {pDrivingScheme->numTransmitPulses};
+
+    status |= iusHdf5WriteFloat(subgroup_id, "/DrivingScheme/TransmitPattern/transmitPatternDelay",  &pDrivingScheme->transmitPatternDelay, 1, verbose);
+
+    float *pFloatArray = (float *)calloc( (size_t)dims[0], sizeof(float) );
+    if( pFloatArray == NULL )
+        return -1;
+
+    int *pIntArray = (int *)calloc( (size_t)dims[0], sizeof(int) );
+    if( pIntArray == NULL )
+    {
+        free(pFloatArray);
+        return -1;
+    }
+
+    for ( i = 0; i < dims[0]; i++ )
+    {
+        pFloatArray[i] = pDrivingScheme->pTransmitPatterns->pTransmitPattern[i].time;
+        pIntArray[i] = pDrivingScheme->pTransmitPatterns->pTransmitPattern[i].index;
+    }
+
+    status |= H5LTmake_dataset_float( subgroup_id, "/DrivingScheme/TransmitPattern/transmitPatternTime",  1, dims, pFloatArray );
+    status |= H5LTmake_dataset_int( subgroup_id,   "/DrivingScheme/TransmitPattern/transmitPatternIndex",  1, dims, pIntArray );
+
+    free( pFloatArray );
+    free( pIntArray );
+    return status;
+}
+
+herr_t iusWriteBaseDrivingScheme(IusDrivingScheme *pDrivingScheme, hid_t group_id, int verbose)
+{
+    herr_t  status;
+    status |= iusWriteDrivingSchemeType(group_id, "/DrivingScheme/drivingSchemeType", pDrivingScheme->type,verbose);
+    status |= iusHdf5WriteInt(group_id, "/DrivingScheme/numTransmitSources",  &pDrivingScheme->numTransmitSources, 1, verbose);
+    status |= iusHdf5WriteInt(group_id, "/DrivingScheme/numTransmitPulses",  &pDrivingScheme->numTransmitPulses, 1, verbose);
+    status |= iusHdf5WriteInt(group_id, "/DrivingScheme/numElements",  &pDrivingScheme->numElements, 1, verbose);
+
+    hid_t subgroup_id = H5Gcreate(group_id, "/DrivingScheme/TransmitPattern/", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT );
+    status |= iusWriteTransmitPattern(pDrivingScheme, subgroup_id, verbose);
+    H5Gclose( subgroup_id );
+
+
+    return status;
+}
+
+int iusWriteDrivingScheme(IusDrivingScheme *pDrivingScheme, hid_t group_id, int verbose)
+{
+    /* write the /Transducer data */
+    herr_t        status=0;
+    hsize_t dims[1] = {1};
+    hid_t subgroup_id;
+
+
+    status = iusWriteBaseDrivingScheme(pDrivingScheme,group_id,verbose);
+    if( status < 0 )
+    {
+        return status;
+    }
+    return status;
+}
 
 //------------------------------------------------------------------------------
 //
@@ -1434,18 +1421,18 @@ int iusInputWrite
 
     subgroup_id = H5Gcreate( group_id,   "/DrivingScheme/TransmitPulse", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT );
     dims[0] = 1;
-    H5LTmake_dataset_int( subgroup_id,   "/DrivingScheme/TransmitPulse/numPulseValues",  1, dims, &(pInst->pDrivingScheme->transmitPulse.numPulseValues) );
-    if ( pInst->pDrivingScheme->transmitPulse.numPulseValues > 0 )
+    H5LTmake_dataset_int( subgroup_id,   "/DrivingScheme/TransmitPulse/numPulseValues",  1, dims, &(pInst->pDrivingScheme->pTransmitPulse.numPulseValues) );
+    if ( pInst->pDrivingScheme->pTransmitPulse.numPulseValues > 0 )
     {
-        dims[0] = pInst->pDrivingScheme->transmitPulse.numPulseValues;
-        H5LTmake_dataset_float( subgroup_id, "/DrivingScheme/TransmitPulse/rawPulseAmplitudes", 1, dims, pInst->pDrivingScheme->transmitPulse.pRawPulseAmplitudes );
-        H5LTmake_dataset_float( subgroup_id, "/DrivingScheme/TransmitPulse/rawPulseTimes", 1, dims, pInst->pDrivingScheme->transmitPulse.pRawPulseTimes );
+        dims[0] = pInst->pDrivingScheme->pTransmitPulse.numPulseValues;
+        H5LTmake_dataset_float( subgroup_id, "/DrivingScheme/TransmitPulse/rawPulseAmplitudes", 1, dims, pInst->pDrivingScheme->pTransmitPulse.pRawPulseAmplitudes );
+        H5LTmake_dataset_float( subgroup_id, "/DrivingScheme/TransmitPulse/rawPulseTimes", 1, dims, pInst->pDrivingScheme->pTransmitPulse.pRawPulseTimes );
     }
 
     dims[0] = 1;
-    H5LTmake_dataset_float( subgroup_id,"/DrivingScheme/TransmitPulse/pulseFrequency",  1, dims, &(pInst->pDrivingScheme->transmitPulse.pulseFrequency) );
-    H5LTmake_dataset_float( subgroup_id,"/DrivingScheme/TransmitPulse/pulseAmplitude",  1, dims, &(pInst->pDrivingScheme->transmitPulse.pulseAmplitude) );
-    H5LTmake_dataset_int( subgroup_id,  "/DrivingScheme/TransmitPulse/pulseCount",  1, dims, &(pInst->pDrivingScheme->transmitPulse.pulseCount) );
+    H5LTmake_dataset_float( subgroup_id,"/DrivingScheme/TransmitPulse/pulseFrequency",  1, dims, &(pInst->pDrivingScheme->pTransmitPulse.pulseFrequency) );
+    H5LTmake_dataset_float( subgroup_id,"/DrivingScheme/TransmitPulse/pulseAmplitude",  1, dims, &(pInst->pDrivingScheme->pTransmitPulse.pulseAmplitude) );
+    H5LTmake_dataset_int( subgroup_id,  "/DrivingScheme/TransmitPulse/pulseCount",  1, dims, &(pInst->pDrivingScheme->pTransmitPulse.pulseCount) );
     H5Gclose( subgroup_id );
     apodDims[0] = pInst->pDrivingScheme->numTransmitPulses;
     apodDims[1] = pInst->pTransducer->numElements;
@@ -1478,7 +1465,13 @@ int iusInputWrite
     iusWriteTransducer(pInst->pTransducer, group_id, verbose);
     status |= H5Gclose(group_id );
 
-    return 0;
+
+    // Make dataset for DrivingScheme
+    group_id = H5Gcreate(handle, "/DrivingScheme", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+    iusWriteDrivingScheme(pInst->pDrivingScheme, group_id, verbose);
+    status |= H5Gclose(group_id );
+
+    return status;
 }
 
 
@@ -1878,7 +1871,7 @@ int iusRead2DTransducer(Ius2DTransducer * pTransducer, hid_t handle, int verbose
 IusTransducer *iusReadTransducer(hid_t handle, int verbose) {
     int status = 0;
     IusTransducer *pTransducer = iusReadBaseTransducer(handle,verbose);
-    if( pTransducer->type == IUS_3D_TRANSDUCER )
+    if( pTransducer->type == IUS_3D_SHAPE )
     {
         Ius3DTransducer *p3DTransducer = (Ius3DTransducer *) pTransducer;
         p3DTransducer->pElements = (Ius3DTransducerElement *) calloc( pTransducer->numElements , sizeof(Ius3DTransducer));
@@ -1888,7 +1881,7 @@ IusTransducer *iusReadTransducer(hid_t handle, int verbose) {
             status = IUS_ERR_VALUE;
     }
 
-    if( pTransducer->type == IUS_2D_TRANSDUCER )
+    if( pTransducer->type == IUS_2D_SHAPE )
     {
         Ius2DTransducer *p2DTransducer = (Ius2DTransducer *) pTransducer;
         p2DTransducer->pElements = (Ius2DTransducerElement *) calloc( pTransducer->numElements , sizeof(Ius2DTransducer));
@@ -1901,6 +1894,128 @@ IusTransducer *iusReadTransducer(hid_t handle, int verbose) {
         return NULL;
     return pTransducer;
 }
+
+
+int iusReadDrivingSchemeType(hid_t handle, char *pVariableString, IusDrivingSchemeType *pType, int verbose)
+{
+    herr_t status = 0;
+    hid_t hdf_drivingSchemeType = H5Tcreate( H5T_ENUM, sizeof(short) );
+    short enumValue;
+    status |= H5Tenum_insert( hdf_drivingSchemeType,  DRIVINGSCHEME_DIVERGING_WAVES_PARAMETRIZED,
+                                                      (enumValue=IUS_DIVERGING_WAVES_PARAMETRIZED, &enumValue) );
+    status |= H5Tenum_insert( hdf_drivingSchemeType, DRIVINGSCHEME_DIVERGING_WAVES,
+                                                      (enumValue=IUS_DIVERGING_WAVES, &enumValue) );
+    status |= H5Tenum_insert( hdf_drivingSchemeType, DRIVINGSCHEME_FOCUSED_WAVES_PARAMETRIZED,
+                                                      (enumValue=IUS_FOCUSED_WAVES_PARAMETRIZED, &enumValue) );
+    status |= H5Tenum_insert( hdf_drivingSchemeType, DRIVINGSCHEME_FOCUSED_WAVES,
+                                                      (enumValue=IUS_FOCUSED_WAVES, &enumValue) );
+    status |= H5Tenum_insert( hdf_drivingSchemeType, DRIVINGSCHEME_PLANE_WAVES,
+                                                      (enumValue=IUS_PLANE_WAVES, &enumValue) );
+    status |= H5Tenum_insert( hdf_drivingSchemeType, DRIVINGSCHEME_SINGLE_ELEMENT,
+                                                      (enumValue=IUS_SINGLE_ELEMENT, &enumValue) );
+    status |= H5Tenum_insert( hdf_drivingSchemeType, DRIVINGSCHEME_CUSTOM_WAVES,
+                                                      (enumValue=IUS_CUSTOM_WAVES, &enumValue) );
+    IusDrivingSchemeType aap;
+    status |= H5LTread_dataset( handle, pVariableString , hdf_drivingSchemeType, &aap );
+    *pType = aap;
+    return status;
+}
+
+IusDrivingScheme *iusReadBaseDrivingScheme(hid_t handle, int verbose)
+{
+    IusDrivingScheme * parametrizedDrivingScheme;
+    IusDrivingScheme * pScheme ;
+    int numElements = 32;
+    int numTransmitPulses = 13;
+    int numTransmitSources = 13;
+    int status = 0;
+
+    IusShape shape = IUS_2D_SHAPE;
+
+//    status |= iusHdf5ReadString( handle, "/Transducer/transducerName",  &(pTransducerName), verbose );
+//    status |= iusHdf5ReadFloat( handle,  "/Transducer/centerFrequency", &(centerFrequency), verbose );
+//    status |= iusHdf5ReadInt( handle,    "/Transducer/numElements",     &(numElements),     verbose );
+
+    IusDrivingSchemeType type = IUS_DIVERGING_WAVES_PARAMETRIZED;
+    parametrizedDrivingScheme = iusHLCreateDrivingScheme(type,
+                                                         shape,
+                                                         numTransmitPulses,
+                                                         numTransmitSources,
+                                                         numElements );
+    // read type
+
+    // read shape
+    // read num transmit sources
+    // read num transmit pulses
+    // read numelements
+    // transmit pattern delay
+    // transmit pattern
+    // transmit pulse
+    // transmit pulse apodization
+    return parametrizedDrivingScheme;
+}
+
+int iusRead3DDrivingScheme(Ius3DDrivingScheme *scheme, hid_t handle, int verbose)
+{
+    return IUS_E_OK;
+}
+
+int iusRead2DDrivingScheme(Ius2DDrivingScheme *scheme, hid_t handle, int verbose)
+{
+    return IUS_E_OK; //
+}
+
+IusDrivingScheme *iusReadDrivingScheme(hid_t handle, IusShape shape,  int verbose) {
+    int status = 0;
+    int numTransmitSources;
+    int numTransmitPulses;
+    int numElements;
+    IusDrivingSchemeType type;
+    IusDrivingScheme *pDrivingScheme;
+
+    // Read info needed for constructor
+    status |= iusReadDrivingSchemeType( handle, "/DrivingScheme/drivingSchemeType",  &(type), verbose );
+    status |= iusHdf5ReadInt( handle,    "/DrivingScheme/numTransmitSources",     &(numTransmitSources),     verbose );
+    status |= iusHdf5ReadInt( handle,    "/DrivingScheme/numTransmitPulses",     &(numTransmitPulses),     verbose );
+    status |= iusHdf5ReadInt( handle,    "/DrivingScheme/numElements",     &(numElements),     verbose );
+
+    if( shape == IUS_3D_SHAPE )
+    {
+        Ius3DDrivingScheme *_3DDrivingScheme = (Ius3DDrivingScheme *) iusCreate3DDrivingScheme(numTransmitSources);
+        if( _3DDrivingScheme == NULL ) return NULL;
+        status = iusRead3DDrivingScheme(_3DDrivingScheme, handle, verbose);
+        pDrivingScheme = (IusDrivingScheme *) _3DDrivingScheme;
+    }
+
+    if( shape == IUS_2D_SHAPE )
+    {
+        Ius2DDrivingScheme *_2DDrivingScheme = (Ius2DDrivingScheme *) iusCreate2DDrivingScheme(numTransmitSources);
+        if( _2DDrivingScheme == NULL ) return NULL;
+        status = iusRead2DDrivingScheme(_2DDrivingScheme, handle, verbose);
+        pDrivingScheme = (IusDrivingScheme *) _2DDrivingScheme;
+    }
+
+    if( status != 0 )
+        return NULL;
+
+    // Read base drivingscheme
+    pDrivingScheme->pTransmitApodization = iusCreateTransmitApodization(numTransmitPulses , numElements);
+    if ( pDrivingScheme->pTransmitApodization == NULL )
+    {
+        iusHLDeleteDrivingScheme(pDrivingScheme);
+        return NULL;
+    }
+
+    // TransmitPattern
+
+    pDrivingScheme->numElements = numElements;
+    pDrivingScheme->numTransmitSources = numTransmitSources;
+    pDrivingScheme->numTransmitPulses = numTransmitPulses;
+    pDrivingScheme->shape = shape;
+    pDrivingScheme->type = type;
+    return pDrivingScheme;
+}
+
 //------------------------------------------------------------------------------
 //
 //------------------------------------------------------------------------------
@@ -1913,6 +2028,7 @@ IusInputInstance * iusInputRead
     IusInputInstance *pInst;
     IusExperiment *pExperiment;
     IusTransducer *pTransducer;
+    IusDrivingScheme *pDrivingScheme;
     herr_t  status;
     int numElements;
 
@@ -2002,21 +2118,21 @@ IusInputInstance * iusInputRead
     }
     status = iusHdf5ReadFloat( handle, "/DrivingScheme/TransmitPattern/transmitPatternDelay", &(pInst->pDrivingScheme->transmitPatternDelay), verbose );
     status = LF_readTransmitPattern( pInst, handle, verbose );
-    status = iusHdf5ReadInt( handle, "/DrivingScheme/TransmitPulse/numPulseValues", &(pInst->pDrivingScheme->transmitPulse.numPulseValues), verbose );
+    status = iusHdf5ReadInt( handle, "/DrivingScheme/TransmitPulse/numPulseValues", &(pInst->pDrivingScheme->pTransmitPulse.numPulseValues), verbose );
 
-    if (pInst->pDrivingScheme->transmitPulse.numPulseValues != 0)
+    if (pInst->pDrivingScheme->pTransmitPulse.numPulseValues != 0)
     {
         // read rawTransmitPulse
-        status = LF_readPulseRaw(pInst, handle, pInst->pDrivingScheme->transmitPulse.numPulseValues, verbose);
+        status = LF_readPulseRaw(pInst, handle, pInst->pDrivingScheme->pTransmitPulse.numPulseValues, verbose);
     }
     else
     {
         //alternative waveform description
         // TODO: define these
     }
-    status = iusHdf5ReadFloat( handle, "/DrivingScheme/TransmitPulse/pulseFrequency", &(pInst->pDrivingScheme->transmitPulse.pulseFrequency), verbose );
-    status = iusHdf5ReadFloat( handle, "/DrivingScheme/TransmitPulse/pulseAmplitude", &(pInst->pDrivingScheme->transmitPulse.pulseAmplitude), verbose );
-    status = iusHdf5ReadInt( handle,   "/DrivingScheme/TransmitPulse/pulseCount", &(pInst->pDrivingScheme->transmitPulse.pulseCount), verbose );
+    status = iusHdf5ReadFloat( handle, "/DrivingScheme/TransmitPulse/pulseFrequency", &(pInst->pDrivingScheme->pTransmitPulse.pulseFrequency), verbose );
+    status = iusHdf5ReadFloat( handle, "/DrivingScheme/TransmitPulse/pulseAmplitude", &(pInst->pDrivingScheme->pTransmitPulse.pulseAmplitude), verbose );
+    status = iusHdf5ReadInt( handle,   "/DrivingScheme/TransmitPulse/pulseCount", &(pInst->pDrivingScheme->pTransmitPulse.pulseCount), verbose );
 
     status = iusHdf5ReadInt(handle, "/ReceiveSettings/numChannels", &(pInst->pReceiveSettings->receiveChannelCoding.numChannels), verbose);
     pInst->pReceiveSettings->receiveChannelCoding.pChannelMap = (int*)calloc(pInst->pReceiveSettings->receiveChannelCoding.numChannels, sizeof(int));
@@ -2051,10 +2167,16 @@ IusInputInstance * iusInputRead
     pExperiment = iusReadExperiment(handle, verbose);
     status |= iusHLHeaderSetExperiment(pInst,pExperiment);
 
+
     // Read Transducer fields
     pTransducer = iusReadTransducer(handle, verbose);
     status |= iusHLHeaderSetTransducer(pInst,pTransducer);
 
+
+    IusShape shape = iusHLTransducerGetShapeType(pTransducer);
+    // Read DrivingScheme fields
+    pDrivingScheme = iusReadDrivingScheme(handle, shape, verbose);
+    status |= iusHLHeaderSetDrivingScheme(pInst, pDrivingScheme);
 
     if( status != 0 )
         return NULL;

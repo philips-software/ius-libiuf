@@ -4,6 +4,8 @@
 
 #ifndef IUSUNITTESTS_UTIL_H
 #define IUSUNITTESTS_UTIL_H
+#include <iusHLTransmitPattern.h>
+
 iu3dte_t iusUtilCreate3DElement
     (
         float x,

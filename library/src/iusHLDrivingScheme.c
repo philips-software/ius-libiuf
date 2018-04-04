@@ -10,6 +10,8 @@
 #include <include/iusError.h>
 #include <math.h>
 #include <include/iusHLPosition.h>
+#include <assert.h>
+#include <include/iusUtil.h>
 #include "iusInput.h"
 #include "iusHLDrivingScheme.h"
 
@@ -126,14 +128,14 @@ IusDrivingScheme *iusHLCreateDrivingScheme
     // Apodization
     if( baseDrivingScheme == NULL ) return NULL;
     baseDrivingScheme->pTransmitApodization = iusCreateTransmitApodization(numTransmitPulses , numElements);
-
     if ( baseDrivingScheme->pTransmitApodization == NULL )
     {
         iusHLDeleteDrivingScheme(baseDrivingScheme);
         return NULL;
     }
 
-    // Apodization
+    // TransmitPatterns
+    baseDrivingScheme->pTransmitPatterns = iusHLCreateTransmitPatternList(numTransmitPulses);
 
     baseDrivingScheme->numElements = numElements;
     baseDrivingScheme->numTransmitSources = numTransmitSources;
@@ -162,7 +164,8 @@ int iusHLDrivingSchemeSetTransmitPulse
     iutp_t transmitPulse
 )
 {
-    drivingScheme->transmitPulse = transmitPulse;
+    // Todo: use pulse list to alter transnit pulses
+    assert(IUS_FALSE);
     return IUS_E_OK;
 }
 
@@ -247,6 +250,7 @@ int iusDrivingSchemeSetSourceStartTheta
     if( drivingScheme->shape == IUS_3D_SHAPE )
     {
         ((Ius3DDrivingScheme *)drivingScheme)->sourceStartTheta = startTheta;
+        return IUS_E_OK;
     }
 
     if( drivingScheme->shape == IUS_2D_SHAPE )
@@ -266,6 +270,7 @@ int iusDrivingSchemeSetSourceDeltaTheta
     if( drivingScheme->shape == IUS_3D_SHAPE )
     {
         ((Ius3DDrivingScheme *)drivingScheme)->sourceDeltaTheta = deltaTheta;
+        return IUS_E_OK;
     }
 
     if( drivingScheme->shape == IUS_2D_SHAPE )
@@ -282,7 +287,7 @@ int iusDrivingSchemeSetSourceFNumber
     float FNumber
 )
 {
-    if( drivingScheme->shape != IUS_2D_SHAPE )
+    if( drivingScheme->type != IUS_DIVERGING_WAVES_PARAMETRIZED && drivingScheme->type != IUS_FOCUSED_WAVES_PARAMETRIZED )
         return IUS_ERR_VALUE;
     ((Ius2DDrivingScheme *)drivingScheme)->sourceFNumber = FNumber;
     return IUS_E_OK;
@@ -398,3 +403,38 @@ float iusDrivingSchemeGetSourceDeltaTheta
         return ((Ius2DDrivingScheme *)drivingScheme)->sourceDeltaTheta;
     return NAN;
 }
+
+IusTransmitPatternList *iusHLDrivingSchemeGetTransmitPatternList
+(
+    iuds_t drivingScheme
+)
+{
+    return drivingScheme->pTransmitPatterns;
+}
+
+
+
+IUS_BOOL iusHLCompareDrivingScheme
+(
+    iuds_t reference,
+    iuds_t actual
+)
+{
+    IUS_BOOL isEqual = IUS_FALSE;
+    if( reference == actual ) return IUS_TRUE;
+    if( reference == NULL || actual == NULL ) return IUS_FALSE;
+    if( reference->type != actual->type ) return IUS_FALSE;
+    if( reference->shape != actual->shape ) return IUS_FALSE;
+    if( reference->numElements != actual->numElements ) return IUS_FALSE;
+    if( reference->numTransmitPulses != actual->numTransmitPulses ) return IUS_FALSE;
+    if( reference->numTransmitSources != actual->numTransmitSources ) return IUS_FALSE;
+    if( IUS_EQUAL_FLOAT(reference->transmitPatternDelay, actual->transmitPatternDelay) == IUS_FALSE) return IUS_FALSE;
+    if( iusCompareTransmitPatternList(
+        reference->pTransmitPatterns,
+        actual->pTransmitPatterns) == IUS_FALSE) return IUS_FALSE;
+
+
+    assert(IUS_FALSE);
+    return IUS_TRUE;
+}
+

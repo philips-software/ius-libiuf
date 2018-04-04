@@ -37,7 +37,7 @@ add_library(ius STATIC
         src/iusHLExperiment.c
         src/iusHLTransducer.c
         src/iusHLDrivingScheme.c
-        include/iusHLDrivingScheme.h include/iusHLPosition.h src/iusHLPosition.c include/iusHLTransmitPulse.h src/iusHLTransmitPulse.c)
+        include/iusHLDrivingScheme.h include/iusHLPosition.h src/iusHLPosition.c include/iusHLTransmitPulse.h src/iusHLTransmitPulse.c include/iusHLTransmitPattern.h src/iusHLTransmitPattern.c)
 
 target_include_directories(ius PUBLIC
         ${CMAKE_CURRENT_LIST_DIR}

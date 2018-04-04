@@ -7,6 +7,8 @@
 #include <include/iusTypes.h>
 #include <include/iusHLTransducer.h>
 #include <include/iusError.h>
+#include <include/iusHLTransmitPattern.h>
+#include <util.h>
 #include "testDrivingScheme.h"
 
 TEST_GROUP(InputfileDrivingScheme);
@@ -20,19 +22,59 @@ TEST_TEAR_DOWN(InputfileDrivingScheme)
 }
 
 
-TEST(InputfileDrivingScheme, testIusHLCreateDrivingScheme)
+TEST(InputfileDrivingScheme, testIusHLTransmitPatternList)
 {
     iuds_t drivingScheme;
 
-    // 2 types of driving schemes
-    // - Parametrized
-    // - non-parametrized
-    //
+    int numElements = 32;
+    int numTransmitPulses = 13;
+    int numTransmitSources = 13;
+    iutpal_t patternList;
+    int i;
+    int status;
+    float transmitTime;
+    int pulseIndex;
+    iutpa_t pattern;
 
-    // Create 3D Transducer
-    //
-    IusShape shape;
-    IusDrivingSchemeType type;
+    drivingScheme = iusHLCreateDrivingScheme( IUS_DIVERGING_WAVES_PARAMETRIZED, IUS_3D_SHAPE, numTransmitPulses,numTransmitSources,numElements);
+    patternList = iusHLDrivingSchemeGetTransmitPatternList(drivingScheme);
+
+    TEST_ASSERT_NOT_EQUAL(IUTPAL_INVALID,patternList);
+    numTransmitPulses = iusHLTransmitPatternListGetSize(patternList);
+    for( i=0; i<numTransmitPulses; i++ )
+    {
+        transmitTime = i *1.0f;
+        status = iusHLTransmitPatternListSet( patternList, transmitTime, pulseIndex, i);
+        TEST_ASSERT_EQUAL(IUS_E_OK,status);
+
+        pattern = iusHLTransmitPatternListGet( patternList, i);
+        TEST_ASSERT_EQUAL(pulseIndex,iusHLTransmitPatternGetIndex(pattern));
+        TEST_ASSERT_EQUAL_FLOAT(transmitTime,iusHLTransmitPatternGetTime(pattern));
+    }
+    iusHLDeleteDrivingScheme(drivingScheme);
+}
+
+//TEST(InputfileDrivingScheme, testIusHLTransmitPulseList)
+//{
+//    iuds_t drivingScheme;
+//
+//    int numElements = 32;
+//    int numTransmitPulses = 13;
+//    int numTransmitSources = 13;
+//    int status = 0;
+//    int i;
+//    iutpul_t pulseList;
+//
+//    drivingScheme = iusHLCreateDrivingScheme( IUS_DIVERGING_WAVES_PARAMETRIZED, IUS_3D_SHAPE, numTransmitPulses,numTransmitSources,numElements);
+//    pulseList = iusHLDrivingSchemeGetTransmitPulseList(drivingScheme);
+//    TEST_ASSERT( pulseList != IUTPUL_INVALID );
+//    fillTransmitPulseList(pulseList);
+//}
+
+
+TEST(InputfileDrivingScheme, testIusHLCreateDrivingScheme)
+{
+    iuds_t drivingScheme;
 
     int numElements = 32;
     int numTransmitPulses = 13;
@@ -41,13 +83,13 @@ TEST(InputfileDrivingScheme, testIusHLCreateDrivingScheme)
 
 #define CREATE_TEST_AND_DELETE_SCHEME(typ,shpe,nt,ns,ne,stat) drivingScheme = iusHLCreateDrivingScheme(typ,shpe,nt,ns,ne); \
                                             TEST_ASSERT(drivingScheme != IUDS_INVALID); \
-                                            TEST_ASSERT(shpe == iusHLDrivingSchemeGetShape(drivingScheme)); \
-                                            TEST_ASSERT(typ == iusHLDrivingSchemeGetType(drivingScheme)); \
-                                            TEST_ASSERT(nt == iusHLDrivingSchemeGetNumTransmitPulses(drivingScheme)); \
-                                            TEST_ASSERT(ns == iusHLDrivingSchemeGetNumTransmitSources(drivingScheme)); \
-                                            TEST_ASSERT(ne == iusHLDrivingSchemeGetNumElements(drivingScheme)); \
+                                            TEST_ASSERT((shpe) == iusHLDrivingSchemeGetShape(drivingScheme)); \
+                                            TEST_ASSERT((typ) == iusHLDrivingSchemeGetType(drivingScheme)); \
+                                            TEST_ASSERT((nt) == iusHLDrivingSchemeGetNumTransmitPulses(drivingScheme)); \
+                                            TEST_ASSERT((ns) == iusHLDrivingSchemeGetNumTransmitSources(drivingScheme)); \
+                                            TEST_ASSERT((ne) == iusHLDrivingSchemeGetNumElements(drivingScheme)); \
                                             status = iusHLDeleteDrivingScheme(drivingScheme); \
-                                            TEST_ASSERT(status == stat)
+                                            TEST_ASSERT(status == (stat))
 
     CREATE_TEST_AND_DELETE_SCHEME(IUS_DIVERGING_WAVES_PARAMETRIZED, IUS_2D_SHAPE, numTransmitPulses,numTransmitSources,numElements,IUS_E_OK);
     CREATE_TEST_AND_DELETE_SCHEME(IUS_DIVERGING_WAVES_PARAMETRIZED, IUS_3D_SHAPE, numTransmitPulses,numTransmitSources,numElements,IUS_E_OK);
@@ -65,9 +107,9 @@ TEST(InputfileDrivingScheme, testIusHLCreateDrivingScheme)
     CREATE_TEST_AND_DELETE_SCHEME(IUS_PLANE_WAVES, IUS_3D_SHAPE, numTransmitPulses,numTransmitSources,numElements,IUS_E_OK);
 
     // test invalid arguments
-    drivingScheme = iusHLCreateDrivingScheme(0, IUS_3D_SHAPE, numTransmitPulses,numTransmitSources,numElements);
+    drivingScheme = iusHLCreateDrivingScheme( (IusDrivingSchemeType) 0, IUS_3D_SHAPE, numTransmitPulses,numTransmitSources,numElements);
     TEST_ASSERT(drivingScheme == IUDS_INVALID);
-    drivingScheme = iusHLCreateDrivingScheme(IUS_CUSTOM_WAVES, 0, numTransmitPulses,numTransmitSources,numElements);
+    drivingScheme = iusHLCreateDrivingScheme(IUS_CUSTOM_WAVES, (IusShape) 0, numTransmitPulses,numTransmitSources,numElements);
     TEST_ASSERT(drivingScheme == IUDS_INVALID);
     drivingScheme = iusHLCreateDrivingScheme(IUS_CUSTOM_WAVES, IUS_3D_SHAPE, -1,numTransmitSources,numElements);
     TEST_ASSERT(drivingScheme == IUDS_INVALID);
@@ -89,7 +131,7 @@ TEST(InputfileDrivingScheme, testSchemeGetTransmitApodization)
                                               numElements );
 
     // By default, apodization should be initialized to 1.0f for all elements.
-    float elementApodization = NAN;
+    float elementApodization;
     int pulseIndex;
     int elementIndex;
     for(pulseIndex=0;pulseIndex < numTransmitPulses ; pulseIndex++)
@@ -130,14 +172,14 @@ TEST(InputfileDrivingScheme, testSchemeSetTransmitApodization)
                                               numElements );
 
     // By default, apodization should be initialized to 1.0f for all elements.
-    float elementApodization = NAN;
+    float elementApodization;
     int pulseIndex;
     int elementIndex;
     for(pulseIndex=0 ;pulseIndex < numTransmitPulses ; pulseIndex++)
     {
         for(elementIndex=0 ;elementIndex < numElements ; elementIndex++)
         {
-            elementApodization = 1.0/((pulseIndex%10)+1);
+            elementApodization = 1.0f/((pulseIndex%10)+1);
             status = iusDrivingSchemeSetTransmitApodization(drivingScheme,elementApodization,pulseIndex,elementIndex);
             TEST_ASSERT(status == IUS_E_OK);
             TEST_ASSERT_EQUAL_FLOAT(elementApodization,iusDrivingSchemeGetTransmitApodization(drivingScheme,pulseIndex,elementIndex));
@@ -170,7 +212,9 @@ TEST(InputfileDrivingScheme, testDivergingWaves3DShape)
     int numTransmitSources = 13;
     int status = 0;
     int index;
-    float x,y,z;
+    float x = 0;
+    float y = 0;
+    float z = 0;
     float angularDelta = 0.13f;
     float FNumber = -0.955f;
     float startAngle = 3.14f;
@@ -186,9 +230,9 @@ TEST(InputfileDrivingScheme, testDivergingWaves3DShape)
     TEST_ASSERT(numTransmitSources == iusHLDrivingSchemeGetNumTransmitSources(drivingScheme));
     for(index = 0; index < numTransmitSources; index++)
     {
-        x=1.0/(index%10);
-        y=1.0/(index%10);
-        z=1.0/(index%10);
+        x=1.0f/((index%10)+1.0f);
+        y=1.0f/((index%10)+1.0f);
+        z=1.0f/((index%10)+1.0f);
         iu3dp_t pos = iusHLCreate3DPosition(
             x,
             y,
@@ -319,5 +363,6 @@ TEST_GROUP_RUNNER(InputfileDrivingScheme)
     RUN_TEST_CASE(InputfileDrivingScheme, testDivergingWaves3DShape);
     RUN_TEST_CASE(InputfileDrivingScheme, testSchemeGetTransmitApodization);
     RUN_TEST_CASE(InputfileDrivingScheme, testSchemeSetTransmitApodization);
+    RUN_TEST_CASE(InputfileDrivingScheme, testIusHLTransmitPatternList);
 }
 

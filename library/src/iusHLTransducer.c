@@ -24,33 +24,24 @@ iut_t iusHLCreateTransducer
 )
 {
     IusTransducer *baseTransducer = NULL;
-    IusTransducerType type ;
+    IusShape type ;
 
     // Identify transducer type based on shape
     if(shape == IUS_LINE || shape == IUS_CIRCLE)
     {
-        type = IUS_2D_TRANSDUCER;
+        type = IUS_2D_SHAPE;
+        // Create 2D transducer
+        Ius2DTransducer * _2DTransducer = (Ius2DTransducer *)calloc(1,sizeof(Ius2DTransducer));
+        _2DTransducer->pElements = (Ius2DTransducerElement *)calloc(numElements,sizeof(Ius2DTransducerElement));
+        baseTransducer = (IusTransducer *)_2DTransducer;
     }
     else
     {
-        type = IUS_3D_TRANSDUCER;
-    }
-
-
-    if(type == IUS_3D_TRANSDUCER)
-    {
+        type = IUS_3D_SHAPE;
         // Create 3D transducer
         Ius3DTransducer * _3DTransducer = (Ius3DTransducer *)calloc(1,sizeof(Ius3DTransducer));
         _3DTransducer->pElements = (Ius3DTransducerElement *)calloc(numElements,sizeof(Ius3DTransducerElement));
         baseTransducer = (IusTransducer *)_3DTransducer;
-    }
-
-    if(type == IUS_2D_TRANSDUCER)
-    {
-        // Create 3D transducer
-        Ius2DTransducer * _2DTransducer = (Ius2DTransducer *)calloc(1,sizeof(Ius2DTransducer));
-        _2DTransducer->pElements = (Ius2DTransducerElement *)calloc(numElements,sizeof(Ius2DTransducerElement));
-        baseTransducer = (IusTransducer *)_2DTransducer;
     }
 
     baseTransducer->type = type;
@@ -99,7 +90,7 @@ char *iusHLTransducerGetName
 }
 
 
-IusTransducerShape iusHLGetTransducerShape
+IusTransducerShape iusHLTransducerGetShape
     (
         iut_t transducer
     )
@@ -171,7 +162,7 @@ Ius2DTransducerElement *iusHLCreate2DElement
     iusElement->theta = theta;
     iusElement->position = *pos;
     iusElement->size = *siz;
-    iusElement->base.type = IUS_2D_TRANSDUCER_ELEMENT;
+    iusElement->base.shape = IUS_2D_SHAPE;
     return iusElement;
 }
 
@@ -186,7 +177,7 @@ Ius3DTransducerElement *iusHLCreate3DElement
     iusElement->angle = *ang;
     iusElement->position = *pos;
     iusElement->size = *siz;
-    iusElement->base.type = IUS_3D_TRANSDUCER_ELEMENT;
+    iusElement->base.shape = IUS_3D_SHAPE;
     return iusElement;
 }
 
@@ -227,7 +218,7 @@ int ius2DTransducerAddElement
     return 0;
 }
 
-int iusTransducerSetElement
+int iusHLTransducerSetElement
     (
         IusTransducer *pTransducer,
         int elementIndex,
@@ -236,7 +227,7 @@ int iusTransducerSetElement
 {
     int status = IUS_ERR_VALUE;
     IusBaseTransducerElement *pBaseElement = (IusBaseTransducerElement*) element;
-    if( pTransducer->type == IUS_3D_TRANSDUCER && pBaseElement->type == IUS_3D_TRANSDUCER_ELEMENT )
+    if( pTransducer->type == IUS_3D_SHAPE && pBaseElement->shape == IUS_3D_SHAPE )
     {
         Ius3DTransducer *castedTransducer = (Ius3DTransducer *)pTransducer;
         Ius3DTransducerElement *castedTransducerElement = (Ius3DTransducerElement *)element;
@@ -247,7 +238,7 @@ int iusTransducerSetElement
         );
     }
 
-    if( pTransducer->type == IUS_2D_TRANSDUCER && pBaseElement->type == IUS_2D_TRANSDUCER_ELEMENT )
+    if( pTransducer->type == IUS_2D_SHAPE && pBaseElement->shape == IUS_2D_SHAPE )
     {
         Ius2DTransducer *castedTransducer = (Ius2DTransducer *)pTransducer;
         Ius2DTransducerElement *castedTransducerElement = (Ius2DTransducerElement *)element;
@@ -261,21 +252,21 @@ int iusTransducerSetElement
     return status;
 }
 
-IusBaseTransducerElement * iusTransducerGetElement
-(
-    IusTransducer *transducer,
-    int elementIndex
-)
+IusBaseTransducerElement * iusHLTransducerGetElement
+    (
+        IusTransducer *transducer,
+        int elementIndex
+    )
 {
     if( elementIndex >=  transducer->numElements)
         return NULL;
-    if( transducer->type == IUS_3D_TRANSDUCER  )
+    if( transducer->type == IUS_3D_SHAPE  )
     {
         Ius3DTransducer *castedTransducer = (Ius3DTransducer *)transducer;
         return (IusBaseTransducerElement *)&castedTransducer->pElements[elementIndex];
     }
 
-    if( transducer->type == IUS_2D_TRANSDUCER  )
+    if( transducer->type == IUS_2D_SHAPE  )
     {
         Ius2DTransducer *castedTransducer = (Ius2DTransducer *)transducer;
         return (IusBaseTransducerElement *)&castedTransducer->pElements[elementIndex];
@@ -346,33 +337,41 @@ IUS_BOOL iusCompare2DElement
     return IUS_TRUE;
 }
 
-IUS_BOOL iusTransducerCompareElement
-(
-    IusBaseTransducerElement *reference,
-    IusBaseTransducerElement *actual
-)
+IUS_BOOL iusHLTransducerCompareElement
+    (
+        IusBaseTransducerElement *reference,
+        IusBaseTransducerElement *actual
+    )
 {
-    if( reference->type != actual->type )
+    if( reference->shape != actual->shape )
         return IUS_FALSE;
 
-    if( reference->type == IUS_3D_TRANSDUCER_ELEMENT  )
+    if( reference->shape == IUS_3D_SHAPE  )
     {
         return iusCompare3DElement((Ius3DTransducerElement *)reference,(Ius3DTransducerElement *)actual);
     }
 
-    if( reference->type == IUS_2D_TRANSDUCER_ELEMENT  )
+    if( reference->shape == IUS_2D_SHAPE  )
     {
         return iusCompare2DElement((Ius2DTransducerElement *)reference,(Ius2DTransducerElement *)actual);
     }
     return IUS_FALSE;
 }
 
-IusTransducerElementType iusHLTransducerGetElementType
+IusShape iusHLTransducerGetShapeType
+(
+    IusTransducer *baseElement
+)
+{
+    return baseElement->type;
+}
+
+IusShape iusHLTransducerGetElementShape
 (
     iudte_t baseElement
 )
 {
-    return baseElement->type;
+    return baseElement->shape;
 }
 
 IUS_BOOL iusHLCompare3DTransducer(Ius3DTransducer *pReference, Ius3DTransducer *pActual)
@@ -397,7 +396,7 @@ IUS_BOOL iusHLCompare2DTransducer(Ius2DTransducer *pReference, Ius2DTransducer *
     return isEqual;
 }
 
-IUS_BOOL iusHLCompareTransducer
+IUS_BOOL iusHLTransducerCompare
     (
         iut_t reference,
         iut_t actual
@@ -413,9 +412,9 @@ IUS_BOOL iusHLCompareTransducer
     if( IUS_EQUAL_FLOAT(reference->centerFrequency, actual->centerFrequency) == IUS_FALSE ) return IUS_FALSE;
     if( reference->numElements != actual->numElements)  return IUS_FALSE;
     if( strcmp(reference->pTransducerName, actual->pTransducerName) != 0)  return IUS_FALSE;
-    if( reference->type == IUS_3D_TRANSDUCER  )
+    if( reference->type == IUS_3D_SHAPE  )
         return iusHLCompare3DTransducer((Ius3DTransducer *)reference, (Ius3DTransducer *)actual);
-    if( reference->type == IUS_2D_TRANSDUCER  )
+    if( reference->type == IUS_2D_SHAPE  )
         return iusHLCompare2DTransducer((Ius2DTransducer *)reference, (Ius2DTransducer *)actual);
     return isEqual;
 }

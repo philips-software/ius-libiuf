@@ -4,6 +4,9 @@
 
 #include <include/iusHLTransducer.h>
 #include <include/iusHLPosition.h>
+#include <include/iusHLTransmitPattern.h>
+#include <unity.h>
+#include <include/ius.h>
 #include "util.h"
 
 iu3dte_t iusUtilCreate3DElement
@@ -54,3 +57,4 @@ iu2dte_t iusUtilCreate2DElement
     iu2dte_t ele = iusHLCreate2DElement(pos, phi, siz);
     return ele;
 }
+

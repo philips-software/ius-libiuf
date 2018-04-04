@@ -9,6 +9,7 @@
 #include <include/iusHLInputFile.h>
 #include <include/ius.h>
 #include <util.h>
+#include <include/iusHLDrivingScheme.h>
 
 
 TEST_GROUP(Inputfile);
@@ -43,7 +44,7 @@ iut_t create3DTransducer()
     sy = 0.0f;
     sz = 6.0 / 1000.0;
     iu3dte_t _3dElement = iusUtilCreate3DElement(x, y, z, sx, sy, sz, theta, phi);
-    int status = iusTransducerSetElement(transducer, elementIndex, _3dElement);
+    int status = iusHLTransducerSetElement(transducer, elementIndex, _3dElement);
     TEST_ASSERT(status == IUS_E_OK);
 
     return transducer;
@@ -69,10 +70,61 @@ iut_t create2DTransducer()
     sx = 0.150 / 1000.0; // meter
     sz = 6.0 / 1000.0;
     iu2dte_t _2dElement = iusUtilCreate2DElement(x, z, sx, sz, phi);
-    int status = iusTransducerSetElement(transducer, elementIndex, _2dElement);
+    int status = iusHLTransducerSetElement(transducer, elementIndex, _2dElement);
     TEST_ASSERT(status == IUS_E_OK);
 
     return transducer;
+}
+
+
+int fillpatternlist(iutpal_t transmitPatternList, int size, float baseTime)
+{
+    int i;
+    int pulseIndex;
+    int status=0;
+    float time;
+
+    for(i=0; i < size ; i++)
+    {
+        time = baseTime * i;
+        pulseIndex = size - 1 - i;
+        status |= iusHLTransmitPatternListSet(transmitPatternList,time,pulseIndex,i);
+    }
+    return status;
+}
+
+iuds_t createDrivingScheme(IusShape shape)
+{
+    iuds_t parametrizedDrivingScheme;
+    iutpal_t transmitPatternList;
+
+    int numElements = 32;
+    int numTransmitPulses = 13;
+    int numTransmitSources = 13;
+    int status = 0;
+    float angularDelta = 0.13f;
+    float FNumber = -0.955f;
+    float startAngle = 3.14f;
+
+    parametrizedDrivingScheme = iusHLCreateDrivingScheme( IUS_DIVERGING_WAVES_PARAMETRIZED,
+                                                          shape,
+                                                          numTransmitPulses,
+                                                          numTransmitSources,
+                                                          numElements );
+
+
+    transmitPatternList = iusHLDrivingSchemeGetTransmitPatternList(parametrizedDrivingScheme);
+    status = fillpatternlist(transmitPatternList,numTransmitPulses,0.33);
+    TEST_ASSERT(status == IUS_E_OK);
+
+    // Driving scheme specific params
+    status |= iusDrivingSchemeSetSourceDeltaTheta(parametrizedDrivingScheme,angularDelta);
+    status |= iusDrivingSchemeSetSourceFNumber(parametrizedDrivingScheme,FNumber);
+    status |= iusDrivingSchemeSetSourceStartTheta(parametrizedDrivingScheme,startAngle);
+    TEST_ASSERT(status == IUS_E_OK);
+
+
+    return parametrizedDrivingScheme;
 }
 
 
@@ -88,6 +140,7 @@ iuh_t create2DTransducerHeader()
     iuh_t iuhHeader;
     iut_t tra;
     iue_t ex;
+    iuds_t dri;
 
     iuhHeader = iusHLCreateInputHeader();
     TEST_ASSERT(iuhHeader != IUH_INVALID);
@@ -105,6 +158,10 @@ iuh_t create2DTransducerHeader()
     status = iusHLHeaderSetTransducer(iuhHeader, tra);
     if (status != IUS_E_OK) return IUH_INVALID;
 
+    dri = createDrivingScheme(IUS_2D_SHAPE);
+    status = iusHLHeaderSetDrivingScheme(iuhHeader, dri);
+    if (status != IUS_E_OK) return IUH_INVALID;
+    
     return iuhHeader;
 }
 
@@ -119,14 +176,14 @@ iuh_t create3DTransducerHeader()
     iuh_t iuhHeader;
     iut_t tra;
     iue_t ex;
+    iuds_t dri;
+
 
     iuhHeader = iusHLCreateInputHeader();
     TEST_ASSERT(iuhHeader != IUH_INVALID);
 
-//    IusExperiment
-//    IusTransducer      * pTransducer;      /**< transducer that has been used */
-//    IusReceiveSettings * pReceiveSettings; /**< data receive settings */
-//    IusDrivingScheme   * pDrivingScheme;   /**< data transmit settings */
+//   Todo:
+// IusReceiveSettings * pReceiveSettings; /**< data receive settings */
 
     ex = iusHLCreateExperiment(speedOfSound, date, pDescription);
     status = iusHLHeaderSetExperiment(iuhHeader, ex);
@@ -135,6 +192,10 @@ iuh_t create3DTransducerHeader()
 
     tra = create3DTransducer();
     status = iusHLHeaderSetTransducer(iuhHeader, tra);
+    if (status != IUS_E_OK) return IUH_INVALID;
+
+    dri = createDrivingScheme(IUS_3D_SHAPE);
+    status = iusHLHeaderSetDrivingScheme(iuhHeader, dri);
     if (status != IUS_E_OK) return IUH_INVALID;
 
     return iuhHeader;
