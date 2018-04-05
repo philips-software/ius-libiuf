@@ -9,42 +9,15 @@
 #ifndef IUSLIBRARY_IMPLEMENTATION
 
 typedef  struct IusTransmitPattern IusTransmitPattern;
-typedef  struct IusTransmitPatternList IusTransmitPatternList;
 #endif // IUSLIBRARY_IMPLEMENTATION
 
 // ADT
 typedef  IusTransmitPattern    * iutpa_t;
-typedef  IusTransmitPatternList   * iutpal_t;
 #define  IUTPA_INVALID (iutpa_t) NULL
-#define  IUTPAL_INVALID (iutpal_t) NULL
 
 
 
 // operations
-iutpal_t iusHLCreateTransmitPatternList
-(
-    int numTransmitPulses
-);
-
-int iusHLTransmitPatternListSet
-(
-    iutpal_t list,
-    float time,
-    int pulseIndex,
-    int patterniIndex
-);
-
-int iusHLTransmitPatternListGetSize
-(
-    iutpal_t list
-);
-
-int iusCompareTransmitPatternList
-(
-    IusTransmitPatternList *reference,
-    IusTransmitPatternList *actual
-);
-
 int iusCompareTransmitPattern
 (
     IusTransmitPattern *reference,
@@ -86,11 +59,5 @@ int iusHLTransmitPatternSet
     iutpa_t pattern,
     float time,
     int pulseIndex
-);
-
-iutpa_t iusHLTransmitPatternListGet
-(
-    IusTransmitPatternList* list,
-    int patternIndex
 );
 #endif //IUSLIBRARY_IUSHLTRANSMITPATTERN_H

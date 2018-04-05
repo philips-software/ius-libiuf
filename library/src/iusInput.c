@@ -1965,6 +1965,53 @@ int iusRead2DDrivingScheme(Ius2DDrivingScheme *scheme, hid_t handle, int verbose
     return IUS_E_OK; //
 }
 
+
+int iusReadTransmitPattern(hid_t handle, IusDrivingScheme *pDrivingScheme, int verbose)
+{
+
+    int status = 0;
+    status |= iusHdf5ReadFloat( handle, "/DrivingScheme/TransmitPattern/transmitPatternDelay", &(pDrivingScheme->transmitPatternDelay), verbose );
+
+    int i;
+    int *   pIndexData;
+    float * pTimeData;
+
+    int numPulses = pDrivingScheme->numTransmitPulses;
+
+    IUS_UNUSED(verbose); // avoid compiler warnings
+
+    pIndexData   =   (int *) malloc(numPulses * sizeof(int));
+    pTimeData   = (float *) malloc(numPulses * sizeof(float));
+    pDrivingScheme->pTransmitPatterns = iusHLCreateTransmitPatternList(numPulses);
+    if ( pDrivingScheme->pTransmitPatterns == NULL || pIndexData == NULL || pTimeData == NULL)
+    {
+        fprintf( stderr, "iusReadTransmitPattern: Error allocating data\n" );
+        free( pIndexData );
+        free( pTimeData );
+        return -1;
+    }
+
+    status |= H5LTread_dataset_int( handle,   "/DrivingScheme/TransmitPattern/transmitPatternIndex",  pIndexData );
+    status |= H5LTread_dataset_float( handle, "/DrivingScheme/TransmitPattern/transmitPatternTime",   pTimeData );
+    if ( status < 0 )
+    {
+        fprintf( stderr, "iusReadTransmitPattern: Error reading dataset: H5Dread returned: %d\n", status );
+        free( pIndexData );
+        free( pTimeData );
+        return status;
+    }
+
+    for ( i = 0; i < numPulses; i++ )
+    {
+        pDrivingScheme->pTransmitPatterns->pTransmitPattern[i].index = pIndexData[i];
+        pDrivingScheme->pTransmitPatterns->pTransmitPattern[i].time  = pTimeData[i];
+    }
+
+    free( pIndexData );
+    free( pTimeData );
+    return status;
+}
+
 IusDrivingScheme *iusReadDrivingScheme(hid_t handle, IusShape shape,  int verbose) {
     int status = 0;
     int numTransmitSources;
@@ -2007,12 +2054,16 @@ IusDrivingScheme *iusReadDrivingScheme(hid_t handle, IusShape shape,  int verbos
     }
 
     // TransmitPattern
-//    status = iusReadTransmitPattern(pDrivingScheme);
     pDrivingScheme->numElements = numElements;
     pDrivingScheme->numTransmitSources = numTransmitSources;
     pDrivingScheme->numTransmitPulses = numTransmitPulses;
     pDrivingScheme->shape = shape;
     pDrivingScheme->type = type;
+
+    status = iusReadTransmitPattern(handle,pDrivingScheme,verbose);
+    if( status != 0 )
+        return NULL;
+
     return pDrivingScheme;
 }
 
@@ -2174,6 +2225,7 @@ IusInputInstance * iusInputRead
 
 
     IusShape shape = iusHLTransducerGetShapeType(pTransducer);
+
     // Read DrivingScheme fields
     pDrivingScheme = iusReadDrivingScheme(handle, shape, verbose);
     status |= iusHLHeaderSetDrivingScheme(pInst, pDrivingScheme);

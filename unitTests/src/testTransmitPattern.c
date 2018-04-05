@@ -9,6 +9,7 @@
 #include <iusHLTransmitPattern.h>
 #include <include/ius.h>
 #include <include/iusError.h>
+#include <include/iusHLTransmitPatternList.h>
 
 TEST_GROUP(InputfileTransmitPattern);
 

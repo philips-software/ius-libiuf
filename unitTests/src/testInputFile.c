@@ -105,6 +105,7 @@ iuds_t createDrivingScheme(IusShape shape)
     float angularDelta = 0.13f;
     float FNumber = -0.955f;
     float startAngle = 3.14f;
+    float transmitPatternDelay = 0.88f;
 
     parametrizedDrivingScheme = iusHLCreateDrivingScheme( IUS_DIVERGING_WAVES_PARAMETRIZED,
                                                           shape,
@@ -121,6 +122,7 @@ iuds_t createDrivingScheme(IusShape shape)
     status |= iusDrivingSchemeSetSourceDeltaTheta(parametrizedDrivingScheme,angularDelta);
     status |= iusDrivingSchemeSetSourceFNumber(parametrizedDrivingScheme,FNumber);
     status |= iusDrivingSchemeSetSourceStartTheta(parametrizedDrivingScheme,startAngle);
+    status |= iusHLDrivingSchemeSetTransmitPatternDelay(parametrizedDrivingScheme,transmitPatternDelay);
     TEST_ASSERT(status == IUS_E_OK);
 
 

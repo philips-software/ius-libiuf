@@ -4,7 +4,6 @@
 
 #include <include/iusHLTransducer.h>
 #include <include/iusHLPosition.h>
-#include <include/iusHLTransmitPattern.h>
 #include <unity.h>
 #include <include/ius.h>
 #include "util.h"

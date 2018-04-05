@@ -8,6 +8,7 @@
 #include <include/iusHLTransducer.h>
 #include <include/iusError.h>
 #include <include/iusHLTransmitPattern.h>
+#include <include/iusHLTransmitPatternList.h>
 #include <util.h>
 #include "testDrivingScheme.h"
 
@@ -19,6 +20,21 @@ TEST_SETUP(InputfileDrivingScheme)
 
 TEST_TEAR_DOWN(InputfileDrivingScheme)
 {
+}
+
+TEST(InputfileDrivingScheme, testTransmitPatternDelay)
+{
+    iuds_t drivingScheme;
+    int status = 0;
+    int numElements = 32;
+    int numTransmitPulses = 13;
+    int numTransmitSources = 13;
+    float transmitPatternDelay = 0.99f;
+
+    drivingScheme = iusHLCreateDrivingScheme( IUS_DIVERGING_WAVES_PARAMETRIZED, IUS_3D_SHAPE, numTransmitPulses,numTransmitSources,numElements);
+    status = iusHLDrivingSchemeSetTransmitPatternDelay(drivingScheme, transmitPatternDelay);
+    TEST_ASSERT_EQUAL_FLOAT(transmitPatternDelay,iusHLDrivingSchemeGetTransmitPatternDelay(drivingScheme));
+
 }
 
 
@@ -51,6 +67,7 @@ TEST(InputfileDrivingScheme, testIusHLTransmitPatternList)
         TEST_ASSERT_EQUAL(pulseIndex,iusHLTransmitPatternGetIndex(pattern));
         TEST_ASSERT_EQUAL_FLOAT(transmitTime,iusHLTransmitPatternGetTime(pattern));
     }
+
     iusHLDeleteDrivingScheme(drivingScheme);
 }
 
@@ -364,5 +381,6 @@ TEST_GROUP_RUNNER(InputfileDrivingScheme)
     RUN_TEST_CASE(InputfileDrivingScheme, testSchemeGetTransmitApodization);
     RUN_TEST_CASE(InputfileDrivingScheme, testSchemeSetTransmitApodization);
     RUN_TEST_CASE(InputfileDrivingScheme, testIusHLTransmitPatternList);
+    RUN_TEST_CASE(InputfileDrivingScheme, testTransmitPatternDelay);
 }
 

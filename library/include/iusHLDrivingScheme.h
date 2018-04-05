@@ -8,6 +8,7 @@
 
 #include "iusHLTransmitPulse.h"
 #include "iusHLTransmitPattern.h"
+#include "iusHLTransmitPatternList.h"
 
 #ifndef IUSLIBRARY_IMPLEMENTATION
 #include <stddef.h>
@@ -49,6 +50,11 @@ iuds_t iusCreate2DDrivingScheme
 );
 
 // setters
+int iusHLDrivingSchemeSetTransmitPatternDelay
+(
+    iuds_t drivingScheme,
+    float transmitPatternDelay
+);
 
 int iusHLDrivingSchemeSetTransmitPulse
 (
@@ -111,10 +117,15 @@ int iusHLDrivingSchemeSet2DSourceLocation
 );
 
 // getters
+float iusHLDrivingSchemeGetTransmitPatternDelay
+(
+    iuds_t drivingScheme
+);
+
 iutpal_t iusHLDrivingSchemeGetTransmitPatternList
-    (
-        iuds_t drivingScheme
-    );
+(
+    iuds_t drivingScheme
+);
 
 IusShape iusHLDrivingSchemeGetShape
 (

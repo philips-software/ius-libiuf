@@ -158,6 +158,16 @@ int iusHLDeleteDrivingScheme
     return IUS_ERR_VALUE;
 }
 
+int iusHLDrivingSchemeSetTransmitPatternDelay
+(
+    IusDrivingScheme * drivingScheme,
+    float transmitPatternDelay
+)
+{
+    drivingScheme->transmitPatternDelay = transmitPatternDelay;
+    return IUS_E_OK;
+}
+
 int iusHLDrivingSchemeSetTransmitPulse
 (
     iuds_t drivingScheme,
@@ -412,6 +422,13 @@ IusTransmitPatternList *iusHLDrivingSchemeGetTransmitPatternList
     return drivingScheme->pTransmitPatterns;
 }
 
+float iusHLDrivingSchemeGetTransmitPatternDelay
+(
+    iuds_t drivingScheme
+)
+{
+    return drivingScheme->transmitPatternDelay;
+}
 
 
 IUS_BOOL iusHLCompareDrivingScheme
@@ -434,7 +451,7 @@ IUS_BOOL iusHLCompareDrivingScheme
         actual->pTransmitPatterns) == IUS_FALSE) return IUS_FALSE;
 
 
-    assert(IUS_FALSE);
+//    assert(IUS_FALSE);
     return IUS_TRUE;
 }
 
