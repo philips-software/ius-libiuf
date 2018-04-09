@@ -28,6 +28,9 @@ IUS_BOOL isValidSchemeType(IusDrivingSchemeType type)
         case IUS_SINGLE_ELEMENT:
         case IUS_PLANE_WAVES:
             return IUS_TRUE;
+
+        case IUS_INVALID_DRIVING_SCHEME:
+            return IUS_FALSE;
     }
     return IUS_FALSE;
 }
@@ -430,6 +433,16 @@ float iusHLDrivingSchemeGetTransmitPatternDelay
     return drivingScheme->transmitPatternDelay;
 }
 
+int iusCompareTransmitApodization(float *reference, float *actual, int numValues)
+{
+    int index;
+    for(index = 0 ; index < numValues; index++)
+    {
+        if(IUS_EQUAL_FLOAT(reference[index],actual[index]) == IUS_FALSE)
+            return IUS_FALSE;
+    }
+    return IUS_TRUE;
+}
 
 IUS_BOOL iusHLCompareDrivingScheme
 (
@@ -449,6 +462,10 @@ IUS_BOOL iusHLCompareDrivingScheme
     if( iusCompareTransmitPatternList(
         reference->pTransmitPatterns,
         actual->pTransmitPatterns) == IUS_FALSE) return IUS_FALSE;
+    if( iusCompareTransmitApodization(
+        reference->pTransmitApodization,
+        actual->pTransmitApodization,
+        reference->numTransmitPulses*reference->numElements) == IUS_FALSE) return IUS_FALSE;
 
 
 //    assert(IUS_FALSE);

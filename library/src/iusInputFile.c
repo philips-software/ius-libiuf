@@ -55,7 +55,7 @@ IusInputFileInstance *iusInputFileCreate
     return NULL;
     }
 
-
+    pFileInst->fileChunkConfig = H5I_INVALID_HID ;
     pFileInst->handle = H5Fcreate( pFullFileName, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT );
     if ( pFileInst->handle < 0 )
     {
@@ -417,7 +417,12 @@ int iusInputFileClose
     int success=0;
     IUS_ASSERT_MEMORY(pFileInst);
 
-    if( pFileInst->fileChunkConfig )
+    if( pFileInst == NULL )
+    {
+        return -1;
+    }
+
+    if( pFileInst->fileChunkConfig != H5I_INVALID_HID )
         success |= H5Pclose(pFileInst->fileChunkConfig);
     if( pFileInst->rfDataset )
         success |= H5Dclose(pFileInst->rfDataset);
@@ -429,6 +434,7 @@ int iusInputFileClose
       free(pFileInst);
       pFileInst = NULL;
     }
+
     return success;
 }
 

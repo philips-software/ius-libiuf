@@ -93,6 +93,35 @@ int fillpatternlist(iutpal_t transmitPatternList, int size, float baseTime)
     return status;
 }
 
+int filltransmitAppodization
+(
+    iuds_t drivingScheme,
+    int numElements,
+    int numTransmitPulses
+
+)
+{
+    // By default, apodization should be initialized to 1.0f for all elements.
+    float elementApodization;
+    int pulseIndex;
+    int elementIndex;
+    int status=IUS_E_OK;
+
+    for(pulseIndex=0 ;pulseIndex < numTransmitPulses ; pulseIndex++)
+    {
+        for (elementIndex = 0; elementIndex < numElements; elementIndex++)
+        {
+            elementApodization = 1.0f / ((pulseIndex % 10) + 1);
+            status = iusDrivingSchemeSetTransmitApodization(drivingScheme, elementApodization, pulseIndex,
+                                                            elementIndex);
+            TEST_ASSERT(status == IUS_E_OK);
+            TEST_ASSERT_EQUAL_FLOAT(elementApodization,
+                                    iusDrivingSchemeGetTransmitApodization(drivingScheme, pulseIndex, elementIndex));
+        }
+    }
+    return status;
+}
+
 iuds_t createDrivingScheme(IusShape shape)
 {
     iuds_t parametrizedDrivingScheme;
@@ -117,6 +146,8 @@ iuds_t createDrivingScheme(IusShape shape)
     transmitPatternList = iusHLDrivingSchemeGetTransmitPatternList(parametrizedDrivingScheme);
     status = fillpatternlist(transmitPatternList,numTransmitPulses,0.33);
     TEST_ASSERT(status == IUS_E_OK);
+
+    status = filltransmitAppodization(parametrizedDrivingScheme,numTransmitPulses,numTransmitSources);
 
     // Driving scheme specific params
     status |= iusDrivingSchemeSetSourceDeltaTheta(parametrizedDrivingScheme,angularDelta);

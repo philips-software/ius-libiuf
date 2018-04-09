@@ -1126,10 +1126,19 @@ herr_t iusWriteTransmitPattern(IusDrivingScheme *pDrivingScheme, hid_t subgroup_
     return status;
 }
 
+
+herr_t iusWriteDrivingSchemeTransmitApodization(hid_t group_id, char *pVariableString, IusDrivingScheme *pDrivingScheme, int verbose)
+{
+    hsize_t apodDims[2] = {pDrivingScheme->numTransmitPulses,  pDrivingScheme->numElements};
+    herr_t status = H5LTmake_dataset_float( group_id,"/DrivingScheme/transmitApodization",  2, apodDims, pDrivingScheme->pTransmitApodization );
+    return status;
+}
+
 herr_t iusWriteBaseDrivingScheme(IusDrivingScheme *pDrivingScheme, hid_t group_id, int verbose)
 {
     herr_t  status;
     status |= iusWriteDrivingSchemeType(group_id, "/DrivingScheme/drivingSchemeType", pDrivingScheme->type,verbose);
+    status |= iusWriteDrivingSchemeTransmitApodization(group_id, "/DrivingScheme/transmitApodization", pDrivingScheme,verbose);
     status |= iusHdf5WriteInt(group_id, "/DrivingScheme/numTransmitSources",  &pDrivingScheme->numTransmitSources, 1, verbose);
     status |= iusHdf5WriteInt(group_id, "/DrivingScheme/numTransmitPulses",  &pDrivingScheme->numTransmitPulses, 1, verbose);
     status |= iusHdf5WriteInt(group_id, "/DrivingScheme/numElements",  &pDrivingScheme->numElements, 1, verbose);
@@ -1137,8 +1146,6 @@ herr_t iusWriteBaseDrivingScheme(IusDrivingScheme *pDrivingScheme, hid_t group_i
     hid_t subgroup_id = H5Gcreate(group_id, "/DrivingScheme/TransmitPattern/", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT );
     status |= iusWriteTransmitPattern(pDrivingScheme, subgroup_id, verbose);
     H5Gclose( subgroup_id );
-
-
     return status;
 }
 
@@ -1162,11 +1169,11 @@ int iusWriteDrivingScheme(IusDrivingScheme *pDrivingScheme, hid_t group_id, int 
 //
 //------------------------------------------------------------------------------
 int iusInputWrite
-    (
-        hid_t handle,
-        IusInputInstance *pInst,
-        int verbose
-    )
+(
+    hid_t handle,
+    IusInputInstance *pInst,
+    int verbose
+)
 {
 #if old
     Ius3DPosition * pPositionArray;
@@ -1915,9 +1922,8 @@ int iusReadDrivingSchemeType(hid_t handle, char *pVariableString, IusDrivingSche
                                                       (enumValue=IUS_SINGLE_ELEMENT, &enumValue) );
     status |= H5Tenum_insert( hdf_drivingSchemeType, DRIVINGSCHEME_CUSTOM_WAVES,
                                                       (enumValue=IUS_CUSTOM_WAVES, &enumValue) );
-    IusDrivingSchemeType aap;
-    status |= H5LTread_dataset( handle, pVariableString , hdf_drivingSchemeType, &aap );
-    *pType = aap;
+    *pType = IUS_INVALID_DRIVING_SCHEME;
+    status |= H5LTread_dataset( handle, pVariableString , hdf_drivingSchemeType, pType );
     return status;
 }
 
@@ -1965,8 +1971,23 @@ int iusRead2DDrivingScheme(Ius2DDrivingScheme *scheme, hid_t handle, int verbose
     return IUS_E_OK; //
 }
 
+int iusReadTransmitApodization
+(
+    hid_t handle,
+    IusDrivingScheme *pDrivingScheme,
+    int verbose
+)
+{
+    int status = 0;
+    return status;
+}
 
-int iusReadTransmitPattern(hid_t handle, IusDrivingScheme *pDrivingScheme, int verbose)
+int iusReadTransmitPattern
+(
+    hid_t handle,
+    IusDrivingScheme *pDrivingScheme,
+    int verbose
+)
 {
 
     int status = 0;
@@ -2060,7 +2081,8 @@ IusDrivingScheme *iusReadDrivingScheme(hid_t handle, IusShape shape,  int verbos
     pDrivingScheme->shape = shape;
     pDrivingScheme->type = type;
 
-    status = iusReadTransmitPattern(handle,pDrivingScheme,verbose);
+    status |= H5LTread_dataset_float(handle, "/DrivingScheme/transmitApodization", pDrivingScheme->pTransmitApodization);
+    status |= iusReadTransmitPattern(handle,pDrivingScheme,verbose);
     if( status != 0 )
         return NULL;
 

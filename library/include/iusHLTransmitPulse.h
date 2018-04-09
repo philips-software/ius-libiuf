@@ -28,11 +28,15 @@ iutp_t iusHLCreateParametricPulse
 
 iutp_t iusHLCreateNonParametricPulse
 (
-    float * pRawPulseAmplitudes,          /**< shape of waveform [in Volts] */
-    float * pRawPulseTimes,               /**< corresponding timestamps of amplitudes [in seconds] */
+
     int     numPulseValues                /**< number of points to describe waveform, 0 implies a parametric description only */
 );
 
+int iusCompareTransmitPulse
+(
+    IusTransmitPulse *reference,
+    IusTransmitPulse *actual
+);
 
 int iusHLDeleteTransmitPulse
 (
@@ -53,6 +57,19 @@ float iusHLParametricPulseGetPulseAmplitude
 int iusHLParametricPulseGetCount
 (
     iutp_t transmitPulse
+);
+
+int iusHLNonParametricPulseGetCount
+(
+    iutp_t transmitPulse
+);
+
+int iusHLNonParametricPulseSetAmplitudeTime
+(
+    iutp_t transmitPulse,
+    float pulseTime,
+    float pulseAmplitude,
+    int index
 );
 
 #endif //IUSLIBRARY_IUSHLTRANSMITPULSE_H

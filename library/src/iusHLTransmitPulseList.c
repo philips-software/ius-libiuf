@@ -14,17 +14,32 @@
 // operations
 iutpl_t iusHLCreateTransmitPulseList
 (
-    int numTransmitPulses
+    int numTransmitPulses,
+    IusTransmitPulseType type
 )
 {
-    return NULL;
+    IusTransmitPulseList *list = calloc(1, sizeof(IusTransmitPulseList));
+    if( list == NULL ) return NULL;
+    if( type == IUS_NON_PARAMETRIC_PULSETYPE )
+    {
+        IusParametricTransmitPulse *pulse = calloc(numTransmitPulses, sizeof(IusParametricTransmitPulse));
+        list->pTransmitPulse = (IusTransmitPulse *) pulse;
+    }
+
+    list->count = numTransmitPulses;
+    return list;
 }
 
 int iusHLTransmitPulseListSet
 (
-    iutpl_t list
+    IusTransmitPulseList * list,
+    IusTransmitPulse * pulse,
+    int pulseIndex
 )
 {
+    if( list == NULL || pulse == NULL ) return IUS_ERR_VALUE;
+    if( pulseIndex >= list->count ) return IUS_ERR_VALUE;
+//    list->pTransmitPulse[pulseIndex] = pulse;
     return IUS_ERR_VALUE;
 }
 
@@ -53,5 +68,15 @@ int iusCompareTransmitPulseList
     iutpl_t actual
 )
 {
-    return IUS_FALSE;
+    int index;
+    if( reference == actual ) return IUS_TRUE;
+    if( reference == NULL || actual == NULL ) return IUS_FALSE;
+    if( reference->count != actual->count ) return IUS_FALSE;
+    for(index = 0 ; index < actual->count ; index++ )
+    {
+        if( iusCompareTransmitPulse( &reference->pTransmitPulse[index], &actual->pTransmitPulse[index] )
+            == IUS_FALSE )
+            return IUS_FALSE;
+    }
+    return IUS_TRUE;
 }

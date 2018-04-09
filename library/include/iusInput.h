@@ -101,10 +101,7 @@ typedef struct
     IusTimeGainControl * pTimeGainControl;          /**< TimeGainControl points (time,gain) */
 } IusReceiveSettings;
 
-typedef enum {
-    IUS_PARAMETRIC_PULSETYPE = 1,
-    IUS_NON_PARAMETRIC_PULSETYPE
-} IusTransmitPulseType;
+
 
 /** \brief Transmit wave object
  *  \details The Transmitwave function is described by a set of points

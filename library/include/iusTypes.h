@@ -174,6 +174,7 @@ typedef enum
 /** \brief Possible driving patterns */
 typedef enum
 {
+    IUS_INVALID_DRIVING_SCHEME,
     IUS_DIVERGING_WAVES_PARAMETRIZED = 1, /**< focus point has negative z value (parametrized) */
     IUS_DIVERGING_WAVES,                 /**< focus point has negative z value */
     IUS_FOCUSED_WAVES_PARAMETRIZED,      /**< focus point has positive z value */
@@ -191,7 +192,10 @@ typedef enum
 #define DRIVINGSCHEME_SINGLE_ELEMENT                 "SINGLE_ELEMENT"
 #define DRIVINGSCHEME_CUSTOM_WAVES                   "CUSTOM_WAVES"
 
-
+typedef enum {
+    IUS_PARAMETRIC_PULSETYPE = 1,
+    IUS_NON_PARAMETRIC_PULSETYPE
+} IusTransmitPulseType;
 
 
 #ifdef __cplusplus
