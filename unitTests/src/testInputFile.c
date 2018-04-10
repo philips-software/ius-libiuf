@@ -178,8 +178,6 @@ iuh_t create2DTransducerHeader()
     iuhHeader = iusHLCreateInputHeader();
     TEST_ASSERT(iuhHeader != IUH_INVALID);
 
-//    IusExperiment
-//    IusTransducer      * pTransducer;      /**< transducer that has been used */
 //    IusReceiveSettings * pReceiveSettings; /**< data receive settings */
 //    IusDrivingScheme   * pDrivingScheme;   /**< data transmit settings */
 

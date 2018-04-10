@@ -3,13 +3,13 @@
 //
 
 #include <unity_fixture.h>
-#include <include/iusHLDrivingScheme.h>
 #include <include/ius.h>
 #include <include/iusTypes.h>
-#include <include/iusHLTransducer.h>
 #include <include/iusError.h>
-#include <include/iusHLTransmitPulseList.h>
-#include "testDrivingScheme.h"
+#include <include/iusHLNonParametricTransmitPulse.h>
+#include <include/iusHLNonParametricTransmitPulseList.h>
+#include <include/iusHLParametricTransmitPulse.h>
+#include <include/iusHLParametricTransmitPulseList.h>
 
 TEST_GROUP(InputfileTransmitPulse);
 
@@ -21,20 +21,21 @@ TEST_TEAR_DOWN(InputfileTransmitPulse)
 {
 }
 
-int fillAmplitudeTime
+int nonParametricPulseFillAmplitudeTime
 (
-    iutp_t transmitPulse
+    iunptp_t transmitPulse,
+    float offset
 )
 {
     int i;
     int status=0;
     float pulseAmplitude;
     float pulseTimes;
-    int numPulseValues = iusHLNonParametricPulseGetCount(transmitPulse);
+    int numPulseValues = iusHLNonParametricPulseGetNumValues(transmitPulse);
     for(i=0; i< numPulseValues; i++)
     {
-        pulseAmplitude = 1.0f / ((i % 10) + 1.0f);
-        pulseTimes = 1.0f / ((i % 10) + 1.0f);
+        pulseAmplitude = offset / ((i % 10) + 1.0f);
+        pulseTimes = offset / ((i % 10) + 1.0f);
         status = iusHLNonParametricPulseSetAmplitudeTime(transmitPulse,pulseTimes,pulseAmplitude,i);
         if( status != IUS_E_OK )
         {
@@ -44,25 +45,20 @@ int fillAmplitudeTime
     return status;
 }
 
-int fillParametricPulseList
+
+int fillNonParametricPulseList
 (
-    iutpl_t transmitPulseList,
-    int pulseValues
+    iunptpl_t transmitPulseList,
+    float offset
 )
 {
     int i;
     int status=0;
-    float pulseAmplitude;          /**< shape of waveform [in Volts] */
-    float pulseFrequency;               /**< corresponding timestamps of amplitudes [in seconds] */
-    int   numPulseCount  = iusHLTransmitPulseListGetSize(transmitPulseList)    ;
-    iutp_t  parametricPulse;
-
+    int numPulseCount  = iusHLNonParametricTransmitPulseListGetSize(transmitPulseList);
     for(i=0; i< numPulseCount; i++)
     {
-        pulseAmplitude = 1.0f/((i%10)+1.0f);
-        pulseFrequency = 1.0f/((i%10)+1.0f);
-        parametricPulse = iusHLCreateParametricPulse(pulseFrequency,pulseAmplitude,pulseValues);
-        status = iusHLTransmitPulseListSet(transmitPulseList, parametricPulse, i );
+        iunptp_t transmitPulse = iusHLNonParametricTransmitPulseListGet(transmitPulseList,i);
+        status = nonParametricPulseFillAmplitudeTime( transmitPulse, offset );
         if( status != IUS_E_OK )
         {
             return status;
@@ -71,45 +67,185 @@ int fillParametricPulseList
     return status;
 }
 
-iutpl_t createNfillpulselist(int pulses, float time){
-    iutpl_t transmitPulseList = iusHLCreateTransmitPulseList(pulses,IUS_PARAMETRIC_PULSETYPE);
-    int pulseValues = 100;
-    int status = fillParametricPulseList(transmitPulseList,pulseValues);
+iunptpl_t createNfillNonParametricPulseList
+(
+    int pulses,
+    float offset
+)
+{
+    int valueCount = 10;
+    iunptpl_t transmitPulseList = iusHLCreateNonParametricTransmitPulseList(pulses,valueCount);
+    int status = fillNonParametricPulseList(transmitPulseList, offset);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
     return transmitPulseList;
 }
 
-TEST(InputfileTransmitPulse, testTransmitPulseListSet)
+int fillParametricPulseList
+(
+    iuptpl_t transmitPulseList,
+    float offset
+)
 {
-    int numTransmitPulses = 10;
+    int i;
+    int status=0;
+    float pulseAmplitude;          /**< shape of waveform [in Volts] */
+    float pulseFrequency;               /**< corresponding timestamps of amplitudes [in seconds] */
+    int numPulseCount  = iusHLParametricTransmitPulseListGetSize(transmitPulseList)    ;
+    int pulseCount;
+
+    for(i=0; i< numPulseCount; i++)
+    {
+        pulseAmplitude = offset/((i%10)+1.0f);
+        pulseFrequency = offset/((i%10)+1.0f);
+        pulseCount = 10;
+        status = iusHLParametricTransmitPulseListSet( (iuptpl_t) transmitPulseList, pulseFrequency, pulseAmplitude, pulseCount, i );
+        if( status != IUS_E_OK )
+        {
+            return status;
+        }
+    }
+    return status;
+}
+
+iuptpl_t createNfillParametricPulseList(int pulses, float offset){
+    iuptpl_t transmitPulseList = iusHLCreateParametricTransmitPulseList(pulses);
+    int status = fillParametricPulseList(transmitPulseList,offset);
+    TEST_ASSERT_EQUAL(IUS_E_OK,status);
+    return transmitPulseList;
+}
+
+TEST(InputfileTransmitPulse, testTransmitParametricPulseListSet)
+{
     int status;
-    float time = 0.1f;
+    int     pulseCount=10;               /**< number of cycles that the pulse represents */
+    float offset = 1.0f;
 
-    iutpl_t transmitPulseList = createNfillpulselist(numTransmitPulses,time);
-    iutpl_t notherPulseList = createNfillpulselist(numTransmitPulses,time);
 
-    IUS_BOOL equal = iusCompareTransmitPulseList(transmitPulseList,transmitPulseList);
+    iuptpl_t transmitPulseList = createNfillParametricPulseList(pulseCount,offset);
+    iuptpl_t notherPulseList = createNfillParametricPulseList(pulseCount,offset);
+
+    IUS_BOOL equal = iusCompareParametricTransmitPulseList( transmitPulseList, transmitPulseList);
     TEST_ASSERT_EQUAL(IUS_TRUE, equal);
-    equal = iusCompareTransmitPulseList(transmitPulseList,notherPulseList);
+    equal = iusCompareParametricTransmitPulseList(transmitPulseList, notherPulseList);
     TEST_ASSERT_EQUAL(IUS_TRUE, equal);
 
     // changing one of the pattern list, should result in a difference
-    iutp_t pulse = iusHLTransmitPulseListGet(transmitPulseList,0);
-    status = iusHLTransmitPulseListSet(transmitPulseList,pulse,0);
+    status = iusHLParametricTransmitPulseListSet( transmitPulseList, 0.1f, 0.1f, 10, 0 );
     TEST_ASSERT_EQUAL(IUS_E_OK, status);
-    equal = iusCompareTransmitPulseList(notherPulseList,transmitPulseList);
+    equal = iusCompareParametricTransmitPulseList(notherPulseList, transmitPulseList);
     TEST_ASSERT_EQUAL(IUS_FALSE, equal);
 
     // invalid params
-    status= iusHLTransmitPulseListSet(transmitPulseList,pulse,-1);
-    TEST_ASSERT_EQUAL(IUS_ERR_VALUE,status);
-    status= iusHLTransmitPulseListSet(transmitPulseList,pulse,numTransmitPulses);
-    TEST_ASSERT_EQUAL(IUS_ERR_VALUE,status);
-    status= iusHLTransmitPulseListSet(transmitPulseList,NULL,0);
-    TEST_ASSERT_EQUAL(IUS_ERR_VALUE,status);
+    status = iusHLParametricTransmitPulseListSet( NULL, 0.1f, 0.1f, 10, 0 );
+    TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
+    status = iusHLParametricTransmitPulseListSet( transmitPulseList, -0.1f, 0.1f, 10, 0 );
+    TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
+    status = iusHLParametricTransmitPulseListSet( transmitPulseList, 0.1f, 0.1f, -10, 0 );
+    TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
+    status = iusHLParametricTransmitPulseListSet( transmitPulseList, 0.1f, 0.1f, 10, -1 );
+    TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
+
 }
 
-TEST(InputfileTransmitPulse, testCreateTransmitPulse)
+TEST(InputfileTransmitPulse, testTransmitNonParametricPulseListSet)
+{
+    iuptp_t  parametricPulse;
+    float   pulseFrequency=8000000.0f;   /**< frequency that the pulse represents in Hz */
+    float   pulseAmplitude=800.0f;       /**< (max) amplitude of the pulse in Volts */
+    int     pulseCount=10;               /**< number of cycles that the pulse represents */
+    int numTransmitPulses = 100;
+    int status;
+    float offset = 1.0f;
+
+
+    iunptpl_t transmitPulseList = createNfillNonParametricPulseList(numTransmitPulses,offset);
+    iunptpl_t notherPulseList = createNfillNonParametricPulseList(numTransmitPulses,offset);
+
+    IUS_BOOL equal = iusCompareNonParametricTransmitPulseList( transmitPulseList, transmitPulseList);
+    TEST_ASSERT_EQUAL(IUS_TRUE, equal);
+    equal = iusCompareNonParametricTransmitPulseList(transmitPulseList, notherPulseList);
+    TEST_ASSERT_EQUAL(IUS_TRUE, equal);
+
+    // changing one of the pattern list, should result in a difference
+    iunptp_t pulse = iusHLNonParametricTransmitPulseListGet(transmitPulseList,0);
+    TEST_ASSERT(pulse != NULL);
+
+    status = nonParametricPulseFillAmplitudeTime(pulse,offset+1.0f);
+    TEST_ASSERT_EQUAL(IUS_E_OK, status);
+    status = iusHLNonParametricTransmitPulseListSet( transmitPulseList, pulse, 0);
+    TEST_ASSERT_EQUAL(IUS_E_OK, status);
+    equal = iusCompareNonParametricTransmitPulseList(notherPulseList, transmitPulseList);
+    TEST_ASSERT_EQUAL(IUS_FALSE, equal);
+
+    // invalid params
+    parametricPulse = iusHLCreateParametricPulse(pulseFrequency,pulseAmplitude,pulseCount);
+    status = iusHLNonParametricTransmitPulseListSet( (iunptpl_t) parametricPulse, pulse, 0);
+    TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
+    status = iusHLNonParametricTransmitPulseListSet( (iunptpl_t) NULL, pulse, 0);
+    TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
+    status = iusHLNonParametricTransmitPulseListSet( transmitPulseList, NULL, 0);
+    TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
+    status = iusHLNonParametricTransmitPulseListSet( transmitPulseList, pulse, -1);
+    TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
+
+}
+
+
+TEST(InputfileTransmitPulse, testCompareTransmitPulse)
+{
+    int status = 0;
+    // Transmit parameters
+    float   pulseFrequency=8000000.0f;   /**< frequency that the pulse represents in Hz */
+    float   pulseAmplitude=800.0f;       /**< (max) amplitude of the pulse in Volts */
+    int     pulseCount=10;               /**< number of cycles that the pulse represents */
+    int     numPulseValues=20;              /**< number of points to describe waveform, 0 implies a parametric description only */
+    iuptp_t  parametricPulse,notherParametricPulse;
+    iunptp_t nonParametricPulse,notherNonParametricPulse;
+    IUS_BOOL isEqual;
+
+
+    // Parametric transmit pulse
+    parametricPulse = iusHLCreateParametricPulse(pulseFrequency,pulseAmplitude,pulseCount);
+    notherParametricPulse = iusHLCreateParametricPulse(pulseFrequency,pulseAmplitude,pulseCount);
+
+    nonParametricPulse = iusHLCreateNonParametricPulse(numPulseValues);
+    notherNonParametricPulse = iusHLCreateNonParametricPulse(numPulseValues);
+
+    isEqual = iusCompareNonParametricPulse(nonParametricPulse,nonParametricPulse);
+    TEST_ASSERT_EQUAL(IUS_TRUE,isEqual);
+    isEqual = iusCompareNonParametricPulse(nonParametricPulse,notherNonParametricPulse);
+    TEST_ASSERT_EQUAL(IUS_TRUE,isEqual);
+    isEqual = iusCompareParametricPulse(parametricPulse,parametricPulse);
+    TEST_ASSERT_EQUAL(IUS_TRUE,isEqual);
+    isEqual = iusCompareParametricPulse(parametricPulse,notherParametricPulse);
+    TEST_ASSERT_EQUAL(IUS_TRUE,isEqual);
+
+    // Invalid arguments
+    isEqual = iusCompareParametricPulse(parametricPulse,(iuptp_t) nonParametricPulse);
+    TEST_ASSERT_EQUAL(IUS_FALSE,isEqual);
+    isEqual = iusCompareNonParametricPulse((iunptp_t) parametricPulse, nonParametricPulse);
+    TEST_ASSERT_EQUAL(IUS_FALSE,isEqual);
+    isEqual = iusCompareParametricPulse(NULL,NULL);
+    TEST_ASSERT_EQUAL(IUS_TRUE,isEqual);
+    isEqual = iusCompareParametricPulse(NULL,parametricPulse);
+    TEST_ASSERT_EQUAL(IUS_FALSE,isEqual);
+    isEqual = iusCompareParametricPulse(parametricPulse,NULL);
+    TEST_ASSERT_EQUAL(IUS_FALSE,isEqual);
+    isEqual = iusCompareNonParametricPulse(NULL,NULL);
+    TEST_ASSERT_EQUAL(IUS_TRUE,isEqual);
+    isEqual = iusCompareNonParametricPulse(NULL,nonParametricPulse);
+    TEST_ASSERT_EQUAL(IUS_FALSE,isEqual);
+    isEqual = iusCompareNonParametricPulse(nonParametricPulse,NULL);
+    TEST_ASSERT_EQUAL(IUS_FALSE,isEqual);
+
+
+    status = iusHLDeleteNonParametricPulse(nonParametricPulse);
+    TEST_ASSERT_EQUAL(IUS_E_OK,status);
+    status = iusHLDeleteParametricPulse(parametricPulse);
+    TEST_ASSERT_EQUAL(IUS_E_OK,status);
+}
+
+TEST(InputfileTransmitPulse, testCreateDeleteTransmitPulse)
 {
     int status = 0;
     // Transmit parameters
@@ -117,16 +253,12 @@ TEST(InputfileTransmitPulse, testCreateTransmitPulse)
     float   pulseAmplitude=800.0f;       /**< (max) amplitude of the pulse in Volts */
     int     pulseCount=10;               /**< number of cycles that the pulse represents */
     int     numPulseValues;              /**< number of points to describe waveform, 0 implies a parametric description only */
-    float * pRawPulseAmplitudes;         /**< shape of waveform [in Volts] */
-    float * pRawPulseTimes;              /**< corresponding timestamps of amplitudes [in seconds] */
-    iutp_t  parametricPulse,nonParametricPulse;
-    float newPulseFrequency;
-
+    iuptp_t  parametricPulse;
+    iunptp_t nonParametricPulse;
 
 
     // Parametric transmit pulse
     parametricPulse = iusHLCreateParametricPulse(pulseFrequency,pulseAmplitude,pulseCount);
-
 
     TEST_ASSERT_EQUAL_FLOAT( iusHLParametricPulseGetFrequency(parametricPulse), pulseFrequency);
     TEST_ASSERT_EQUAL_FLOAT( iusHLParametricPulseGetPulseAmplitude(parametricPulse), pulseAmplitude);
@@ -135,28 +267,35 @@ TEST(InputfileTransmitPulse, testCreateTransmitPulse)
     // Non Parametric transmit pulse
     // alloc mem
     numPulseValues = 20;
-
     nonParametricPulse = iusHLCreateNonParametricPulse(numPulseValues);
-    fillAmplitudeTime(nonParametricPulse);
-    TEST_ASSERT(nonParametricPulse != IUTP_INVALID);
+    nonParametricPulseFillAmplitudeTime( nonParametricPulse, 1.0f );
+    TEST_ASSERT(nonParametricPulse != IUNPTP_INVALID);
 
     // Invalid operation on nonparametric dta type
-    TEST_ASSERT_EQUAL_FLOAT(iusHLParametricPulseGetFrequency(nonParametricPulse), NAN);
-    TEST_ASSERT_EQUAL_FLOAT(iusHLParametricPulseGetPulseAmplitude(nonParametricPulse), NAN);
-    TEST_ASSERT(iusHLParametricPulseGetCount(nonParametricPulse) == -1);
+    TEST_ASSERT_EQUAL(NULL, iusHLCreateNonParametricPulse(-1));
+    TEST_ASSERT_EQUAL(NULL, iusHLCreateParametricPulse(pulseFrequency,pulseAmplitude,-1));
+    TEST_ASSERT_EQUAL(NULL, iusHLCreateParametricPulse(-1.0f,pulseAmplitude,pulseCount));
+    TEST_ASSERT_EQUAL_FLOAT(iusHLParametricPulseGetFrequency( (iuptp_t) nonParametricPulse), NAN);
+    TEST_ASSERT_EQUAL_FLOAT(iusHLParametricPulseGetPulseAmplitude( (iuptp_t) nonParametricPulse), NAN);
+    TEST_ASSERT_EQUAL(IUS_ERR_VALUE, iusHLParametricPulseGetCount( (iuptp_t) nonParametricPulse));
 
 
-    status = iusHLDeleteTransmitPulse(nonParametricPulse);
+    status = iusHLDeleteNonParametricPulse( (iunptp_t) parametricPulse);
+    TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
+    status = iusHLDeleteParametricPulse( (iuptp_t) nonParametricPulse);
+    TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
+
+    status = iusHLDeleteNonParametricPulse(nonParametricPulse);
     TEST_ASSERT(status == IUS_E_OK);
-    status = iusHLDeleteTransmitPulse(parametricPulse);
+    status = iusHLDeleteParametricPulse(parametricPulse);
     TEST_ASSERT(status == IUS_E_OK);
-    free(pRawPulseAmplitudes);
-    free(pRawPulseTimes);
 }
 
 
 TEST_GROUP_RUNNER(InputfileTransmitPulse)
 {
-//    RUN_TEST_CASE(InputfileTransmitPulse, testCreateTransmitPulse);
-//    RUN_TEST_CASE(InputfileTransmitPulse, testTransmitPulseListSet);
+    RUN_TEST_CASE(InputfileTransmitPulse, testCreateDeleteTransmitPulse);
+    RUN_TEST_CASE(InputfileTransmitPulse,testCompareTransmitPulse)
+    RUN_TEST_CASE(InputfileTransmitPulse, testTransmitParametricPulseListSet);
+    RUN_TEST_CASE(InputfileTransmitPulse, testTransmitNonParametricPulseListSet);
 }

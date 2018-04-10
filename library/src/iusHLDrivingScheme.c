@@ -40,21 +40,6 @@ IUS_BOOL isValidShape(IusShape shape)
     return (shape == IUS_2D_SHAPE || shape == IUS_3D_SHAPE);
 }
 
-IusTransmitPulse *iusHLCreateParametricPulse
-(
-    float pulseFrequency,
-    float pulseAmplitude,
-    int   pulseCount
-)
-{
-    IusParametricTransmitPulse *pulse = (IusParametricTransmitPulse *) calloc (1,sizeof(IusParametricTransmitPulse));
-    pulse->pulseAmplitude = pulseAmplitude;
-    pulse->pulseCount = pulseCount;
-    pulse->pulseFrequency = pulseFrequency;
-    pulse->base.type = IUS_PARAMETRIC_PULSETYPE;
-    return (IusTransmitPulse *)pulse;
-}
-
 
 IusDrivingScheme * iusCreate2DDrivingScheme
 (

@@ -6,7 +6,7 @@ set (HDF5_DOWNLOAD_URL     https://support.hdfgroup.org/ftp/HDF5/current18/src/h
 
 if(NOT EXISTS ${LOCAL_HDF5_LIB})
     # we did not find it so we fetch it from the web, configure, compile, and link
-    set(CURL_COMMAND curl  ${HDF5_DOWNLOAD_URL} | tar xvz -C ${PROJECT_BINARY_DIR}/hdf5_local/src)
+    set(CURL_COMMAND curl  ${HDF5_DOWNLOAD_URL} | tar  xvz -C ${PROJECT_BINARY_DIR}/hdf5_local/src)
 else()
     set(CURL_COMMAND "")
 endif()
@@ -22,7 +22,7 @@ include(ExternalProject)
 set (
         ExternalProjectCMakeArgs
         -DHDF5_BUILD_CPP_LIB=ON
-        -DCMAKE_INSTALL_PREFIX=${HDF5_ROOT}
+        -DCMAKE_INSTALL_PREFIX=/usr/local
      )
 
 file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/hdf5_local/src)

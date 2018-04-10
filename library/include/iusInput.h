@@ -140,22 +140,34 @@ typedef struct
 typedef struct
 {
     int count;
-    IusTransmitPulse *        pTransmitPulse;          /**< waveform of the transmit pulse */
+    IusTransmitPulseType type;
 } IusTransmitPulseList;
+
+typedef struct
+{
+    IusTransmitPulseList base;
+    IusParametricTransmitPulse **pTransmitPulses;
+} IusParametricTransmitPulseList;
+
+typedef struct
+{
+    IusTransmitPulseList base;
+    IusNonParametricTransmitPulse **pTransmitPulses;
+} IusNonParametricTransmitPulseList;
 
 /** \brief the driving scheme for an experiment */
 typedef struct
 {
-    IusDrivingSchemeType      type;      /**< driving scheme: e.g. diveringwaves, planeswaves, ... */
-    IusShape                  shape;
-    int                       numTransmitSources;     /**< number of US sources (tyically these are virtual) */
-    int                       numTransmitPulses;      /**< number of pulses in a frame == numPulsesPerFrame */
-    int                       numElements;
+    IusDrivingSchemeType          type;      /**< driving scheme: e.g. diveringwaves, planeswaves, ... */
+    IusShape                      shape;
+    int                           numTransmitSources;     /**< number of US sources (tyically these are virtual) */
+    int                           numTransmitPulses;      /**< number of pulses in a frame == numPulsesPerFrame */
+    int                           numElements;
     //int numFrames;                                  /**< number of repetitions of the driving pattern */
-    float                     transmitPatternDelay;   /**< extra delay at the end of a transmit pattern */
-    IusTransmitPatternList *  pTransmitPatterns;       /**< array (time, index) of length numTransmitPulses */
-    IusTransmitPulseList *    pTransmitPulses;          /**< waveform of the transmit pulse */
-    float *                   pTransmitApodization;   /**< 2D array: per transmit event we have numElements gains */
+    float                         transmitPatternDelay;   /**< extra delay at the end of a transmit pattern */
+    IusTransmitPatternList *      pTransmitPatterns;       /**< array (time, index) of length numTransmitPulses */
+    IusTransmitPulseList *        pTransmitPulses;          /**< waveform of the transmit pulse */
+    float *                       pTransmitApodization;   /**< 2D array: per transmit event we have numElements gains */
 } IusDrivingScheme;
 
 typedef struct
