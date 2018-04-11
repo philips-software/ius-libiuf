@@ -1,6 +1,11 @@
 cmake_minimum_required(VERSION 3.00)
 project(iusLibrary C)
 
+if(MSVC)
+    # disable the security warnings for sprintf() in bee2.c
+    add_definitions(/D _CRT_SECURE_NO_WARNINGS)
+endif()
+
 set (TARGET_GROUP test CACHE STRING "Group to build")
 if(TARGET_GROUP STREQUAL production)
     add_subdirectory(main)

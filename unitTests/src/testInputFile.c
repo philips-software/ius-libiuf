@@ -40,9 +40,9 @@ iut_t create3DTransducer()
 
     x = y = z = 0.0f;
     theta = phi = 0.0f;
-    sx = 0.150 / 1000.0; // meter
+    sx = 0.150f / 1000.0f; // meter
     sy = 0.0f;
-    sz = 6.0 / 1000.0;
+    sz = 6.0f / 1000.0f;
     iu3dte_t _3dElement = iusUtilCreate3DElement(x, y, z, sx, sy, sz, theta, phi);
     int status = iusHLTransducerSetElement(transducer, elementIndex, _3dElement);
     TEST_ASSERT(status == IUS_E_OK);
@@ -67,8 +67,8 @@ iut_t create2DTransducer()
 
     x = z = 0.0f;
     phi = 0.0f;
-    sx = 0.150 / 1000.0; // meter
-    sz = 6.0 / 1000.0;
+    sx = 0.150f / 1000.0f; // meter
+    sz = 6.0f / 1000.0f;
     iu2dte_t _2dElement = iusUtilCreate2DElement(x, z, sx, sz, phi);
     int status = iusHLTransducerSetElement(transducer, elementIndex, _2dElement);
     TEST_ASSERT(status == IUS_E_OK);
@@ -144,7 +144,7 @@ iuds_t createDrivingScheme(IusShape shape)
 
 
     transmitPatternList = iusHLDrivingSchemeGetTransmitPatternList(parametrizedDrivingScheme);
-    status = fillpatternlist(transmitPatternList,numTransmitPulses,0.33);
+    status = fillpatternlist(transmitPatternList,numTransmitPulses,0.33f);
     TEST_ASSERT(status == IUS_E_OK);
 
     status = filltransmitAppodization(parametrizedDrivingScheme,numTransmitPulses,numTransmitSources);
@@ -165,7 +165,7 @@ iuds_t createDrivingScheme(IusShape shape)
 iuh_t create2DTransducerHeader()
 {
     // Generic settings
-    float speedOfSound = 1498.1;
+    float speedOfSound = 1498.1f;
     int date = 20160124;
     int status;
     char *pDescription = "My important experiment notes, by create3DTransducerHeader()";
@@ -199,7 +199,7 @@ iuh_t create2DTransducerHeader()
 iuh_t create3DTransducerHeader()
 {
     // Generic settings
-    float speedOfSound = 1498.1;
+    float speedOfSound = 1498.1f;
     int date = 20160124;
     int status;
     char *pDescription = "My important experiment notes, by create3DTransducerHeader()";

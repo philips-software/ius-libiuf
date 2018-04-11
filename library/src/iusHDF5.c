@@ -152,6 +152,7 @@ herr_t iusHdf5ReadString
     }
     if ( verbose )
     {
+		strLength = strlen(pVariableString);
         fprintf( stdout, "read: %s [%d]: %s\n", pVariableString, strLength,
             *ppReturnString );
     }

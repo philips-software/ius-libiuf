@@ -32,10 +32,9 @@ IusInputFileInstance *iusInputFileCreate
     const char *pFullFileName
 )
 {
-    hsize_t chunkDims[4];
-    hsize_t rfDataDims[4];
-    hid_t space;
-    hid_t dataset;
+//    hsize_t chunkDims[4];
+//    hsize_t rfDataDims[4];
+//    hid_t space;
 
     IusInputFileInstance *pFileInst;
 
@@ -100,7 +99,7 @@ IusInputFileInstance * iusInputFileOpen
     const int verbose
 )
 {
-    hsize_t  chunkDims[4];
+    // hsize_t  chunkDims[4];
     IusInputFileInstance *pFileInst = (IusInputFileInstance *)calloc(1, sizeof(IusInputFileInstance));
     //check calloc
     if( pFileInst == NULL )

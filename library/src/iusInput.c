@@ -764,12 +764,11 @@ int iusWrite3DTransducerElementPositions(Ius3DTransducer *pTransducer, hid_t sub
 {
     herr_t        status=0;
     hid_t position_tid; // File datatype identifier for IusPosition
-    hid_t dataset, space, dataChunkConfig;
+    hid_t dataset, space;
     hsize_t dims[1] = {1};
     Ius3DPosition * pPositionArray;
     int numElements = pTransducer->baseTransducer.numElements;
     int i; //iterator
-    hid_t propList;     // Property list
 
     /* write the /Transducer/Elements/ positions, angles and sizes are compound types */
     dims[0] = numElements;
@@ -806,7 +805,7 @@ int iusWrite3DTransducerElementSizes(Ius3DTransducer *pTransducer, hid_t subgrou
 {
     herr_t        status=0;
     hid_t size_tid; // File datatype identifier for IusPosition
-    hid_t dataset, space, dataChunkConfig;
+    hid_t dataset, space;
     hsize_t dims[1] = {1};
     Ius3DSize * pSizeArray;
     int numElements = pTransducer->baseTransducer.numElements;
@@ -891,12 +890,11 @@ int iusWrite2DTransducerElementPositions(Ius2DTransducer *pTransducer, hid_t sub
 {
     herr_t        status=0;
     hid_t position_tid; // File datatype identifier for IusPosition
-    hid_t dataset, space, dataChunkConfig;
+    hid_t dataset, space;
     hsize_t dims[1] = {1};
     Ius2DPosition * pPositionArray;
     int numElements = pTransducer->baseTransducer.numElements;
     int i; //iterator
-    hid_t propList;     // Property list
 
     /* write the /Transducer/Elements/ positions, angles and sizes are compound types */
     dims[0] = numElements;
@@ -932,7 +930,7 @@ int iusWrite2DTransducerElementSizes(Ius2DTransducer *pTransducer, hid_t subgrou
 {
     herr_t        status=0;
     hid_t size_tid; // File datatype identifier for IusPosition
-    hid_t dataset, space, dataChunkConfig;
+    hid_t dataset, space;
     hsize_t dims[1] = {1};
     Ius2DSize * pSizeArray;
     int numElements = pTransducer->baseTransducer.numElements;
@@ -968,7 +966,6 @@ int iusWrite2DTransducerElementSizes(Ius2DTransducer *pTransducer, hid_t subgrou
 int iusWrite2DTransducerElementAngles(Ius2DTransducer *pTransducer, hid_t subgroup_id, int verbose)
 {
     herr_t        status=0;
-    hid_t angle_tid; // File datatype identifier for IusAngle
     hid_t dataset, space;
     float * pAngleArray;
     int numElements = pTransducer->baseTransducer.numElements;
@@ -992,7 +989,6 @@ int iusWrite2DTransducerElementAngles(Ius2DTransducer *pTransducer, hid_t subgro
 
     free(pAngleArray);
     // step d: release resources
-    status |= H5Tclose(angle_tid);
     status |= H5Sclose(space);
     status |= H5Dclose(dataset);
     return status;
@@ -1154,7 +1150,6 @@ int iusWriteDrivingScheme(IusDrivingScheme *pDrivingScheme, hid_t group_id, int 
     /* write the /Transducer data */
     herr_t        status=0;
     hsize_t dims[1] = {1};
-    hid_t subgroup_id;
 
 
     status = iusWriteBaseDrivingScheme(pDrivingScheme,group_id,verbose);
@@ -1930,7 +1925,6 @@ int iusReadDrivingSchemeType(hid_t handle, char *pVariableString, IusDrivingSche
 IusDrivingScheme *iusReadBaseDrivingScheme(hid_t handle, int verbose)
 {
     IusDrivingScheme * parametrizedDrivingScheme;
-    IusDrivingScheme * pScheme ;
     int numElements = 32;
     int numTransmitPulses = 13;
     int numTransmitSources = 13;
@@ -2103,7 +2097,6 @@ IusInputInstance * iusInputRead
     IusTransducer *pTransducer;
     IusDrivingScheme *pDrivingScheme;
     herr_t  status;
-    int numElements;
 
     //--------------------------------------------------------------------------
     // alloc instance ; using calloc to clear all state.
