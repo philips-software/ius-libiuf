@@ -1530,6 +1530,7 @@ herr_t iusReadShape(hid_t handle, char *pVariableString, IusTransducerShape *pSh
     status |= H5Tenum_insert( hdf_shapeType, TRANSDUCER_SHAPE_PLANE,    (enumValue=IUS_PLANE,    &enumValue) );
     status |= H5Tenum_insert( hdf_shapeType, TRANSDUCER_SHAPE_CYLINDER, (enumValue=IUS_CYLINDER, &enumValue) );
     status |= H5Tenum_insert( hdf_shapeType, TRANSDUCER_SHAPE_SPHERE,   (enumValue=IUS_SPHERE,   &enumValue) );
+	*pShape = 0;
     status |= H5LTread_dataset( handle, pVariableString , hdf_shapeType, pShape );
 
     return status;
@@ -1541,7 +1542,7 @@ IusTransducer *iusReadBaseTransducer(hid_t handle, int verbose)
     float centerFrequency;
     int numElements;
     char *pTransducerName;
-    IusTransducerShape shape;
+    IusTransducerShape shape = IUS_INVALID_SHAPE;
 
     IusTransducer * transducer;
     status |= iusReadShape( handle, "/Transducer/shape",  &(shape), verbose );
@@ -1876,7 +1877,7 @@ IusTransducer *iusReadTransducer(hid_t handle, int verbose) {
     if( pTransducer->type == IUS_3D_SHAPE )
     {
         Ius3DTransducer *p3DTransducer = (Ius3DTransducer *) pTransducer;
-        p3DTransducer->pElements = (Ius3DTransducerElement *) calloc( pTransducer->numElements , sizeof(Ius3DTransducer));
+        p3DTransducer->pElements = (Ius3DTransducerElement *) calloc( pTransducer->numElements , sizeof(Ius3DTransducerElement));
         if( p3DTransducer->pElements != NULL )
             status = iusRead3DTransducer(p3DTransducer, handle, verbose);
         else
@@ -1917,7 +1918,6 @@ int iusReadDrivingSchemeType(hid_t handle, char *pVariableString, IusDrivingSche
                                                       (enumValue=IUS_SINGLE_ELEMENT, &enumValue) );
     status |= H5Tenum_insert( hdf_drivingSchemeType, DRIVINGSCHEME_CUSTOM_WAVES,
                                                       (enumValue=IUS_CUSTOM_WAVES, &enumValue) );
-    *pType = IUS_INVALID_DRIVING_SCHEME;
     status |= H5LTread_dataset( handle, pVariableString , hdf_drivingSchemeType, pType );
     return status;
 }
@@ -2032,7 +2032,7 @@ IusDrivingScheme *iusReadDrivingScheme(hid_t handle, IusShape shape,  int verbos
     int numTransmitSources;
     int numTransmitPulses;
     int numElements;
-    IusDrivingSchemeType type;
+    IusDrivingSchemeType type = IUS_INVALID_DRIVING_SCHEME;
     IusDrivingScheme *pDrivingScheme;
 
     // Read info needed for constructor

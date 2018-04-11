@@ -137,7 +137,7 @@ herr_t iusHdf5ReadString
 )
 {
     herr_t status = -1;
-    int strLength;
+    size_t strLength;
 
     IUS_ASSERT_MEMORY( pVariableString && ppReturnString );
 
@@ -153,7 +153,7 @@ herr_t iusHdf5ReadString
     if ( verbose )
     {
 		strLength = strlen(pVariableString);
-        fprintf( stdout, "read: %s [%d]: %s\n", pVariableString, strLength,
+        fprintf( stdout, "read: %s [%d]: %s\n", pVariableString, (int) strLength,
             *ppReturnString );
     }
     return status;

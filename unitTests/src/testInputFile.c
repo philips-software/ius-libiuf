@@ -377,8 +377,6 @@ TEST(Inputfile,  testIusHLCreateFile)
 }
 
 
-
-
 TEST_GROUP_RUNNER(Inputfile)
 {
     RUN_TEST_CASE(Inputfile, testIusHLCreateFile);

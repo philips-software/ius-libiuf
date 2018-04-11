@@ -16,6 +16,14 @@ configure_file (
 #FIND_PACKAGE(HDF5 COMPONENTS C HL NO_MODULE REQUIRED shared)
 #FIND_PACKAGE(HDF5)
 FIND_PACKAGE(HDF5 COMPONENTS C HL)
+#FIND_PACKAGE(UUID)
+#if(UUID_FOUND)
+#else(UUID_FOUND)
+#endif(UUID_FOUND)
+
+if(NOT MSVC)
+	set(UUID_LIBRARIES -luuid)
+endif()
 include_directories("${PROJECT_BINARY_DIR}")
 include_directories(${HDF5_INCLUDE_DIR})
 
@@ -45,11 +53,12 @@ target_include_directories(ius PUBLIC
         include
         )
 
+
 target_link_libraries(
         ius
         ${HDF5_LIBRARIES}
         ${HDF5_HL_LIBRARIES}
-        -luuid
+        ${UUID_LIBRARIES}
 )
 
 
