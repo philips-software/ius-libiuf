@@ -1134,7 +1134,49 @@ herr_t iusWriteDrivingSchemeTransmitApodization(hid_t group_id, char *pVariableS
     return status;
 }
 
-herr_t iusWriteBaseDrivingScheme(IusDrivingScheme *pDrivingScheme, hid_t group_id, int verbose)
+herr_t iusWriteNonParametricPulseList( IusDrivingScheme *pDrivingScheme, hid_t group_id, int verbose ) {
+    herr_t status = 0;
+//    hsize_t dims[1] = { 1 };
+//    IusNonParametricTransmitPulseList *pPulseList = (IusNonParametricTransmitPulseList *) pDrivingScheme->pTransmitPulses;
+//    H5LTmake_dataset_int( group_id,   "/DrivingScheme/TransmitPulse/numPulseValues",  1, dims, &(pPulseList->pTransmitPulses[0]->numPulseValues) );
+//    if ( pPulseList->pTransmitPulses[0]->numPulseValues > 0 )
+//    {
+//        dims[0] = pPulseList->pTransmitPulses[0]->numPulseValues;
+//        H5LTmake_dataset_float( group_id, "/DrivingScheme/TransmitPulse/rawPulseAmplitudes", 1, dims, pPulseList->pTransmitPulsespRawPulseAmplitudes );
+//        H5LTmake_dataset_float( group_id, "/DrivingScheme/TransmitPulse/rawPulseTimes", 1, dims, pInst->pDrivingScheme->pTransmitPulse.pRawPulseTimes );
+//    }
+    return status;
+}
+
+herr_t iusWriteParametricPulseList( IusDrivingScheme *pDrivingScheme, hid_t group_id, int verbose ) {
+    herr_t status = 0;
+//    hsize_t dims[1] = { 1 };
+
+//    dims[0] = 1;
+//    H5LTmake_dataset_float( group_id,"/DrivingScheme/TransmitPulse/pulseFrequency",  1, dims, &(pInst->pDrivingScheme->pTransmitPulse.pulseFrequency) );
+//    H5LTmake_dataset_float( group_id,"/DrivingScheme/TransmitPulse/pulseAmplitude",  1, dims, &(pInst->pDrivingScheme->pTransmitPulse.pulseAmplitude) );
+//    H5LTmake_dataset_int( group_id,  "/DrivingScheme/TransmitPulse/pulseCount",  1, dims, &(pInst->pDrivingScheme->pTransmitPulse.pulseCount) );
+    return status;
+}
+
+herr_t iusWriteTransmitPulseList( IusDrivingScheme *pDrivingScheme, hid_t group_id, int verbose ) {
+    herr_t status = 0;
+    hsize_t dims[1] = { 1 };
+
+    if( pDrivingScheme->pTransmitPulses->type == IUS_NON_PARAMETRIC_PULSETYPE )
+    {
+        return iusWriteNonParametricPulseList(pDrivingScheme,group_id,verbose);
+    }
+
+    if( pDrivingScheme->pTransmitPulses->type == IUS_PARAMETRIC_PULSETYPE )
+    {
+        return iusWriteParametricPulseList(pDrivingScheme,group_id,verbose);
+    }
+    return -1;
+
+}
+
+herr_t iusWriteBaseDrivingScheme( IusDrivingScheme *pDrivingScheme, hid_t group_id, int verbose)
 {
     herr_t  status;
     status |= iusWriteDrivingSchemeType(group_id, "/DrivingScheme/drivingSchemeType", pDrivingScheme->type,verbose);
@@ -1146,6 +1188,12 @@ herr_t iusWriteBaseDrivingScheme(IusDrivingScheme *pDrivingScheme, hid_t group_i
     hid_t subgroup_id = H5Gcreate(group_id, "/DrivingScheme/TransmitPattern/", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT );
     status |= iusWriteTransmitPattern(pDrivingScheme, subgroup_id, verbose);
     H5Gclose( subgroup_id );
+
+//    subgroup_id = H5Gcreate(group_id, "/DrivingScheme/TransmitPulse/", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT );
+//    status |= iusWriteTransmitPulseList(pDrivingScheme, subgroup_id, verbose);
+//    H5Gclose( subgroup_id );
+
+
     return status;
 }
 
