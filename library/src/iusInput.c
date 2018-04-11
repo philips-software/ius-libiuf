@@ -764,12 +764,11 @@ int iusWrite3DTransducerElementPositions(Ius3DTransducer *pTransducer, hid_t sub
 {
     herr_t        status=0;
     hid_t position_tid; // File datatype identifier for IusPosition
-    hid_t dataset, space, dataChunkConfig;
+    hid_t dataset, space;
     hsize_t dims[1] = {1};
     Ius3DPosition * pPositionArray;
     int numElements = pTransducer->baseTransducer.numElements;
     int i; //iterator
-    hid_t propList;     // Property list
 
     /* write the /Transducer/Elements/ positions, angles and sizes are compound types */
     dims[0] = numElements;
@@ -806,7 +805,7 @@ int iusWrite3DTransducerElementSizes(Ius3DTransducer *pTransducer, hid_t subgrou
 {
     herr_t        status=0;
     hid_t size_tid; // File datatype identifier for IusPosition
-    hid_t dataset, space, dataChunkConfig;
+    hid_t dataset, space;
     hsize_t dims[1] = {1};
     Ius3DSize * pSizeArray;
     int numElements = pTransducer->baseTransducer.numElements;
@@ -891,12 +890,11 @@ int iusWrite2DTransducerElementPositions(Ius2DTransducer *pTransducer, hid_t sub
 {
     herr_t        status=0;
     hid_t position_tid; // File datatype identifier for IusPosition
-    hid_t dataset, space, dataChunkConfig;
+    hid_t dataset, space;
     hsize_t dims[1] = {1};
     Ius2DPosition * pPositionArray;
     int numElements = pTransducer->baseTransducer.numElements;
     int i; //iterator
-    hid_t propList;     // Property list
 
     /* write the /Transducer/Elements/ positions, angles and sizes are compound types */
     dims[0] = numElements;
@@ -932,7 +930,7 @@ int iusWrite2DTransducerElementSizes(Ius2DTransducer *pTransducer, hid_t subgrou
 {
     herr_t        status=0;
     hid_t size_tid; // File datatype identifier for IusPosition
-    hid_t dataset, space, dataChunkConfig;
+    hid_t dataset, space;
     hsize_t dims[1] = {1};
     Ius2DSize * pSizeArray;
     int numElements = pTransducer->baseTransducer.numElements;
@@ -968,7 +966,6 @@ int iusWrite2DTransducerElementSizes(Ius2DTransducer *pTransducer, hid_t subgrou
 int iusWrite2DTransducerElementAngles(Ius2DTransducer *pTransducer, hid_t subgroup_id, int verbose)
 {
     herr_t        status=0;
-    hid_t angle_tid; // File datatype identifier for IusAngle
     hid_t dataset, space;
     float * pAngleArray;
     int numElements = pTransducer->baseTransducer.numElements;
@@ -992,7 +989,6 @@ int iusWrite2DTransducerElementAngles(Ius2DTransducer *pTransducer, hid_t subgro
 
     free(pAngleArray);
     // step d: release resources
-    status |= H5Tclose(angle_tid);
     status |= H5Sclose(space);
     status |= H5Dclose(dataset);
     return status;
@@ -1202,7 +1198,6 @@ int iusWriteDrivingScheme(IusDrivingScheme *pDrivingScheme, hid_t group_id, int 
     /* write the /Transducer data */
     herr_t        status=0;
     hsize_t dims[1] = {1};
-    hid_t subgroup_id;
 
 
     status = iusWriteBaseDrivingScheme(pDrivingScheme,group_id,verbose);
@@ -1583,6 +1578,7 @@ herr_t iusReadShape(hid_t handle, char *pVariableString, IusTransducerShape *pSh
     status |= H5Tenum_insert( hdf_shapeType, TRANSDUCER_SHAPE_PLANE,    (enumValue=IUS_PLANE,    &enumValue) );
     status |= H5Tenum_insert( hdf_shapeType, TRANSDUCER_SHAPE_CYLINDER, (enumValue=IUS_CYLINDER, &enumValue) );
     status |= H5Tenum_insert( hdf_shapeType, TRANSDUCER_SHAPE_SPHERE,   (enumValue=IUS_SPHERE,   &enumValue) );
+	*pShape = 0;
     status |= H5LTread_dataset( handle, pVariableString , hdf_shapeType, pShape );
 
     return status;
@@ -1594,7 +1590,7 @@ IusTransducer *iusReadBaseTransducer(hid_t handle, int verbose)
     float centerFrequency;
     int numElements;
     char *pTransducerName;
-    IusTransducerShape shape;
+    IusTransducerShape shape = IUS_INVALID_SHAPE;
 
     IusTransducer * transducer;
     status |= iusReadShape( handle, "/Transducer/shape",  &(shape), verbose );
@@ -1929,7 +1925,7 @@ IusTransducer *iusReadTransducer(hid_t handle, int verbose) {
     if( pTransducer->type == IUS_3D_SHAPE )
     {
         Ius3DTransducer *p3DTransducer = (Ius3DTransducer *) pTransducer;
-        p3DTransducer->pElements = (Ius3DTransducerElement *) calloc( pTransducer->numElements , sizeof(Ius3DTransducer));
+        p3DTransducer->pElements = (Ius3DTransducerElement *) calloc( pTransducer->numElements , sizeof(Ius3DTransducerElement));
         if( p3DTransducer->pElements != NULL )
             status = iusRead3DTransducer(p3DTransducer, handle, verbose);
         else
@@ -1970,7 +1966,6 @@ int iusReadDrivingSchemeType(hid_t handle, char *pVariableString, IusDrivingSche
                                                       (enumValue=IUS_SINGLE_ELEMENT, &enumValue) );
     status |= H5Tenum_insert( hdf_drivingSchemeType, DRIVINGSCHEME_CUSTOM_WAVES,
                                                       (enumValue=IUS_CUSTOM_WAVES, &enumValue) );
-    *pType = IUS_INVALID_DRIVING_SCHEME;
     status |= H5LTread_dataset( handle, pVariableString , hdf_drivingSchemeType, pType );
     return status;
 }
@@ -1978,7 +1973,6 @@ int iusReadDrivingSchemeType(hid_t handle, char *pVariableString, IusDrivingSche
 IusDrivingScheme *iusReadBaseDrivingScheme(hid_t handle, int verbose)
 {
     IusDrivingScheme * parametrizedDrivingScheme;
-    IusDrivingScheme * pScheme ;
     int numElements = 32;
     int numTransmitPulses = 13;
     int numTransmitSources = 13;
@@ -2086,7 +2080,7 @@ IusDrivingScheme *iusReadDrivingScheme(hid_t handle, IusShape shape,  int verbos
     int numTransmitSources;
     int numTransmitPulses;
     int numElements;
-    IusDrivingSchemeType type;
+    IusDrivingSchemeType type = IUS_INVALID_DRIVING_SCHEME;
     IusDrivingScheme *pDrivingScheme;
 
     // Read info needed for constructor
@@ -2151,7 +2145,6 @@ IusInputInstance * iusInputRead
     IusTransducer *pTransducer;
     IusDrivingScheme *pDrivingScheme;
     herr_t  status;
-    int numElements;
 
     //--------------------------------------------------------------------------
     // alloc instance ; using calloc to clear all state.

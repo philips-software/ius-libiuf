@@ -84,7 +84,7 @@ TEST(InputfileTransducer,  testIusCompareExperiment)
     iusHLDeleteExperiment(exAltered);
 
     // floating point errors
-    exAltered = iusHLCreateExperiment(speedOfSound + 0.00006, date, pDescription);
+    exAltered = iusHLCreateExperiment(speedOfSound + 0.00006f, date, pDescription);
     isEqual = iusHLExperimentCompare(ex, exAltered);
     TEST_ASSERT(isEqual == IUS_TRUE);
     iusHLDeleteExperiment(exAltered);
@@ -108,9 +108,9 @@ TEST(InputfileTransducer,  testIusTransducerElements)
 
     x = y = z = 0.0f;
     theta = phi = 0.0f;
-    sx = 0.150 / 1000.0; // meter
+    sx = 0.150f / 1000.0f; // meter
     sy = 0.0f;
-    sz = 6.0 / 1000.0;
+    sz = 6.0f / 1000.0f;
     iu3dte_t _3dElement = iusUtilCreate3DElement(x, y, z, sx, sy, sz, theta, phi);
     int status = iusHLTransducerSetElement(transducer, elementIndex, _3dElement);
     TEST_ASSERT(status == IUS_E_OK);
@@ -164,8 +164,8 @@ TEST(InputfileTransducer,  testIusHLCompare2DTransducer)
 
     x = z = 0.0f;
     phi = 0.0f;
-    sx = 0.150 / 1000.0; // meter
-    sz = 6.0 / 1000.0;
+    sx = 0.150f / 1000.0f; // meter
+    sz = 6.0f / 1000.0f;
 
     iu2dte_t _2dElement = iusUtilCreate2DElement(x, z, sx, sz, phi);
 
@@ -265,9 +265,9 @@ TEST(InputfileTransducer,  testIusHLCompare3DTransducer)
 
     x = y = z = 0.0f;
     theta = phi = 0.0f;
-    sx = 0.150 / 1000.0; // meter
+    sx = 0.150f / 1000.0f; // meter
     sy = 0.0f;
-    sz = 6.0 / 1000.0;
+    sz = 6.0f / 1000.0f;
 
     iu3dte_t _3dElement = iusUtilCreate3DElement(x, y, z, sx, sy, sz, theta, phi);
 

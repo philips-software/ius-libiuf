@@ -150,7 +150,8 @@ typedef struct
 
 typedef enum
 {
-    IUS_LINE = 1,           /**< Todo: See Draft */
+	IUS_INVALID_SHAPE = 0,
+    IUS_LINE,           /**< Todo: See Draft */
     IUS_CIRCLE,
     IUS_PLANE,
     IUS_CYLINDER,

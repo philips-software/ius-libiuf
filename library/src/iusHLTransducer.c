@@ -2,15 +2,16 @@
 // Created by Ruijzendaal on 15/03/2018.
 //
 #define IUSLIBRARY_IMPLEMENTATION
-#include <iusInput.h>
-#include <iusHLTransducer.h>
 #include <stdlib.h>
-#include <include/iusInput.h>
-#include <memory.h>
-#include <include/iusTypes.h>
-#include <include/iusError.h>
+#include <string.h>
 #include <math.h>
 #include <float.h>
+#include <memory.h>
+#include <iusInput.h>
+#include <iusHLTransducer.h>
+#include <include/iusInput.h>
+#include <include/iusTypes.h>
+#include <include/iusError.h>
 #include <include/iusUtil.h>
 #include <include/iusHLPosition.h>
 

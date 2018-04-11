@@ -25,10 +25,10 @@ int iusHLGetNumFrames(iuh_t header)
 
 iuh_t iusHLCreateInputHeader(void)
 {
-    IusExperiment      * pExperiment;      /**< experiment settings */
-    IusTransducer      * pTransducer;      /**< transducer that has been used */
-    IusReceiveSettings * pReceiveSettings; /**< data receive settings */
-    IusDrivingScheme   * pDrivingScheme;   /**< data transmit settings */
+//    IusExperiment      * pExperiment;      /**< experiment settings */
+//    IusTransducer      * pTransducer;      /**< transducer that has been used */
+//    IusReceiveSettings * pReceiveSettings; /**< data receive settings */
+//    IusDrivingScheme   * pDrivingScheme;   /**< data transmit settings */
 //
 //    IusNode              iusNode;
     /*

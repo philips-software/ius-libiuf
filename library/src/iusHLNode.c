@@ -3,8 +3,9 @@
 //
 #include <stdio.h>
 #include <stdlib.h>
-#include <include/iusUuid.h>
 #include <memory.h>
+#include <string.h>
+#include <include/iusUuid.h>
 #include <include/iusTypes.h>
 #include <include/iusHDF5.h>
 

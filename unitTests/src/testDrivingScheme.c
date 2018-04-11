@@ -60,6 +60,7 @@ TEST(InputfileDrivingScheme, testIusHLTransmitPatternList)
     for( i=0; i<numTransmitPulses; i++ )
     {
         transmitTime = i *1.0f;
+		pulseIndex = i;
         status = iusHLTransmitPatternListSet( patternList, transmitTime, pulseIndex, i);
         TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
