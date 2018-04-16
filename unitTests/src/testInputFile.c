@@ -10,6 +10,7 @@
 #include <include/ius.h>
 #include <util.h>
 #include <include/iusHLDrivingScheme.h>
+#include <testDataGenerators.h>
 
 
 TEST_GROUP(Inputfile);
@@ -80,7 +81,7 @@ iut_t create2DTransducer()
 int fillpatternlist(iutpal_t transmitPatternList, int size, float baseTime)
 {
     int i;
-    int pulseIndex;
+    int pulseIndex,sourceIndex;
     int status=0;
     float time;
 
@@ -88,7 +89,8 @@ int fillpatternlist(iutpal_t transmitPatternList, int size, float baseTime)
     {
         time = baseTime * i;
         pulseIndex = size - 1 - i;
-        status |= iusHLTransmitPatternListSet(transmitPatternList,time,pulseIndex,i);
+        sourceIndex = size - 1 - i;
+        status |= iusHLTransmitPatternListSet(transmitPatternList,time,sourceIndex,pulseIndex,i);
     }
     return status;
 }
@@ -124,40 +126,38 @@ int filltransmitAppodization
 
 iuds_t createDrivingScheme(IusShape shape)
 {
-    iuds_t parametrizedDrivingScheme;
-    iutpal_t transmitPatternList;
-
     int numElements = 32;
-    int numTransmitPulses = 13;
+    int numTransmitPulses = 26;
     int numTransmitSources = 13;
     int status = 0;
-    float angularDelta = 0.13f;
-    float FNumber = -0.955f;
-    float startAngle = 3.14f;
-    float transmitPatternDelay = 0.88f;
+    iuds_t dri;
+    IusSourceLocationType locationType = IUS_PARAMETRIC_3D_SOURCE_LOCATION;
 
-    parametrizedDrivingScheme = iusHLCreateDrivingScheme( IUS_DIVERGING_WAVES_PARAMETRIZED,
-                                                          shape,
-                                                          numTransmitPulses,
-                                                          numTransmitSources,
-                                                          numElements );
+    // Create transmit sources
+    iusll_t transmitSources = iusHLCreateSourceLocationList( locationType, numTransmitSources );
+    // fill
+    status = fill3DSourceLocationList(transmitSources);
 
+    // Create transmit pulses
+    iutpl_t transmitPulses = iusHLCreateTransmitPulseList( numTransmitPulses );
 
-    transmitPatternList = iusHLDrivingSchemeGetTransmitPatternList(parametrizedDrivingScheme);
-    status = fillpatternlist(transmitPatternList,numTransmitPulses,0.33f);
-    TEST_ASSERT(status == IUS_E_OK);
+    // fill
+    status = fillTransmitPulseList(transmitPulses);
 
-    status = filltransmitAppodization(parametrizedDrivingScheme,numTransmitPulses,numTransmitSources);
+    // Create transmit pattern
+    iutpal_t transmitPatterns = iusHLCreateTransmitPatternList( numTransmitPulses );
+    status = fillTransmitPatternList(transmitPatterns);
 
-    // Driving scheme specific params
-    status |= iusDrivingSchemeSetSourceDeltaTheta(parametrizedDrivingScheme,angularDelta);
-    status |= iusDrivingSchemeSetSourceFNumber(parametrizedDrivingScheme,FNumber);
-    status |= iusDrivingSchemeSetSourceStartTheta(parametrizedDrivingScheme,startAngle);
-    status |= iusHLDrivingSchemeSetTransmitPatternDelay(parametrizedDrivingScheme,transmitPatternDelay);
-    TEST_ASSERT(status == IUS_E_OK);
+    dri = iusHLCreateDrivingScheme( IUS_DIVERGING_WAVES_PARAMETRIZED,
+                                    shape,
+                                    transmitSources,
+                                    transmitPulses,
+                                    transmitPatterns,
+                                    numElements );
 
+    status = filltransmitAppodization(dri,numTransmitPulses,numTransmitSources);
 
-    return parametrizedDrivingScheme;
+    return dri;
 }
 
 
@@ -169,6 +169,8 @@ iuh_t create2DTransducerHeader()
     int date = 20160124;
     int status;
     char *pDescription = "My important experiment notes, by create3DTransducerHeader()";
+    IusSourceLocationType locationType = IUS_PARAMETRIC_3D_SOURCE_LOCATION;
+
 
     iuh_t iuhHeader;
     iut_t tra;
@@ -188,6 +190,7 @@ iuh_t create2DTransducerHeader()
     tra = create2DTransducer();
     status = iusHLHeaderSetTransducer(iuhHeader, tra);
     if (status != IUS_E_OK) return IUH_INVALID;
+
 
     dri = createDrivingScheme(IUS_2D_SHAPE);
     status = iusHLHeaderSetDrivingScheme(iuhHeader, dri);

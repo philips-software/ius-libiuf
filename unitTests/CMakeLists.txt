@@ -10,7 +10,7 @@ add_executable(unitTests
         src/testReceiveSettings.c
         include/testReceiveSettings.h
         src/testDrivingScheme.c
-        include/testDrivingScheme.h src/testTransmitPulse.c src/testTransmitPattern.c)
+        include/testDrivingScheme.h src/testTransmitPulse.c src/testTransmitPattern.c src/testDataGenerators.c include/testDataGenerators.h src/testTransmitPatternList.c src/testTransmiapodization.c)
 
 target_link_libraries(unitTests
         ius

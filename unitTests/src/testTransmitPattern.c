@@ -24,7 +24,7 @@ TEST_TEAR_DOWN(InputfileTransmitPattern)
 iutpal_t createNfillpatternlist(int size, float baseTime)
 {
     int i;
-    int pulseIndex;
+    int pulseIndex,sourceIndex;
     int status;
     float time;
 
@@ -35,7 +35,8 @@ iutpal_t createNfillpatternlist(int size, float baseTime)
     {
         time = baseTime * i;
         pulseIndex = size - 1 - i;
-        status = iusHLTransmitPatternListSet(transmitPatternList,time,pulseIndex,i);
+        sourceIndex = size - 1 - i;
+        status = iusHLTransmitPatternListSet(transmitPatternList,time,sourceIndex,pulseIndex,i);
         TEST_ASSERT(status == IUS_E_OK);
     }
     return transmitPatternList;
@@ -44,6 +45,7 @@ iutpal_t createNfillpatternlist(int size, float baseTime)
 TEST(InputfileTransmitPattern, testTransmitPatternListSet)
 {
     int numTransmitPulses = 10;
+    int numTransmitSources = 10;
     int status;
     float time = 0.1f;
 
@@ -56,17 +58,17 @@ TEST(InputfileTransmitPattern, testTransmitPatternListSet)
     TEST_ASSERT_EQUAL(IUS_TRUE, equal);
 
     // changing one of the pattern list, should result in a difference
-    status = iusHLTransmitPatternListSet(transmitPatternList,time,numTransmitPulses,0);
+    status = iusHLTransmitPatternListSet(transmitPatternList,time,numTransmitSources,numTransmitPulses,0);
     TEST_ASSERT_EQUAL(IUS_E_OK, status);
     equal = iusCompareTransmitPatternList(notherPatternList,transmitPatternList);
     TEST_ASSERT_EQUAL(IUS_FALSE, equal);
 
     // invalid params
-    status= iusHLTransmitPatternListSet(transmitPatternList,time,1,numTransmitPulses);
+    status= iusHLTransmitPatternListSet(transmitPatternList,time,1,1,numTransmitPulses);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE,status);
-    status= iusHLTransmitPatternListSet(transmitPatternList,time,1,-1);
+    status= iusHLTransmitPatternListSet(transmitPatternList,time,1,-1,0);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE,status);
-    status= iusHLTransmitPatternListSet(transmitPatternList,time,-1,0);
+    status= iusHLTransmitPatternListSet(transmitPatternList,time,-1,1,0);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE,status);
 
 }

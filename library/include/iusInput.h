@@ -57,7 +57,8 @@ typedef struct
 /** \brief Transmitpattern point (time, index) i.e. source triggers at time */
 typedef struct
 {
-    int    index;       /**< index of transmit source */
+    int    sourceIndex;       /**< index of transmit source */
+    int    pulseIndex;   /**< index of transmit pulse */
     float  time;        /**< time to the source transmits */
 } IusTransmitPattern;
 
@@ -140,20 +141,46 @@ typedef struct
 typedef struct
 {
     int count;
-    IusTransmitPulseType type;
+    IusTransmitPulse **pTransmitPulses;
 } IusTransmitPulseList;
 
-typedef struct
-{
-    IusTransmitPulseList base;
-    IusParametricTransmitPulse **pTransmitPulses;
-} IusParametricTransmitPulseList;
 
 typedef struct
 {
-    IusTransmitPulseList base;
-    IusNonParametricTransmitPulse **pTransmitPulses;
-} IusNonParametricTransmitPulseList;
+    IusSourceLocationType         locationType;           // Parametric2D/3D, NonParametric2D/3D locationtypes
+    int                           count;
+} IusSourceLocationList;
+
+typedef struct
+{
+    IusSourceLocationList         base;           // Parametric2D/3D, NonParametric2D/3D locationtypes
+    Ius2DPosition *               pSourceLocations;
+} Ius2DSourceLocationList;
+
+typedef struct
+{
+    Ius2DSourceLocationList   base2d;
+    float                     sourceFNumber;          /**< distance in [m] of sources to transducer for POLAR */
+    float                     sourceDeltaTheta;     /**< angle in [rad] between sources */
+    float                     sourceStartTheta;       /**< angle in [rad] between sources */
+} IusParametric2DSourceLocationList;
+
+typedef struct
+{
+    IusSourceLocationList         base;           // Parametric2D/3D, NonParametric2D/3D locationtypes
+    Ius3DPosition *               pSourceLocations;
+} Ius3DSourceLocationList;
+
+typedef struct
+{
+    Ius3DSourceLocationList   base3d;
+    float                     sourceFNumber;          /**< distance in [m] of sources to transducer for POLAR */
+    float                     sourceDeltaTheta;     /**< angle in [rad] between sources */
+    float                     sourceStartTheta;       /**< angle in [rad] between sources */
+    float                     sourceDeltaPhi;     /**< angle in [rad] between sources */
+    float                     sourceStartPhi;       /**< angle in [rad] between sources */
+} IusParametric3DSourceLocationList;
+
 
 /** \brief the driving scheme for an experiment */
 typedef struct
@@ -164,33 +191,11 @@ typedef struct
     int                           numTransmitPulses;      /**< number of pulses in a frame == numPulsesPerFrame */
     int                           numElements;
     //int numFrames;                                  /**< number of repetitions of the driving pattern */
-    float                         transmitPatternDelay;   /**< extra delay at the end of a transmit pattern */
     IusTransmitPatternList *      pTransmitPatterns;       /**< array (time, index) of length numTransmitPulses */
     IusTransmitPulseList *        pTransmitPulses;          /**< waveform of the transmit pulse */
     float *                       pTransmitApodization;   /**< 2D array: per transmit event we have numElements gains */
+    IusSourceLocationList *       pSourceLocations;
 } IusDrivingScheme;
-
-typedef struct
-{
-    IusDrivingScheme          base;                   /**< driving scheme: e.g. diveringwaves, planeswaves, ... */
-    Ius2DPosition *           pSourceLocations;       /**< position of the US sources in case of CARTESIAN coordinates*/
-    float                     sourceFNumber;          /**< distance in [m] of sources to transducer for POLAR */
-    float                     sourceDeltaTheta;     /**< angle in [rad] between sources */
-    float                     sourceStartTheta;       /**< angle in [rad] between sources */
-
-} Ius2DDrivingScheme;
-
-typedef struct
-{
-    IusDrivingScheme          base;                   /**< driving scheme: e.g. diveringwaves, planeswaves, ... */
-    Ius3DPosition *           pSourceLocations;       /**< position of the US sources in case of CARTESIAN coordinates*/
-    float                     sourceFNumber;          /**< distance in [m] of sources to transducer for POLAR */
-    float                     sourceDeltaTheta;     /**< angle in [rad] between sources */
-    float                     sourceStartTheta;       /**< angle in [rad] between sources */
-    float                     sourceDeltaPhi;     /**< angle in [rad] between sources */
-    float                     sourceStartPhi;       /**< angle in [rad] between sources */
-} Ius3DDrivingScheme;
-
 
 
 /** \brief An Ultrasound experiment is identified by a date and a description, also the speed of sound has been determined */

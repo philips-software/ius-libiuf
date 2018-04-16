@@ -5,6 +5,8 @@
 #ifndef IUSLIBRARY_IUSHLTRANSMITPATTERNLIST_H
 #define IUSLIBRARY_IUSHLTRANSMITPATTERNLIST_H
 
+#include "iusHLTransmitPattern.h"
+
 #ifndef IUSLIBRARY_IMPLEMENTATION
 typedef  struct IusTransmitPatternList IusTransmitPatternList;
 #endif // IUSLIBRARY_IMPLEMENTATION
@@ -20,15 +22,21 @@ iutpal_t iusHLCreateTransmitPatternList
     int numTransmitPulses
 );
 
+int iusHLDeleteTransmitPatternList
+(
+    IusTransmitPatternList* list
+);
+
 int iusHLTransmitPatternListSet
 (
     iutpal_t list,
     float time,
+    int sourceIndex,
     int pulseIndex,
-    int patterniIndex
+    int patternIndex
 );
 
-IusTransmitPattern* iusHLTransmitPatternListGet
+iutpa_t iusHLTransmitPatternListGet
 (
     IusTransmitPatternList* list,
     int patternIndex

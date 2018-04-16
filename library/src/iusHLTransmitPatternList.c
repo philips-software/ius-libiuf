@@ -15,9 +15,9 @@
 #include <include/iusUtil.h>
 
 IusTransmitPatternList *iusHLCreateTransmitPatternList
-    (
-        int numTransmitPulses
-    )
+(
+    int numTransmitPulses
+)
 {
     IusTransmitPatternList *pPatternList = calloc(1, sizeof(IusTransmitPatternList));
     if(pPatternList!=NULL)
@@ -33,6 +33,17 @@ IusTransmitPatternList *iusHLCreateTransmitPatternList
     }
     return pPatternList;
 }
+
+int iusHLDeleteTransmitPatternList
+(
+    IusTransmitPatternList* list
+)
+{
+    if(list == NULL) return IUS_ERR_VALUE;
+    free(list);
+    return IUS_E_OK;
+}
+
 
 int iusHLTransmitPatternListGetSize
 (
@@ -57,14 +68,16 @@ int iusHLTransmitPatternListSet
 (
     IusTransmitPatternList* list,
     float time,
+    int sourceIndex,
     int pulseIndex,
     int patternIndex
 )
 {
-    if( pulseIndex < 0 || patternIndex < 0 ) return IUS_ERR_VALUE;
+    if( sourceIndex < 0 || pulseIndex < 0 || patternIndex < 0 ) return IUS_ERR_VALUE;
     if( list == NULL   || patternIndex >= list->count ) return IUS_ERR_VALUE;
     list->pTransmitPattern[patternIndex].time = time;
-    list->pTransmitPattern[patternIndex].index = pulseIndex;
+    list->pTransmitPattern[patternIndex].sourceIndex = sourceIndex;
+    list->pTransmitPattern[patternIndex].pulseIndex = pulseIndex;
     return IUS_E_OK;
 }
 

@@ -15,43 +15,82 @@
 #include <include/iusHLTransmitPulseList.h>
 #include <include/iusHLNonParametricTransmitPulse.h>
 #include <include/iusHLParametricTransmitPulse.h>
-#include <include/iusHLNonParametricTransmitPulseList.h>
 
 
-// operations
-//
-//iutpl_t iusHLCreateTransmitPulseList
-//(
-//    int numTransmitPulses,
-//    IusTransmitPulseType type,
-//    ...
-//)
-//{
-//    int index;
-//    IusTransmitPulseList *list = NULL;
-//    switch(type)
-//    {
-//        case IUS_PARAMETRIC_PULSETYPE:
-//        {
-//            list  = iusHLCreateParametricTransmitPulseList(numTransmitPulses);
-//            break;
-//        }
-//        case IUS_NON_PARAMETRIC_PULSETYPE:
-//        {
-//            va_list ap;
-//            va_start(ap, type);
-//            int numPulseValues = va_arg(ap, int);
-//            list = iusHLCreateNonParametricTransmitPulseList(numTransmitPulses,numPulseValues);
-//            break;
-//        }
-//        default:
-//        {
-//            // New type?
-//            free(list);
-//            list = NULL;
-//        }
-//    }
-//    return list;
-//}
-//
+iutpl_t iusHLCreateTransmitPulseList
+(
+int numTransmitPulses
+)
+{
+    int index;
+    IusTransmitPulseList *list = calloc(1, sizeof(IusTransmitPulseList));
+    IusTransmitPulse **pulse = calloc((size_t) numTransmitPulses, sizeof(IusTransmitPulseList *));
+    list->pTransmitPulses =  pulse;
+    list->count = numTransmitPulses;
+    for(index=0; index < numTransmitPulses; index++)
+    {
+        pulse[index] =  NULL;
+    }
+    return list;
+}
 
+
+int iusHLTransmitPulseListSet
+(
+    IusTransmitPulseList * list,
+    IusTransmitPulse *pulse,
+    int index
+)
+{
+    if( list == NULL  )
+        return IUS_ERR_VALUE;
+
+    list->pTransmitPulses[index] = pulse;
+    return IUS_E_OK;
+}
+
+IusTransmitPulse * iusHLTransmitPulseListGet
+(
+    IusTransmitPulseList *list,
+    int index
+)
+{
+    if( list == NULL )
+        return IUS_FALSE;
+    if( index >= list->count )
+        return IUS_FALSE;
+
+    return list->pTransmitPulses[index];
+}
+
+
+int iusHLTransmitPulseListGetSize
+(
+    IusTransmitPulseList *list
+)
+{
+    if( list == NULL ) return -1;
+    return list->count;
+}
+
+int iusCompareTransmitPulseList
+(
+    IusTransmitPulseList *reference,
+    IusTransmitPulseList *actual
+)
+{
+    int index;
+    if( reference == actual )
+        return IUS_TRUE;
+    if( reference == NULL || actual == NULL )
+        return IUS_FALSE;
+    if( reference->count != actual->count )
+        return IUS_FALSE;
+
+    for(index = 0 ; index < actual->count ; index++ )
+    {
+        if( iusCompareTransmitPulse( reference->pTransmitPulses[index], actual->pTransmitPulses[index] ) == IUS_FALSE )
+            return IUS_FALSE;
+    }
+    return IUS_TRUE;
+}

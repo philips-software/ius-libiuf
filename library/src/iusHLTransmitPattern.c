@@ -17,12 +17,14 @@ int iusHLTransmitPatternSet
 (
     IusTransmitPattern *pattern,
     float time,
+    int sourceIndex,
     int pulseIndex
 )
 {
     int status = IUS_E_OK;
     if( pulseIndex < 0 ) return IUS_ERR_VALUE;
-    pattern->index = pulseIndex;
+    pattern->pulseIndex = pulseIndex;
+    pattern->sourceIndex = sourceIndex;
     pattern->time = time;
     return status;
 }
@@ -38,15 +40,23 @@ float iusHLTransmitPatternGetTime
 }
 
 
-int iusHLTransmitPatternGetIndex
+int iusHLTransmitPatternGetSourceIndex
 (
     iutpa_t pattern
 )
 {
     if( pattern == NULL ) return -1;
-    return pattern->index;
+    return pattern->sourceIndex;
 }
 
+int iusHLTransmitPatternGetPulseIndex
+(
+    iutpa_t pattern
+)
+{
+    if( pattern == NULL ) return -1;
+    return pattern->pulseIndex;
+}
 
 int iusCompareTransmitPattern
 (
@@ -54,7 +64,8 @@ int iusCompareTransmitPattern
     IusTransmitPattern *actual
 )
 {
-    if( reference->index != actual->index ) return IUS_FALSE;
+    if( reference->pulseIndex != actual->pulseIndex ) return IUS_FALSE;
+    if( reference->sourceIndex != actual->sourceIndex ) return IUS_FALSE;
     if( IUS_EQUAL_FLOAT(reference->time, actual->time) == IUS_FALSE ) return IUS_FALSE;
     return IUS_TRUE;
 }

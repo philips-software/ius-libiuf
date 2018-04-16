@@ -2,18 +2,17 @@
 // Created by Ruijzendaal on 08/03/2018.
 //
 #include <library_config.h>
+#include <memory.h>
+#include <stdlib.h>
 
 #define IUSLIBRARY_IMPLEMENTATION
 #include "ius.h"
 #include "iusNode.h"
-#include <iusInputFile.h>
 #include <iusInput.h>
+#include <iusInputFile.h>
 #include <iusHLNode.h>
 #include <iusHLInput.h>
 #include <iusHLInputFile.h>
-#include <stdlib.h>
-#include <include/iusInput.h>
-#include <memory.h>
 
 
 iuf_t iusHLCreateFile(const char *filename)

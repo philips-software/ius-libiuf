@@ -7,6 +7,7 @@
 //  iusVersion    : 255.255.255.255
 //
 //==============================================================================
+#define IUSLIBRARY_IMPLEMENTATION
 
 #include "iusInput.h"
 #include "iusError.h"
@@ -1095,15 +1096,21 @@ herr_t iusWriteTransmitPattern(IusDrivingScheme *pDrivingScheme, hid_t subgroup_
     int status = 0;
     hsize_t dims[1] = {pDrivingScheme->numTransmitPulses};
 
-    status |= iusHdf5WriteFloat(subgroup_id, "/DrivingScheme/TransmitPattern/transmitPatternDelay",  &pDrivingScheme->transmitPatternDelay, 1, verbose);
-
     float *pFloatArray = (float *)calloc( (size_t)dims[0], sizeof(float) );
     if( pFloatArray == NULL )
         return -1;
 
-    int *pIntArray = (int *)calloc( (size_t)dims[0], sizeof(int) );
-    if( pIntArray == NULL )
+    int *pSourceIndexArray = (int *)calloc( (size_t)dims[0], sizeof(int) );
+    if( pSourceIndexArray == NULL )
     {
+        free(pFloatArray);
+        return -1;
+    }
+
+    int *pPulseIndexArray = (int *)calloc( (size_t)dims[0], sizeof(int) );
+    if( pPulseIndexArray == NULL )
+    {
+        free(pSourceIndexArray);
         free(pFloatArray);
         return -1;
     }
@@ -1111,14 +1118,16 @@ herr_t iusWriteTransmitPattern(IusDrivingScheme *pDrivingScheme, hid_t subgroup_
     for ( i = 0; i < dims[0]; i++ )
     {
         pFloatArray[i] = pDrivingScheme->pTransmitPatterns->pTransmitPattern[i].time;
-        pIntArray[i] = pDrivingScheme->pTransmitPatterns->pTransmitPattern[i].index;
+        pSourceIndexArray[i] = pDrivingScheme->pTransmitPatterns->pTransmitPattern[i].sourceIndex;
+        pPulseIndexArray[i] = pDrivingScheme->pTransmitPatterns->pTransmitPattern[i].pulseIndex;
     }
 
     status |= H5LTmake_dataset_float( subgroup_id, "/DrivingScheme/TransmitPattern/transmitPatternTime",  1, dims, pFloatArray );
-    status |= H5LTmake_dataset_int( subgroup_id,   "/DrivingScheme/TransmitPattern/transmitPatternIndex",  1, dims, pIntArray );
+    status |= H5LTmake_dataset_int( subgroup_id,   "/DrivingScheme/TransmitPattern/sourceIndex",  1, dims, pSourceIndexArray );
+    status |= H5LTmake_dataset_int( subgroup_id,   "/DrivingScheme/TransmitPattern/pulseIndex",  1, dims, pPulseIndexArray );
 
     free( pFloatArray );
-    free( pIntArray );
+    free( pSourceIndexArray );
     return status;
 }
 
@@ -1159,15 +1168,8 @@ herr_t iusWriteTransmitPulseList( IusDrivingScheme *pDrivingScheme, hid_t group_
     herr_t status = 0;
     hsize_t dims[1] = { 1 };
 
-    if( pDrivingScheme->pTransmitPulses->type == IUS_NON_PARAMETRIC_PULSETYPE )
-    {
-        return iusWriteNonParametricPulseList(pDrivingScheme,group_id,verbose);
-    }
-
-    if( pDrivingScheme->pTransmitPulses->type == IUS_PARAMETRIC_PULSETYPE )
-    {
-        return iusWriteParametricPulseList(pDrivingScheme,group_id,verbose);
-    }
+//TODO
+    assert(IUS_FALSE);
     return -1;
 
 }
@@ -1935,7 +1937,7 @@ IusTransducer *iusReadTransducer(hid_t handle, int verbose) {
     if( pTransducer->type == IUS_2D_SHAPE )
     {
         Ius2DTransducer *p2DTransducer = (Ius2DTransducer *) pTransducer;
-        p2DTransducer->pElements = (Ius2DTransducerElement *) calloc( pTransducer->numElements , sizeof(Ius2DTransducer));
+        p2DTransducer->pElements = (Ius2DTransducerElement *) calloc( pTransducer->numElements , sizeof(Ius2DTransducerElement));
         if( p2DTransducer->pElements != NULL )
             status = iusRead2DTransducer(p2DTransducer, handle, verbose);
         else
@@ -1970,48 +1972,38 @@ int iusReadDrivingSchemeType(hid_t handle, char *pVariableString, IusDrivingSche
     return status;
 }
 
-IusDrivingScheme *iusReadBaseDrivingScheme(hid_t handle, int verbose)
-{
-    IusDrivingScheme * parametrizedDrivingScheme;
-    int numElements = 32;
-    int numTransmitPulses = 13;
-    int numTransmitSources = 13;
-    int status = 0;
-
-    IusShape shape = IUS_2D_SHAPE;
-
-//    status |= iusHdf5ReadString( handle, "/Transducer/transducerName",  &(pTransducerName), verbose );
-//    status |= iusHdf5ReadFloat( handle,  "/Transducer/centerFrequency", &(centerFrequency), verbose );
-//    status |= iusHdf5ReadInt( handle,    "/Transducer/numElements",     &(numElements),     verbose );
-
-    IusDrivingSchemeType type = IUS_DIVERGING_WAVES_PARAMETRIZED;
-    parametrizedDrivingScheme = iusHLCreateDrivingScheme(type,
-                                                         shape,
-                                                         numTransmitPulses,
-                                                         numTransmitSources,
-                                                         numElements );
-    // read type
-
-    // read shape
-    // read num transmit sources
-    // read num transmit pulses
-    // read numelements
-    // transmit pattern delay
-    // transmit pattern
-    // transmit pulse
-    // transmit pulse apodization
-    return parametrizedDrivingScheme;
-}
-
-int iusRead3DDrivingScheme(Ius3DDrivingScheme *scheme, hid_t handle, int verbose)
-{
-    return IUS_E_OK;
-}
-
-int iusRead2DDrivingScheme(Ius2DDrivingScheme *scheme, hid_t handle, int verbose)
-{
-    return IUS_E_OK; //
-}
+//IusDrivingScheme *iusReadBaseDrivingScheme(hid_t handle, int verbose)
+//{
+//    IusDrivingScheme * parametrizedDrivingScheme;
+//    int numElements = 32;
+//    int numTransmitPulses = 13;
+//    int numTransmitSources = 13;
+//    int status = 0;
+//
+//    IusShape shape = IUS_2D_SHAPE;
+//
+////    status |= iusHdf5ReadString( handle, "/Transducer/transducerName",  &(pTransducerName), verbose );
+////    status |= iusHdf5ReadFloat( handle,  "/Transducer/centerFrequency", &(centerFrequency), verbose );
+////    status |= iusHdf5ReadInt( handle,    "/Transducer/numElements",     &(numElements),     verbose );
+//
+//    IusDrivingSchemeType type = IUS_DIVERGING_WAVES_PARAMETRIZED;
+//    parametrizedDrivingScheme = iusHLCreateDrivingScheme(type,
+//                                                         shape,
+//                                                         numTransmitPulses,
+//                                                         numTransmitSources,
+//                                                         numElements );
+//    // read type
+//
+//    // read shape
+//    // read num transmit sources
+//    // read num transmit pulses
+//    // read numelements
+//    // transmit pattern delay
+//    // transmit pattern
+//    // transmit pulse
+//    // transmit pulse apodization
+//    return parametrizedDrivingScheme;
+//}
 
 int iusReadTransmitApodization
 (
@@ -2031,46 +2023,53 @@ int iusReadTransmitPattern
     int verbose
 )
 {
-
     int status = 0;
-    status |= iusHdf5ReadFloat( handle, "/DrivingScheme/TransmitPattern/transmitPatternDelay", &(pDrivingScheme->transmitPatternDelay), verbose );
-
     int i;
-    int *   pIndexData;
+    int *   pSourceIndexData;
+    int *   pPulseIndexData;
     float * pTimeData;
 
     int numPulses = pDrivingScheme->numTransmitPulses;
 
     IUS_UNUSED(verbose); // avoid compiler warnings
 
-    pIndexData   =   (int *) malloc(numPulses * sizeof(int));
+    pSourceIndexData   =   (int *) malloc(numPulses * sizeof(int));
+    pPulseIndexData    =   (int *) malloc(numPulses * sizeof(int));
     pTimeData   = (float *) malloc(numPulses * sizeof(float));
     pDrivingScheme->pTransmitPatterns = iusHLCreateTransmitPatternList(numPulses);
-    if ( pDrivingScheme->pTransmitPatterns == NULL || pIndexData == NULL || pTimeData == NULL)
+    if ( pDrivingScheme->pTransmitPatterns == NULL || pPulseIndexData == NULL ||
+         pSourceIndexData == NULL || pTimeData == NULL)
     {
         fprintf( stderr, "iusReadTransmitPattern: Error allocating data\n" );
-        free( pIndexData );
+        free( pDrivingScheme->pTransmitPatterns );
+        free( pPulseIndexData );
+        free( pSourceIndexData );
         free( pTimeData );
         return -1;
     }
 
-    status |= H5LTread_dataset_int( handle,   "/DrivingScheme/TransmitPattern/transmitPatternIndex",  pIndexData );
+    status |= H5LTread_dataset_int( handle,   "/DrivingScheme/TransmitPattern/sourceIndex",  pSourceIndexData );
+    status |= H5LTread_dataset_int( handle,   "/DrivingScheme/TransmitPattern/pulseIndex",  pPulseIndexData );
     status |= H5LTread_dataset_float( handle, "/DrivingScheme/TransmitPattern/transmitPatternTime",   pTimeData );
     if ( status < 0 )
     {
         fprintf( stderr, "iusReadTransmitPattern: Error reading dataset: H5Dread returned: %d\n", status );
-        free( pIndexData );
+        free( pDrivingScheme->pTransmitPatterns );
+        free( pPulseIndexData );
+        free( pSourceIndexData );
         free( pTimeData );
         return status;
     }
 
     for ( i = 0; i < numPulses; i++ )
     {
-        pDrivingScheme->pTransmitPatterns->pTransmitPattern[i].index = pIndexData[i];
+        pDrivingScheme->pTransmitPatterns->pTransmitPattern[i].sourceIndex = pSourceIndexData[i];
+        pDrivingScheme->pTransmitPatterns->pTransmitPattern[i].pulseIndex = pPulseIndexData[i];
         pDrivingScheme->pTransmitPatterns->pTransmitPattern[i].time  = pTimeData[i];
     }
 
-    free( pIndexData );
+    free( pSourceIndexData );
+    free( pPulseIndexData );
     free( pTimeData );
     return status;
 }
@@ -2089,21 +2088,10 @@ IusDrivingScheme *iusReadDrivingScheme(hid_t handle, IusShape shape,  int verbos
     status |= iusHdf5ReadInt( handle,    "/DrivingScheme/numTransmitPulses",     &(numTransmitPulses),     verbose );
     status |= iusHdf5ReadInt( handle,    "/DrivingScheme/numElements",     &(numElements),     verbose );
 
-    if( shape == IUS_3D_SHAPE )
-    {
-        Ius3DDrivingScheme *_3DDrivingScheme = (Ius3DDrivingScheme *) iusCreate3DDrivingScheme(numTransmitSources);
-        if( _3DDrivingScheme == NULL ) return NULL;
-        status = iusRead3DDrivingScheme(_3DDrivingScheme, handle, verbose);
-        pDrivingScheme = (IusDrivingScheme *) _3DDrivingScheme;
-    }
 
-    if( shape == IUS_2D_SHAPE )
-    {
-        Ius2DDrivingScheme *_2DDrivingScheme = (Ius2DDrivingScheme *) iusCreate2DDrivingScheme(numTransmitSources);
-        if( _2DDrivingScheme == NULL ) return NULL;
-        status = iusRead2DDrivingScheme(_2DDrivingScheme, handle, verbose);
-        pDrivingScheme = (IusDrivingScheme *) _2DDrivingScheme;
-    }
+    // TODO Read sourcelocations
+    pDrivingScheme = calloc(1 ,  sizeof(IusDrivingScheme));
+//    assert(IUS_FALSE);
 
     if( status != 0 )
         return NULL;

@@ -3,27 +3,37 @@
 //
 #include <library_config.h>
 
+
 #define IUSLIBRARY_IMPLEMENTATION
-
-#include "ius.h"
-#include "iusNode.h"
-#include <iusInputFile.h>
-#include <iusInput.h>
-#include <iusHLNode.h>
-#include <iusHLInput.h>
-#include <iusHLInputFile.h>
-#include <include/iusHLDrivingScheme.h>
-#include <memory.h>
-#include <stdlib.h>
 #include <include/iusInput.h>
+#include <include/iusHLNode.h>
+#include <include/iusHLExperiment.h>
+#include <include/iusHLInput.h>
+#include <include/ius.h>
 
 
-int iusHLGetNumFrames(iuh_t header)
+//#include <include/iusHLInput.h>
+
+
+//#include "ius.h"
+//#include "iusNode.h"
+//#include <iusInputFile.h>
+//#include <iusInput.h>
+//#include <iusHLNode.h>
+//#include <iusHLInput.h>
+//#include <iusHLInputFile.h>
+//#include <include/iusHLDrivingScheme.h>
+//#include <memory.h>
+//#include <stdlib.h>
+//#include <include/iusInput.h>
+
+
+int iusHLGetNumFrames(IusInputInstance *header)
 {
     return header->numFrames;
 }
 
-iuh_t iusHLCreateInputHeader(void)
+IusInputInstance * iusHLCreateInputHeader(void)
 {
 //    IusExperiment      * pExperiment;      /**< experiment settings */
 //    IusTransducer      * pTransducer;      /**< transducer that has been used */
@@ -54,15 +64,15 @@ iuh_t iusHLCreateInputHeader(void)
 
 }
 
-int iusHLHeaderSetExperiment(iuh_t header, iue_t experiment)
+int iusHLHeaderSetExperiment(IusInputInstance * header, IusExperiment *experiment)
 {
     header->pExperiment = experiment;
     return IUS_E_OK;
 }
 
-iue_t iusHLHeaderGetExperiment
+IusExperiment * iusHLHeaderGetExperiment
 (
-    iuh_t pInstance
+IusInputInstance * pInstance
 )
 {
     return pInstance->pExperiment;
@@ -70,17 +80,17 @@ iue_t iusHLHeaderGetExperiment
 
 int iusHLHeaderSetTransducer
 (
-    iuh_t header,
-    iut_t transducer
+IusInputInstance * header,
+IusTransducer* transducer
 )
 {
     header->pTransducer = transducer;
     return IUS_E_OK;
 }
 
-iut_t iusHLHeaderGetTransducer
+IusTransducer* iusHLHeaderGetTransducer
 (
-        iuh_t pInstance
+IusInputInstance * pInstance
 )
 {
     return pInstance->pTransducer;
@@ -88,24 +98,24 @@ iut_t iusHLHeaderGetTransducer
 
 int iusHLHeaderSetDrivingScheme
 (
-    iuh_t header,
-    iuds_t scheme
+IusInputInstance * header,
+IusDrivingScheme* scheme
 )
 {
     header->pDrivingScheme = scheme;
     return IUS_E_OK;
 }
 
-iuds_t iusHLHeaderGetDrivingScheme
+IusDrivingScheme* iusHLHeaderGetDrivingScheme
     (
-        iuh_t pInstance
+    IusInputInstance * pInstance
     )
 {
     return pInstance->pDrivingScheme;
 }
 
 
-IUS_BOOL iusHLCompareHeader(iuh_t referenceHeader, iuh_t actualHeader)
+IUS_BOOL iusHLCompareHeader(IusInputInstance * referenceHeader, IusInputInstance * actualHeader)
 {
     if( referenceHeader->IusVersion != actualHeader->IusVersion ) {
         fprintf( stderr, "iusHLCompareHeader version match %s@%d\n", __FILE__, __LINE__);

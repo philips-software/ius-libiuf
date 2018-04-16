@@ -36,28 +36,22 @@ float iusHLTransmitPatternGetTime
     iutpa_t pattern
 );
 
-int iusHLTransmitPatternGetIndex
+int iusHLTransmitPatternGetSourceIndex
+(
+    iutpa_t pattern
+);
+
+int iusHLTransmitPatternGetPulseIndex
 (
     iutpa_t pattern
 );
 
 // set
-int iusHLTransmitPatternSetTime
-(
-    iutpa_t pattern,
-    float time
-);
-
-int iusHLTransmitPatternSetIndex
-(
-    iutpa_t pattern,
-    int pulseIndex
-);
-
 int iusHLTransmitPatternSet
 (
     iutpa_t pattern,
     float time,
+    int sourceIndex,
     int pulseIndex
 );
 #endif //IUSLIBRARY_IUSHLTRANSMITPATTERN_H

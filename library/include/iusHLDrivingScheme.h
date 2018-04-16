@@ -6,15 +6,16 @@
 #define IUSLIBRARY_IUSHLDRIVINGSCHEME_H
 
 
+#include <stddef.h>
+#include "iusTypes.h"
+#include "iusHLPosition.h"
+#include "iusHLSourceLocationList.h"
 #include "iusHLTransmitPulse.h"
+#include "iusHLTransmitPulseList.h"
 #include "iusHLTransmitPattern.h"
 #include "iusHLTransmitPatternList.h"
 
 #ifndef IUSLIBRARY_IMPLEMENTATION
-#include <stddef.h>
-#include "iusTypes.h"
-#include "iusHLPosition.h"
-
 struct IusDrivingScheme;
 typedef  struct IusDrivingScheme IusDrivingScheme;
 #endif // IUSLIBRARY_IMPLEMENTATION
@@ -23,30 +24,20 @@ typedef  struct IusDrivingScheme IusDrivingScheme;
 typedef  IusDrivingScheme    * iuds_t;
 #define IUDS_INVALID (iuds_t) NULL
 
+
 iuds_t iusHLCreateDrivingScheme
 (
-    IusDrivingSchemeType param,
-    IusShape shape, // determines whether to use 2D or 3D positions/Angles
-    int numTransmitPulses,
-    int numTransmitSources,
+    IusDrivingSchemeType type,
+    IusShape shape,       // determines whether to use 2D or 3D positions/Angles
+    iusll_t transmitSources,
+    iutpl_t transmitPulses,
+    iutpal_t transmitPatterns,
     int numElements
 );
-
 
 int iusHLDeleteDrivingScheme
 (
     iuds_t drivingScheme
-);
-
-iuds_t iusCreate3DDrivingScheme
-(
-    int numTransmitSources
-);
-
-
-iuds_t iusCreate2DDrivingScheme
-(
-    int numTransmitSources
 );
 
 // setters
@@ -61,38 +52,38 @@ int iusHLDrivingSchemeSetTransmitPulse
     iuds_t drivingScheme,
     iutp_t transmitPulse
 );
-
-int iusDrivingSchemeSetSourceFNumber
-(
-    iuds_t drivingScheme,
-    float FNumber
-);
-
-
-int iusDrivingSchemeSetSourceStartPhi
-(
-    iuds_t drivingScheme,
-    float startPhi
-);
-
-int iusDrivingSchemeSetSourceDeltaPhi
-(
-    iuds_t drivingScheme,
-    float deltaPhi
-);
-
-
-int iusDrivingSchemeSetSourceStartTheta
-(
-    iuds_t drivingScheme,
-    float startTheta
-);
-
-int iusDrivingSchemeSetSourceDeltaTheta
-(
-    iuds_t drivingScheme,
-    float deltaTheta
-);
+//
+//int iusDrivingSchemeSetSourceFNumber
+//(
+//    iuds_t drivingScheme,
+//    float FNumber
+//);
+//
+//
+//int iusDrivingSchemeSetSourceStartPhi
+//(
+//    iuds_t drivingScheme,
+//    float startPhi
+//);
+//
+//int iusDrivingSchemeSetSourceDeltaPhi
+//(
+//    iuds_t drivingScheme,
+//    float deltaPhi
+//);
+//
+//
+//int iusDrivingSchemeSetSourceStartTheta
+//(
+//    iuds_t drivingScheme,
+//    float startTheta
+//);
+//
+//int iusDrivingSchemeSetSourceDeltaTheta
+//(
+//    iuds_t drivingScheme,
+//    float deltaTheta
+//);
 
 int iusDrivingSchemeSetTransmitApodization
 (
@@ -101,20 +92,20 @@ int iusDrivingSchemeSetTransmitApodization
     int pulseIndex,
     int elementIndex
 );
-
-int iusHLDrivingSchemeSet3DSourceLocation
-(
-    IusDrivingScheme * drivingScheme,
-    iu3dp_t position,
-    int index
-);
-
-int iusHLDrivingSchemeSet2DSourceLocation
-(
-    IusDrivingScheme * drivingScheme,
-    iu2dp_t position,
-    int index
-);
+//
+//int iusHLDrivingSchemeSet3DSourceLocation
+//(
+//    IusDrivingScheme * drivingScheme,
+//    iu3dp_t position,
+//    int index
+//);
+//
+//int iusHLDrivingSchemeSet2DSourceLocation
+//(
+//    IusDrivingScheme * drivingScheme,
+//    iu2dp_t position,
+//    int index
+//);
 
 // getters
 float iusHLDrivingSchemeGetTransmitPatternDelay

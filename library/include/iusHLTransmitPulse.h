@@ -5,6 +5,8 @@
 #ifndef IUSLIBRARY_IUSHLTRANSMITPULSE_H
 #define IUSLIBRARY_IUSHLTRANSMITPULSE_H
 
+#include "iusTypes.h"
+
 #ifndef IUSLIBRARY_IMPLEMENTATION
 
 
@@ -17,5 +19,9 @@ typedef  struct IusTransmitPulse IusTransmitPulse;
 typedef  IusTransmitPulse    * iutp_t;
 #define  IUTP_INVALID (iutp_t) NULL
 
-
+IUS_BOOL  iusCompareTransmitPulse
+(
+    iutp_t reference,
+    iutp_t acttual
+);
 #endif //IUSLIBRARY_IUSHLTRANSMITPULSE_H

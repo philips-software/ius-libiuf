@@ -20,4 +20,33 @@ typedef  IusTransmitPulseList   * iutpl_t;
 
 // operations
 
+iutpl_t iusHLCreateTransmitPulseList
+(
+    int numTransmitPulses
+);
+
+int iusHLTransmitPulseListSet
+(
+    iutpl_t list,
+    iutp_t pulse,
+    int index
+);
+
+IusTransmitPulse * iusHLTransmitPulseListGet
+(
+    iutpl_t list,
+    int index
+);
+
+int iusHLTransmitPulseListGetSize
+(
+    iutpl_t list
+);
+
+int iusCompareTransmitPulseList
+(
+    iutpl_t reference,
+    iutpl_t actual
+);
+
 #endif //IUSLIBRARY_IUSHLTRANSMITPULSELIST_H
