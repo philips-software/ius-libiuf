@@ -47,6 +47,72 @@ TEST_TEAR_DOWN(InputfileDrivingScheme)
 //}
 
 
+int createTestAndDeleteScheme
+(
+    IusDrivingSchemeType type,
+    IusShape shape,
+    IusSourceLocationType locationType,
+    int numTransmitPulses,
+    int numTransmitSources,
+    int numElements
+)
+{
+    iuds_t drivingScheme;
+
+    int status = 0;
+    drivingScheme = dgCreateDrivingScheme(type,shape,locationType,numTransmitPulses,numTransmitSources,numElements);
+    TEST_ASSERT(drivingScheme != IUDS_INVALID);
+    TEST_ASSERT((shape) == iusHLDrivingSchemeGetShape(drivingScheme));
+    TEST_ASSERT((type) == iusHLDrivingSchemeGetType(drivingScheme));
+    TEST_ASSERT((numTransmitPulses) == iusHLDrivingSchemeGetNumTransmitPulses(drivingScheme));
+    TEST_ASSERT((numTransmitSources) == iusHLDrivingSchemeGetNumTransmitSources(drivingScheme));
+    TEST_ASSERT((numElements) == iusHLDrivingSchemeGetNumElements(drivingScheme));
+    status = iusHLDeleteDrivingScheme(drivingScheme);
+    TEST_ASSERT(status == (IUS_E_OK));
+    return status;
+}
+
+int createTestAndDeleteSchemeForLocation
+(
+    IusSourceLocationType locationType,
+    int numTransmitPulses,
+    int numTransmitSources,
+    int numElements
+
+)
+{
+    int status = 0;
+    status |= createTestAndDeleteScheme( IUS_DIVERGING_WAVES_PARAMETRIZED, IUS_2D_SHAPE, locationType,
+                               numTransmitSources, numTransmitPulses, numElements );
+    status |= createTestAndDeleteScheme( IUS_DIVERGING_WAVES_PARAMETRIZED, IUS_3D_SHAPE, locationType,
+                               numTransmitSources, numTransmitPulses, numElements );
+    status |= createTestAndDeleteScheme( IUS_DIVERGING_WAVES, IUS_2D_SHAPE, locationType, numTransmitSources,
+                               numTransmitPulses, numElements );
+    status |= createTestAndDeleteScheme( IUS_DIVERGING_WAVES, IUS_3D_SHAPE, locationType, numTransmitSources,
+                               numTransmitPulses, numElements );
+    status |= createTestAndDeleteScheme( IUS_FOCUSED_WAVES_PARAMETRIZED, IUS_2D_SHAPE, locationType,
+                               numTransmitSources, numTransmitPulses, numElements );
+    status |= createTestAndDeleteScheme( IUS_FOCUSED_WAVES_PARAMETRIZED, IUS_3D_SHAPE, locationType,
+                               numTransmitSources, numTransmitPulses, numElements );
+    status |= createTestAndDeleteScheme( IUS_FOCUSED_WAVES, IUS_2D_SHAPE, locationType, numTransmitSources,
+                               numTransmitPulses, numElements );
+    status |= createTestAndDeleteScheme( IUS_FOCUSED_WAVES, IUS_3D_SHAPE, locationType, numTransmitSources,
+                               numTransmitPulses, numElements );
+    status |= createTestAndDeleteScheme( IUS_SINGLE_ELEMENT, IUS_2D_SHAPE, locationType, numTransmitSources,
+                               numTransmitPulses, numElements );
+    status |= createTestAndDeleteScheme( IUS_SINGLE_ELEMENT, IUS_3D_SHAPE, locationType, numTransmitSources,
+                               numTransmitPulses, numElements );
+    status |= createTestAndDeleteScheme( IUS_CUSTOM_WAVES, IUS_2D_SHAPE, locationType, numTransmitSources,
+                               numTransmitPulses, numElements );
+    status |= createTestAndDeleteScheme( IUS_CUSTOM_WAVES, IUS_3D_SHAPE, locationType, numTransmitSources,
+                               numTransmitPulses, numElements );
+    status |= createTestAndDeleteScheme( IUS_PLANE_WAVES, IUS_2D_SHAPE, locationType, numTransmitSources,
+                               numTransmitPulses, numElements );
+    status |= createTestAndDeleteScheme( IUS_PLANE_WAVES, IUS_3D_SHAPE, locationType, numTransmitSources,
+                               numTransmitPulses, numElements );
+    return status;
+}
+
 TEST(InputfileDrivingScheme, testIusHLCreateDrivingScheme)
 {
     iuds_t drivingScheme;
@@ -54,50 +120,13 @@ TEST(InputfileDrivingScheme, testIusHLCreateDrivingScheme)
     int numElements = 32;
     int numTransmitPulses = 13;
     int numTransmitSources = 13;
-    int status = 0;
 
-    IusDrivingSchemeType typ = IUS_DIVERGING_WAVES_PARAMETRIZED;
-    IusShape shpe = IUS_3D_SHAPE;
-    IusSourceLocationType locty = IUS_PARAMETRIC_3D_SOURCE_LOCATION;
-    int nts = numTransmitSources;
-    int ntpu = numTransmitPulses;
-    int ne =  numElements;
+    createTestAndDeleteSchemeForLocation( IUS_PARAMETRIC_3D_SOURCE_LOCATION, numTransmitPulses, numTransmitSources, numElements);
+    createTestAndDeleteSchemeForLocation( IUS_PARAMETRIC_2D_SOURCE_LOCATION, numTransmitPulses, numTransmitSources, numElements);
+    createTestAndDeleteSchemeForLocation( IUS_3D_SOURCE_LOCATION, numTransmitPulses, numTransmitSources, numElements);
+    createTestAndDeleteSchemeForLocation( IUS_2D_SOURCE_LOCATION, numTransmitPulses, numTransmitSources, numElements);
 
-    drivingScheme = dgCreateDrivingScheme(typ,shpe,locty,ntpu,nts,ne); \
-                                            TEST_ASSERT(drivingScheme != IUDS_INVALID); \
-                                            TEST_ASSERT((shpe) == iusHLDrivingSchemeGetShape(drivingScheme)); \
-                                            TEST_ASSERT((typ) == iusHLDrivingSchemeGetType(drivingScheme)); \
-                                            TEST_ASSERT((ntpu) == iusHLDrivingSchemeGetNumTransmitPulses(drivingScheme)); \
-                                            TEST_ASSERT((nts) == iusHLDrivingSchemeGetNumTransmitSources(drivingScheme)); \
-                                            TEST_ASSERT((ne) == iusHLDrivingSchemeGetNumElements(drivingScheme)); \
-                                            status = iusHLDeleteDrivingScheme(drivingScheme); \
-                                            TEST_ASSERT(status == (IUS_E_OK))
-    #if 0
-#define CREATE_TEST_AND_DELETE_SCHEME(typ,shpe,nt,ns,ne,stat) drivingScheme = iusHLCreateDrivingScheme(typ,shpe,nt,ns,ne); \
-                                            TEST_ASSERT(drivingScheme != IUDS_INVALID); \
-                                            TEST_ASSERT((shpe) == iusHLDrivingSchemeGetShape(drivingScheme)); \
-                                            TEST_ASSERT((typ) == iusHLDrivingSchemeGetType(drivingScheme)); \
-                                            TEST_ASSERT((nt) == iusHLDrivingSchemeGetNumTransmitPulses(drivingScheme)); \
-                                            TEST_ASSERT((ns) == iusHLDrivingSchemeGetNumTransmitSources(drivingScheme)); \
-                                            TEST_ASSERT((ne) == iusHLDrivingSchemeGetNumElements(drivingScheme)); \
-                                            status = iusHLDeleteDrivingScheme(drivingScheme); \
-                                            TEST_ASSERT(status == (stat))
 
-    CREATE_TEST_AND_DELETE_SCHEME(IUS_DIVERGING_WAVES_PARAMETRIZED, IUS_2D_SHAPE, numTransmitPulses,numTransmitSources,numElements,IUS_E_OK);
-    CREATE_TEST_AND_DELETE_SCHEME(IUS_DIVERGING_WAVES_PARAMETRIZED, IUS_3D_SHAPE, numTransmitPulses,numTransmitSources,numElements,IUS_E_OK);
-    CREATE_TEST_AND_DELETE_SCHEME(IUS_DIVERGING_WAVES, IUS_2D_SHAPE, numTransmitPulses,numTransmitSources,numElements,IUS_E_OK);
-    CREATE_TEST_AND_DELETE_SCHEME(IUS_DIVERGING_WAVES, IUS_3D_SHAPE, numTransmitPulses,numTransmitSources,numElements,IUS_E_OK);
-    CREATE_TEST_AND_DELETE_SCHEME(IUS_FOCUSED_WAVES_PARAMETRIZED, IUS_2D_SHAPE, numTransmitPulses,numTransmitSources,numElements,IUS_E_OK);
-    CREATE_TEST_AND_DELETE_SCHEME(IUS_FOCUSED_WAVES_PARAMETRIZED, IUS_3D_SHAPE, numTransmitPulses,numTransmitSources,numElements,IUS_E_OK);
-    CREATE_TEST_AND_DELETE_SCHEME(IUS_FOCUSED_WAVES, IUS_2D_SHAPE, numTransmitPulses,numTransmitSources,numElements,IUS_E_OK);
-    CREATE_TEST_AND_DELETE_SCHEME(IUS_FOCUSED_WAVES, IUS_3D_SHAPE, numTransmitPulses,numTransmitSources,numElements,IUS_E_OK);
-    CREATE_TEST_AND_DELETE_SCHEME(IUS_SINGLE_ELEMENT, IUS_2D_SHAPE, numTransmitPulses,numTransmitSources,numElements,IUS_E_OK);
-    CREATE_TEST_AND_DELETE_SCHEME(IUS_SINGLE_ELEMENT, IUS_3D_SHAPE, numTransmitPulses,numTransmitSources,numElements,IUS_E_OK);
-    CREATE_TEST_AND_DELETE_SCHEME(IUS_CUSTOM_WAVES, IUS_2D_SHAPE, numTransmitPulses,numTransmitSources,numElements,IUS_E_OK);
-    CREATE_TEST_AND_DELETE_SCHEME(IUS_CUSTOM_WAVES, IUS_3D_SHAPE, numTransmitPulses,numTransmitSources,numElements,IUS_E_OK);
-    CREATE_TEST_AND_DELETE_SCHEME(IUS_PLANE_WAVES, IUS_2D_SHAPE, numTransmitPulses,numTransmitSources,numElements,IUS_E_OK);
-    CREATE_TEST_AND_DELETE_SCHEME(IUS_PLANE_WAVES, IUS_3D_SHAPE, numTransmitPulses,numTransmitSources,numElements,IUS_E_OK);
-    #endif
 //    // test invalid arguments
 //    drivingScheme = iusHLCreateDrivingScheme( (IusDrivingSchemeType) 0, IUS_3D_SHAPE, IUS_PARAMETRIC_3D_SOURCE_LOCATION, numTransmitPulses,numTransmitSources,numElements);
 //    TEST_ASSERT(drivingScheme == IUDS_INVALID);

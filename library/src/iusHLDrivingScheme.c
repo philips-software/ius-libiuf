@@ -42,41 +42,6 @@ IUS_BOOL isValidShape(IusShape shape)
     return (shape == IUS_2D_SHAPE || shape == IUS_3D_SHAPE);
 }
 
-
-//IusDrivingScheme * iusCreate2DDrivingScheme
-//(
-//    int numTransmitSources
-//)
-//{
-//    Ius2DDrivingScheme *_2DDrivingScheme = (Ius2DDrivingScheme *)calloc( 1, sizeof( Ius2DDrivingScheme ) );
-//    if( _2DDrivingScheme == NULL ) return NULL;
-//
-//    _2DDrivingScheme->pSourceLocations = (Ius2DPosition *)calloc(numTransmitSources, sizeof(Ius2DPosition));
-//    if( _2DDrivingScheme->pSourceLocations == NULL )
-//    {
-//        free(_2DDrivingScheme);
-//        return NULL;
-//    }
-//    return (IusDrivingScheme *)_2DDrivingScheme;
-//}
-//
-//IusDrivingScheme * iusCreate3DDrivingScheme
-//(
-//    int numTransmitSources
-//)
-//{
-//    Ius3DDrivingScheme *_3DDrivingScheme = (Ius3DDrivingScheme *)calloc( 1, sizeof( Ius3DDrivingScheme ) );
-//    if( _3DDrivingScheme == NULL ) return NULL;
-//
-//    _3DDrivingScheme->pSourceLocations = (Ius3DPosition *)calloc(numTransmitSources, sizeof(Ius3DPosition));
-//    if( _3DDrivingScheme->pSourceLocations == NULL )
-//    {
-//        free(_3DDrivingScheme);
-//        return NULL;
-//    }
-//    return (IusDrivingScheme *)_3DDrivingScheme;
-//}
-
 float *iusCreateTransmitApodization(int numTransmitPulses,int numElements)
 {
     // 2D array: per transmitted pulse we have numElement gains

@@ -94,6 +94,7 @@ IusSourceLocationList *iusHLCreateSourceLocationList
     switch(locationType) {
         case IUS_2D_SOURCE_LOCATION:
             locationList = (IusSourceLocationList*) iusCreate2DSourceLocationList(numTransmitSources);
+
             break;
         case IUS_3D_SOURCE_LOCATION:
             locationList = (IusSourceLocationList*) iusCreate3DSourceLocationList(numTransmitSources);
