@@ -1,15 +1,21 @@
 //
 // Created by Ruijzendaal on 14/03/2018.
 //
-
-#include <include/iusHDF5.h>
-#include <stdlib.h>
 #include <math.h>
+#include <stdlib.h>
+
+#include <library_config.h>
+#include <iusHDF5.h>
 #include "iusUtil.h"
 
 int iusHLDiagDisable()
 {
     return iusHdf5DisableMessages();
+}
+
+
+int iusGetVersionMajor(void) {
+    return IUS_VERSION_MAJOR;
 }
 
 IUS_BOOL  equalFloat

@@ -7,24 +7,22 @@
 
 #include "iusHLTransmitPattern.h"
 
-#ifndef IUSLIBRARY_IMPLEMENTATION
-typedef  struct IusTransmitPatternList IusTransmitPatternList;
-#endif // IUSLIBRARY_IMPLEMENTATION
 
 // ADT
+typedef  struct IusTransmitPatternList IusTransmitPatternList;
 typedef  IusTransmitPatternList   * iutpal_t;
 #define  IUTPAL_INVALID (iutpal_t) NULL
 
 
 // operations
-iutpal_t iusHLCreateTransmitPatternList
+iutpal_t iusHLTransmitPatternListCreate
 (
-    int numTransmitPulses
+int numPulses
 );
 
-int iusHLDeleteTransmitPatternList
+int iusHLTransmitPatternListDelete
 (
-    IusTransmitPatternList* list
+IusTransmitPatternList *list
 );
 
 int iusHLTransmitPatternListSet

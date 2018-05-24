@@ -18,33 +18,10 @@ extern "C" {
 
 #include "iusTypes.h"
 #include "iusNode.h"
- 
-#define IUS_INPUT_TYPE "IUSINPUTFILETYPE_V3"
+#include "iusHLApodizationList.h"
 
 
 
-typedef struct
-{
-    IusShape shape;
-
-} IusBaseTransducerElement;
-
-typedef struct
-{
-     IusBaseTransducerElement base;
-     Ius3DPosition position; /**< 3D Location of the element */
-     Ius3DAngle    angle;    /**< orientation of the elements */
-     Ius3DSize     size;     /**< size of the element */
-} Ius3DTransducerElement;
-
-/** \brief 2D Transducer element description: position, orientation and size */
-typedef struct
-{
-    IusBaseTransducerElement base;
-    Ius2DPosition position; /**< 3D Location of the element */
-    float         theta;      /**< orientation of the elements */
-    Ius2DSize     size;     /**< size of the element */
-} Ius2DTransducerElement;
 
 /** \brief Time gain control point (time, gain) */
 typedef struct
@@ -52,38 +29,6 @@ typedef struct
     float time;         /**< timestamp in seconds */
     float gain;         /**< value dimensionless */
 } IusTimeGainControl;
-
-
-/** \brief Transmitpattern point (time, index) i.e. source triggers at time */
-typedef struct
-{
-    int    sourceIndex;       /**< index of transmit source */
-    int    pulseIndex;   /**< index of transmit pulse */
-    float  time;        /**< time to the source transmits */
-} IusTransmitPattern;
-
-
-/** \brief a Transducer object */
-typedef struct
-{
-    IusShape               type; /**< 2D or 3D transducer? */
-    char *                 pTransducerName;   /**< descriptive name of the ultrasound probe */
-    float                  centerFrequency;   /**< operating frequency of the transducer */
-    int                    numElements;       /**< number of transducer Elements in the probe */
-    IusTransducerShape     shape;
-} IusTransducer;
-
-typedef struct
-{
-    IusTransducer            baseTransducer;
-    Ius3DTransducerElement * pElements;         /**< an array of numElements transducer element (position, angle, size) */
-} Ius3DTransducer;
-
-typedef struct
-{
-    IusTransducer            baseTransducer;
-    Ius2DTransducerElement * pElements;         /**< an array of numElements transducer element (position, angle, size) */
-} Ius2DTransducer;
 
 /** \brief Ultrasound recording settings (TGC and Fs) */
 typedef struct
@@ -104,138 +49,6 @@ typedef struct
 
 
 
-/** \brief Transmit wave object
- *  \details The Transmitwave function is described by a set of points
- *  (time,voltage) to know what has been sent, but also parametrically by
- *  pulseFrequency (Hz), pulseAmplitude (V), and pulseCount for calculation
- *  purposes.
- */
-typedef struct
-{
-    IusTransmitPulseType type;
-} IusTransmitPulse;
-
-typedef struct
-{
-    IusTransmitPulse base;
-    float   pulseFrequency;       /**< frequency that the pulse represents in Hz */
-    float   pulseAmplitude;       /**< (max) amplitude of the pulse in Volts */
-    int     pulseCount;           /**< number of cycles that the pulse represents */
-} IusParametricTransmitPulse;
-
-typedef struct
-{
-    IusTransmitPulse base;
-    int     numPulseValues;       /**< number of points to describe waveform, 0 implies a parametric description only */
-    float * pRawPulseAmplitudes;  /**< shape of waveform [in Volts] */
-    float * pRawPulseTimes;       /**< corresponding timestamps of amplitudes [in seconds] */
-} IusNonParametricTransmitPulse;
-
-
-typedef struct
-{
-    int count;
-    IusTransmitPattern *      pTransmitPattern;       /**< array (time, index) of length numTransmitPulses */
-} IusTransmitPatternList;
-
-typedef struct
-{
-    int count;
-    IusTransmitPulse **pTransmitPulses;
-} IusTransmitPulseList;
-
-
-typedef struct
-{
-    IusSourceLocationType         locationType;           // Parametric2D/3D, NonParametric2D/3D locationtypes
-    int                           count;
-} IusSourceLocationList;
-
-typedef struct
-{
-    IusSourceLocationList         base;           // Parametric2D/3D, NonParametric2D/3D locationtypes
-    Ius2DPosition *               pSourceLocations;
-} Ius2DSourceLocationList;
-
-typedef struct
-{
-    Ius2DSourceLocationList   base2d;
-    float                     sourceFNumber;          /**< distance in [m] of sources to transducer for POLAR */
-    float                     sourceDeltaTheta;     /**< angle in [rad] between sources */
-    float                     sourceStartTheta;       /**< angle in [rad] between sources */
-} IusParametric2DSourceLocationList;
-
-typedef struct
-{
-    IusSourceLocationList         base;           // Parametric2D/3D, NonParametric2D/3D locationtypes
-    Ius3DPosition *               pSourceLocations;
-} Ius3DSourceLocationList;
-
-typedef struct
-{
-    Ius3DSourceLocationList   base3d;
-    float                     sourceFNumber;          /**< distance in [m] of sources to transducer for POLAR */
-    float                     sourceDeltaTheta;     /**< angle in [rad] between sources */
-    float                     sourceStartTheta;       /**< angle in [rad] between sources */
-    float                     sourceDeltaPhi;     /**< angle in [rad] between sources */
-    float                     sourceStartPhi;       /**< angle in [rad] between sources */
-} IusParametric3DSourceLocationList;
-
-
-/** \brief the driving scheme for an experiment */
-typedef struct
-{
-    IusDrivingSchemeType          type;      /**< driving scheme: e.g. diveringwaves, planeswaves, ... */
-    IusShape                      shape;
-    int                           numTransmitSources;     /**< number of US sources (tyically these are virtual) */
-    int                           numTransmitPulses;      /**< number of pulses in a frame == numPulsesPerFrame */
-    int                           numElements;
-    //int numFrames;                                  /**< number of repetitions of the driving pattern */
-    IusTransmitPatternList *      pTransmitPatterns;       /**< array (time, index) of length numTransmitPulses */
-    IusTransmitPulseList *        pTransmitPulses;          /**< waveform of the transmit pulse */
-    float *                       pTransmitApodization;   /**< 2D array: per transmit event we have numElements gains */
-    IusSourceLocationList *       pSourceLocations;
-} IusDrivingScheme;
-
-
-/** \brief An Ultrasound experiment is identified by a date and a description, also the speed of sound has been determined */
-typedef struct
-{
-    float  speedOfSound;    /**< speed of sound in m/s */
-    int    date;            /**< interger concatenation of year-month-day e.g. 20160123 for 23th Jan 2016 */
-    char * pDescription;    /**< Experiment notes */
-} IusExperiment;
-
-
-/**
- * \brief IusInput internal data structure
- */
-typedef struct
-{
-    IusNode              iusNode;
-	 /*
-     * Properties that fully describe CWC data
-     */
-    IusExperiment      * pExperiment;      /**< experiment settings */
-    IusTransducer      * pTransducer;      /**< transducer that has been used */
-    IusReceiveSettings * pReceiveSettings; /**< data receive settings */
-    IusDrivingScheme   * pDrivingScheme;   /**< data transmit settings */
-    
-    int                  numFrames;        /**< The number of frames in the data */
-    int                  IusVersion;       /**< version of input file format */
-} IusInputInstance;
-
-
-/**
- * \brief Set depth region of interest of input samples
- */
-int iusInputSetDepthRange
-(
-    const IusInputInstance * const pInst,
-    int                            startIndex,
-    int                            numSamples,
-    IusRange * const               pDepthRange
-);
 
 /**
  * \brief Creates an input instance from scratch, e.g. without a parent.
@@ -259,11 +72,6 @@ IusInputInstance * iusInputCreate
 );
 #endif
 
-IusInputInstance * iusInputCreate
-        (
-                IusNode      * pNode,
-                int numFrames
-        );
 
 /**
  * \brief Creates an input instance and populates it with the data from the HDF5 handle.
@@ -279,11 +87,11 @@ IusInputInstance * iusInputRead
 );
 
 /**
- * \brief Writes an input instance to a handle 
+ * \brief Writes an input instance to a handle
  *
  * \brief parameters for writing the data
  * \param[in]   handle : Handle to write the IusInputInstance data to
- * \param[in]   IusInputInstance : Instance pointer 
+ * \param[in]   IusInputInstance : Instance pointer
  * \return      error code;
  */
 int iusInputWrite

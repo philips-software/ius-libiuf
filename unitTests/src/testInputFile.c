@@ -5,7 +5,7 @@
 #include <unity.h>
 #include <unity_internals.h>
 #include <unity_fixture.h>
-#include <include/iusHLInput.h>
+#include <include/iusHLInputInstance.h>
 #include <include/iusHLInputFile.h>
 #include <include/ius.h>
 #include <util.h>

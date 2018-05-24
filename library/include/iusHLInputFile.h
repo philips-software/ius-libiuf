@@ -5,46 +5,43 @@
 #ifndef IUSLIBRARY_IUSHLINPUTFILE_H
 #define IUSLIBRARY_IUSHLINPUTFILE_H
 
-#include <iusTypes.h>
 
-#ifndef IUSLIBRARY_IMPLEMENTATION
-struct IusInputFileInstance;
-typedef struct IusInputFileInstance IusInputFileInstance;
-#endif // IUSLIBRARY_IMPLEMENTATION
 
 // ADT
-typedef  IusInputFileInstance * iuf_t;
+struct IusInputFile;
+typedef struct IusInputFile IusInputFile;
+typedef  IusInputFile * iuf_t;
 
 
-iuf_t iusHLOpenFile
+iuf_t iusHLInputFileOpen
 (
-    const char *filename
+const char *filename
 );
 
-iuf_t iusHLCreateFile
+iuf_t iusHLInputFileCreate
 (
-    const char *filename
+const char *filename
 );
 
-int iusHLFileSave
+int iusHLInputFileSave
 (
-    IusInputFileInstance *fileHandle
+iuf_t fileHandle
 );
 
-int iusHLCloseFile
+int iusHLInputFileClose
 (
-    iuf_t fileHandle
+iuf_t fileHandle
 );
 
-iuh_t iusHLFileGetHeader
+iuii_t iusHLInputFileGetInstance
 (
-    iuf_t fileHandle
+iuf_t fileHandle
 );
 
-int iusHLFileSetHeader
+int iusHLInputFileSetInstance
 (
-    iuf_t fileHandle,
-    iuh_t header
+iuf_t fileHandle,
+iuii_t instance
 );
 
 #endif //IUSLIBRARY_IUSHLINPUTFILE_H

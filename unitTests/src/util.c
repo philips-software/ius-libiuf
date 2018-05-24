@@ -6,6 +6,8 @@
 #include <include/iusHLPosition.h>
 #include <unity.h>
 #include <include/ius.h>
+#include <include/iusHL3DAngle.h>
+#include <include/iusHL3DSize.h>
 #include "util.h"
 
 iu3dte_t iusUtilCreate3DElement
@@ -20,24 +22,24 @@ iu3dte_t iusUtilCreate3DElement
         float phi
     )
 {
-    iu3dp_t pos = iusHLCreate3DPosition(
-        x,
-        y,
-        z
+    iu3dp_t pos = iusHL3DPositionCreate(
+    x,
+    y,
+    z
     );
-    iu3da_t ang = iusHLCreate3DElementAngle(
-        theta,
-        phi
+    iu3da_t ang = iusHL3DAngleCreate(
+    theta,
+    phi
     );
-    iu3ds_t siz = iusHLCreate3DElementSize(
-        sx,
-        sy,
-        sz
+    iu3ds_t siz = iusHL3DSizeCreate(
+    sx,
+    sy,
+    sz
     );
-    iu3dte_t ele = iusHLCreate3DElement(
-        pos,
-        ang,
-        siz
+    iu3dte_t ele = iusHL3DTransducerElementCreate(
+    pos,
+    ang,
+    siz
     );
     return ele;
 }
@@ -51,9 +53,9 @@ iu2dte_t iusUtilCreate2DElement
         float phi
     )
 {
-    iu2dp_t pos = iusHLCreate2DPosition(x, z);
-    iu2ds_t siz = iusHLCreate2DElementSize(sx, sz);
-    iu2dte_t ele = iusHLCreate2DElement(pos, phi, siz);
+    iu2dp_t pos = iusHL2DPositionCreate(x, z);
+    iu2ds_t siz = iusHL2DSizeCreate(sx, sz);
+    iu2dte_t ele = iusHL2DTransducerElementCreate(pos, phi, siz);
     return ele;
 }
 

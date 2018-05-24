@@ -4,32 +4,40 @@
 
 
 
-#define IUSLIBRARY_IMPLEMENTATION
 #include <stdarg.h>
 #include <assert.h>
+
 #include <include/ius.h>
 #include <include/iusError.h>
-#include <include/iusInput.h>
 #include <include/iusTypes.h>
 
 #include <include/iusHLTransmitPulseList.h>
-#include <include/iusHLNonParametricTransmitPulse.h>
-#include <include/iusHLParametricTransmitPulse.h>
+#include <include/iusHLNonParametricPulse.h>
+#include <include/iusHLParametricPulse.h>
 
+
+// ADT
+struct IusTransmitPulseList
+{
+    int count;
+    iup_t *pTransmitPulses;
+} ;
 
 iutpl_t iusHLCreateTransmitPulseList
 (
-int numTransmitPulses
+    int numTransmitPulses
 )
 {
     int index;
+    int size1 = sizeof(IusTransmitPulseList);
+    int size2 = sizeof(struct IusTransmitPulseList);
     IusTransmitPulseList *list = calloc(1, sizeof(IusTransmitPulseList));
-    IusTransmitPulse **pulse = calloc((size_t) numTransmitPulses, sizeof(IusTransmitPulseList *));
-    list->pTransmitPulses =  pulse;
+    iup_t *pulses = calloc((size_t) numTransmitPulses, sizeof(iup_t));
+    list->pTransmitPulses =  pulses;
     list->count = numTransmitPulses;
     for(index=0; index < numTransmitPulses; index++)
     {
-        pulse[index] =  NULL;
+        pulses[index] =  NULL;
     }
     return list;
 }
@@ -37,8 +45,8 @@ int numTransmitPulses
 
 int iusHLTransmitPulseListSet
 (
-    IusTransmitPulseList * list,
-    IusTransmitPulse *pulse,
+    iutpl_t list,
+    iup_t pulse,
     int index
 )
 {
@@ -49,9 +57,9 @@ int iusHLTransmitPulseListSet
     return IUS_E_OK;
 }
 
-IusTransmitPulse * iusHLTransmitPulseListGet
+iup_t iusHLTransmitPulseListGet
 (
-    IusTransmitPulseList *list,
+    iutpl_t list,
     int index
 )
 {
@@ -66,7 +74,7 @@ IusTransmitPulse * iusHLTransmitPulseListGet
 
 int iusHLTransmitPulseListGetSize
 (
-    IusTransmitPulseList *list
+    iutpl_t list
 )
 {
     if( list == NULL ) return -1;
@@ -75,8 +83,8 @@ int iusHLTransmitPulseListGetSize
 
 int iusCompareTransmitPulseList
 (
-    IusTransmitPulseList *reference,
-    IusTransmitPulseList *actual
+    iutpl_t reference,
+    iutpl_t actual
 )
 {
     int index;
@@ -89,7 +97,7 @@ int iusCompareTransmitPulseList
 
     for(index = 0 ; index < actual->count ; index++ )
     {
-        if( iusCompareTransmitPulse( reference->pTransmitPulses[index], actual->pTransmitPulses[index] ) == IUS_FALSE )
+        if(iusHLComparePulse( reference->pTransmitPulses[index], actual->pTransmitPulses[index] ) == IUS_FALSE )
             return IUS_FALSE;
     }
     return IUS_TRUE;

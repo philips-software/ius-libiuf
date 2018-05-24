@@ -8,6 +8,7 @@ if(MSVC)
     add_definitions(/D _CRT_SECURE_NO_WARNINGS /D _CRT_NONSTDC_NO_DEPRECATE)
 endif()
 
+set (UTHASH_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/external/uthash/include")
 set (TARGET_GROUP test CACHE STRING "Group to build")
 if(TARGET_GROUP STREQUAL production)
     add_subdirectory(main)

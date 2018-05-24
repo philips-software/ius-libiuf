@@ -2,41 +2,44 @@
 // Created by Ruijzendaal on 05/04/2018.
 //
 
-
-#define IUSLIBRARY_IMPLEMENTATION
-
 #include <stdlib.h>
 #include <math.h>
-#include <include/iusInput.h>
 #include <include/iusHLTransmitPatternList.h>
 #include <include/iusHLTransmitPattern.h>
 #include <include/ius.h>
 #include <include/iusError.h>
 #include <include/iusUtil.h>
 
-IusTransmitPatternList *iusHLCreateTransmitPatternList
+
+// ADT
+struct IusTransmitPatternList
+{
+    int count;
+    iutpa_t *     pTransmitPattern;       /**< array (time, index) of length numTransmitPulses */
+} ;
+
+iutpal_t iusHLTransmitPatternListCreate
 (
-    int numTransmitPulses
+int numPulses
 )
 {
-    IusTransmitPatternList *pPatternList = calloc(1, sizeof(IusTransmitPatternList));
+    iutpal_t pPatternList = calloc(1, sizeof(IusTransmitPatternList));
     if(pPatternList!=NULL)
     {
-        pPatternList->count = numTransmitPulses;
-        pPatternList->pTransmitPattern = (IusTransmitPattern *) calloc(numTransmitPulses, sizeof(IusTransmitPattern));
+        pPatternList->count = numPulses;
+        pPatternList->pTransmitPattern = (iutpa_t *) calloc(numPulses, sizeof(iutpa_t));
         if( pPatternList->pTransmitPattern == NULL )
         {
             free(pPatternList);
             pPatternList = NULL;
         }
-
     }
     return pPatternList;
 }
 
-int iusHLDeleteTransmitPatternList
+int iusHLTransmitPatternListDelete
 (
-    IusTransmitPatternList* list
+iutpal_t list
 )
 {
     if(list == NULL) return IUS_ERR_VALUE;
@@ -45,28 +48,48 @@ int iusHLDeleteTransmitPatternList
 }
 
 
+int iusCompareTransmitPatternList
+(
+    iutpal_t reference,
+    iutpal_t actual
+)
+{
+    int index;
+    if( reference == actual ) return IUS_TRUE;
+    if( reference == NULL || actual == NULL ) return IUS_FALSE;
+    if( reference->count != actual->count ) return IUS_FALSE;
+    for(index = 0 ; index < actual->count ; index++ )
+    {
+        if(iusHLTransmitPatternCompare(reference->pTransmitPattern[index], actual->pTransmitPattern[index])
+            == IUS_FALSE )
+            return IUS_FALSE;
+    }
+    return IUS_TRUE;
+}
+
+
 int iusHLTransmitPatternListGetSize
 (
-    IusTransmitPatternList* list
+    iutpal_t list
 )
 {
     return list->count;
 }
 
-IusTransmitPattern* iusHLTransmitPatternListGet
+iutpa_t iusHLTransmitPatternListGet
 (
-    IusTransmitPatternList* list,
+    iutpal_t list,
     int patternIndex
 )
 {
     if( patternIndex < 0 ) return NULL;
     if( list == NULL || patternIndex >= list->count ) return NULL;
-    return &list->pTransmitPattern[patternIndex];
+    return list->pTransmitPattern[patternIndex];
 }
 
 int iusHLTransmitPatternListSet
 (
-    IusTransmitPatternList* list,
+    iutpal_t list,
     float time,
     int sourceIndex,
     int pulseIndex,
@@ -75,28 +98,7 @@ int iusHLTransmitPatternListSet
 {
     if( sourceIndex < 0 || pulseIndex < 0 || patternIndex < 0 ) return IUS_ERR_VALUE;
     if( list == NULL   || patternIndex >= list->count ) return IUS_ERR_VALUE;
-    list->pTransmitPattern[patternIndex].time = time;
-    list->pTransmitPattern[patternIndex].sourceIndex = sourceIndex;
-    list->pTransmitPattern[patternIndex].pulseIndex = pulseIndex;
+    iusHLTransmitPatternSet(list->pTransmitPattern[patternIndex], time, sourceIndex,pulseIndex);
     return IUS_E_OK;
 }
 
-
-int iusCompareTransmitPatternList
-    (
-        IusTransmitPatternList *reference,
-        IusTransmitPatternList *actual
-    )
-{
-    int index;
-    if( reference == actual ) return IUS_TRUE;
-    if( reference == NULL || actual == NULL ) return IUS_FALSE;
-    if( reference->count != actual->count ) return IUS_FALSE;
-    for(index = 0 ; index < actual->count ; index++ )
-    {
-        if( iusCompareTransmitPattern( &reference->pTransmitPattern[index], &actual->pTransmitPattern[index] )
-            == IUS_FALSE )
-            return IUS_FALSE;
-    }
-    return IUS_TRUE;
-}

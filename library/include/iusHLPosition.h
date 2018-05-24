@@ -12,42 +12,42 @@ typedef Ius3DPosition *iu3dp_t;
 typedef Ius2DPosition *iu2dp_t;
 
 
-IUS_BOOL iusCompare2DPosition
+iu2dp_t iusHL2DPositionCreate
 (
-    iu2dp_t reference,
-    iu2dp_t actual
-);
-
-IUS_BOOL iusCompare3DPosition
-(
-    iu3dp_t reference,
-    iu3dp_t actual
-);
-
-iu2dp_t iusHLCreate2DPosition
-(
-    float x,
-    float z
+float x,
+float z
 );
 
 
-iu3dp_t iusHLCreate3DPosition
+iu3dp_t iusHL3DPositionCreate
 (
-    float x,
-    float y,
-    float z
+float x,
+float y,
+float z
+);
+
+void iusHL3DPositionDelete
+(
+iu3dp_t iusPos
+);
+
+void iusHL2DPositionDelete
+(
+iu2dp_t iusPos
 );
 
 
-void iusHLDelete3DPosition
+
+IUS_BOOL iusHL2DPositionCompare
 (
-    iu3dp_t iusPos
+iu2dp_t reference,
+iu2dp_t actual
 );
 
-void iusHLDelete2DPosition
+IUS_BOOL iusHL3DPositionCompare
 (
-    iu2dp_t iusPos
+iu3dp_t reference,
+iu3dp_t actual
 );
-
 
 #endif //IUSLIBRARY_IUSHLPOSITION_H

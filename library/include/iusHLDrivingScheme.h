@@ -9,35 +9,34 @@
 #include <stddef.h>
 #include "iusTypes.h"
 #include "iusHLPosition.h"
-#include "iusHLSourceLocationList.h"
-#include "iusHLTransmitPulse.h"
-#include "iusHLTransmitPulseList.h"
+#include "iusHLSourceListOld.h"
+#include "iusHLPulse.h"
 #include "iusHLTransmitPattern.h"
 #include "iusHLTransmitPatternList.h"
-
-#ifndef IUSLIBRARY_IMPLEMENTATION
-struct IusDrivingScheme;
-typedef  struct IusDrivingScheme IusDrivingScheme;
-#endif // IUSLIBRARY_IMPLEMENTATION
+#include "iusHLApodizationList.h"
+#include "iusHLPulseList.h"
 
 // ADT
+struct IusDrivingScheme;
+typedef  struct IusDrivingScheme IusDrivingScheme;
 typedef  IusDrivingScheme    * iuds_t;
 #define IUDS_INVALID (iuds_t) NULL
 
 
-iuds_t iusHLCreateDrivingScheme
+iuds_t iusHLDrivingSchemeCreate
 (
-    IusDrivingSchemeType type,
-    IusShape shape,       // determines whether to use 2D or 3D positions/Angles
-    iusll_t transmitSources,
-    iutpl_t transmitPulses,
-    iutpal_t transmitPatterns,
-    int numElements
+IusDrivingSchemeType type,
+IusShape shape,       // determines whether to use 2D or 3D positions/Angles
+iusl_t transmitSources,
+iupl_t transmitPulses,
+iutpal_t transmitPatterns,
+iual_t apodizations,
+int numElements
 );
 
-int iusHLDeleteDrivingScheme
+int iusHLDrivingSchemeDelete
 (
-    iuds_t drivingScheme
+iuds_t drivingScheme
 );
 
 // setters
@@ -50,64 +49,25 @@ int iusHLDrivingSchemeSetTransmitPatternDelay
 int iusHLDrivingSchemeSetTransmitPulse
 (
     iuds_t drivingScheme,
-    iutp_t transmitPulse
+    iup_t *transmitPulse
 );
-//
-//int iusDrivingSchemeSetSourceFNumber
-//(
-//    iuds_t drivingScheme,
-//    float FNumber
-//);
-//
-//
-//int iusDrivingSchemeSetSourceStartPhi
-//(
-//    iuds_t drivingScheme,
-//    float startPhi
-//);
-//
-//int iusDrivingSchemeSetSourceDeltaPhi
-//(
-//    iuds_t drivingScheme,
-//    float deltaPhi
-//);
-//
-//
-//int iusDrivingSchemeSetSourceStartTheta
-//(
-//    iuds_t drivingScheme,
-//    float startTheta
-//);
-//
-//int iusDrivingSchemeSetSourceDeltaTheta
-//(
-//    iuds_t drivingScheme,
-//    float deltaTheta
-//);
 
-int iusDrivingSchemeSetTransmitApodization
+
+int iusHLDrivingSchemeSetTransmitApodization
 (
-    iuds_t drivingScheme,
-    float Apodization,
-    int pulseIndex,
-    int elementIndex
+iuds_t drivingScheme,
+float Apodization,
+int apodizationIndex,
+int elementIndex
 );
-//
-//int iusHLDrivingSchemeSet3DSourceLocation
-//(
-//    IusDrivingScheme * drivingScheme,
-//    iu3dp_t position,
-//    int index
-//);
-//
-//int iusHLDrivingSchemeSet2DSourceLocation
-//(
-//    IusDrivingScheme * drivingScheme,
-//    iu2dp_t position,
-//    int index
-//);
+
 
 // getters
+iusl_t iusHLDrivingSchemeGetSourceLocationList
+(
+    iuds_t drivingScheme
+);
+
 float iusHLDrivingSchemeGetTransmitPatternDelay
 (
     iuds_t drivingScheme
@@ -144,17 +104,22 @@ int iusHLDrivingSchemeGetNumElements
 );
 
 
-float iusDrivingSchemeGetSourceFNumber
+float iusHLDrivingSchemeGetSourceFNumber
 (
-    iuds_t drivingScheme
+iuds_t drivingScheme
 );
 
 
-float iusDrivingSchemeGetTransmitApodization
+float iusHLDrivingSchemeGetTransmitApodization
 (
-    iuds_t drivingScheme,
-    int pulseIndex,
-    int elementIndex
+iuds_t drivingScheme,
+int pulseIndex,
+int elementIndex
+);
+
+int iusHLDrivingSchemeGetNumChannels
+(
+    iuds_t drivingScheme
 );
 
 iu3dp_t iusHLDrivingSchemeGet3DSourceLocation
@@ -163,37 +128,37 @@ iu3dp_t iusHLDrivingSchemeGet3DSourceLocation
     int elementIndex
 );
 
-float iusDrivingSchemeGetSourceStartPhi
+float iusHLDrivingSchemeGetSourceStartPhi
 (
-    iuds_t drivingScheme
+iuds_t drivingScheme
 );
 
-float iusDrivingSchemeGetSourceDeltaPhi
+float iusHLDrivingSchemeGetSourceDeltaPhi
 (
-    iuds_t drivingScheme
-);
-
-
-float iusDrivingSchemeGetSourceStartTheta
-(
-    iuds_t drivingScheme
-);
-
-float iusDrivingSchemeGetSourceDeltaTheta
-(
-    iuds_t drivingScheme
-);
-
-IUS_BOOL iusHLCompareDrivingScheme
-(
-    iuds_t reference,
-    iuds_t actual
+iuds_t drivingScheme
 );
 
 
-float *iusCreateTransmitApodization
+float iusHLDrivingSchemeGetSourceStartTheta
 (
-    int numTransmitPulses,
-    int numElements
+iuds_t drivingScheme
 );
+
+float iusHLDrivingSchemeGetSourceDeltaTheta
+(
+iuds_t drivingScheme
+);
+
+IUS_BOOL iusHLDrivingSchemeCompare
+(
+iuds_t reference,
+iuds_t actual
+);
+//
+//
+//float *iusCreateTransmitApodization
+//(
+//    int numTransmitPulses,
+//    int numElements
+//);
 #endif //IUSLIBRARY_IUSHLDRIVINGSCHEME_H

@@ -1,139 +1,68 @@
-//
-// Created by Ruijzendaal on 14/03/2018.
-//
 
+// Created by nlv09165 on 24/05/2018.
 #ifndef IUSLIBRARY_IUSHLTRANSDUCER_H
 #define IUSLIBRARY_IUSHLTRANSDUCER_H
 
-#include <include/iusTypes.h>
-#include <iusHLPosition.h>
-
-#ifndef IUSLIBRARY_IMPLEMENTATION
-
-#define FORWARD_STRUCT_DECL(a)  struct a; typedef  struct a a;
-struct IusTransducer;
-typedef struct IusTransducer IusTransducer;
-struct IusBaseTransducerElement;
-typedef struct IusBaseTransducerElement IusBaseTransducerElement;
-struct Ius2DTransducerElement;
-typedef struct Ius2DTransducerElement Ius2DTransducerElement;
-struct Ius3DTransducerElement;
-typedef struct Ius3DTransducerElement Ius3DTransducerElement;
-#endif // IUSLIBRARY_IMPLEMENTATION
+#include "iusTypes.h"
+#include "iusHLTransducerElement.h"
 
 // ADT
+typedef struct IusTransducer IusTransducer;
 typedef IusTransducer *iut_t;
-typedef Ius3DAngle *iu3da_t;
-typedef Ius3DSize *iu3ds_t;
-typedef Ius2DSize *iu2ds_t;
-typedef Ius2DTransducerElement *iu2dte_t;
-typedef Ius3DTransducerElement *iu3dte_t;
-typedef IusBaseTransducerElement *iudte_t;
-#define IUT_INVALID (iut_t) NULL
-#define IUTE_INVALID (iudte_t) NULL
+#define  IUT_INVALID (iut_t) NULL
 
-iut_t iusHLCreateTransducer
+iut_t iusHLTransducerCreate
 (
-    char *name,
-    IusTransducerShape shape,
-    float centerFrequency,
-    int numElements
+  char *name,
+  IusTransducerShape shape,
+  float centerFrequency
 );
 
-int iusHLDeleteTransducer
+int iusHLTransducerDelete
 (
-    iut_t transducer
+    iut_t iusTransducer
 );
 
-int iusHLTransducerSetElement
-(
-    IusTransducer *pTransducer,
-    int elementIndex,
-    void *transducerElement
-);
 
-iudte_t iusHLTransducerGetElement
-(
-    IusTransducer
-    *transducer,
-    int elementIndex
-);
-
-IUS_BOOL iusHLTransducerCompareElement
-(
-    IusBaseTransducerElement *reference,
-    IusBaseTransducerElement *actual
-);
-
-IUS_BOOL iusHLTransducerCompare
+// operations
+int iusHLTransducerCompare
 (
     iut_t reference,
     iut_t actual
 );
 
+// Getters
 float iusHLTransducerGetCenterFrequency
 (
-    iut_t transducer
+  iut_t transducer
 );
 
 int iusHLTransducerGetNumElements
 (
-    iut_t transducer
+  iut_t transducer
 );
 
 char *iusHLTransducerGetName
 (
-    iut_t transducer
+  iut_t transducer
 );
 
 IusTransducerShape iusHLTransducerGetShape
 (
-    iut_t transducer
+  iut_t transducer
 );
 
-
-
-Ius2DSize *iusHLCreate2DElementSize
+iute_t iusHLTransducerGetElement
 (
-    float sx,
-    float sz
+  iut_t transducer,
+  int elementIndex
 );
 
-Ius2DTransducerElement *iusHLCreate2DElement
+// Setters
+int iusHLTransducerSetElement
 (
-    iu2dp_t pos,
-    float phi,
-    iu2ds_t siz
+  iut_t transducer,
+  int elementIndex,
+  iute_t transducerElement
 );
-
-iu3da_t iusHLCreate3DElementAngle
-(
-    float theta,
-    float phi
-);
-
-iu3ds_t iusHLCreate3DElementSize
-(
-    float sx,
-    float sy,
-    float sz
-);
-
-iu3dte_t iusHLCreate3DElement
-(
-    iu3dp_t pos,
-    iu3da_t ang,
-    iu3ds_t siz
-);
-
-IusShape iusHLTransducerGetElementShape
-(
-    iudte_t baseElement
-);
-
-IusShape iusHLTransducerGetShapeType
-(
-    iut_t baseElement
-);
-
 #endif //IUSLIBRARY_IUSHLTRANSDUCER_H

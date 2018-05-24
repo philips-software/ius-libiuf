@@ -7,21 +7,45 @@
 
 #include "iusTypes.h"
 
-#ifndef IUSLIBRARY_IMPLEMENTATION
+// ADT
 struct IusNode;
 typedef struct IusNode IusNode;
-#define IUN_INVALID NULL
-#endif //IUSLIBRARY_IMPLEMENTATION
-
-// ADT
 typedef IusNode *iun_t;
+#define IUN_INVALID (iun_t) NULL
 
 // Operations
-iun_t iusHLCreateNode(char *pNodeType,int parents);
-char *iusHLGetNodeType(iun_t node);
-int iusHLNodeGetNumParents(iun_t node);
-char *iusHLGetNodeId(iun_t node);
-IUS_BOOL iuHLNodeCompare(iun_t reference, iun_t actual);
+iun_t iusHLNodeCreate
+(
+char *pNodeType,
+int parents
+);
+
+int iusHLNodeDelete
+(
+iun_t node
+);
+
+IUS_BOOL iuHLNodeCompare
+(
+    iun_t reference,
+    iun_t actual
+);
+
+// getters
+char *iusHLNodeGetType
+(
+iun_t node
+);
+
+int iusHLNodeGetNumParents
+(
+    iun_t node
+);
+
+char *iusHLNodeGetId
+(
+iun_t node
+);
 
 
 #endif //IUSLIBRARY_IUSHLNODE_H

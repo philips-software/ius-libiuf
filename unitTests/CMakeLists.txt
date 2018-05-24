@@ -1,16 +1,30 @@
 include_directories(include)
 
 add_executable(unitTests
+#        src/testDataGenerators.c
         src/unitTests.c
-        src/testNode.c
-        src/testTransducer.c
+        src/testIusExperiment.c
+        src/testIusTransducer.c
+        src/testIusParametricPulse.c
+        src/testIusNonParametricPulse.c
+        src/testIusPulseList.c
+        src/testIusPulseDict.c
         src/util.c
-        src/testMisc.c
-        src/testInputFile.c
-        src/testReceiveSettings.c
-        include/testReceiveSettings.h
-        src/testDrivingScheme.c
-        include/testDrivingScheme.h src/testTransmitPulse.c src/testTransmitPattern.c src/testDataGenerators.c include/testDataGenerators.h src/testTransmitPatternList.c src/testTransmiapodization.c)
+#        src/testNode.c
+#        src/testTransducer.c
+#        src/util.c
+#        src/testMisc.c
+#        src/testInputFile.c
+#        src/testReceiveSettings.c
+#        include/testReceiveSettings.h
+#        src/testTransmitPulse.c
+#        src/testTransmitPattern.c
+#        include/testDataGenerators.h
+#        src/testTransmitPatternList.c
+#        src/testIusApodizationList.c
+#        src/testIusInputInstance.c
+#        src/testIusDrivingScheme.c
+        )
 
 target_link_libraries(unitTests
         ius

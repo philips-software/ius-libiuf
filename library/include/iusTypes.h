@@ -39,28 +39,7 @@ typedef struct
     float z;
 } Ius2DPosition;
 
-/** \brief 3D Angle of rotation theta and phi over z and x axis */
-typedef struct 
-{
-    float theta; /**< rotation over z axis */
-    float phi;   /**< rotation over x axis */
-} Ius3DAngle;
 
-/** \brief 3D Size (of element) in x,y,z dimensions */
-typedef struct 
-{
-    float sx;
-    float sy;
-    float sz;
-} Ius3DSize;
-
-
-/** \brief 2D Size (of element) in x,z dimensions */
-typedef struct
-{
-    float sx;
-    float sz;
-} Ius2DSize;
 
 /** \brief velocity vector in x,y,z dimensions */
 typedef struct 
@@ -150,7 +129,7 @@ typedef struct
 
 typedef enum
 {
-	IUS_INVALID_SHAPE = 0,
+	IUS_INVALID_TRANSDUCER_SHAPE = 0,
     IUS_LINE,           /**< Todo: See Draft */
     IUS_CIRCLE,
     IUS_PLANE,
@@ -167,7 +146,8 @@ typedef enum
 
 typedef enum
 {
-    IUS_2D_SHAPE = 1,
+	IUS_INVALID_SHAPE = 0,
+    IUS_2D_SHAPE,
     IUS_3D_SHAPE
 } IusShape;
 
@@ -175,8 +155,8 @@ typedef enum
 /** \brief Possible driving patterns */
 typedef enum
 {
-    IUS_INVALID_DRIVING_SCHEME,
-    IUS_DIVERGING_WAVES_PARAMETRIZED = 1, /**< focus point has negative z value (parametrized) */
+    IUS_INVALID_DRIVING_SCHEME = 0,
+    IUS_DIVERGING_WAVES_PARAMETRIZED, /**< focus point has negative z value (parametrized) */
     IUS_DIVERGING_WAVES,                 /**< focus point has negative z value */
     IUS_FOCUSED_WAVES_PARAMETRIZED,      /**< focus point has positive z value */
     IUS_FOCUSED_WAVES,       /**< focus point has positive z value */
@@ -194,9 +174,10 @@ typedef enum
 #define DRIVINGSCHEME_CUSTOM_WAVES                   "CUSTOM_WAVES"
 
 typedef enum {
-    IUS_PARAMETRIC_PULSETYPE = 1,
+	IUS_INVALID_PULSETYPE = 0,
+    IUS_PARAMETRIC_PULSETYPE,
     IUS_NON_PARAMETRIC_PULSETYPE
-} IusTransmitPulseType;
+} IusPulseType;
 
 typedef enum {
 	IUS_INVALID_SOURCE_LOCATION = 0,
@@ -204,7 +185,9 @@ typedef enum {
 	IUS_3D_SOURCE_LOCATION,
 	IUS_PARAMETRIC_2D_SOURCE_LOCATION,
 	IUS_PARAMETRIC_3D_SOURCE_LOCATION
-} IusSourceLocationType;
+} IusSourceType;
+
+
 
 #ifdef __cplusplus
 }

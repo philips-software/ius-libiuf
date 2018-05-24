@@ -3,20 +3,23 @@
 //
 
 
-#include <include/iusHLSourceLocationList.h>
+#include <include/iusHLSourceListOld.h>
 #include <include/iusHLPosition.h>
 #include <unity.h>
-#include <include/iusHLNonParametricTransmitPulse.h>
+#include <include/iusHLNonParametricPulse.h>
 #include <include/ius.h>
-#include <include/iusHLTransmitPulseList.h>
-#include <include/iusHLParametricTransmitPulse.h>
+#include <include/iusHLPulseList.h>
+#include <include/iusHLParametricPulse.h>
 #include <include/iusHLTransmitPatternList.h>
 #include <include/iusHLTransmitPattern.h>
 #include <include/iusHLDrivingScheme.h>
+#include <include/iusError.h>
+#include <include/iusHL2DSourceList.h>
+#include <include/iusHL3DSourceList.h>
 
 int fill3DSourceLocationList
 (
-iusll_t sourceLocationList
+    iusl_t sourceLocationList
 )
 {
     int status=0;
@@ -25,7 +28,7 @@ iusll_t sourceLocationList
     iu3dp_t _3dpos;
     float x,y,z;
 
-    numTransmitSources=iusHLSourceLocationListGetSize(sourceLocationList);
+    numTransmitSources= iusHLSourceListGetSize( sourceLocationList );
     for( index = 0 ; index < numTransmitSources; index++)
     {
         x = 0.05f*index;
@@ -33,17 +36,40 @@ iusll_t sourceLocationList
         z = -0.05f;
         iu3dp_t _3dpos = iusHLCreate3DPosition(x, y, z);
         TEST_ASSERT_NOT_EQUAL(_3dpos,NULL);
-        status = iusHLSourceLocationListSet3DPosition(sourceLocationList, _3dpos, index);
+        status = iusHLSourceListSet3DPosition( sourceLocationList, _3dpos, index );
         TEST_ASSERT_EQUAL(IUS_E_OK,status);
     }
     return status;
 
 }
 
+int nonParametricPulseFillAmplitudeTime2
+(
+    iunpp_t transmitPulse,
+    float offset
+)
+{
+    int i;
+    int status=0;
+    float pulseAmplitude;
+    float pulseTimes;
+    int numPulseValues = iusHLNonParametricPulseGetNumValues(transmitPulse);
+    for(i=0; i< numPulseValues; i++)
+    {
+        pulseAmplitude = offset / ((i % 10) + 1.0f);
+        pulseTimes = offset / ((i % 10) + 1.0f);
+        status = iusHLNonParametricPulseSetAmplitudeTime(transmitPulse,pulseTimes,pulseAmplitude,i);
+        if( status != IUS_E_OK )
+        {
+            return status;
+        }
+    }
+    return status;
+}
 
 int nonParametricPulseFillAmplitudeTime
 (
-iunptp_t transmitPulse
+    iunpp_t transmitPulse
 )
 {
     int i;
@@ -67,27 +93,27 @@ iunptp_t transmitPulse
 
 int fillTransmitPulseList
 (
-iutpl_t transmitPulses
+    iupl_t transmitPulses
 )
 {
     int status=0;
     int index = 0;
-    int numTransmitPulses=iusHLTransmitPulseListGetSize(transmitPulses);
+    int numTransmitPulses=iusHLPulseListGetSize(transmitPulses);
 
     float pulseFrequency=5000000.0f;
     float pulseAmplitude=40.0f;
     int pulseCount=2;
     int numTransmitPulseValues=20;
 
-    iutp_t pulse;
-    iunptp_t nonParametricPulse;
+    iup_t pulse;
+    iunpp_t nonParametricPulse;
 
     for( index = 0 ; index < numTransmitPulses; index++)
     {
         if( index%2 )
         {
             // Parametric
-            pulse = (iutp_t) iusHLCreateParametricPulse(pulseFrequency,pulseAmplitude,pulseCount);
+            pulse = (iup_t) iusHLCreateParametricPulse(pulseFrequency,pulseAmplitude,pulseCount);
             TEST_ASSERT_NOT_EQUAL(pulse, NULL);
         }
         else
@@ -95,10 +121,10 @@ iutpl_t transmitPulses
             nonParametricPulse = iusHLCreateNonParametricPulse(numTransmitPulseValues);
             TEST_ASSERT_NOT_EQUAL(nonParametricPulse, NULL);
             status = nonParametricPulseFillAmplitudeTime(nonParametricPulse);
-            pulse = (iutp_t) nonParametricPulse;
+            pulse = (iup_t) nonParametricPulse;
             TEST_ASSERT_EQUAL(IUS_E_OK,status);
         }
-        status = iusHLTransmitPulseListSet(transmitPulses,pulse,index);
+        status = iusHLPulseListSet(transmitPulses,pulse,index);
     }
     return status;
 
@@ -134,7 +160,7 @@ iutpal_t transmitPatterns
 
 int fill2DSourceLocationList
     (
-        iusll_t list
+        iusl_t list
     )
 {
     int status=0;
@@ -144,26 +170,39 @@ int fill2DSourceLocationList
     iu2dp_t _2dpos;
     float x,z;
 
-    numTransmitSources=iusHLSourceLocationListGetSize(list);
+    numTransmitSources= iusHLSourceListGetSize( list );
     for( index = 0 ; index < numTransmitSources; index++)
     {
         x = index + 1.0*index;
         z = 2*index + 1.0*index;
         iu2dp_t _2dpos = iusHLCreate2DPosition(x, z);
-        iusHLSourceLocationListSet2DPosition(list,_2dpos,index);
+        iusHLSourceListSet2DPosition( list, _2dpos, index );
     }
     return status;
 }
 
+int dgDeleteDrivingScheme
+(
+    iuds_t drivingScheme
+)
+{
+    if( drivingScheme == NULL ) return IUS_ERR_VALUE;
+    iusl_t transmitSources = iusHLDrivingSchemeGetSourceLocationList(drivingScheme);
+    int status = iusHLDeleteSourceList( transmitSources );
+    return status;
+}
 
 
 iuds_t dgCreateDrivingScheme
 (
     IusDrivingSchemeType type,
     IusShape shape,
-    IusSourceLocationType locationType,
+    IusSourceType locationType,
     int numTransmitPulses,
     int numTransmitSources,
+    int numChannels,
+    int numApodizations,
+    int numTGCs,
     int numElements
 )
 {
@@ -171,19 +210,24 @@ iuds_t dgCreateDrivingScheme
     int status = 0;
 
     // Create transmit sources
-    iusll_t transmitSources = iusHLCreateSourceLocationList( locationType, numTransmitSources );
+    iusl_t transmitSources ;
     if( locationType == IUS_PARAMETRIC_3D_SOURCE_LOCATION )
     {
         // fill
-        status = fill3DSourceLocationList(transmitSources);
+        iu2dsl_t sources =iusHLCreate2DSourceList(numTransmitSources);
+        status = fill3DSourceLocationList(sources);
+        transmitSources = (iusl_t) sources;
     }
     else
     {
+        iu3dsl_t sources =iusHLCreate3DSourceList(numTransmitSources);
         status = fill2DSourceLocationList(transmitSources);
+        transmitSources = (iusl_t) sources;
     }
 
     // Create transmit pulses
-    iutpl_t transmitPulses = iusHLCreateTransmitPulseList( numTransmitPulses );
+    iupl_t transmitPulses = iusHLCreatePulseList( numTransmitPulses );
+
     // fill
     status = fillTransmitPulseList(transmitPulses);
 
@@ -191,6 +235,7 @@ iuds_t dgCreateDrivingScheme
     iutpal_t transmitPatterns = iusHLCreateTransmitPatternList( numTransmitPulses );
     status = fillTransmitPatternList(transmitPatterns);
 
+    iual_t  apodizations = iusHLCreateApodizationList(numApodizations,numElements);
 
     // fill
     parametrizedDrivingScheme = iusHLCreateDrivingScheme( type,
@@ -198,6 +243,7 @@ iuds_t dgCreateDrivingScheme
                                                           transmitSources,
                                                           transmitPulses,
                                                           transmitPatterns,
+                                                          apodizations,
                                                           numElements );
     return parametrizedDrivingScheme;
 }

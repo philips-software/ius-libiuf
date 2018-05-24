@@ -10,10 +10,10 @@
 #include <include/iusHLTransmitPattern.h>
 #include <include/iusHLTransmitPatternList.h>
 #include <util.h>
-#include <include/iusHLSourceLocationList.h>
+#include <include/iusHLSourceListOld.h>
 #include <include/iusHLTransmitPulseList.h>
-#include <include/iusHLParametricTransmitPulse.h>
-#include <include/iusHLNonParametricTransmitPulse.h>
+#include <include/iusHLParametricPulse.h>
+#include <include/iusHLNonParametricPulse.h>
 #include <testDataGenerators.h>
 #include "testDrivingScheme.h"
 

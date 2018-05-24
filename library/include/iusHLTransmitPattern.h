@@ -6,28 +6,25 @@
 #define IUSLIBRARY_IUSHLTRANSMITPATTERN_H
 
 
-#ifndef IUSLIBRARY_IMPLEMENTATION
-
-typedef  struct IusTransmitPattern IusTransmitPattern;
-#endif // IUSLIBRARY_IMPLEMENTATION
 
 // ADT
+typedef  struct IusTransmitPattern IusTransmitPattern;
 typedef  IusTransmitPattern    * iutpa_t;
 #define  IUTPA_INVALID (iutpa_t) NULL
 
 
 
-// operations
-int iusCompareTransmitPattern
+int iusHLTransmitPatternDelete
 (
-    IusTransmitPattern *reference,
-    IusTransmitPattern *actual
+iutpa_t pattern
 );
 
 
-int iusHLDeleteTransmitPattern
+// operations
+int iusHLTransmitPatternCompare
 (
-    iutpa_t pattern
+iutpa_t reference,
+iutpa_t actual
 );
 
 // getters

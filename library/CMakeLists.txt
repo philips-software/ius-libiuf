@@ -24,42 +24,79 @@ FIND_PACKAGE(HDF5 COMPONENTS C HL)
 if(NOT MSVC)
 	set(UUID_LIBRARIES -luuid)
 endif()
+
 include_directories("${PROJECT_BINARY_DIR}")
 include_directories(${HDF5_INCLUDE_DIR})
+include_directories(${UTHASH_INCLUDE_DIR})
 
 
 add_library(ius STATIC
-        src/iusInput.c
-        src/iusInputFile.c
+#        src/iusInput.c
+#        src/iusInputFile.c
         src/iusUuid.c
-        src/iusHLInput.c
-        src/iusHLInputFile.c
-        src/iusHLExperiment.c
-        src/iusHLTransducer.c
+#        src/iusHLInput.c
+#        src/iusHLInputFile.c
+#        src/iusHLExperiment.c
+#        src/iusHLTransducer.c
         src/iusHLNode.c
         src/iusHDF5.c
-        src/iusNode.c
         src/iusUtil.c
+		src/iusHL2DSize.c
+		include/iusHL2DSize.h
+		src/iusHL3DSize.c
+		include/iusHL3DSize.h
         include/iusUtil.h
         include/iusHLExperiment.h
         src/iusHLExperiment.c
         src/iusHLTransducer.c
+		include/iusHLTransducer.h
+		src/iusHLTransducerFactory.c
+		include/iusHLTransducerFactory.h
         src/iusHLDrivingScheme.c
         include/iusHLDrivingScheme.h
 		include/iusHLPosition.h
 		src/iusHLPosition.c
-		include/iusHLTransmitPulse.h
-		src/iusHLTransmitPulse.c
+		include/iusHLPulse.h
+        src/iusHLPulse.c
 		include/iusHLTransmitPattern.h
 		src/iusHLTransmitPattern.c
 		include/iusHLTransmitPatternList.h
 		src/iusHLTransmitPatternList.c
-		include/iusHLTransmitPulseList.h
-		src/iusHLTransmitPulseList.c
-		include/iusHLParametricTransmitPulse.h
-		include/iusHLNonParametricTransmitPulse.h
-		src/iusHLParametricTransmitPulse.c
-		src/iusHLNonParametricTransmitPulse.c include/iusHLSourceLocationList.h src/iusHLSourceLocationList.c)
+		include/iusTypes.h
+		include/iusHLApodizationList.h
+		src/iusHLApodizationList.c
+		include/iusHLInputInstance.h
+		src/iusHLInputInstance.c
+		include/iusHLReceiveSettings.h
+		src/iusHLReceiveSettings.c
+        include/iusHLParametricPulse.h
+        include/iusHLNonParametricPulse.h
+        src/iusHLParametricPulse.c
+        src/iusHLNonParametricPulse.c
+		include/iusHLPulseList.h
+		src/iusHLPulseList.c
+		include/iusHLPulseDict.h
+		src/iusHLPulseDict.c
+		include/iusHL2DTransducerElement.h
+		src/iusHL2DTransducerElement.c
+		include/iusHL3DTransducerElement.h
+		src/iusHL3DTransducerElement.c
+		include/iusHLTransducerElement.h
+		src/iusHLTransducerElement.c
+		include/iusHLTransducerElement.h
+		include/iusHL2DTransducerElementList.h
+		src/iusHL2DTransducerElementList.c
+		include/iusHL3DTransducerElementList.h
+		src/iusHL3DTransducerElementList.c
+		include/iusHL3DTransducer.h
+		src/iusHL3DTransducer.c
+		include/iusHL2DTransducer.h
+		src/iusHL2DTransducer.c
+		src/iusHLTransducerFactory.c include/iusHLTransducerFactory.h
+		src/iusHL3DAngle.c
+		include/iusHL3DAngle.h
+        include/iusHLPulseImp.h
+		)
 
 target_include_directories(ius PUBLIC
         ${CMAKE_CURRENT_LIST_DIR}

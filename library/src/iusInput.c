@@ -21,8 +21,9 @@
 #include <include/iusInput.h>
 #include <include/ius.h>
 #include <include/iusHLExperiment.h>
-#include <include/iusHLInput.h>
+#include <include/iusHLInputInstance.h>
 #include <assert.h>
+#include <include/iusHLApodizationList.h>
 
 #if USED
 //------------------------------------------------------------------------------
@@ -1131,12 +1132,13 @@ herr_t iusWriteTransmitPattern(IusDrivingScheme *pDrivingScheme, hid_t subgroup_
     return status;
 }
 
-
+// TODO
 herr_t iusWriteDrivingSchemeTransmitApodization(hid_t group_id, char *pVariableString, IusDrivingScheme *pDrivingScheme, int verbose)
 {
-    hsize_t apodDims[2] = {pDrivingScheme->numTransmitPulses,  pDrivingScheme->numElements};
-    herr_t status = H5LTmake_dataset_float( group_id,"/DrivingScheme/transmitApodization",  2, apodDims, pDrivingScheme->pTransmitApodization );
-    return status;
+//    hsize_t apodDims[2] = {pDrivingScheme->numTransmitPulses,  pDrivingScheme->numElements};
+//    herr_t status = H5LTmake_dataset_float( group_id,"/DrivingScheme/transmitApodization",  2, apodDims, pDrivingScheme->pTransmitApodization );
+//    return status;
+    return IUS_ERR_VALUE;
 }
 
 herr_t iusWriteNonParametricPulseList( IusDrivingScheme *pDrivingScheme, hid_t group_id, int verbose ) {
@@ -1528,28 +1530,6 @@ int iusInputWrite
 
 
 
-//------------------------------------------------------------------------------
-//
-//------------------------------------------------------------------------------
-IusInputInstance * iusInputCreate( IusNode *node, int  numFrames )
-{
-    //--------------------------------------------------------------------------
-    // alloc instance ; using calloc to clear all state.
-    //--------------------------------------------------------------------------
-    IusInputInstance * pInst;
-    pInst = (IusInputInstance *)calloc( 1, sizeof( IusInputInstance ) );
-    if ( pInst == NULL )
-    {
-        fprintf( stderr, "iusInputCreate: calloc of data instance failed\n" );
-        return NULL;
-    }
-
-    memcpy( &pInst->iusNode, node, sizeof(IusNode));
-    pInst->numFrames = numFrames;
-    pInst->IusVersion = iusGetVersionMajor();
-    return pInst;
-};
-
 
 
 IusExperiment *iusReadExperiment(hid_t handle, int verbose) {
@@ -1592,7 +1572,7 @@ IusTransducer *iusReadBaseTransducer(hid_t handle, int verbose)
     float centerFrequency;
     int numElements;
     char *pTransducerName;
-    IusTransducerShape shape = IUS_INVALID_SHAPE;
+    IusTransducerShape shape = IUS_INVALID_TRANSDUCER_SHAPE;
 
     IusTransducer * transducer;
     status |= iusReadShape( handle, "/Transducer/shape",  &(shape), verbose );
@@ -2097,8 +2077,10 @@ IusDrivingScheme *iusReadDrivingScheme(hid_t handle, IusShape shape,  int verbos
         return NULL;
 
     // Read base drivingscheme
-    pDrivingScheme->pTransmitApodization = iusCreateTransmitApodization(numTransmitPulses , numElements);
-    if ( pDrivingScheme->pTransmitApodization == NULL )
+    // TODO: check
+
+    pDrivingScheme->pApodizations = iusHLCreateApodizationList(numTransmitPulses , numElements);
+    if ( pDrivingScheme->pApodizations == NULL )
     {
         iusHLDeleteDrivingScheme(pDrivingScheme);
         return NULL;
@@ -2111,7 +2093,8 @@ IusDrivingScheme *iusReadDrivingScheme(hid_t handle, IusShape shape,  int verbos
     pDrivingScheme->shape = shape;
     pDrivingScheme->type = type;
 
-    status |= H5LTread_dataset_float(handle, "/DrivingScheme/transmitApodization", pDrivingScheme->pTransmitApodization);
+    // TODO: Fix
+//    status |= H5LTread_dataset_float(handle, "/DrivingScheme/transmitApodization", pDrivingScheme->pTransmitApodization);
     status |= iusReadTransmitPattern(handle,pDrivingScheme,verbose);
     if( status != 0 )
         return NULL;

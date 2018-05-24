@@ -4,7 +4,6 @@
 
 #define IUSLIBRARY_IMPLEMENTATION
 
-#include <include/iusInput.h>
 #include <iusHLTransmitPattern.h>
 #include <stdlib.h>
 #include <include/ius.h>
@@ -13,9 +12,21 @@
 #include <include/iusUtil.h>
 
 
+
+// ADT
+/** \brief Transmitpattern point (time, index) i.e. source triggers at time */
+struct IusTransmitPattern
+{
+    int    sourceIndex;       /**< index of transmit source */
+    int    pulseIndex;   /**< index of transmit pulse */
+    float  time;        /**< time to the source transmits */
+} ;
+
+
+
 int iusHLTransmitPatternSet
 (
-    IusTransmitPattern *pattern,
+    iutpa_t pattern,
     float time,
     int sourceIndex,
     int pulseIndex
@@ -32,7 +43,7 @@ int iusHLTransmitPatternSet
 
 float iusHLTransmitPatternGetTime
 (
-    IusTransmitPattern *pattern
+    iutpa_t pattern
 )
 {
     if( pattern == NULL ) return NAN;
@@ -58,10 +69,10 @@ int iusHLTransmitPatternGetPulseIndex
     return pattern->pulseIndex;
 }
 
-int iusCompareTransmitPattern
+int iusHLTransmitPatternCompare
 (
-    IusTransmitPattern *reference,
-    IusTransmitPattern *actual
+iutpa_t reference,
+iutpa_t actual
 )
 {
     if( reference->pulseIndex != actual->pulseIndex ) return IUS_FALSE;

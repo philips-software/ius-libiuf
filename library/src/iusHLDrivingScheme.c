@@ -1,69 +1,58 @@
 //
 // Created by Ruijzendaal on 27/03/2018.
 //
-
-#define IUSLIBRARY_IMPLEMENTATION
-
-#include <stdlib.h>
-#include <include/ius.h>
-#include <include/iusInput.h>
-#include <include/iusError.h>
-#include <math.h>
-#include <include/iusHLPosition.h>
 #include <assert.h>
-#include <include/iusUtil.h>
-#include <include/iusHLSourceLocationList.h>
-#include <include/iusHLTransmitPulseList.h>
-#include "iusInput.h"
-#include "iusHLDrivingScheme.h"
+#include <stdlib.h>
+#include <math.h>
 
+#include <include/ius.h>
+#include <iusUtil.h>
+#include <include/iusError.h>
+#include <include/iusTypes.h>
 
-IUS_BOOL isValidSchemeType(IusDrivingSchemeType type)
+#include <include/iusHLDrivingScheme.h>
+
+// ADT
+/** \brief the driving scheme for an experiment */
+struct IusDrivingScheme
 {
-    switch(type)
-    {
-        case IUS_DIVERGING_WAVES_PARAMETRIZED:
-        case IUS_DIVERGING_WAVES:
-        case IUS_FOCUSED_WAVES_PARAMETRIZED:
-        case IUS_FOCUSED_WAVES:
-        case IUS_CUSTOM_WAVES:
-        case IUS_SINGLE_ELEMENT:
-        case IUS_PLANE_WAVES:
-            return IUS_TRUE;
+    IusDrivingSchemeType          type;      /**< driving scheme: e.g. diveringwaves, planeswaves, ... */
+    IusShape                      shape;
+    int                           numTransmitSources;     /**< number of US sources (tyically these are virtual) */
+    int                           numTransmitPulses;      /**< number of pulses in a frame == numPulsesPerFrame */
+    int                           numElements;
+    //int numFrames;                                  /**< number of repetitions of the driving pattern */
 
-        case IUS_INVALID_DRIVING_SCHEME:
-            return IUS_FALSE;
-    }
-    return IUS_FALSE;
-}
+// TODO    IusFrameList *                pTransmitFrames;          /**< array of numFrames */
+    iutpal_t      pTransmitPatterns;       /**< array (time, index) of length numTransmitPulses */
+    iupl_t       pTransmitPulses;          /**< waveform of the transmit pulse */
+    iusl_t       pSourceLocations;
+//TODO    IusChannelMapList *           pChannelMaps;
+    iual_t        pApodizations;   /**< 2D array: per transmit event we have numElements gains */
+//TODO    IusTimeGainControlList *      pTimeGainControls;
+} ;
 
-IUS_BOOL isValidShape(IusShape shape)
-{
-    return (shape == IUS_2D_SHAPE || shape == IUS_3D_SHAPE);
-}
-
-float *iusCreateTransmitApodization(int numTransmitPulses,int numElements)
-{
-    // 2D array: per transmitted pulse we have numElement gains
-    // (which are numTransducerElements or numChannelElements)
-    float *pTransmitApodization = (float *)calloc( numTransmitPulses * numElements, sizeof(float) );
-    if( pTransmitApodization == NULL ) return NULL;
-    for (int i = 0; i < numElements*numTransmitPulses; ++i)
-    {
-        pTransmitApodization[i] = 1.0f;
-    }
-    return pTransmitApodization;
-}
-
-
-IusDrivingScheme *iusHLCreateDrivingScheme
+// forward declarations
+static IUS_BOOL isValidSchemeType
 (
-    IusDrivingSchemeType type,
-    IusShape shape,       // determines whether to use 2D or 3D positions/Angles
-    IusSourceLocationList   *transmitSources,
-    IusTransmitPulseList *transmitPulses,
-    IusTransmitPatternList *transmitPatterns,
-    int numElements
+    IusDrivingSchemeType type
+);
+
+static IUS_BOOL isValidShape
+(
+    IusShape shape
+);
+
+
+iuds_t iusHLDrivingSchemeCreate
+(
+IusDrivingSchemeType type,
+IusShape shape,       // determines whether to use 2D or 3D positions/Angles
+iusl_t transmitSources,
+iupl_t transmitPulses,
+iutpal_t transmitPatterns,
+iual_t apodizations,
+int numElements
 )
 {
     if( !isValidSchemeType(type) ) return IUDS_INVALID;
@@ -71,36 +60,29 @@ IusDrivingScheme *iusHLCreateDrivingScheme
     if( transmitSources == NULL ) return IUDS_INVALID;
     if( transmitPulses == NULL ) return IUDS_INVALID;
     if( transmitPatterns == NULL ) return IUDS_INVALID;
-    if( transmitPulses->count <= 0 ) return IUDS_INVALID;
-    if( transmitSources->count <= 0 ) return IUDS_INVALID;
-    if( transmitPatterns->count <= 0 ) return IUDS_INVALID;
+    if( apodizations == NULL ) return IUDS_INVALID;
     if( numElements <= 0 ) return IUDS_INVALID;
 
     IusDrivingScheme *baseDrivingScheme = calloc(1,sizeof(IusDrivingScheme));
 
-    // Apodization
-    if( baseDrivingScheme == NULL ) return NULL;
-    baseDrivingScheme->pTransmitApodization = iusCreateTransmitApodization(transmitPulses->count , numElements);
-    if ( baseDrivingScheme->pTransmitApodization == NULL )
-    {
-        iusHLDeleteDrivingScheme(baseDrivingScheme);
-        return NULL;
-    }
+    if( baseDrivingScheme == NULL ) return IUDS_INVALID;
 
     // TransmitPatterns
-    baseDrivingScheme->pTransmitPatterns = iusHLCreateTransmitPatternList(transmitPulses->count);
-
+    baseDrivingScheme->pSourceLocations = transmitSources;
+    baseDrivingScheme->pTransmitPulses = transmitPulses;
+    baseDrivingScheme->pTransmitPatterns = transmitPatterns;
+    baseDrivingScheme->pApodizations = apodizations;
     baseDrivingScheme->numElements = numElements;
-    baseDrivingScheme->numTransmitSources = transmitSources->count;
-    baseDrivingScheme->numTransmitPulses = transmitPulses->count;
+    baseDrivingScheme->numTransmitSources = iusHLSourceListGetSize( transmitSources );
+    baseDrivingScheme->numTransmitPulses = iusHLPulseListGetSize(transmitPulses);
     baseDrivingScheme->shape = shape;
     baseDrivingScheme->type = type;
     return baseDrivingScheme;
 }
 
-int iusHLDeleteDrivingScheme
+int iusHLDrivingSchemeDelete
 (
-    iuds_t drivingScheme
+iuds_t drivingScheme
 )
 {
     if( drivingScheme != NULL )
@@ -112,10 +94,48 @@ int iusHLDeleteDrivingScheme
 }
 
 
+
+IUS_BOOL iusHLDrivingSchemeCompare
+(
+iuds_t reference,
+iuds_t actual
+)
+{
+    IUS_BOOL isEqual = IUS_FALSE;
+    if( reference == actual ) return IUS_TRUE;
+    if( reference == NULL || actual == NULL ) return IUS_FALSE;
+    if( reference->type != actual->type ) return IUS_FALSE;
+    if( reference->shape != actual->shape ) return IUS_FALSE;
+    if( reference->numElements != actual->numElements ) return IUS_FALSE;
+    if( reference->numTransmitPulses != actual->numTransmitPulses ) return IUS_FALSE;
+    if( reference->numTransmitSources != actual->numTransmitSources ) return IUS_FALSE;
+
+    if( iusCompareTransmitPatternList(
+        reference->pTransmitPatterns,
+        actual->pTransmitPatterns) == IUS_FALSE) return IUS_FALSE;
+
+    if(iusHLApodizationListCompare(
+    reference->pApodizations,
+    actual->pApodizations) == IUS_FALSE) return IUS_FALSE;
+
+    if(iusHLPulseListCompare(
+    reference->pTransmitPulses,
+    actual->pTransmitPulses) == IUS_FALSE) return IUS_FALSE;
+
+    // TODO
+//    if( iusHLCompareSourceList(
+//        reference->pSources,
+//        actual->pSources) == IUS_FALSE) return IUS_FALSE;
+
+//    assert(IUS_FALSE);
+    return IUS_TRUE;
+}
+
+
 int iusHLDrivingSchemeSetTransmitPulse
 (
     iuds_t drivingScheme,
-    iutp_t transmitPulse
+    iup_t *transmitPulse
 )
 {
     // Todo: use pulse list to alter transnit pulses
@@ -134,7 +154,7 @@ int iusHLDrivingSchemeSetTransmitPulse
 //    Ius3DDrivingScheme *castedScheme = (Ius3DDrivingScheme *)drivingScheme;
 //    if( index >= castedScheme->base.numTransmitSources || index < 0 )
 //        return IUS_ERR_VALUE;
-//    castedScheme->pSourceLocations[index]=*position;
+//    castedScheme->pSources[index]=*position;
 //    return IUS_E_OK;
 //}
 //
@@ -148,26 +168,27 @@ int iusHLDrivingSchemeSetTransmitPulse
 //    Ius2DDrivingScheme *castedScheme = (Ius2DDrivingScheme *)drivingScheme;
 //    if( index >= castedScheme->base.numTransmitSources || index < 0 )
 //        return IUS_ERR_VALUE;
-//    castedScheme->pSourceLocations[index]=*position;
+//    castedScheme->pSources[index]=*position;
 //    return IUS_E_OK;
 //}
 
 
-int iusDrivingSchemeSetTransmitApodization
-    (
-        iuds_t drivingScheme,
-        float apodization,
-        int pulseIndex,
-        int elementIndex
-    )
+int iusHLDrivingSchemeSetTransmitApodization
+(
+iuds_t drivingScheme,
+float apodization,
+int apodizationIndex,
+int elementIndex
+)
 {
-    if( pulseIndex >= drivingScheme->numTransmitPulses || pulseIndex < 0 )
+    // TODO: check if still valid
+    if( apodizationIndex >= drivingScheme->numTransmitPulses || apodizationIndex < 0 )
         return IUS_ERR_VALUE;
     if( elementIndex >= drivingScheme->numElements || elementIndex < 0 )
         return IUS_ERR_VALUE;
     if( apodization < 0.0f || apodization > 1.0f )
         return IUS_ERR_VALUE;
-    drivingScheme->pTransmitApodization[pulseIndex*drivingScheme->numElements+elementIndex]=apodization;
+    iusHLApodizationListSetApodization(drivingScheme->pApodizations, apodizationIndex, elementIndex, apodization);
     return IUS_E_OK;
 }
 //
@@ -310,19 +331,28 @@ float iusDrivingSchemeGetSourceFNumber
 */
 
 
-float iusDrivingSchemeGetTransmitApodization
+float iusHLDrivingSchemeGetTransmitApodization
 (
-    iuds_t drivingScheme,
-    int pulseIndex,
-    int elementIndex
+iuds_t drivingScheme,
+int pulseIndex,
+int elementIndex
 )
 {
     if( pulseIndex >= drivingScheme->numTransmitPulses || pulseIndex < 0 )
         return NAN;
     if( elementIndex >= drivingScheme->numElements || elementIndex < 0 )
         return NAN;
-    return drivingScheme->pTransmitApodization[pulseIndex*drivingScheme->numElements+elementIndex];
+    return iusHLApodizationListGetApodization(drivingScheme->pApodizations, pulseIndex, elementIndex);
 }
+
+int iusHLDrivingSchemeGetNumChannels
+(
+    iuds_t drivingScheme
+)
+{
+    return 0;
+}
+
 
 //iu3dp_t iusHLDrivingSchemeGet3DSourceLocation
 //(
@@ -333,7 +363,7 @@ float iusDrivingSchemeGetTransmitApodization
 //    Ius3DDrivingScheme *castedScheme = (Ius3DDrivingScheme *) drivingScheme;
 //    if( elementIndex >= castedScheme->base.numTransmitSources || elementIndex < 0 )
 //        return NULL;
-//    return &castedScheme->pSourceLocations[elementIndex];
+//    return &castedScheme->pSources[elementIndex];
 //}
 //
 //float iusDrivingSchemeGetSourceStartTheta
@@ -360,7 +390,7 @@ float iusDrivingSchemeGetTransmitApodization
 //    return NAN;
 //}
 
-IusTransmitPatternList *iusHLDrivingSchemeGetTransmitPatternList
+iutpal_t iusHLDrivingSchemeGetTransmitPatternList
 (
     iuds_t drivingScheme
 )
@@ -368,42 +398,44 @@ IusTransmitPatternList *iusHLDrivingSchemeGetTransmitPatternList
     return drivingScheme->pTransmitPatterns;
 }
 
-
-int iusCompareTransmitApodization(float *reference, float *actual, int numValues)
-{
-    int index;
-    for(index = 0 ; index < numValues; index++)
-    {
-        if(IUS_EQUAL_FLOAT(reference[index],actual[index]) == IUS_FALSE)
-            return IUS_FALSE;
-    }
-    return IUS_TRUE;
-}
-
-IUS_BOOL iusHLCompareDrivingScheme
+iusl_t iusHLDrivingSchemeGetSourceLocationList
 (
-    iuds_t reference,
-    iuds_t actual
+    iuds_t drivingScheme
 )
 {
-    IUS_BOOL isEqual = IUS_FALSE;
-    if( reference == actual ) return IUS_TRUE;
-    if( reference == NULL || actual == NULL ) return IUS_FALSE;
-    if( reference->type != actual->type ) return IUS_FALSE;
-    if( reference->shape != actual->shape ) return IUS_FALSE;
-    if( reference->numElements != actual->numElements ) return IUS_FALSE;
-    if( reference->numTransmitPulses != actual->numTransmitPulses ) return IUS_FALSE;
-    if( reference->numTransmitSources != actual->numTransmitSources ) return IUS_FALSE;
-    if( iusCompareTransmitPatternList(
-        reference->pTransmitPatterns,
-        actual->pTransmitPatterns) == IUS_FALSE) return IUS_FALSE;
-    if( iusCompareTransmitApodization(
-        reference->pTransmitApodization,
-        actual->pTransmitApodization,
-        reference->numTransmitPulses*reference->numElements) == IUS_FALSE) return IUS_FALSE;
-
-
-//    assert(IUS_FALSE);
-    return IUS_TRUE;
+    return drivingScheme->pSourceLocations;
 }
 
+
+// util
+
+
+static IUS_BOOL isValidSchemeType
+(
+    IusDrivingSchemeType type
+)
+{
+    switch(type)
+    {
+        case IUS_DIVERGING_WAVES_PARAMETRIZED:
+        case IUS_DIVERGING_WAVES:
+        case IUS_FOCUSED_WAVES_PARAMETRIZED:
+        case IUS_FOCUSED_WAVES:
+        case IUS_CUSTOM_WAVES:
+        case IUS_SINGLE_ELEMENT:
+        case IUS_PLANE_WAVES:
+            return IUS_TRUE;
+
+        case IUS_INVALID_DRIVING_SCHEME:
+            return IUS_FALSE;
+    }
+    return IUS_FALSE;
+}
+
+static IUS_BOOL isValidShape
+(
+    IusShape shape
+)
+{
+    return (shape == IUS_2D_SHAPE || shape == IUS_3D_SHAPE);
+}
