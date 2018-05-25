@@ -15,11 +15,12 @@
 
 #include "include/iusHLTransducerElement.h"
 #include "include/iusHL2DTransducerElement.h"
+#include <include/iusHLTransducerElementImp.h>
 
 
 struct Ius2DTransducerElement
 {
-  iute_t    base;
+  struct IusTransducerElement base;
   iu2dp_t   position;
   float     theta;
   iu2ds_t   size;
@@ -37,7 +38,7 @@ iu2dte_t iusHL2DTransducerElementCreate
     if( pos == NULL || siz == NULL ) return IU2DTE_INVALID;
     if( theta == NAN ) return IU2DTE_INVALID;
     iu2dte_t created = (Ius2DTransducerElement *) calloc(1,sizeof(struct Ius2DTransducerElement));
-    created->base = iusHLTransducerElementCreate(IUS_2D_SHAPE);
+    created->base.shape = IUS_2D_SHAPE;
     created->position = pos;
     created->theta = theta;
     created->size = siz;

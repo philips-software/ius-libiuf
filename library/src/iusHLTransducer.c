@@ -18,14 +18,7 @@
 #include <include/iusHL2DTransducer.h>
 
 #include "include/iusHLTransducer.h"
-
-struct IusTransducer
-{
-  IusShape               type; /**< 2D or 3D transducer? */
-  char *                 pTransducerName;   /**< descriptive name of the ultrasound probe */
-  float                  centerFrequency;   /**< operating frequency of the transducer */
-  IusTransducerShape     shape;
-} ;
+#include "include/iusHLTransducerImp.h"
 
 // ADT
 iut_t iusHLTransducerCreate
@@ -84,7 +77,20 @@ int iusHLTransducerCompare
     if( reference->type != actual->type ) return IUS_FALSE;
     if( IUS_EQUAL_FLOAT(reference->centerFrequency, actual->centerFrequency ) == IUS_FALSE ) return IUS_FALSE;
     if( strcmp( reference->pTransducerName, actual->pTransducerName) != 0 ) return IUS_FALSE;
-    return IUS_TRUE;
+    if( reference->type == IUS_2D_SHAPE )
+    {
+        iu2dt_t castedReferenceTransducer =  (iu2dt_t) reference;
+        iu2dt_t castedActualTransducer =  (iu2dt_t) actual;
+        return iusHL2DTransducerCompare(castedReferenceTransducer,castedActualTransducer);
+    }
+
+    if( reference->type == IUS_3D_SHAPE )
+    {
+        iu3dt_t castedReferenceTransducer =  (iu3dt_t) reference;
+        iu3dt_t castedActualTransducer =  (iu3dt_t) actual;
+        return iusHL3DTransducerCompare(castedReferenceTransducer,castedActualTransducer);
+    }
+    return IUS_FALSE;
 }
 
 
@@ -106,12 +112,12 @@ int iusHLTransducerGetNumElements
   if (transducer == NULL) return -1;
   if( transducer->type == IUS_2D_SHAPE )
   {
-      return iusHL2DTransducerElementListGetSize((iu2dtel_t)transducer);
+      return iusHL2DTransducerGetNumElements((iu2dt_t)transducer);
   }
 
   if( transducer->type == IUS_3D_SHAPE )
   {
-    return iusHL3DTransducerElementListGetSize((iu3dtel_t)transducer);
+      return iusHL3DTransducerGetNumElements((iu3dt_t)transducer);
   }
 
   return -1;

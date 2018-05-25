@@ -13,11 +13,12 @@
 #include <include/iusHLPosition.h>
 
 #include "include/iusHL3DTransducerElement.h"
+#include <include/iusHLTransducerElementImp.h>
 
 
 struct Ius3DTransducerElement
 {
-  iute_t        base;
+  struct IusTransducerElement base;
   iu3dp_t   position; /**< 3D Location of the element */
   iu3da_t      angle;    /**< orientation of the elements */
   iu3ds_t       size;     /**< size of the element */
@@ -33,7 +34,7 @@ iu3dte_t iusHL3DTransducerElementCreate
 {
     if( pos == NULL || ang == NULL || siz == NULL ) return IU3DTE_INVALID;
     iu3dte_t created = calloc(1,sizeof(Ius3DTransducerElement));
-    created->base = iusHLTransducerElementCreate(IUS_3D_SHAPE);
+    created->base.shape = IUS_3D_SHAPE;
     created->position = pos;
     created->angle = ang;
     created->size = siz;

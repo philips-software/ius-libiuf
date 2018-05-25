@@ -11,11 +11,7 @@
 #include <iusUtil.h>
 
 #include "include/iusHLTransducerElement.h"
-
-struct IusTransducerElement
-{
-  IusShape shape;
-} ;
+#include "include/iusHLTransducerElementImp.h"
 
 // ADT
 iute_t iusHLTransducerElementCreate
@@ -25,6 +21,7 @@ iute_t iusHLTransducerElementCreate
 {
     if( shape ==  IUS_INVALID_SHAPE ) return IUTE_INVALID;
     iute_t created = calloc(1,sizeof(IusTransducerElement));
+    created->shape = shape;
     return created;
 }
 

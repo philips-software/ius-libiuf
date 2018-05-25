@@ -96,7 +96,7 @@ add_library(ius STATIC
 		src/iusHL3DAngle.c
 		include/iusHL3DAngle.h
         include/iusHLPulseImp.h
-		)
+		include/iusHLTransducerImp.h include/iusHLTransducerElementImp.h)
 
 target_include_directories(ius PUBLIC
         ${CMAKE_CURRENT_LIST_DIR}

@@ -11,12 +11,13 @@
 #include <iusUtil.h>
 #include <include/iusHL3DTransducerElementList.h>
 #include <include/iusHLTransducer.h>
-
+#include <string.h>
 #include "include/iusHL3DTransducer.h"
+#include "include/iusHLTransducerImp.h"
 
 struct Ius3DTransducer
 {
-  iut_t              baseTransducer;
+  struct IusTransducer     baseTransducer;
   iu3dtel_t                elements;         /**< an array of numElements transducer element (position, angle, size) */
 }  ;
 
@@ -33,7 +34,11 @@ iu3dt_t iusHL3DTransducerCreate
   if( numElements < 0 ) return IU3DT_INVALID;
   iu3dt_t created = calloc(1,sizeof(Ius3DTransducer));
   created->elements = iusHL3DTransducerElementListCreate(numElements);
-  created->baseTransducer = iusHLTransducerCreate(name,shape,centerFrequency);
+  created->baseTransducer.pTransducerName = strdup(name);
+  created->baseTransducer.shape = shape;
+  created->baseTransducer.centerFrequency = centerFrequency;
+  created->baseTransducer.type = IUS_3D_SHAPE;
+
   return created;
 }
 
@@ -46,8 +51,6 @@ iu3dt_t ius3DTransducer
   int status = IUS_ERR_VALUE;
   if(ius3DTransducer != NULL)
   {
-    // Todo find nice solution for this unwanted method
-    if( ius3DTransducer->baseTransducer  != NULL ) free(ius3DTransducer->baseTransducer);
     free(ius3DTransducer);
     ius3DTransducer = NULL;
     status = IUS_E_OK;
@@ -59,12 +62,14 @@ iu3dt_t ius3DTransducer
 // operations
 int iusHL3DTransducerCompare
 (
-iu3dt_t reference,
-iu3dt_t actual
+  iu3dt_t reference,
+  iu3dt_t actual
 )
 {
   if( reference == actual ) return IUS_TRUE;
   if( reference == NULL || actual == NULL ) return IUS_FALSE;
+  if( iusHL3DTransducerElementListGetSize(reference->elements) !=
+  iusHL3DTransducerElementListGetSize(actual->elements) ) return IUS_FALSE;
   if( iusHL3DTransducerElementListCompare(reference->elements,actual->elements) == IUS_FALSE )  return IUS_FALSE;
   return IUS_TRUE;
 }
@@ -78,6 +83,15 @@ iu3dte_t iusHL3DTransducerGetElement
 {
   if( transducer == NULL ) return IU3DTE_INVALID;
   return iusHL3DTransducerElementListGet(transducer->elements,elementIndex);
+}
+
+int iusHL3DTransducerGetNumElements
+(
+  iu3dt_t transducer
+)
+{
+  if( transducer == NULL ) return -1;
+  return iusHL3DTransducerElementListGetSize(transducer->elements);
 }
 
 // setters

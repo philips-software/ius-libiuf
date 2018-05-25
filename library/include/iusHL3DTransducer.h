@@ -41,6 +41,11 @@ iu3dte_t iusHL3DTransducerGetElement
   int elementIndex
 );
 
+int iusHL3DTransducerGetNumElements
+(
+  iu3dt_t transducer
+);
+
 // setters
 int iusHL3DTransducerSetElement(
   iu3dt_t transducer,

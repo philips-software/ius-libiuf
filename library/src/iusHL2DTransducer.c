@@ -11,12 +11,15 @@
 #include <iusUtil.h>
 #include <include/iusHLTransducer.h>
 #include <include/iusHL2DTransducerElementList.h>
+#include <string.h>
 #include "include/iusHL2DTransducer.h"
+#include "include/iusHLTransducerImp.h"
+
 
 
 struct Ius2DTransducer
 {
-  iut_t              baseTransducer;
+  struct IusTransducer     baseTransducer;
   iu2dtel_t                elements;         /**< an array of numElements transducer element (position, angle, size) */
 }  ;
 
@@ -33,7 +36,10 @@ iu2dt_t iusHL2DTransducerCreate
     if( numElements < 0 ) return IU2DT_INVALID;
     iu2dt_t created = calloc(1,sizeof(Ius2DTransducer));
     created->elements = iusHL2DTransducerElementListCreate(numElements);
-    created->baseTransducer = iusHLTransducerCreate(name,shape,centerFrequency);
+    created->baseTransducer.type = IUS_2D_SHAPE;
+    created->baseTransducer.pTransducerName = strdup(name);
+    created->baseTransducer.shape = shape;
+    created->baseTransducer.centerFrequency = centerFrequency;
     return created;
 }
 
@@ -46,8 +52,6 @@ iu2dt_t ius2DTransducer
     int status = IUS_ERR_VALUE;
     if(ius2DTransducer != NULL)
     {
-        // Todo find nice solution for this unwanted method
-        if( ius2DTransducer->baseTransducer  != NULL ) free(ius2DTransducer->baseTransducer);
         free(ius2DTransducer);
         ius2DTransducer = NULL;
         status = IUS_E_OK;
@@ -55,21 +59,20 @@ iu2dt_t ius2DTransducer
     return status;
 }
 
-
 // operations
 int iusHL2DTransducerCompare
 (
-iu2dt_t reference,
-iu2dt_t actual
+    iu2dt_t reference,
+    iu2dt_t actual
 )
 {
     if( reference == actual ) return IUS_TRUE;
     if( reference == NULL || actual == NULL ) return IUS_FALSE;
+    if( iusHL2DTransducerElementListGetSize(reference->elements) !=
+        iusHL2DTransducerElementListGetSize(actual->elements) ) return IUS_FALSE;
     if( iusHL2DTransducerElementListCompare(reference->elements,actual->elements) == IUS_FALSE )  return IUS_FALSE;
     return IUS_TRUE;
 }
-
-// getters
 
 // getters
 iu2dte_t iusHL2DTransducerGetElement
@@ -80,6 +83,15 @@ iu2dte_t iusHL2DTransducerGetElement
 {
     if( transducer == NULL ) return IU2DTE_INVALID;
     return iusHL2DTransducerElementListGet(transducer->elements,elementIndex);
+}
+
+int iusHL2DTransducerGetNumElements
+(
+  iu2dt_t transducer
+)
+{
+  if( transducer == NULL ) return -1;
+  return iusHL2DTransducerElementListGetSize(transducer->elements);
 }
 
 // setters

@@ -41,6 +41,11 @@ iu2dte_t iusHL2DTransducerGetElement
   int elementIndex
 );
 
+int iusHL2DTransducerGetNumElements
+(
+  iu2dt_t transducer
+);
+
 // setters
 int iusHL2DTransducerSetElement(
   iu2dt_t transducer,
