@@ -1,15 +1,13 @@
-
-
-
 //
 // Created by nlv09165 on 23/05/2018.
 //
 #include <stdlib.h>
 #include <math.h>
-#include <include/iusHL3DTransducerElementList.h>
-#include <include/ius.h>
-#include <include/iusError.h>
-#include <include/iusUtil.h>
+
+#include <ius.h>
+#include <iusError.h>
+#include <iusUtil.h>
+#include <iusHL3DTransducerElementList.h>
 
 
 // ADT

@@ -1,15 +1,14 @@
-
 //
 // Created by nlv09165 on 03/05/2018.
 //
 #include <unity.h>
 #include <unity_internals.h>
 #include <unity_fixture.h>
-#include <include/iusHLPulseDict.h>
-#include <include/iusHLParametricPulse.h>
-#include <include/iusHLNonParametricPulse.h>
-#include <include/ius.h>
 
+#include <ius.h>
+#include <iusHLPulseDict.h>
+#include <iusHLParametricPulse.h>
+#include <iusHLNonParametricPulse.h>
 
 TEST_GROUP(IusPulseDict);
 

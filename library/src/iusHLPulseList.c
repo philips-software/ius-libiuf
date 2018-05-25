@@ -1,15 +1,13 @@
-
-
-
 //
 // Created by nlv09165 on 02/05/2018.
 //
-#include <stdlib.h>
 #include <math.h>
-#include <include/iusHLPulseList.h>
-#include <include/ius.h>
-#include <include/iusError.h>
-#include <include/iusUtil.h>
+#include <stdlib.h>
+
+#include <ius.h>
+#include <iusError.h>
+#include <iusUtil.h>
+#include <iusHLPulseList.h>
 
 
 // ADT
@@ -20,10 +18,9 @@ struct IusPulseList
 } ;
 
 // ADT
-
 iupl_t iusHLPulseListCreate
 (
-int numPulses
+    int numPulses
 )
 {
     iupl_t list = calloc(1, sizeof(IusPulseList));
@@ -42,7 +39,7 @@ int numPulses
 
 int iusHLPulseListDelete
 (
-iupl_t list
+    iupl_t list
 )
 {
     if(list == NULL) return IUS_ERR_VALUE;
@@ -54,8 +51,8 @@ iupl_t list
 // operations
 int iusHLPulseListCompare
 (
-iupl_t reference,
-iupl_t actual
+    iupl_t reference,
+    iupl_t actual
 )
 {
     int index;

@@ -1,15 +1,16 @@
 //
 // Created by Ruijzendaal on 20/03/2018.
 //
-
+#include <util.h>
 #include <unity.h>
 #include <unity_internals.h>
 #include <unity_fixture.h>
-#include <include/iusHLInputInstance.h>
-#include <include/iusHLInputFile.h>
-#include <include/ius.h>
-#include <util.h>
-#include <include/iusHLDrivingScheme.h>
+
+#include <ius.h>
+#include <iusHLInputInstance.h>
+#include <iusHLInputFile.h>
+#include <iusHLDrivingScheme.h>
+
 #include <testDataGenerators.h>
 
 

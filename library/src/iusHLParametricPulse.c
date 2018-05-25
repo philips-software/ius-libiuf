@@ -3,19 +3,17 @@
 //
 #include <math.h>
 #include <stdlib.h>
-
-#include <include/ius.h>
-#include <include/iusError.h>
-#include <include/iusHLPulse.h>
-#include <include/iusUtil.h>
 #include <string.h>
 
-#include "iusHLParametricPulse.h"
-#include <include/iusHLPulseImp.h>
+#include <ius.h>
+#include <iusError.h>
+#include <iusHLPulse.h>
+#include <iusUtil.h>
+
+#include <iusHLParametricPulse.h>
+#include <iusHLPulseImp.h>
 
 // ADT
-
-
 struct IusParametricPulse
 {
 // ADT
@@ -28,10 +26,10 @@ struct IusParametricPulse
 
 iupp_t iusHLParametricPulseCreate
 (
-char *label,
-float pulseFrequency,
-float pulseAmplitude,
-int pulseCount
+    char *label,
+    float pulseFrequency,
+    float pulseAmplitude,
+    int pulseCount
 )
 {
     IusParametricPulse *pulse;
@@ -56,7 +54,7 @@ int pulseCount
 
 int iusHLParametricPulseDelete
 (
-iupp_t pulse
+    iupp_t pulse
 )
 {
     if( pulse == NULL ) return IUS_ERR_VALUE;
@@ -68,8 +66,8 @@ iupp_t pulse
 
 int iusHLParametricPulseCompare
 (
-iupp_t reference,
-iupp_t actual
+    iupp_t reference,
+    iupp_t actual
 )
 {
     if( reference == actual ) return IUS_TRUE;

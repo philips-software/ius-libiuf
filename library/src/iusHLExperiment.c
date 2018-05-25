@@ -5,10 +5,11 @@
 #include <string.h>
 #include <memory.h>
 #include <math.h>
+
 #include <ius.h>
 #include <iusUtil.h>
-#include <include/iusHLInputInstance.h>
-#include <include/iusError.h>
+#include <iusError.h>
+#include <iusHLInputInstance.h>
 
 
 // ADT

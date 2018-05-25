@@ -1,21 +1,20 @@
 //
 // Created by Ruijzendaal on 16/04/2018.
 //
-
-
-#include <include/iusHLSourceListOld.h>
-#include <include/iusHLPosition.h>
 #include <unity.h>
-#include <include/iusHLNonParametricPulse.h>
-#include <include/ius.h>
-#include <include/iusHLPulseList.h>
-#include <include/iusHLParametricPulse.h>
-#include <include/iusHLTransmitPatternList.h>
-#include <include/iusHLTransmitPattern.h>
-#include <include/iusHLDrivingScheme.h>
-#include <include/iusError.h>
-#include <include/iusHL2DSourceList.h>
-#include <include/iusHL3DSourceList.h>
+
+#include <ius.h>
+#include <iusError.h>
+#include <iusHLSourceListOld.h>
+#include <iusHLPosition.h>
+#include <iusHLNonParametricPulse.h>
+#include <iusHLPulseList.h>
+#include <iusHLParametricPulse.h>
+#include <iusHLTransmitPatternList.h>
+#include <iusHLTransmitPattern.h>
+#include <iusHLDrivingScheme.h>
+#include <iusHL2DSourceList.h>
+#include <iusHL3DSourceList.h>
 
 int fill3DSourceLocationList
 (

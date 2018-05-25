@@ -5,11 +5,12 @@
 #include <unity_internals.h>
 #include <unity_fixture.h>
 
-#include <include/ius.h>
-#include <include/iusError.h>
-#include <include/iusTypes.h>
+#include <ius.h>
+#include <iusError.h>
+#include <iusTypes.h>
+#include <iusHLDrivingScheme.h>
+
 #include <testDataGenerators.h>
-#include "include/iusHLDrivingScheme.h"
 
 TEST_GROUP(IusDrivingScheme);
 

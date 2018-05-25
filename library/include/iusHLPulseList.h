@@ -1,10 +1,8 @@
-
-
 // Created by nlv09165 on 02/05/2018.
 #ifndef IUSLIBRARY_IUSHLPULSELIST_H
 #define IUSLIBRARY_IUSHLPULSELIST_H
 
-#include <include/iusHLPulse.h>
+#include <iusHLPulse.h>
 
 // ADT
 typedef struct IusPulseList IusPulseList;
@@ -13,18 +11,18 @@ typedef IusPulseList *iupl_t;
 
 iupl_t iusHLPulseListCreate
 (
-int numPulse
+    int numPulse
 );
 
 int iusHLPulseListDelete
 (
-iupl_t list
+    iupl_t list
 );
 
 int iusHLPulseListCompare
 (
-iupl_t reference,
-iupl_t actual
+    iupl_t reference,
+    iupl_t actual
 );
 
 int iusHLPulseListGetSize

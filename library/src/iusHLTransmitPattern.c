@@ -2,15 +2,13 @@
 // Created by Ruijzendaal on 04/04/2018.
 //
 
-#define IUSLIBRARY_IMPLEMENTATION
-
-#include <iusHLTransmitPattern.h>
-#include <stdlib.h>
-#include <include/ius.h>
 #include <math.h>
-#include <include/iusError.h>
-#include <include/iusUtil.h>
+#include <stdlib.h>
 
+#include <ius.h>
+#include <iusError.h>
+#include <iusUtil.h>
+#include <iusHLTransmitPattern.h>
 
 
 // ADT

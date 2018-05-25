@@ -16,8 +16,8 @@ extern "C" {
 #endif
 
 #include <hdf5.h>
-#include "iusNode.h"
-#include "iusInput.h"
+#include <iusNode.h>
+#include <iusInput.h>
 
 #define IUS_INPUT_TYPE "IUSINPUTFILETYPE_V3"
 

@@ -7,23 +7,20 @@
 //  iusVersion    : 255.255.255.255
 //
 //==============================================================================
-#define IUSLIBRARY_IMPLEMENTATION
-
-#include "iusInput.h"
-#include "iusError.h"
-#include "iusHDF5.h"
-#include "iusUuid.h"
+#include <assert.h>
 #include <stdlib.h>
 #include <string.h>
 
+#include <ius.h>
+#include <iusInput.h>
+#include <iusError.h>
+#include <iusHDF5.h>
+#include <iusUuid.h>
+#include <iusHLNode.h>
 #include <H5LTpublic.h>
-#include <include/iusHLNode.h>
-#include <include/iusInput.h>
-#include <include/ius.h>
-#include <include/iusHLExperiment.h>
-#include <include/iusHLInputInstance.h>
-#include <assert.h>
-#include <include/iusHLApodizationList.h>
+#include <iusHLExperiment.h>
+#include <iusHLInputInstance.h>
+#include <iusHLApodizationList.h>
 
 #if USED
 //------------------------------------------------------------------------------

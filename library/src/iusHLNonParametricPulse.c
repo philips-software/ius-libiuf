@@ -2,15 +2,15 @@
 // Created by Ruijzendaal on 10/04/2018.
 //
 #include <stdlib.h>
-
-#include <include/ius.h>
-#include <include/iusError.h>
-#include <include/iusUtil.h>
-#include <include/iusHLPulse.h>
 #include <string.h>
 
-#include "iusHLNonParametricPulse.h"
-#include <include/iusHLPulseImp.h>
+#include <ius.h>
+#include <iusError.h>
+#include <iusUtil.h>
+#include <iusHLPulse.h>
+
+#include <iusHLNonParametricPulse.h>
+#include <iusHLPulseImp.h>
 
 
 struct IusNonParametricPulse
@@ -22,12 +22,10 @@ struct IusNonParametricPulse
 } ;
 
 
-
-
 iunpp_t iusHLNonParametricPulseCreate
 (
-char *label,
-int numPulseValues
+    char *label,
+    int numPulseValues
 )
 {
     IusNonParametricPulse *pulse;
@@ -51,7 +49,7 @@ int numPulseValues
 
 int iusHLNonParametricPulseDelete
 (
-iunpp_t pulse
+    iunpp_t pulse
 )
 {
     if( pulse == NULL ) return IUS_ERR_VALUE;
@@ -67,8 +65,8 @@ iunpp_t pulse
 
 int iusNonParametricPulseCompare
 (
-iunpp_t reference,
-iunpp_t actual
+    iunpp_t reference,
+    iunpp_t actual
 )
 {
     int i;

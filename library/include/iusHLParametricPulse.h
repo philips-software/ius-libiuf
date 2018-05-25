@@ -5,9 +5,6 @@
 #ifndef IUSLIBRARY_IUSHLPARAMETRICPULSE_H
 #define IUSLIBRARY_IUSHLPARAMETRICPULSE_H
 
-
-
-
 // ADT
 typedef struct IusParametricPulse IusParametricPulse;
 typedef IusParametricPulse *iupp_t;
@@ -15,15 +12,15 @@ typedef IusParametricPulse *iupp_t;
 
 iupp_t iusHLParametricPulseCreate
 (
-char *label,
-float pulseFrequency,
-float pulseAmplitude,
-int pulseCount
+    char *label,
+    float pulseFrequency,
+    float pulseAmplitude,
+    int pulseCount
 );
 
 int iusHLParametricPulseDelete
 (
-iupp_t pulse
+    iupp_t pulse
 );
 
 
@@ -31,8 +28,8 @@ iupp_t pulse
 
 int iusHLParametricPulseCompare
 (
-iupp_t reference,
-iupp_t actual
+    iupp_t reference,
+    iupp_t actual
 );
 
 // Getters

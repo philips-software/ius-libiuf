@@ -2,23 +2,21 @@
 //
 // Created by nlv09165 on 24/05/2018.
 //
+#include <math.h>
+#include <string.h>
 #include <stdlib.h>
-#define IUSLIBRARY_IMPLEMENTATION
 
 #include <ius.h>
 #include <iusError.h>
 #include <iusTypes.h>
 #include <iusUtil.h>
-#include <math.h>
-#include <string.h>
-#include <include/iusHL2DTransducerElementList.h>
-#include <include/iusHL3DTransducerElementList.h>
-#include <include/iusHL3DTransducer.h>
-#include <include/iusHLTransducerElement.h>
-#include <include/iusHL2DTransducer.h>
-
-#include "include/iusHLTransducer.h"
-#include "include/iusHLTransducerImp.h"
+#include <iusHLTransducer.h>
+#include <iusHL3DTransducer.h>
+#include <iusHL2DTransducer.h>
+#include <iusHLTransducerImp.h>
+#include <iusHLTransducerElement.h>
+#include <iusHL2DTransducerElementList.h>
+#include <iusHL3DTransducerElementList.h>
 
 // ADT
 iut_t iusHLTransducerCreate

@@ -2,12 +2,12 @@
 // Created by Ruijzendaal on 20/03/2018.
 //
 
-#include <include/iusHLInputInstance.h>
-#include <include/iusHLNode.h>
 #include <unity.h>
 #include <unity_internals.h>
 #include <unity_fixture.h>
 
+#include <iusHLNode.h>
+#include <iusHLInputInstance.h>
 
 TEST_GROUP(InputfileNode);
 

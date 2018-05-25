@@ -1,21 +1,17 @@
-
-
-
 //
 // Created by nlv09165 on 02/05/2018.
 //
 #include <stdlib.h>
 #include <math.h>
-#include <include/iusHLPulseDict.h>
-#include <include/ius.h>
-#include <include/iusError.h>
-#include <include/iusUtil.h>
-#include <include/iusHLPulseImp.h>
-#include "uthash.h"
+
+#include <uthash.h>
+#include <ius.h>
+#include <iusError.h>
+#include <iusUtil.h>
+#include <iusHLPulseImp.h>
+#include <iusHLPulseDict.h>
 
 // ADT
-
-
 struct HashablePulse
 {
     iup_t pulse;

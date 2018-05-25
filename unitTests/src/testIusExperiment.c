@@ -1,15 +1,15 @@
 //
 // Created by nlv09165 on 26/04/2018.
 //
+#include <string.h>
 #include <unity.h>
 #include <unity_internals.h>
 #include <unity_fixture.h>
 
-#include <include/ius.h>
-#include <include/iusError.h>
-#include <include/iusTypes.h>
-#include <string.h>
-#include "include/iusHLExperiment.h"
+#include <ius.h>
+#include <iusError.h>
+#include <iusTypes.h>
+#include <iusHLExperiment.h>
 
 TEST_GROUP(IusExperiment);
 

@@ -1,10 +1,9 @@
 
-
 // Created by nlv09165 on 23/05/2018.
 #ifndef IUSLIBRARY_IUSHL2DTRANSDUCERELEMENTLIST_H
 #define IUSLIBRARY_IUSHL2DTRANSDUCERELEMENTLIST_H
 
-#include <include/iusHL2DTransducerElement.h>
+#include <iusHL2DTransducerElement.h>
 
 // ADT
 typedef struct Ius2DTransducerElementList Ius2DTransducerElementList;

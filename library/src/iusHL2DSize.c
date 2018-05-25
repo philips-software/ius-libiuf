@@ -2,16 +2,14 @@
 //
 // Created by nlv09165 on 24/05/2018.
 //
+#include <math.h>
 #include <stdlib.h>
-#define IUSLIBRARY_IMPLEMENTATION
 
 #include <ius.h>
 #include <iusError.h>
 #include <iusTypes.h>
 #include <iusUtil.h>
-#include <math.h>
-
-#include "include/iusHL2DSize.h"
+#include <iusHL2DSize.h>
 
 struct Ius2DSize
 {

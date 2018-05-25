@@ -1,5 +1,3 @@
-
-
 //
 // Created by nlv09165 on 01/05/2018.
 //
@@ -7,12 +5,13 @@
 #include <unity_internals.h>
 #include <unity_fixture.h>
 
-#include <include/ius.h>
-#include <include/iusError.h>
-#include <include/iusTypes.h>
-#include <include/iusHLParametricPulse.h>
+#include <ius.h>
+#include <iusError.h>
+#include <iusTypes.h>
+#include <iusHLParametricPulse.h>
+#include <iusHLNonParametricPulse.h>
+
 #include <testDataGenerators.h>
-#include "include/iusHLNonParametricPulse.h"
 
 TEST_GROUP(IusNonParametricPulse);
 

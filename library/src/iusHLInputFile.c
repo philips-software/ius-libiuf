@@ -5,9 +5,8 @@
 #include <memory.h>
 #include <stdlib.h>
 
-#define IUSLIBRARY_IMPLEMENTATION
-#include "ius.h"
-#include "iusNode.h"
+#include <ius.h>
+#include <iusNode.h>
 #include <iusInput.h>
 #include <iusInputFile.h>
 #include <iusHLNode.h>

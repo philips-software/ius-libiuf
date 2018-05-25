@@ -1,11 +1,11 @@
 //
 // Created by Ruijzendaal on 16/04/2018.
 //
-
-
 #include <unity_fixture.h>
-#include <include/iusHLDrivingScheme.h>
-#include <include/ius.h>
+
+#include <ius.h>
+#include <iusHLDrivingScheme.h>
+
 #include <testDataGenerators.h>
 
 TEST_GROUP(InputfileTransmitPatternList);

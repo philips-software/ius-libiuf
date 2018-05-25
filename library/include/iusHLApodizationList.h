@@ -2,10 +2,6 @@
 #ifndef IUSLIBRARY_IUSHLAPODIZATIONLIST_H
 #define IUSLIBRARY_IUSHLAPODIZATIONLIST_H
 
-//#ifndef IUSLIBRARY_IMPLEMENTATION
-//typedef struct IusApodizationList IusApodizationList;
-//#endif // IUSLIBRARY_IMPLEMENTATION
-
 // ADT
 typedef struct IusApodizationList IusApodizationList;
 typedef IusApodizationList *iual_t;
@@ -13,48 +9,48 @@ typedef IusApodizationList *iual_t;
 
 iual_t iusHLApodizationListCreate
 (
-int numApodizations,
-int numElements
+    int numApodizations,
+    int numElements
 );
 
 int iusHLApodizationListDelete
 (
-iual_t iusApodizationList
+    iual_t iusApodizationList
 );
 
 
 // operations
 int iusHLApodizationListCompare
 (
-iual_t reference,
-iual_t actual
+    iual_t reference,
+    iual_t actual
 );
 
 // Getters
 int iusHLApodizationListGetNumApodizations
 (
-iual_t iusApodizationList
+    iual_t iusApodizationList
 );
 
 int iusHLApodizationListGetNumElements
 (
-iual_t iusApodizationList
+    iual_t iusApodizationList
 );
 
 float iusHLApodizationListGetApodization
 (
-iual_t iusApodizationList,
-int listIndex,
-int elementIndex
+    iual_t iusApodizationList,
+    int listIndex,
+    int elementIndex
 );
 
 // Setters
 int iusHLApodizationListSetApodization
 (
-iual_t iusApodizationList,
-int listIndex,
-int elementIndex,
-float apodization
+    iual_t iusApodizationList,
+    int listIndex,
+    int elementIndex,
+    float apodization
 );
 
 

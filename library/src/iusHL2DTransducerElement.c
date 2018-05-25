@@ -2,20 +2,19 @@
 //
 // Created by nlv09165 on 23/05/2018.
 //
+#include <math.h>
 #include <stdlib.h>
-#define IUSLIBRARY_IMPLEMENTATION
 
 #include <ius.h>
 #include <iusError.h>
 #include <iusTypes.h>
 #include <iusUtil.h>
-#include <math.h>
-#include <include/iusHL3DTransducerElement.h>
-#include <include/iusHL2DSize.h>
+#include <iusHL2DSize.h>
+#include <iusHLTransducerElement.h>
+#include <iusHLTransducerElementImp.h>
+#include <iusHL2DTransducerElement.h>
+#include <iusHL3DTransducerElement.h>
 
-#include "include/iusHLTransducerElement.h"
-#include "include/iusHL2DTransducerElement.h"
-#include <include/iusHLTransducerElementImp.h>
 
 
 struct Ius2DTransducerElement

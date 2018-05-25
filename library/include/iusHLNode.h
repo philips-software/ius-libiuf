@@ -1,11 +1,10 @@
 //
 // Created by Ruijzendaal on 12/03/2018.
 //
-
 #ifndef IUSLIBRARY_IUSHLNODE_H
 #define IUSLIBRARY_IUSHLNODE_H
 
-#include "iusTypes.h"
+#include <iusTypes.h>
 
 // ADT
 struct IusNode;
@@ -16,13 +15,13 @@ typedef IusNode *iun_t;
 // Operations
 iun_t iusHLNodeCreate
 (
-char *pNodeType,
-int parents
+    char *pNodeType,
+    int parents
 );
 
 int iusHLNodeDelete
 (
-iun_t node
+    iun_t node
 );
 
 IUS_BOOL iuHLNodeCompare
@@ -34,7 +33,7 @@ IUS_BOOL iuHLNodeCompare
 // getters
 char *iusHLNodeGetType
 (
-iun_t node
+    iun_t node
 );
 
 int iusHLNodeGetNumParents
@@ -44,8 +43,7 @@ int iusHLNodeGetNumParents
 
 char *iusHLNodeGetId
 (
-iun_t node
+    iun_t node
 );
-
 
 #endif //IUSLIBRARY_IUSHLNODE_H

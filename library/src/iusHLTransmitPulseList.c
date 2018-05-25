@@ -1,19 +1,15 @@
 //
 // Created by Ruijzendaal on 05/04/2018.
 //
-
-
-
-#include <stdarg.h>
 #include <assert.h>
+#include <stdarg.h>
 
-#include <include/ius.h>
-#include <include/iusError.h>
-#include <include/iusTypes.h>
-
-#include <include/iusHLTransmitPulseList.h>
-#include <include/iusHLNonParametricPulse.h>
-#include <include/iusHLParametricPulse.h>
+#include <ius.h>
+#include <iusError.h>
+#include <iusTypes.h>
+#include <iusHLTransmitPulseList.h>
+#include <iusHLNonParametricPulse.h>
+#include <iusHLParametricPulse.h>
 
 
 // ADT

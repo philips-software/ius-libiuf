@@ -4,9 +4,10 @@
 
 #ifndef IUSLIBRARY_IUSHLTRANSDUCERELEMENTIMP_H
 #define IUSLIBRARY_IUSHLTRANSDUCERELEMENTIMP_H
+
 struct IusTransducerElement
 {
-  IusShape shape;
+    IusShape shape;
 } ;
 
 #endif //IUSLIBRARY_IUSHLTRANSDUCERELEMENTIMP_H

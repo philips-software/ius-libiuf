@@ -1,10 +1,8 @@
-
-
 // Created by nlv09165 on 03/05/2018.
 #ifndef IUSLIBRARY_IUSHLPULSEDICT_H
 #define IUSLIBRARY_IUSHLPULSEDICT_H
 
-#include <include/iusHLPulse.h>
+#include <iusHLPulse.h>
 
 // ADT
 typedef struct IusPulseDict IusPulseDict;
@@ -13,18 +11,18 @@ typedef IusPulseDict *iupd_t;
 
 iupd_t iusHLPulseDictCreate
 (
-void
+    void
 );
 
 int iusHLPulseDictDelete
 (
-iupd_t dict
+    iupd_t dict
 );
 
 int iusHLPulseDictCompare
 (
-iupd_t reference,
-iupd_t actual
+    iupd_t reference,
+    iupd_t actual
 );
 
 int iusHLPulseDictGetSize

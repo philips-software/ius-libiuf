@@ -1,14 +1,13 @@
 //
 // Created by Ruijzendaal on 16/04/2018.
 //
-
 #ifndef IUSLIBRARY_TESTDATAGENERATORS_H
 #define IUSLIBRARY_TESTDATAGENERATORS_H
 
-#include <include/iusHLNonParametricPulse.h>
-#include <include/iusHLPulseList.h>
-#include <include/iusHLTransmitPatternList.h>
-#include <include/iusHLDrivingScheme.h>
+#include <iusHLNonParametricPulse.h>
+#include <iusHLPulseList.h>
+#include <iusHLTransmitPatternList.h>
+#include <iusHLDrivingScheme.h>
 
 
 // TODO: replace with dict!

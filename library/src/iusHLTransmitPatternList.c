@@ -1,15 +1,14 @@
 //
 // Created by Ruijzendaal on 05/04/2018.
 //
-
 #include <stdlib.h>
 #include <math.h>
-#include <include/iusHLTransmitPatternList.h>
-#include <include/iusHLTransmitPattern.h>
-#include <include/ius.h>
-#include <include/iusError.h>
-#include <include/iusUtil.h>
 
+#include <ius.h>
+#include <iusError.h>
+#include <iusUtil.h>
+#include <iusHLTransmitPattern.h>
+#include <iusHLTransmitPatternList.h>
 
 // ADT
 struct IusTransmitPatternList
@@ -20,7 +19,7 @@ struct IusTransmitPatternList
 
 iutpal_t iusHLTransmitPatternListCreate
 (
-int numPulses
+    int numPulses
 )
 {
     iutpal_t pPatternList = calloc(1, sizeof(IusTransmitPatternList));
@@ -39,7 +38,7 @@ int numPulses
 
 int iusHLTransmitPatternListDelete
 (
-iutpal_t list
+    iutpal_t list
 )
 {
     if(list == NULL) return IUS_ERR_VALUE;

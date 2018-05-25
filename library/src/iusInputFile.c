@@ -7,13 +7,11 @@
 //  iusVersion    : 255.255.255.255
 //
 //=============================================================================
-
-#include "iusInputFile.h"
-#include "iusInput.h"
-#include "iusError.h"
 #include <stdlib.h>    // for calloc
-#include <include/iusInputFile.h>
-#include <include/iusInput.h>
+
+#include <iusInput.h>
+#include <iusError.h>
+#include <iusInputFile.h>
 
 
 int iusInputFileSave(IusInputFileInstance *pIFI, int verbose)

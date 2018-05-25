@@ -6,10 +6,10 @@
 #define IUSLIBRARY_IUSHLINPUT_H
 
 #include <iusTypes.h>
+#include <iusHLNode.h>
 #include <iusHLExperiment.h>
 #include <iusHLTransducer.h>
 #include <iusHLDrivingScheme.h>
-#include <iusHLNode.h>
 
 #define IUS_DEFAULT_NUM_FRAMES  1
 
@@ -22,20 +22,20 @@ typedef  IusInputInstance * iuii_t;
 
 iuii_t iusHLInputInstanceCreate
 (
-void
+    void
 );
 
 int iusHLInputInstanceDelete
 (
-iuii_t instance
+    iuii_t instance
 );
 
 
 // operations
 int iusHLInputInstanceCompare
 (
-iuii_t reference,
-iuii_t actual
+    iuii_t reference,
+    iuii_t actual
 );
 
 // getters

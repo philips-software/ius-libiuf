@@ -9,21 +9,21 @@ typedef IusReceiveSettings *iurs_t;
 
 iurs_t iusHLReceiveSettingsCreate
 (
-int intParam,
-float floatParam
+    int intParam,
+    float floatParam
 );
 
 int iusHLReceiveSettingsDelete
 (
-iurs_t iusReceiveSettings
+    iurs_t iusReceiveSettings
 );
 
 
 // operations
 int iusHLReceiveSettingsCompare
 (
-iurs_t reference,
-iurs_t actual
+    iurs_t reference,
+    iurs_t actual
 );
 
 // Getters
@@ -49,6 +49,5 @@ int iusHLReceiveSettingsSetFloatParam
     iurs_t iusReceiveSettings,
     float floatParam
 );
-
 
 #endif //IUSLIBRARY_IUSHLRECEIVESETTINGS_H

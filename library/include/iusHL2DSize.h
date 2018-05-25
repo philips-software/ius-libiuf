@@ -1,11 +1,6 @@
-
 // Created by nlv09165 on 24/05/2018.
 #ifndef IUSLIBRARY_IUSHL2DSIZE_H
 #define IUSLIBRARY_IUSHL2DSIZE_H
-
-//#ifndef IUSLIBRARY_IMPLEMENTATION
-//typedef struct Ius2DSize Ius2DSize;
-//#endif // IUSLIBRARY_IMPLEMENTATION
 
 // ADT
 typedef struct Ius2DSize Ius2DSize;
@@ -30,6 +25,5 @@ int iusHL2DSizeCompare
     iu2ds_t reference,
     iu2ds_t actual
 );
-
 
 #endif //IUSLIBRARY_IUSHL2DSIZE_H

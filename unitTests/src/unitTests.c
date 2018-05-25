@@ -3,12 +3,11 @@
 //
 
 #include <stdio.h>
-
 #include <unity_fixture.h>
-#include "uniTests.h"
+#include <uniTests.h>
 
-#include "iusTypes.h"
-#include <include/iusUtil.h>
+#include <iusTypes.h>
+#include <iusUtil.h>
 
 
 static void RunAllTests(void)

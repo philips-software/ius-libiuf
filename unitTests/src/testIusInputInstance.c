@@ -5,11 +5,11 @@
 #include <unity_internals.h>
 #include <unity_fixture.h>
 
-#include <include/ius.h>
-#include <include/iusError.h>
-#include <include/iusTypes.h>
-#include <include/iusHLNode.h>
-#include "include/iusHLInputInstance.h"
+#include <ius.h>
+#include <iusError.h>
+#include <iusTypes.h>
+#include <iusHLNode.h>
+#include <iusHLInputInstance.h>
 
 TEST_GROUP(IusInputInstance);
 

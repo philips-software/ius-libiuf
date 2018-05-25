@@ -6,20 +6,15 @@
 #include <stdlib.h>
 #include <string.h>
 
-//#include <hdf5_hl.h>
-
-#include <include/ius.h>
-#include <include/iusUuid.h>
-#include <include/iusTypes.h>
-#include <include/iusHDF5.h>
-#include <include/iusHLInputInstance.h>
-#include <include/iusError.h>
+#include <ius.h>
+#include <iusUuid.h>
+#include <iusTypes.h>
+#include <iusHDF5.h>
+#include <iusError.h>
 #include <hdf5_hl.h>
-
-#include "iusNode.h"
-#include "iusHLNode.h"
-
-
+#include <iusNode.h>
+#include <iusHLNode.h>
+#include <iusHLInputInstance.h>
 
 #define IUSLIBRARY_IMPLEMENTATION
 #define MAX_TYPE_LENGTH 40

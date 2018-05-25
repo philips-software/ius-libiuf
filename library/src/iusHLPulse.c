@@ -1,25 +1,23 @@
 //
 // Created by Ruijzendaal on 30/03/2018.
 //
-
-
-
 #include <math.h>
 #include <stdlib.h>
-#include <include/ius.h>
-#include <include/iusUtil.h>
-#include <include/iusError.h>
-#include <include/iusHLParametricPulse.h>
-#include <include/iusHLNonParametricPulse.h>
-#include <include/iusHLPulse.h>
-#include <include/iusHLPulseImp.h>
 #include <string.h>
+
+#include <ius.h>
+#include <iusUtil.h>
+#include <iusError.h>
+#include <iusHLPulse.h>
+#include <iusHLPulseImp.h>
+#include <iusHLParametricPulse.h>
+#include <iusHLNonParametricPulse.h>
 
 
 iup_t  iusHLPulseCreate
 (
-IusPulseType type,
-char *label
+    IusPulseType type,
+    char *label
 )
 {
     iup_t transmitPulse = IUP_INVALID;
@@ -35,7 +33,7 @@ char *label
 
 int iusHLPulseDelete
 (
-iup_t pulse
+    iup_t pulse
 )
 {
     if( pulse == NULL ) return IUS_ERR_VALUE;
@@ -45,8 +43,8 @@ iup_t pulse
 
 int iusHLPulseCompare
 (
-iup_t reference,
-iup_t actual
+    iup_t reference,
+    iup_t actual
 )
 {
     if( reference == actual ) return IUS_TRUE;
@@ -85,18 +83,3 @@ char *iusHLPulseGetLabel
     if( pulse == NULL ) return  NULL;
     return pulse->label;
 }
-
-
-// TODO: Remove
-//// setters
-//int iusHLPulseSetType
-//(
-//    iup_t pulse,
-//    IusPulseType type
-//)
-//{
-//    if( pulse == NULL ) return  IUS_ERR_VALUE;
-//    pulse->type = type;
-//    return IUS_E_OK;
-//}
-

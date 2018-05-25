@@ -4,9 +4,10 @@
 #include <unity.h>
 #include <unity_internals.h>
 #include <unity_fixture.h>
-#include <include/iusTypes.h>
-#include <include/iusUtil.h>
-#include <include/ius.h>
+
+#include <ius.h>
+#include <iusTypes.h>
+#include <iusUtil.h>
 
 
 TEST_GROUP(Misc);

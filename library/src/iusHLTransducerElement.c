@@ -1,17 +1,14 @@
-
 //
 // Created by nlv09165 on 23/05/2018.
 //
 #include <stdlib.h>
-#define IUSLIBRARY_IMPLEMENTATION
 
 #include <ius.h>
 #include <iusError.h>
 #include <iusTypes.h>
 #include <iusUtil.h>
-
-#include "include/iusHLTransducerElement.h"
-#include "include/iusHLTransducerElementImp.h"
+#include <iusHLTransducerElement.h>
+#include <iusHLTransducerElementImp.h>
 
 // ADT
 iute_t iusHLTransducerElementCreate

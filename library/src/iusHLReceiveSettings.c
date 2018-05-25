@@ -1,16 +1,13 @@
-
 //
 // Created by nlv09165 on 25/04/2018.
 //
 #include <stdlib.h>
-#define IUSLIBRARY_IMPLEMENTATION
 
 #include <ius.h>
 #include <iusError.h>
 #include <iusTypes.h>
 #include <iusUtil.h>
-
-#include "include/iusHLReceiveSettings.h"
+#include <iusHLReceiveSettings.h>
 
 struct IusReceiveSettings
 {
@@ -19,11 +16,10 @@ struct IusReceiveSettings
 } ;
 
 // ADT
-
 iurs_t iusHLReceiveSettingsCreate
 (
-int intParam,
-float floatParam
+  int intParam,
+  float floatParam
 )
 {
     if( intParam < 0 ) return IURS_INVALID;
@@ -36,7 +32,7 @@ float floatParam
 
 int iusHLReceiveSettingsDelete
 (
-iurs_t iusReceiveSettings
+    iurs_t iusReceiveSettings
 )
 {
     int status = IUS_ERR_VALUE;
@@ -53,8 +49,8 @@ iurs_t iusReceiveSettings
 // operations
 int iusHLReceiveSettingsCompare
 (
-iurs_t reference,
-iurs_t actual
+    iurs_t reference,
+    iurs_t actual
 )
 {
     if( reference == actual ) return IUS_TRUE;

@@ -3,17 +3,16 @@
 // Created by nlv09165 on 23/05/2018.
 //
 #include <stdlib.h>
-#define IUSLIBRARY_IMPLEMENTATION
+#include <string.h>
 
 #include <ius.h>
 #include <iusError.h>
 #include <iusTypes.h>
 #include <iusUtil.h>
-#include <include/iusHLTransducer.h>
-#include <include/iusHL2DTransducerElementList.h>
-#include <string.h>
-#include "include/iusHL2DTransducer.h"
-#include "include/iusHLTransducerImp.h"
+#include <iusHLTransducer.h>
+#include <iusHLTransducerImp.h>
+#include <iusHL2DTransducer.h>
+#include <iusHL2DTransducerElementList.h>
 
 
 

@@ -1,10 +1,11 @@
 //
 // Created by Ruijzendaal on 24/05/2018.
 //
-#include <include/iusHLTransducerFactory.h>
-#include <include/iusHL2DTransducer.h>
-#include <include/iusHL3DTransducer.h>
 #include <stddef.h>
+
+#include <iusHLTransducerFactory.h>
+#include <iusHL2DTransducer.h>
+#include <iusHL3DTransducer.h>
 
 iut_t iusHLTransducerFactoryCreate
 (

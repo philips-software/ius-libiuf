@@ -1,15 +1,13 @@
 //
 // Created by Ruijzendaal on 04/04/2018.
 //
-
-
-
 #include <unity_fixture.h>
-#include <include/iusTypes.h>
+
+#include <ius.h>
+#include <iusError.h>
+#include <iusTypes.h>
 #include <iusHLTransmitPattern.h>
-#include <include/ius.h>
-#include <include/iusError.h>
-#include <include/iusHLTransmitPatternList.h>
+#include <iusHLTransmitPatternList.h>
 
 TEST_GROUP(InputfileTransmitPattern);
 

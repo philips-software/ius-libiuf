@@ -1,21 +1,23 @@
 //
 // Created by Ruijzendaal on 27/03/2018.
 //
-#include <unity_fixture.h>
-#include <include/iusHLDrivingScheme.h>
-#include <include/ius.h>
-#include <include/iusTypes.h>
-#include <include/iusHLTransducer.h>
-#include <include/iusError.h>
-#include <include/iusHLTransmitPattern.h>
-#include <include/iusHLTransmitPatternList.h>
 #include <util.h>
-#include <include/iusHLSourceListOld.h>
-#include <include/iusHLTransmitPulseList.h>
-#include <include/iusHLParametricPulse.h>
-#include <include/iusHLNonParametricPulse.h>
+#include <unity_fixture.h>
+
+#include <iusHLDrivingScheme.h>
+#include <ius.h>
+#include <iusError.h>
+#include <iusTypes.h>
+#include <iusHLTransducer.h>
+#include <iusHLTransmitPattern.h>
+#include <iusHLTransmitPatternList.h>
+#include <iusHLSourceListOld.h>
+#include <iusHLTransmitPulseList.h>
+#include <iusHLParametricPulse.h>
+#include <iusHLNonParametricPulse.h>
+
 #include <testDataGenerators.h>
-#include "testDrivingScheme.h"
+#include <testDrivingScheme.h>
 
 TEST_GROUP(InputfileDrivingScheme);
 

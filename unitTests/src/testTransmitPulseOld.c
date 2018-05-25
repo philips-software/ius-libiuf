@@ -1,13 +1,13 @@
 //
 // Created by Ruijzendaal on 30/03/2018.
 //
-
 #include <unity_fixture.h>
-#include <include/ius.h>
-#include <include/iusTypes.h>
-#include <include/iusError.h>
-#include <include/iusHLNonParametricPulse.h>
-#include <include/iusHLParametricPulse.h>
+
+#include <ius.h>
+#include <iusTypes.h>
+#include <iusError.h>
+#include <iusHLNonParametricPulse.h>
+#include <iusHLParametricPulse.h>
 
 TEST_GROUP(InputfileTransmitPulse);
 

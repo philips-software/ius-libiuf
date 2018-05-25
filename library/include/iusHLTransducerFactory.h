@@ -4,14 +4,14 @@
 #ifndef IUSLIBRARY_IUSHLTRANSDUCERFACTORY__H
 #define IUSLIBRARY_IUSHLTRANSDUCERFACTORY__H
 
-#include "iusHLTransducer.h"
+#include <iusHLTransducer.h>
 
 iut_t iusHLTransducerFactoryCreate
 (
-  char *name,
-  IusTransducerShape shape,
-  float centerFrequency,
-  int numElements
+    char *name,
+    IusTransducerShape shape,
+    float centerFrequency,
+    int numElements
 );
 
 #endif // IUSLIBRARY_IUSHLTRANSDUCERFACTORY__H

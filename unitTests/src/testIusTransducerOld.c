@@ -1,17 +1,17 @@
 //
 // Created by Ruijzendaal on 20/03/2018.
 //
-
+#include <util.h>
 #include <unity.h>
 #include <unity_internals.h>
 #include <unity_fixture.h>
-#include <include/ius.h>
-#include <include/iusTypes.h>
-#include <include/iusHLExperiment.h>
-#include <include/iusHLTransducer.h>
-#include <include/iusError.h>
-#include <util.h>
-#include <include/iusUtil.h>
+
+#include <ius.h>
+#include <iusError.h>
+#include <iusUtil.h>
+#include <iusTypes.h>
+#include <iusHLExperiment.h>
+#include <iusHLTransducer.h>
 
 TEST_GROUP(IusTransducer);
 

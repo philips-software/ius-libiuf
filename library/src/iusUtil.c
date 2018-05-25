@@ -6,7 +6,7 @@
 
 #include <library_config.h>
 #include <iusHDF5.h>
-#include "iusUtil.h"
+#include <iusUtil.h>
 
 int iusHLDiagDisable()
 {

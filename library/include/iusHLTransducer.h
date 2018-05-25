@@ -1,10 +1,9 @@
-
 // Created by nlv09165 on 24/05/2018.
 #ifndef IUSLIBRARY_IUSHLTRANSDUCER_H
 #define IUSLIBRARY_IUSHLTRANSDUCER_H
 
-#include "iusTypes.h"
-#include "iusHLTransducerElement.h"
+#include <iusTypes.h>
+#include <iusHLTransducerElement.h>
 
 // ADT
 typedef struct IusTransducer IusTransducer;
@@ -13,9 +12,9 @@ typedef IusTransducer *iut_t;
 
 iut_t iusHLTransducerCreate
 (
-  char *name,
-  IusTransducerShape shape,
-  float centerFrequency
+    char *name,
+    IusTransducerShape shape,
+    float centerFrequency
 );
 
 int iusHLTransducerDelete
@@ -34,35 +33,36 @@ int iusHLTransducerCompare
 // Getters
 float iusHLTransducerGetCenterFrequency
 (
-  iut_t transducer
+    iut_t transducer
 );
 
 int iusHLTransducerGetNumElements
 (
-  iut_t transducer
+    iut_t transducer
 );
 
 char *iusHLTransducerGetName
 (
-  iut_t transducer
+    iut_t transducer
 );
 
 IusTransducerShape iusHLTransducerGetShape
 (
-  iut_t transducer
+    iut_t transducer
 );
 
 iute_t iusHLTransducerGetElement
 (
-  iut_t transducer,
-  int elementIndex
+    iut_t transducer,
+    int elementIndex
 );
 
 // Setters
 int iusHLTransducerSetElement
 (
-  iut_t transducer,
-  int elementIndex,
-  iute_t transducerElement
+    iut_t transducer,
+    int elementIndex,
+    iute_t transducerElement
 );
+
 #endif //IUSLIBRARY_IUSHLTRANSDUCER_H
