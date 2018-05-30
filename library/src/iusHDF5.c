@@ -11,12 +11,14 @@
 //------------------------------------------------------------------------------
 // 
 //------------------------------------------------------------------------------
+
+static int verbose = IUS_FALSE;
+
 herr_t iusHdf5ReadFloat
 (
     hid_t        handle,
     const char * pVariableString,
-    float *      pValue,
-    int          verbose
+    float *      pValue
 )
 {
     herr_t status = -1;
@@ -44,8 +46,7 @@ herr_t iusHdf5ReadShort
 (
     hid_t        handle,
     const char * pVariableString,
-    short *      pValue,
-    int          verbose
+    short *      pValue
 )
 {
     herr_t status = -1;
@@ -70,12 +71,11 @@ herr_t iusHdf5ReadShort
 // 
 //------------------------------------------------------------------------------
 herr_t iusHdf5ReadInt
-    (
-        hid_t        handle,
-        const char * pVariableString,
-        int *        pValue,
-        int          verbose
-    )
+(
+    hid_t        handle,
+    const char * pVariableString,
+    int *        pValue
+)
 {
     herr_t status = -1;
 
@@ -102,8 +102,7 @@ herr_t iusHdf5ReadLong
 (
     hid_t        handle,
     const char * pVariableString,
-    long int *   pValue,
-    int          verbose
+    long int *   pValue
 )
 {
     herr_t status = -1;
@@ -132,8 +131,7 @@ herr_t iusHdf5ReadString
 (
     hid_t        handle,
     const char * pVariableString,
-    char * *     ppReturnString,
-    int          verbose
+    char * *     ppReturnString
 )
 {
     herr_t status = -1;
@@ -169,8 +167,7 @@ herr_t iusHdf5ReadGridSize
     const char * pGridName,
     int *        pDim0,
     int *        pDim1,
-    int *        pDim2,
-    int          verbose
+    int *        pDim2
 )
 {
     herr_t status = -1;
@@ -183,16 +180,16 @@ herr_t iusHdf5ReadGridSize
     {
         sprintf( pVariableNameDim2, "%s/numPointsRadial", pGridName );
         sprintf( pVariableNameDim1, "%s/numPointsTheta", pGridName );
-        status  = iusHdf5ReadInt( handle, pVariableNameDim2, pDim2, verbose );
-        status |= iusHdf5ReadInt( handle, pVariableNameDim1, pDim1, verbose );
+        status  = iusHdf5ReadInt( handle, pVariableNameDim2, pDim2 );
+        status |= iusHdf5ReadInt( handle, pVariableNameDim1, pDim1 );
         *pDim0 = 0;  // elevation dimension not yet supported
     }
     else if ( strcmp( pGridName, "CartesianGrid" ) == 0 )
     {
         sprintf( pVariableNameDim2, "%s/numPointsZ", pGridName );
         sprintf( pVariableNameDim1, "%s/numPointsX", pGridName );
-        status  = iusHdf5ReadInt( handle, pVariableNameDim2, pDim2, verbose );
-        status |= iusHdf5ReadInt( handle, pVariableNameDim1, pDim1, verbose );
+        status  = iusHdf5ReadInt( handle, pVariableNameDim2, pDim2 );
+        status |= iusHdf5ReadInt( handle, pVariableNameDim1, pDim1 );
         *pDim0 = 0;  // elevation dimension not yet supported
     }
     else
@@ -210,8 +207,7 @@ herr_t iusHdf5ReadGrid
 (
     hid_t              handle,
     const char * const pGridName,
-    const IusGrid *    pGrid,
-    int                verbose
+    const IusGrid *    pGrid
 )
 {
     herr_t status = -1;
@@ -225,7 +221,7 @@ herr_t iusHdf5ReadGrid
         strcmp(pGridName, "CartesianGrid") == 0)
     {
         status = iusHdf5ReadGridSize( handle, pGridName, &dims[0], &dims[1],
-                                      &dims[2], verbose );
+                                      &dims[2] );
         if ( status < 0 )
         {
             fprintf( stderr,
@@ -268,8 +264,7 @@ herr_t iusHdf5WriteFloat
     hid_t               handle,
     const char * const  pVariableString,
     const float * const pValues,
-    int                 numValues,
-    int                 verbose
+    int                 numValues
 )
 {
     herr_t   returnValue;
@@ -301,8 +296,7 @@ herr_t iusHdf5WriteInt
     hid_t              handle,
     const char * const pVariableString,
     const int * const  pValues,
-    int                numValues,
-    int                verbose
+    int                numValues
 )
 {
     herr_t returnValue;
@@ -334,8 +328,7 @@ herr_t iusHdf5WriteLong
     hid_t              handle,
     const char * const pVariableString,
     const long * const pValues,
-    int                numValues,
-    int                verbose
+    int                numValues
 )
 {
     herr_t returnValue;
@@ -366,8 +359,7 @@ herr_t iusHdf5WriteString
 (
     hid_t              handle,
     const char * const pVariableString,
-    const char * const pString,
-    int                verbose
+    const char * const pString
 )
 {
     herr_t returnValue;
@@ -393,8 +385,7 @@ herr_t iusHdf5WriteGrid
 (
     hid_t        handle,
     const char * pGridName,
-    IusGrid *    pGrid,
-    int          verbose
+    IusGrid *    pGrid
 )
 {
     herr_t returnValue;

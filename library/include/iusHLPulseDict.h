@@ -38,7 +38,8 @@ iup_t iusHLPulseDictGet
 
 int iusHLPulseDictSet
 (
-    iupd_t list,
+    iupd_t dict,
+    char * key,
     iup_t member
 );
 

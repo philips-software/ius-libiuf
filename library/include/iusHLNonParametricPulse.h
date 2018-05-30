@@ -23,7 +23,7 @@ int iusHLNonParametricPulseDelete
 );
 
 
-int iusNonParametricPulseCompare
+int iusHLNonParametricPulseCompare
 (
     iunpp_t reference,
     iunpp_t actual

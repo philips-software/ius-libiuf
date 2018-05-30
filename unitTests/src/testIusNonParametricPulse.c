@@ -9,7 +9,7 @@
 #include <iusError.h>
 #include <iusTypes.h>
 #include <iusHLParametricPulse.h>
-#include <iusHLNonParametricPulse.h>
+#include <iusHLNonParametricPulseImp.h>
 
 #include <testDataGenerators.h>
 
@@ -98,19 +98,19 @@ TEST(IusNonParametricPulse, testIusCompareNonParametricPulse)
 
     parametricPulse = iusHLParametricPulseCreate("parametricPulse", pulseFrequency, pulseAmplitude, pulseCount);
 
-    isEqual = iusNonParametricPulseCompare(nonParametricPulse, nonParametricPulse);
+    isEqual = iusHLNonParametricPulseCompare(nonParametricPulse, nonParametricPulse);
     TEST_ASSERT_EQUAL(IUS_TRUE,isEqual);
-    isEqual = iusNonParametricPulseCompare(nonParametricPulse, notherNonParametricPulse);
+    isEqual = iusHLNonParametricPulseCompare(nonParametricPulse, notherNonParametricPulse);
     TEST_ASSERT_EQUAL(IUS_TRUE,isEqual);
 
     // Invalid arguments
-    isEqual = iusNonParametricPulseCompare((iunpp_t) parametricPulse, nonParametricPulse);
+    isEqual = iusHLNonParametricPulseCompare((iunpp_t) parametricPulse, nonParametricPulse);
     TEST_ASSERT_EQUAL(IUS_FALSE,isEqual);
-    isEqual = iusNonParametricPulseCompare(NULL, NULL);
+    isEqual = iusHLNonParametricPulseCompare(NULL, NULL);
     TEST_ASSERT_EQUAL(IUS_TRUE,isEqual);
-    isEqual = iusNonParametricPulseCompare(NULL, nonParametricPulse);
+    isEqual = iusHLNonParametricPulseCompare(NULL, nonParametricPulse);
     TEST_ASSERT_EQUAL(IUS_FALSE,isEqual);
-    isEqual = iusNonParametricPulseCompare(nonParametricPulse, NULL);
+    isEqual = iusHLNonParametricPulseCompare(nonParametricPulse, NULL);
     TEST_ASSERT_EQUAL(IUS_FALSE,isEqual);
 
 
@@ -175,6 +175,36 @@ TEST(IusNonParametricPulse, testIusSetGetNonParametricPulse)
 }
 
 
+TEST(IusNonParametricPulse, testIusSerialization)
+{
+    char *filename = "testIusNonParametricPulseSerialization.hdf5";
+    char *pulsePath =  "/NonParametricPulse";
+    char *label = "label for IUS_NON_PARAMETRIC_PULSETYPE";
+
+    int numPulseValues = 20;
+
+    // create and save
+    iunpp_t nonParametricPulse = iusHLNonParametricPulseCreate("Created_in_testIusCreateNonParametricPulse", numPulseValues);
+    iunpp_t notherNonParametricPulse = iusHLNonParametricPulseCreate("Created_in_testIusCreateNonParametricPulse", numPulseValues+10);
+
+    hid_t handle = H5Fcreate( filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT );
+    TEST_ASSERT(handle > 0);
+    int status = iusHLNonParametricPulseSave(nonParametricPulse, pulsePath, handle);
+    H5Fclose(handle);
+    TEST_ASSERT_EQUAL(IUS_E_OK,status);
+
+    // read back
+    handle = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT );
+    iunpp_t savedObj = iusHLNonParametricPulseLoad(handle, pulsePath);
+    TEST_ASSERT(savedObj != NULL);
+    H5Fclose(handle);
+
+    TEST_ASSERT_EQUAL(IUS_TRUE, iusHLNonParametricPulseCompare(nonParametricPulse,savedObj));
+    TEST_ASSERT_EQUAL(IUS_FALSE, iusHLNonParametricPulseCompare(notherNonParametricPulse,savedObj));
+    iusHLNonParametricPulseDelete(nonParametricPulse);
+    iusHLNonParametricPulseDelete(notherNonParametricPulse);
+    iusHLNonParametricPulseDelete(savedObj);
+}
 
 TEST_GROUP_RUNNER(IusNonParametricPulse)
 {
@@ -182,4 +212,5 @@ TEST_GROUP_RUNNER(IusNonParametricPulse)
     RUN_TEST_CASE(IusNonParametricPulse, testIusDeleteNonParametricPulse);
     RUN_TEST_CASE(IusNonParametricPulse, testIusCompareNonParametricPulse);
     RUN_TEST_CASE(IusNonParametricPulse, testIusSetGetNonParametricPulse);
+    RUN_TEST_CASE(IusNonParametricPulse, testIusSerialization);
 }

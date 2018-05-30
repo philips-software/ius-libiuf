@@ -17,7 +17,7 @@ iue_t iusHLExperimentCreate
     char *pDescription  /**< Experiment notes */
 );
 
-int iusHLDeleteExperiment
+int iusHLExperimentDelete
 (
     iue_t experiment
 );

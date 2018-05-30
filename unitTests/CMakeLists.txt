@@ -1,4 +1,8 @@
+
+FIND_PACKAGE(HDF5 COMPONENTS C HL)
+
 include_directories(include)
+include_directories(${HDF5_INCLUDE_DIR})
 
 add_executable(unitTests
 #        src/testDataGenerators.c
@@ -9,6 +13,7 @@ add_executable(unitTests
         src/testIusNonParametricPulse.c
         src/testIusPulseList.c
         src/testIusPulseDict.c
+        src/testIusPulse.c
         src/util.c
 #        src/testNode.c
 #        src/testTransducer.c
@@ -29,6 +34,8 @@ add_executable(unitTests
 target_link_libraries(unitTests
         ius
         Unity
+        ${HDF5_LIBRARIES}
+        ${HDF5_HL_LIBRARIES}
         )
 
 add_test(suite_1_test unitTests)

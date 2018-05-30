@@ -125,13 +125,16 @@ iup_t iusHLPulseDictGet
 int iusHLPulseDictSet
 (
     iupd_t dict,
+    char * key,
     iup_t member
 )
 {
+    if( dict == NULL ) return IUS_ERR_VALUE;
+    if( key == NULL ) return IUS_ERR_VALUE;
+
     HashablePulse *newMember = calloc(1, sizeof(HashablePulse));
     newMember->pulse = member;
-    char *label = iusHLPulseGetLabel(member);
     if( dict == NULL  ) return IUS_ERR_VALUE;
-    HASH_ADD_KEYPTR( hh, dict->pPulses, label, strlen(label), newMember );
+    HASH_ADD_KEYPTR( hh, dict->pPulses, key, strlen(key), newMember );
     return IUS_E_OK;
 }

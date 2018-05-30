@@ -11,7 +11,7 @@
 
 #include <iusHLNonParametricPulse.h>
 #include <iusHLPulseImp.h>
-
+#include <include/iusHDF5.h>
 
 struct IusNonParametricPulse
 {
@@ -63,7 +63,7 @@ int iusHLNonParametricPulseDelete
 
 
 
-int iusNonParametricPulseCompare
+int iusHLNonParametricPulseCompare
 (
     iunpp_t reference,
     iunpp_t actual
@@ -138,4 +138,47 @@ int iusHLNonParametricPulseSetAmplitudeTime
 }
 
 
+#define NUMPULSEVALUESFMT "%s/numpulseValues"
+
+int iusHLNonParametricPulseSave
+(
+    iunpp_t pulse,
+    char *parentPath,
+    hid_t handle
+)
+{
+    int status=0;
+    char path[64];
+
+    status |= iusHLPulseSave((iup_t)pulse,parentPath,handle);
+    sprintf(path, NUMPULSEVALUESFMT, parentPath);
+    status |= iusHdf5WriteInt(handle, path, &(pulse->numPulseValues), 1);
+    return status;
+}
+
+iunpp_t iusHLNonParametricPulseLoad
+(
+    hid_t handle,
+    char *parentPath
+)
+{
+    int status = 0;
+    char *label;
+    char path[64];
+    int  numPulseValues;
+
+    iunpp_t  pulse;
+
+    iup_t basePulse = iusHLPulseLoad( handle, parentPath);
+    if( basePulse == IUP_INVALID )
+        return IUNPP_INVALID;
+
+    label = iusHLPulseGetLabel(basePulse);
+    sprintf(path, NUMPULSEVALUESFMT, parentPath);
+    status |= iusHdf5ReadInt(handle, path, &(numPulseValues));
+    if( status < 0 )
+        return NULL;
+    pulse = iusHLNonParametricPulseCreate(label,numPulseValues);
+    return pulse;
+}
 

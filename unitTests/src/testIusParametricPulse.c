@@ -9,7 +9,7 @@
 #include <iusError.h>
 #include <iusTypes.h>
 #include <iusHLPulse.h>
-#include <iusHLParametricPulse.h>
+#include <iusHLParametricPulseImp.h>
 #include <iusHLNonParametricPulse.h>
 
 TEST_GROUP(IusParametricPulse);
@@ -98,22 +98,26 @@ TEST(IusParametricPulse, testIusComparePulse)
     float   pulseAmplitude=800.0f;       /**< (max) amplitude of the pulse in Volts */
     int     pulseCount=10;               /**< number of cycles that the pulse represents */
     int     numPulseValues=20;              /**< number of points to describe waveform, 0 implies a parametric description only */
-    iupp_t  parametricPulse,notherParametricPulse;
+    iupp_t  parametricPulse,notherParametricPulse,identicalPulse;
     iunpp_t nonParametricPulse;
     IUS_BOOL isEqual;
 
 
     // Parametric transmit pulse
     parametricPulse = iusHLParametricPulseCreate("parametricPulse", pulseFrequency, pulseAmplitude, pulseCount);
+    identicalPulse = iusHLParametricPulseCreate("parametricPulse", pulseFrequency, pulseAmplitude, pulseCount);
     notherParametricPulse =
     iusHLParametricPulseCreate("notherParametricPulse", pulseFrequency, pulseAmplitude, pulseCount);
+
 
     nonParametricPulse = iusHLNonParametricPulseCreate("nonParametricPulse", numPulseValues);
 
     isEqual = iusHLParametricPulseCompare(parametricPulse, parametricPulse);
     TEST_ASSERT_EQUAL(IUS_TRUE,isEqual);
-    isEqual = iusHLParametricPulseCompare(parametricPulse, notherParametricPulse);
+    isEqual = iusHLParametricPulseCompare(parametricPulse, identicalPulse);
     TEST_ASSERT_EQUAL(IUS_TRUE,isEqual);
+    isEqual = iusHLParametricPulseCompare(parametricPulse, notherParametricPulse);
+    TEST_ASSERT_EQUAL(IUS_FALSE,isEqual);
 
     // Invalid arguments
     isEqual = iusHLParametricPulseCompare(parametricPulse, (iupp_t) nonParametricPulse);
@@ -166,7 +170,37 @@ TEST(IusParametricPulse, testIusSetGetPulse)
     TEST_ASSERT(status == IUS_E_OK);
 }
 
+TEST(IusParametricPulse, testIusSerialization)
+{
+    char *filename = "testIusParametricPulseSerialization.hdf5";
+    char *pulsePath =  "/ParametricPulse";
+    char *label = "label for IUS_PARAMETRIC_PULSETYPE";
+    float   pulseFrequency=8000000.0f;   /**< frequency that the pulse represents in Hz */
+    float   pulseAmplitude=800.0f;       /**< (max) amplitude of the pulse in Volts */
+    int     pulseCount=10;               /**< number of cycles that the pulse represents */
 
+
+    // create and save
+    iupp_t parametricPulse = iusHLParametricPulseCreate("parametricPulse", pulseFrequency, pulseAmplitude, pulseCount);
+    iupp_t notherParametricPulse = iusHLParametricPulseCreate("notherParametricPulse", pulseFrequency, pulseAmplitude, pulseCount);
+
+    hid_t handle = H5Fcreate( filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT );
+    TEST_ASSERT(handle > 0);
+    int status = iusHLParametricPulseSave(parametricPulse, pulsePath, handle);
+    H5Fclose(handle);
+    TEST_ASSERT_EQUAL(IUS_E_OK,status);
+
+    // read back
+    handle = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT );
+    iupp_t savedObj = iusHLParametricPulseLoad(handle, pulsePath);
+    H5Fclose(handle);
+
+    TEST_ASSERT_EQUAL(IUS_TRUE, iusHLParametricPulseCompare(parametricPulse,savedObj));
+    TEST_ASSERT_EQUAL(IUS_FALSE, iusHLParametricPulseCompare(notherParametricPulse,savedObj));
+    iusHLParametricPulseDelete(parametricPulse);
+    iusHLParametricPulseDelete(notherParametricPulse);
+    iusHLParametricPulseDelete(savedObj);
+}
 
 TEST_GROUP_RUNNER(IusParametricPulse)
 {
@@ -174,4 +208,5 @@ TEST_GROUP_RUNNER(IusParametricPulse)
     RUN_TEST_CASE(IusParametricPulse, testIusDeletePulse);
     RUN_TEST_CASE(IusParametricPulse, testIusComparePulse);
     RUN_TEST_CASE(IusParametricPulse, testIusSetGetPulse);
+    RUN_TEST_CASE(IusParametricPulse, testIusSerialization);
 }

@@ -750,14 +750,6 @@ void iusInputDestroy
 #endif
 
 
-int iusWriteExperiment(IusExperiment *pExperiment, hid_t handle, int verbose) {
-    herr_t status = 0;
-    /* write the /Experiment data */
-    status |= iusHdf5WriteFloat( handle , "/Experiment/speedOfSound",    &(pExperiment->speedOfSound), 1,   verbose );
-    status |= iusHdf5WriteInt( handle , "/Experiment/date", &(pExperiment->date), 1,   verbose );
-    status |= iusHdf5WriteString( handle , "/Experiment/description", pExperiment->pDescription, 1,   verbose );
-    return status;
-}
 
 int iusWrite3DTransducerElementPositions(Ius3DTransducer *pTransducer, hid_t subgroup_id, int verbose)
 {
@@ -1528,22 +1520,6 @@ int iusInputWrite
 
 
 
-
-IusExperiment *iusReadExperiment(hid_t handle, int verbose) {
-    int status = 0;
-    float speedOfSound;
-    int date;
-    char *pDescription;
-    iue_t experiment;
-    status |= iusHdf5ReadFloat( handle , "/Experiment/speedOfSound",    &(speedOfSound),    verbose );
-    status |= iusHdf5ReadInt( handle,    "/Experiment/date",            &(date),            verbose );
-    status |= iusHdf5ReadString( handle, "/Experiment/description",     &(pDescription),    verbose );
-
-    if( status < 0 )
-        return NULL;
-    experiment = iusHLCreateExperiment(speedOfSound,date,pDescription);
-    return experiment;
-}
 
 
 

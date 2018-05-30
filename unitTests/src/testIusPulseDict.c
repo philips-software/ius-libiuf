@@ -56,17 +56,28 @@ TEST(IusPulseDict, testIusComparePulseDict)
     TEST_ASSERT_EQUAL(IUS_TRUE,equal);
 
     parametricPulse = iusHLParametricPulseCreate("parametricPulse", pulseFrequency, pulseAmplitude, pulseCount);
-//    nonParametricPulse = iusHLCreateNonParametricPulse("nonParametricPulse",numPulseValues);
+    nonParametricPulse = iusHLNonParametricPulseCreate("nonParametricPulse",numPulseValues);
 
     char *label = iusHLPulseGetLabel((iup_t) parametricPulse);
-    status = iusHLPulseDictSet(dict,(iup_t) parametricPulse);
+    status = iusHLPulseDictSet(dict,label,(iup_t) parametricPulse);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
     equal = iusHLPulseDictCompare(dict, notherDict);
     TEST_ASSERT_EQUAL(IUS_FALSE,equal);
-    status = iusHLPulseDictSet(notherDict,(iup_t) parametricPulse);
+    status = iusHLPulseDictSet(notherDict,label,(iup_t) parametricPulse);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
     equal = iusHLPulseDictCompare(dict, notherDict);
     TEST_ASSERT_EQUAL(IUS_TRUE,equal);
+
+    label = iusHLPulseGetLabel((iup_t) nonParametricPulse);
+    status = iusHLPulseDictSet(dict,label,(iup_t) nonParametricPulse);
+    TEST_ASSERT_EQUAL(IUS_E_OK,status);
+    equal = iusHLPulseDictCompare(dict, notherDict);
+    TEST_ASSERT_EQUAL(IUS_FALSE,equal);
+    status = iusHLPulseDictSet(notherDict,label,(iup_t) nonParametricPulse);
+    TEST_ASSERT_EQUAL(IUS_E_OK,status);
+    equal = iusHLPulseDictCompare(dict, notherDict);
+    TEST_ASSERT_EQUAL(IUS_TRUE,equal);
+
 
     // invalid params
     equal = iusHLPulseDictCompare(dict, NULL);

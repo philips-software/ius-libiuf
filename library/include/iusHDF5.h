@@ -35,8 +35,7 @@ herr_t iusHdf5ReadFloat
 (
     hid_t        handle,
     const char * pVariableString,
-    float *      pValue,
-    int          verbose
+    float *      pValue
 );
 
 /** 
@@ -57,8 +56,7 @@ herr_t iusHdf5ReadShort
 (
     hid_t        handle,
     const char * pVariableString,
-    short *        pValue,
-    int          verbose
+    short *        pValue
 );
 
 
@@ -81,8 +79,7 @@ herr_t iusHdf5ReadInt
     (
         hid_t        handle,
         const char * pVariableString,
-        int *        pValue,
-        int          verbose
+        int *        pValue
     );
 
 
@@ -105,8 +102,7 @@ herr_t iusHdf5ReadLong
 (
     hid_t        handle,
     const char * pVariableString,
-    long int *   pValue,
-    int          verbose
+    long int *   pValue
 );
 
 /** 
@@ -128,8 +124,7 @@ herr_t iusHdf5ReadString
 (
     hid_t        handle,
     const char * pVariableString,
-    char * *     ppReturnString,
-    int verbose
+    char * *     ppReturnString
 );
 
 /** 
@@ -155,8 +150,7 @@ herr_t iusHdf5ReadGrid
 (
     hid_t              handle,
     const char * const pGridName,
-    IusGrid *          pGrid,
-    int                verbose
+    IusGrid *          pGrid
 );
 
 /**
@@ -176,8 +170,7 @@ herr_t iusHdf5WriteFloat
     hid_t        handle,
     const char * pVariableString,
     float *      pValues,
-    int          numValues,
-    int          verbose
+    int          numValues
 );
 //return H5LTmake_dataset_float( handle,  "centerFrequency",  1, dims,
 //    &(pInst->centerFrequency));
@@ -199,8 +192,7 @@ herr_t iusHdf5WriteInt
     hid_t        handle,
     const char * pVariableString,
     int *        pValues,
-    int          numValues,
-    int          verbose
+    int          numValues
 );
 
 /**
@@ -241,8 +233,7 @@ herr_t iusHdf5WriteString
     hid_t        handle,
     const char * pVariableString,
     char *       pString,
-    int          numValues,
-    int          verbose
+    int          numValues
 );
 
 /** 

@@ -9,7 +9,7 @@
 #include <ius.h>
 #include <iusError.h>
 #include <iusTypes.h>
-#include <iusHLExperiment.h>
+#include <iusHLExperimentImp.h>
 
 TEST_GROUP(IusExperiment);
 
@@ -33,8 +33,8 @@ TEST(IusExperiment, testIusCreateExperiment)
     iue_t notherObj = iusHLExperimentCreate(speedOfSound, date, pDescription);
     TEST_ASSERT(obj != IUE_INVALID);
     TEST_ASSERT(notherObj != IUE_INVALID);
-    iusHLDeleteExperiment(obj);
-    iusHLDeleteExperiment(notherObj);
+  iusHLExperimentDelete(obj);
+  iusHLExperimentDelete(notherObj);
 
     // invalid params
     obj = iusHLExperimentCreate(-1.0f, date, pDescription);
@@ -53,11 +53,11 @@ TEST(IusExperiment, testIusDeleteExperiment)
     char *pDescription = "My important experiment notes, by testIusCreateExperiment";
     iue_t obj = iusHLExperimentCreate(speedOfSound, date, pDescription);
     TEST_ASSERT(obj != IUE_INVALID);
-    int status = iusHLDeleteExperiment(obj);
+    int status = iusHLExperimentDelete(obj);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
     // invalid params
-    status = iusHLDeleteExperiment(NULL);
+    status = iusHLExperimentDelete(NULL);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
 }
 
@@ -88,10 +88,9 @@ TEST(IusExperiment, testIusCompareExperiment)
     equal = iusHLExperimentCompare(NULL, obj);
     TEST_ASSERT_EQUAL(IUS_FALSE,equal);
 
-
-    iusHLDeleteExperiment(obj);
-    iusHLDeleteExperiment(notherObj);
-    iusHLDeleteExperiment(differentObj);
+  iusHLExperimentDelete(obj);
+  iusHLExperimentDelete(notherObj);
+  iusHLExperimentDelete(differentObj);
 }
 
 TEST(IusExperiment, testIusGetExperiment)
@@ -110,8 +109,39 @@ TEST(IusExperiment, testIusGetExperiment)
     TEST_ASSERT_EQUAL_FLOAT(NAN,iusHLExperimentGetSpeedOfSound(NULL));
     TEST_ASSERT_EQUAL(-1,iusHLExperimentGetDate(NULL));
     TEST_ASSERT(iusHLExperimentGetDescription(NULL)==NULL);
-    iusHLDeleteExperiment(obj);
+  iusHLExperimentDelete(obj);
 }
+
+TEST(IusExperiment, testIusSerialization)
+{
+    float speedOfSound = 1498.1f;
+    int date = 20160124;
+    char *pDescription = "My important experiment notes, by testIusCreateExperiment";
+    char *filename = "testIusSerialization.hdf5";
+    char *experimentPath =  "/Experiment";
+
+    // create and save
+    iue_t obj = iusHLExperimentCreate(speedOfSound, date, pDescription);
+    iue_t notherObj = iusHLExperimentCreate(speedOfSound+1, date+1, pDescription);
+
+    hid_t handle = H5Fcreate( filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT );
+    TEST_ASSERT(handle > 0);
+    int status = iusHLExperimentSave(obj, experimentPath, handle);
+    H5Fclose(handle);
+    TEST_ASSERT_EQUAL(IUS_E_OK,status);
+
+    // read back
+    handle = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT );
+    iue_t savedObj = iusHLExperimentLoad(handle, experimentPath);
+    H5Fclose(handle);
+
+    TEST_ASSERT_EQUAL(IUS_TRUE, iusHLExperimentCompare(obj,savedObj));
+    TEST_ASSERT_EQUAL(IUS_FALSE, iusHLExperimentCompare(notherObj,savedObj));
+    iusHLExperimentDelete(obj);
+    iusHLExperimentDelete(savedObj);
+}
+
+
 
 TEST_GROUP_RUNNER(IusExperiment)
 {
@@ -119,4 +149,5 @@ TEST_GROUP_RUNNER(IusExperiment)
     RUN_TEST_CASE(IusExperiment, testIusDeleteExperiment);
     RUN_TEST_CASE(IusExperiment, testIusCompareExperiment);
     RUN_TEST_CASE(IusExperiment, testIusGetExperiment);
+    RUN_TEST_CASE(IusExperiment, testIusSerialization);
 }

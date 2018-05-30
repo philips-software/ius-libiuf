@@ -15,7 +15,7 @@ configure_file (
 #FIND_PACKAGE(HDF5 COMPONENTS C HL NO_MODULE REQUIRED static)
 #FIND_PACKAGE(HDF5 COMPONENTS C HL NO_MODULE REQUIRED shared)
 #FIND_PACKAGE(HDF5)
-FIND_PACKAGE(HDF5 COMPONENTS C HL)
+FIND_PACKAGE(HDF5 1.8 COMPONENTS C HL REQUIRED)
 #FIND_PACKAGE(UUID)
 #if(UUID_FOUND)
 #else(UUID_FOUND)
@@ -96,7 +96,7 @@ add_library(ius STATIC
 		src/iusHL3DAngle.c
 		include/iusHL3DAngle.h
         include/iusHLPulseImp.h
-		include/iusHLTransducerImp.h include/iusHLTransducerElementImp.h)
+		include/iusHLTransducerImp.h include/iusHLTransducerElementImp.h include/iusHLExperimentImp.h include/iusHLParametricPulseImp.h include/iusHLNonParametricPulseImp.h)
 
 target_include_directories(ius PUBLIC
         ${CMAKE_CURRENT_LIST_DIR}
