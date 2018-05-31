@@ -27,8 +27,8 @@ endif()
 
 include_directories("${PROJECT_BINARY_DIR}")
 include_directories(${HDF5_INCLUDE_DIR})
-include_directories(${UTHASH_INCLUDE_DIR})
-
+#include_directories(${UTHASH_INCLUDE_DIR})
+include_directories(${HASHMAP_INCLUDE_DIR})
 
 add_library(ius STATIC
 #        src/iusInput.c
@@ -96,7 +96,12 @@ add_library(ius STATIC
 		src/iusHL3DAngle.c
 		include/iusHL3DAngle.h
         include/iusHLPulseImp.h
-		include/iusHLTransducerImp.h include/iusHLTransducerElementImp.h include/iusHLExperimentImp.h include/iusHLParametricPulseImp.h include/iusHLNonParametricPulseImp.h)
+		include/iusHLTransducerImp.h
+		include/iusHLTransducerElementImp.h
+		include/iusHLExperimentImp.h
+		include/iusHLParametricPulseImp.h
+		include/iusHLNonParametricPulseImp.h
+		include/iusHLPulseDictImp.h)
 
 target_include_directories(ius PUBLIC
         ${CMAKE_CURRENT_LIST_DIR}
@@ -107,6 +112,7 @@ target_include_directories(ius PUBLIC
 
 target_link_libraries(
         ius
+		hashmap
         ${HDF5_LIBRARIES}
         ${HDF5_HL_LIBRARIES}
         ${UUID_LIBRARIES}

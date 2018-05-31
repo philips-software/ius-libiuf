@@ -9,6 +9,14 @@ target_include_directories(Unity PUBLIC
         Unity/extras/fixture/src
         )
 
+add_library(hashmap STATIC
+        hashmap/src/hashmap.c
+        )
+
+target_include_directories(hashmap PUBLIC
+        hashmap/src
+        )
+
 # the option is here so that we can plug it into other
 #set (HDF5_ROOT  /usr/local/HDF_Group/HDF5/1.8.20)
 #find_package(HDF5)

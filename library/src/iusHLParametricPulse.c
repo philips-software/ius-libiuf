@@ -17,7 +17,6 @@
 // ADT
 struct IusParametricPulse
 {
-// ADT
     struct  IusPulse base;
     float   pulseFrequency;       /**< frequency that the pulse represents in Hz */
     float   pulseAmplitude;       /**< (max) amplitude of the pulse in Volts */
@@ -128,37 +127,30 @@ int iusHLParametricPulseSave
     int status=0;
     char path[64];
 
-    status |= iusHLPulseSave((iup_t)pulse,parentPath,handle);
-//    hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
     sprintf(path, FREQUENCYFMT, parentPath);
     status |= iusHdf5WriteFloat(handle, path, &(pulse->pulseFrequency), 1);
     sprintf(path, AMPLITUDEFMT, parentPath);
     status |= iusHdf5WriteFloat(handle, path, &(pulse->pulseAmplitude), 1);
     sprintf(path, COUNTFMT, parentPath);
     status |= iusHdf5WriteInt(handle, path, &(pulse->pulseCount), 1);
-//    status |= H5Gclose(group_id );
     return status;
 }
 
 iupp_t iusHLParametricPulseLoad
 (
     hid_t handle,
-    char *parentPath
+    char *parentPath,
+    char *label
 )
 {
     int status = 0;
-    char *label;
     char path[64];
     float   pulseFrequency;       /**< frequency that the pulse represents in Hz */
     float   pulseAmplitude;       /**< (max) amplitude of the pulse in Volts */
     int     pulseCount;           /**< number of cycles that the pulse represents */
     iupp_t  pulse;
 
-    iup_t basePulse = iusHLPulseLoad( handle, parentPath);
-    if( basePulse == IUP_INVALID )
-      return IUPP_INVALID;
 
-    label = iusHLPulseGetLabel(basePulse);
     sprintf(path, FREQUENCYFMT, parentPath);
     status |= iusHdf5ReadFloat( handle, path, &(pulseFrequency));
     sprintf(path, AMPLITUDEFMT, parentPath);

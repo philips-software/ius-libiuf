@@ -8,6 +8,7 @@
 #include <ius.h>
 #include <iusError.h>
 #include <iusTypes.h>
+#include <iusHLPulseImp.h>
 #include <iusHLParametricPulse.h>
 #include <iusHLNonParametricPulseImp.h>
 
@@ -141,30 +142,31 @@ TEST(IusNonParametricPulse, testIusSetGetNonParametricPulse)
     TEST_ASSERT(nonParametricPulse != IUNPP_INVALID);
     TEST_ASSERT_EQUAL(numPulseValues,iusHLNonParametricPulseGetNumValues(nonParametricPulse));
 
-    status = iusHLNonParametricPulseSetAmplitudeTime(nonParametricPulse, pulseTime, pulseAmplitude, 0);
+    status = iusHLNonParametricPulseSetValue(nonParametricPulse, 0, pulseTime, pulseAmplitude);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
-    TEST_ASSERT_EQUAL_FLOAT(pulseAmplitude,iusHLNonParametricPulseGetAmplitude(nonParametricPulse, 0));
-    TEST_ASSERT_EQUAL_FLOAT(pulseTime,iusHLNonParametricPulseGetTime(nonParametricPulse, 0));
+    TEST_ASSERT_EQUAL_FLOAT(pulseAmplitude, iusHLNonParametricPulseGetValueAmplitude(nonParametricPulse, 0));
+    TEST_ASSERT_EQUAL_FLOAT(pulseTime, iusHLNonParametricPulseGetValueTime(nonParametricPulse, 0));
 
     pulseTime *= numPulseValues;
     pulseAmplitude *= numPulseValues;
-    status = iusHLNonParametricPulseSetAmplitudeTime(nonParametricPulse, pulseTime, pulseAmplitude, numPulseValues-1);
+    status = iusHLNonParametricPulseSetValue(nonParametricPulse, numPulseValues - 1, pulseTime, pulseAmplitude);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
-    TEST_ASSERT_EQUAL_FLOAT(pulseAmplitude,iusHLNonParametricPulseGetAmplitude(nonParametricPulse, numPulseValues-1));
-    TEST_ASSERT_EQUAL_FLOAT(pulseTime,iusHLNonParametricPulseGetTime(nonParametricPulse, numPulseValues-1));
+    TEST_ASSERT_EQUAL_FLOAT(pulseAmplitude,
+                            iusHLNonParametricPulseGetValueAmplitude(nonParametricPulse, numPulseValues - 1));
+    TEST_ASSERT_EQUAL_FLOAT(pulseTime, iusHLNonParametricPulseGetValueTime(nonParametricPulse, numPulseValues - 1));
 
     // Invalid params
     // Parametric transmit pulse
     parametricPulse = iusHLParametricPulseCreate("parametricPulse", pulseFrequency, pulseAmplitude, pulseCount);
-    status = iusHLNonParametricPulseSetAmplitudeTime((iunpp_t) parametricPulse, pulseTime, pulseAmplitude, 0);
+    status = iusHLNonParametricPulseSetValue((iunpp_t) parametricPulse, 0, pulseTime, pulseAmplitude);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE,status);
-    status = iusHLNonParametricPulseSetAmplitudeTime(NULL, pulseTime, pulseAmplitude, 0);
+    status = iusHLNonParametricPulseSetValue(NULL, 0, pulseTime, pulseAmplitude);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE,status);
-    status = iusHLNonParametricPulseSetAmplitudeTime(nonParametricPulse, -1.0f, pulseAmplitude, 0);
+    status = iusHLNonParametricPulseSetValue(nonParametricPulse, 0, -1.0f, pulseAmplitude);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE,status);
-    status = iusHLNonParametricPulseSetAmplitudeTime(nonParametricPulse, pulseAmplitude, pulseAmplitude, -1);
+    status = iusHLNonParametricPulseSetValue(nonParametricPulse, -1, pulseTime, pulseAmplitude);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE,status);
-    status = iusHLNonParametricPulseSetAmplitudeTime(nonParametricPulse, pulseAmplitude, pulseAmplitude, numPulseValues);
+    status = iusHLNonParametricPulseSetValue(nonParametricPulse, numPulseValues, pulseTime, pulseAmplitude);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE,status);
 
 
@@ -177,25 +179,32 @@ TEST(IusNonParametricPulse, testIusSetGetNonParametricPulse)
 
 TEST(IusNonParametricPulse, testIusSerialization)
 {
-    char *filename = "testIusNonParametricPulseSerialization.hdf5";
-    char *pulsePath =  "/NonParametricPulse";
-    char *label = "label for IUS_NON_PARAMETRIC_PULSETYPE";
+  char *filename = "testIusNonParametricPulseSerialization.hdf5";
+  char *pulsePath =  "/NonParametricPulse";
+  char *label = "label for IUS_NON_PARAMETRIC_PULSETYPE";
 
     int numPulseValues = 20;
 
-    // create and save
+    // create
     iunpp_t nonParametricPulse = iusHLNonParametricPulseCreate("Created_in_testIusCreateNonParametricPulse", numPulseValues);
     iunpp_t notherNonParametricPulse = iusHLNonParametricPulseCreate("Created_in_testIusCreateNonParametricPulse", numPulseValues+10);
 
+    // fill
+    int status = iusHLNonParametricPulseSetValue(nonParametricPulse,0,0.1f,10.0f);
+    TEST_ASSERT_EQUAL(IUS_E_OK,status);
+    status = iusHLNonParametricPulseSetValue(nonParametricPulse,1,0.2f,10.0f);
+    TEST_ASSERT_EQUAL(IUS_E_OK,status);
+
+    // save
     hid_t handle = H5Fcreate( filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT );
     TEST_ASSERT(handle > 0);
-    int status = iusHLNonParametricPulseSave(nonParametricPulse, pulsePath, handle);
+    status = iusHLPulseSave((iup_t)nonParametricPulse, pulsePath, handle);
     H5Fclose(handle);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
     // read back
     handle = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT );
-    iunpp_t savedObj = iusHLNonParametricPulseLoad(handle, pulsePath);
+    iunpp_t savedObj = iusHLNonParametricPulseLoad(handle, pulsePath, label);
     TEST_ASSERT(savedObj != NULL);
     H5Fclose(handle);
 

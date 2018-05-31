@@ -34,24 +34,24 @@ int iusHLNonParametricPulseGetNumValues
     iunpp_t pulse
 );
 
-float iusHLNonParametricPulseGetAmplitude
+float iusHLNonParametricPulseGetValueAmplitude
 (
     iunpp_t pulse,
     int index
 );
 
-float iusHLNonParametricPulseGetTime
+float iusHLNonParametricPulseGetValueTime
 (
     iunpp_t pulse,
     int index
 );
 
-int iusHLNonParametricPulseSetAmplitudeTime
+int iusHLNonParametricPulseSetValue
 (
     iunpp_t pulse,
+    int index,
     float pulseTime,
-    float pulseAmplitude,
-    int index
+    float pulseAmplitude
 );
 
 #endif //IUSLIBRARY_IUSHLNONPARAMETRICPULSE_H

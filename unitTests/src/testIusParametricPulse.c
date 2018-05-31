@@ -8,7 +8,7 @@
 #include <ius.h>
 #include <iusError.h>
 #include <iusTypes.h>
-#include <iusHLPulse.h>
+#include <iusHLPulseImp.h>
 #include <iusHLParametricPulseImp.h>
 #include <iusHLNonParametricPulse.h>
 
@@ -181,18 +181,18 @@ TEST(IusParametricPulse, testIusSerialization)
 
 
     // create and save
-    iupp_t parametricPulse = iusHLParametricPulseCreate("parametricPulse", pulseFrequency, pulseAmplitude, pulseCount);
+    iupp_t parametricPulse = iusHLParametricPulseCreate(label, pulseFrequency, pulseAmplitude, pulseCount);
     iupp_t notherParametricPulse = iusHLParametricPulseCreate("notherParametricPulse", pulseFrequency, pulseAmplitude, pulseCount);
 
     hid_t handle = H5Fcreate( filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT );
     TEST_ASSERT(handle > 0);
-    int status = iusHLParametricPulseSave(parametricPulse, pulsePath, handle);
+    int status = iusHLPulseSave((iup_t)parametricPulse, pulsePath, handle);
     H5Fclose(handle);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
     // read back
     handle = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT );
-    iupp_t savedObj = iusHLParametricPulseLoad(handle, pulsePath);
+    iupp_t savedObj = iusHLParametricPulseLoad(handle, pulsePath, label);
     H5Fclose(handle);
 
     TEST_ASSERT_EQUAL(IUS_TRUE, iusHLParametricPulseCompare(parametricPulse,savedObj));

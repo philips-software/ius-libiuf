@@ -4,27 +4,33 @@
 #include <stdlib.h>
 #include <math.h>
 
-#include <uthash.h>
+#include <hashmap.h>
 #include <ius.h>
 #include <iusError.h>
 #include <iusUtil.h>
 #include <iusHLPulseImp.h>
+#include <iusHLParametricPulseImp.h>
+#include <iusHLNonParametricPulseImp.h>
 #include <iusHLPulseDict.h>
+#include <assert.h>
+#include <string.h>
 
 // ADT
 struct HashablePulse
 {
     iup_t pulse;
-    UT_hash_handle hh;         /* makes this structure hashable */
+    char key[256];
 } ;
 
 typedef struct HashablePulse HashablePulse;
 
 struct IusPulseDict
 {
-    HashablePulse *   pPulses ;
+    struct hashmap map;
 } ;
 
+/* Declare type-specific blob_hashmap_* functions with this handy macro */
+HASHMAP_FUNCS_CREATE(HashablePulse, const char, struct HashablePulse)
 
 // ADT
 iupd_t iusHLPulseDictCreate
@@ -34,23 +40,21 @@ iupd_t iusHLPulseDictCreate
     iupd_t list = calloc(1, sizeof(IusPulseDict));
     if(list!=NULL)
     {
-        list->pPulses = NULL;
+      hashmap_init(&list->map, hashmap_hash_string, hashmap_compare_string, 0);
     }
     return list;
 }
 
 int iusHLPulseDictDelete
 (
-iupd_t dict
+  iupd_t dict
 )
 {
     HashablePulse *el;
     HashablePulse *tmp;
     if(dict == NULL) return IUS_ERR_VALUE;
-    HASH_ITER(hh, dict->pPulses, el, tmp) {
-        HASH_DEL(dict->pPulses, el);
-    }
-
+    /* Free all allocated resources associated with map and reset its state */
+    hashmap_destroy(&dict->map);
     free(dict);
     return IUS_E_OK;
 }
@@ -62,35 +66,40 @@ static int iusHLPulseDictSourceInTarget
     iupd_t target
 )
 {
-    HashablePulse *sourceElement;
+    iup_t sourcePulse;
     HashablePulse *targetElement;
+    HashablePulse *sourceElement;
     IUS_BOOL sourceInTarget = IUS_FALSE;
+    struct hashmap_iter *iter;
 
     // iterate over source list elements using the hash double linked list
-    for(sourceElement=source->pPulses; sourceElement != NULL; sourceElement=sourceElement->hh.next) {
-        // lookup source item
-        HASH_FIND_STR( target->pPulses, sourceElement->pulse->label, targetElement);
-        if( targetElement == NULL)
-            return IUS_FALSE;
-        if( iusHLPulseCompare(sourceElement->pulse,targetElement->pulse) == IUS_FALSE )
-            return IUS_FALSE;
-        sourceInTarget = IUS_TRUE;
+    for (iter = hashmap_iter(&source->map); iter; iter = hashmap_iter_next(&source->map, iter)) {
+      sourceElement = HashablePulse_hashmap_iter_get_data(iter);
+      targetElement = HashablePulse_hashmap_get(&target->map, sourceElement->pulse->label);
+      if( targetElement == NULL)
+        return IUS_FALSE;
+
+      if( iusHLPulseCompare(sourceElement->pulse,targetElement->pulse) == IUS_FALSE )
+        return IUS_FALSE;
+      sourceInTarget = IUS_TRUE;
     }
-    return sourceInTarget;
+
+  return sourceInTarget;
 }
 
 // operations
 int iusHLPulseDictCompare
 (
-iupd_t reference,
-iupd_t actual
+  iupd_t reference,
+  iupd_t actual
 )
 {
     HashablePulse *referenceElement;
     HashablePulse *actualElement;
     if( reference == actual ) return IUS_TRUE;
     if( reference == NULL || actual == NULL ) return IUS_FALSE;
-    if( reference->pPulses == actual->pPulses) return IUS_TRUE;
+    if( hashmap_size(&reference->map) != hashmap_size(&reference->map) ) return IUS_FALSE;
+    if( hashmap_size(&reference->map) == 0) return IUS_TRUE;
 
     // check if elements of source hash are in target hash
     if( iusHLPulseDictSourceInTarget(reference,actual) == IUS_FALSE )
@@ -106,7 +115,9 @@ int iusHLPulseDictGetSize
     iupd_t dict
 )
 {
-    return HASH_COUNT(dict->pPulses);
+  assert(0==1);
+
+  return -1;
 }
 
 iup_t iusHLPulseDictGet
@@ -117,7 +128,8 @@ iup_t iusHLPulseDictGet
 {
     HashablePulse * search;
     if( dict == NULL ) return NULL;
-    HASH_FIND_STR( dict->pPulses, key, search);
+  assert(0==1);
+
     if( search != NULL ) return NULL;
     return search->pulse;
 }
@@ -134,7 +146,94 @@ int iusHLPulseDictSet
 
     HashablePulse *newMember = calloc(1, sizeof(HashablePulse));
     newMember->pulse = member;
-    if( dict == NULL  ) return IUS_ERR_VALUE;
-    HASH_ADD_KEYPTR( hh, dict->pPulses, key, strlen(key), newMember );
+    strcpy(newMember->key,key);
+    if (HashablePulse_hashmap_put(&dict->map, newMember->key, newMember) != newMember)
+    {
+      printf("discarding blob with duplicate key: %s\n", newMember->key);
+      free(newMember);
+      return IUS_ERR_VALUE;
+    }
     return IUS_E_OK;
+}
+
+
+// serialization
+#define NUMPULSEVALUESFMT  "%s/numPulseValues"
+#define PULSEAMPLITUDESFMT "%s/rawPulseAmplitudes"
+#define PULSETIMESFMT      "%s/rawPulseTimes"
+
+
+#define LABELPATH          "%s/%s"
+int iusHLPulseDictSave
+(
+    iupd_t dict,
+    char *parentPath,
+    hid_t handle
+)
+{
+    int status=0;
+    char path[64];
+    struct hashmap_iter *iter;
+
+    if(dict == NULL)
+        return IUS_ERR_VALUE;
+    if(parentPath == NULL || handle == H5I_INVALID_HID)
+        return IUS_ERR_VALUE;
+
+
+
+    hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+    HashablePulse *sourceElement;
+
+    // iterate over source list elements and save'em
+    for (iter = hashmap_iter(&dict->map); iter; iter = hashmap_iter_next(&dict->map, iter))
+    {
+        sourceElement = HashablePulse_hashmap_iter_get_data(iter);
+        sprintf(path, LABELPATH, parentPath, sourceElement->pulse->label);
+        iusHLPulseSave(sourceElement->pulse,path,handle);
+    }
+
+    status |= H5Gclose(group_id );
+    return status;
+}
+
+// TODO refactor!
+
+#define MAX_NAME 1024
+
+iupd_t iusHLPulseDictLoad
+(
+    hid_t handle,
+    char *parentPath
+)
+{
+    int status = 0;
+    char path[64];
+    iunpp_t  pulse;
+    int i;
+    char memb_name[MAX_NAME];
+
+    if(parentPath == NULL || handle == H5I_INVALID_HID)
+        return NULL;
+
+    hid_t grpid = H5Gopen(handle, parentPath, H5P_DEFAULT);
+    hsize_t nobj;
+    status = H5Gget_num_objs(grpid, &nobj);
+
+    iupd_t dict = iusHLPulseDictCreate();
+    for (i = 0; i < nobj; i++)
+    {
+        H5Gget_objname_by_idx(grpid, (hsize_t) i,
+                                    memb_name, (size_t) MAX_NAME);
+        sprintf(path,"%s/%s", parentPath,memb_name);
+        iup_t pulse = iusHLPulseLoad(handle,path);
+        status = iusHLPulseDictSet(dict, memb_name, pulse);
+    }
+
+    H5Gclose(handle);
+    if( status != IUS_E_OK )
+    {
+        return NULL;
+    }
+    return dict;
 }
