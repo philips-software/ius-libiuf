@@ -27,7 +27,6 @@ endif()
 
 include_directories("${PROJECT_BINARY_DIR}")
 include_directories(${HDF5_INCLUDE_DIR})
-#include_directories(${UTHASH_INCLUDE_DIR})
 include_directories(${HASHMAP_INCLUDE_DIR})
 
 add_library(ius STATIC
