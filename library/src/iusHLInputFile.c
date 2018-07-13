@@ -32,37 +32,56 @@ struct IusInputFile
     int IusVersion;       /**< version of input file format */
 } ;
 
+static iuif_t iusHLInputFileAlloc
+(
+	const char *pFilename
+)
+{
+	iuif_t pFileInst = (IusInputFile *)calloc(1, sizeof(IusInputFile));
+	if (pFileInst == NULL)
+	{
+		return IUIF_INVALID;
+	}
+
+	pFileInst->numFrames = IUS_DEFAULT_NUM_FRAMES;
+	pFileInst->IusVersion = iusGetVersionMajor();
+	pFileInst->pFilename = pFilename;
+	pFileInst->rfDataset = H5I_INVALID_HID;
+	pFileInst->fileChunkConfig = H5I_INVALID_HID;
+	pFileInst->pulseDict = IUPD_INVALID;
+	if (pFileInst->handle < 0)
+	{
+		return IUIF_INVALID;
+	}
+	return pFileInst;
+}
+
 // ADT
 iuif_t iusHLInputFileCreate
 (
     const char *pFilename
 )
 {
-    if (pFilename == NULL)
-    {
-        fprintf( stderr, "iusInputFileCreate: Input arguments can not be NULL \n");
-        return IUIF_INVALID;
-    }
+	if (pFilename == NULL)
+	{
+		fprintf(stderr, "iusHLInputFileAlloc: Input arguments can not be NULL \n");
+		return IUIF_INVALID;
+	}
 
-    iuif_t pFileInst = (IusInputFile *)calloc(1,sizeof(IusInputFile));
-    if( pFileInst == NULL )
-    {
-        fprintf( stderr, "iusHLInputFileCreate: calloc of instance failed\n" );
-        return IUIF_INVALID;
-    }
+	iuif_t pFileInst = iusHLInputFileAlloc(pFilename);
+	if (pFileInst == IUIF_INVALID)
+	{
+		fprintf(stderr, "iusHLInputFileCreate: calloc of instance failed\n");
+		return IUIF_INVALID;
+	}
 
-    pFileInst->numFrames = IUS_DEFAULT_NUM_FRAMES;
-    pFileInst->IusVersion = iusGetVersionMajor();
-    pFileInst->pFilename = pFilename;
-    pFileInst->rfDataset = H5I_INVALID_HID;
-    pFileInst->fileChunkConfig = H5I_INVALID_HID;
-    pFileInst->handle = H5Fcreate( pFilename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT );
-    pFileInst->pulseDict = IUPD_INVALID;
-    if ( pFileInst->handle < 0 )
-    {
-        return IUIF_INVALID;
-    }
-    return pFileInst;
+	pFileInst->handle = H5Fcreate(pFilename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
+	if (pFileInst->handle == H5I_INVALID_HID)
+	{
+		iusHLInputFileDelete(pFileInst);
+		return IUIF_INVALID;
+	}
+	return pFileInst;
 }
 
 int iusHLInputFileDelete
@@ -88,14 +107,19 @@ iuif_t iusHLInputFileLoad
     const char *pFilename
 )
 {
-    IusInputFile *pFileInst = (IusInputFile *)calloc(1, sizeof(IusInputFile));
+	if (pFilename == NULL)
+	{
+		fprintf(stderr, "iusHLInputFileAlloc: Input arguments can not be NULL \n");
+		return IUIF_INVALID;
+	}
 
+	IusInputFile *pFileInst = iusHLInputFileAlloc(pFilename);
     // check calloc
-    if( pFileInst == NULL )
-    {
-        fprintf( stderr, "iusHLInputFileLoad: calloc of instance failed\n" );
-        return IUIF_INVALID;
-    }
+	if (pFileInst == IUIF_INVALID)
+	{
+		fprintf(stderr, "iusHLInputFileLoad: calloc of instance failed\n");
+		return IUIF_INVALID;
+	}
 
     // open  Hdf5 file using default properties.
     pFileInst->handle = H5Fopen( pFilename, H5F_ACC_RDONLY, H5P_DEFAULT );

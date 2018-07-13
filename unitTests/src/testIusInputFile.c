@@ -26,13 +26,14 @@ TEST_SETUP(IusInputFile)
 
 TEST_TEAR_DOWN(IusInputFile)
 {
+	int return_value = 0;
     if( fileExists(pFilename) == IUS_TRUE )
     {
-        remove(pFilename);
+		return_value = remove(pFilename);
     }
     if( fileExists(pNotherFilename) == IUS_TRUE )
     {
-        remove(pNotherFilename);
+		return_value = remove(pNotherFilename);
     }
 }
 
@@ -67,7 +68,11 @@ TEST(IusInputFile, testIusInputFileDelete)
 {
     iuif_t obj = iusHLInputFileCreate(pFilename);
     TEST_ASSERT(obj != IUIF_INVALID);
-    int status = iusHLInputFileDelete(obj);
+
+	int status = iusHLInputFileClose(obj);
+	TEST_ASSERT_EQUAL(IUS_E_OK, status);
+	
+	status = iusHLInputFileDelete(obj);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
     // invalid params
@@ -94,7 +99,12 @@ TEST(IusInputFile, testIusInputFileCompare)
     equal = iusHLInputFileCompare(NULL,obj);
     TEST_ASSERT_EQUAL(IUS_FALSE,equal);
     
-    iusHLInputFileDelete(obj);
+
+	int status = iusHLInputFileClose(obj);
+	TEST_ASSERT(status == IUS_E_OK);
+	status = iusHLInputFileClose(notherObj);
+	TEST_ASSERT(status == IUS_E_OK);
+	iusHLInputFileDelete(obj);
     iusHLInputFileDelete(notherObj);
 }
 
@@ -120,15 +130,14 @@ TEST(IusInputFile, testIusInputFileSetGet)
 
     // invalid param
 
-   
+	status = iusHLInputFileClose(obj);
+	TEST_ASSERT(status == IUS_E_OK);
     iusHLInputFileDelete(obj);
 }
 
 
 TEST(IusInputFile, testIusInputFileSerialization)
 {
-
-    IUS_BOOL equal;
     const char *ptestFileName = "testIusInputFileSerialization.hdf5";
 
     // create
@@ -150,6 +159,9 @@ TEST(IusInputFile, testIusInputFileSerialization)
     iuif_t savedObj = iusHLInputFileLoad(ptestFileName);
     TEST_ASSERT(savedObj != NULL);
     TEST_ASSERT_EQUAL(IUS_TRUE, iusHLInputFileCompare(inputFile,savedObj));
+
+	status = iusHLInputFileClose(savedObj);
+	TEST_ASSERT(status == IUS_E_OK);
 
     iusHLPulseDictDelete(dict);
     iusHLInputFileDelete(inputFile);
