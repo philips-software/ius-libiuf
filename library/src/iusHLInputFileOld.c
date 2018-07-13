@@ -11,7 +11,7 @@
 #include <iusInputFile.h>
 #include <iusHLNode.h>
 #include <iusHLInputInstance.h>
-#include <iusHLInputFile.h>
+#include <iusHLInputFileOld.h>
 
 
 iuf_t iusHLCreateFile(const char *filename)

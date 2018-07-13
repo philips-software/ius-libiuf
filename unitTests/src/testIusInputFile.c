@@ -129,9 +129,10 @@ TEST(IusInputFile, testIusInputFileSerialization)
 {
 
     IUS_BOOL equal;
+    const char *ptestFileName = "testIusInputFileSerialization.hdf5";
 
     // create
-    iuif_t inputFile = iusHLInputFileCreate(pFilename);
+    iuif_t inputFile = iusHLInputFileCreate(ptestFileName);
     TEST_ASSERT(inputFile != IUIF_INVALID);
 
     // fill
@@ -146,7 +147,7 @@ TEST(IusInputFile, testIusInputFileSerialization)
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
     // read back
-    iuif_t savedObj = iusHLInputFileLoad(pFilename);
+    iuif_t savedObj = iusHLInputFileLoad(ptestFileName);
     TEST_ASSERT(savedObj != NULL);
     TEST_ASSERT_EQUAL(IUS_TRUE, iusHLInputFileCompare(inputFile,savedObj));
 
