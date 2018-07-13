@@ -7,6 +7,9 @@ The ius C_v3 library consists of 3 folders:
 - unitTests, contains unit-tests for the library
 - main, contains an example of a program using the library
 
+#### Build requirements
+- Install cmake
+
 
 #### Build instructions for Mac/Linux
 
@@ -30,4 +33,20 @@ The ius C_v3 library consists of 3 folders:
     OK
     
     Process finished with exit code 0
+    ```
+
+#### Build instructions for Windows
+
+- Checkout and build code
+
+    ```
+    c:\proj> git clone https://USERID@bitbucket.atlas.philips.com/scm/ius/ius.git
+    c:\proj> cd ius
+    c:\proj> git checkout feature/IUS-99-input-file-io-test
+    c:\proj> C_v3\bin\build.bat
+    ```
+- Run unit tests
+
+    ```
+    c:\proj> C_v3\bin\ut.bat
     ```
