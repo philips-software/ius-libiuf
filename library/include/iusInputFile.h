@@ -39,7 +39,6 @@ typedef struct
 
 } IusInputFileInstance;
 
-
 int iusInputFileSave
 (
 	IusInputFileInstance *pIFI,

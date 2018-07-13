@@ -53,7 +53,7 @@ int iusHLPulseDelete
     return IUS_E_OK;
 }
 
-int iusHLPulseCompare
+IUS_BOOL iusHLBasePulseCompare
 (
     iup_t reference,
     iup_t actual
@@ -68,6 +68,23 @@ int iusHLPulseCompare
     if( strcmp(reference->label,actual->label) != 0 )
         return IUS_FALSE;
     return IUS_TRUE;
+}
+
+IUS_BOOL iusHLPulseCompare
+(
+    iup_t reference,
+    iup_t actual
+)
+{
+    if( reference == actual )
+        return IUS_TRUE;
+    if( reference == NULL || actual == NULL )
+        return IUS_FALSE;
+    if( reference->type == IUS_NON_PARAMETRIC_PULSETYPE )
+        return iusHLNonParametricPulseCompare((iunpp_t) reference, (iunpp_t)actual);
+    if( reference->type == IUS_PARAMETRIC_PULSETYPE )
+        return iusHLParametricPulseCompare((iupp_t) reference, (iupp_t)actual);
+    return IUS_FALSE;
 }
 
 // getters
@@ -138,6 +155,25 @@ static int iusReadPulseType
 
 
 
+int iusHLBasePulseSave
+(
+    iup_t pulse,
+    char *parentPath,
+    hid_t handle
+)
+{
+    int status=IUS_E_OK;
+    char path[64];
+
+    hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+    sprintf(path, PULSETYPEFMT, parentPath);
+    status |= iusWritePulseType(group_id, path, pulse->type);
+    sprintf(path, LABELFMT, parentPath);
+    status |= iusHdf5WriteString(group_id, path, pulse->label, 1);
+    status |= H5Gclose(group_id );
+    return status;
+}
+
 // serialization
 int iusHLPulseSave
 (
@@ -147,14 +183,7 @@ int iusHLPulseSave
 )
 {
     int status=IUS_ERR_VALUE;
-    char path[64];
 
-    hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-    sprintf(path, PULSETYPEFMT, parentPath);
-    status |= iusWritePulseType(group_id, path, pulse->type);
-    sprintf(path, LABELFMT, parentPath);
-    status |= iusHdf5WriteString(group_id, path, pulse->label, 1);
-    status |= H5Gclose(group_id );
     // Make dataset for Experiment
     switch(pulse->type)
     {
@@ -170,7 +199,7 @@ int iusHLPulseSave
     return status;
 }
 
-iup_t iusHLPulseLoad
+iup_t iusHLBasePulseLoad
 (
     hid_t handle,
     char *parentPath
@@ -180,22 +209,33 @@ iup_t iusHLPulseLoad
     IusPulseType type;
     char *label;
     char path[64];
-    iup_t pulse=NULL;
 
     sprintf(path, PULSETYPEFMT, parentPath);
-    status |= iusReadPulseType( handle,    path, &(type));
+    status |= iusReadPulseType( handle, path, &(type));
     sprintf(path, LABELFMT, parentPath);
     status |= iusHdf5ReadString( handle, path, &(label));
     if( status < 0 )
         return NULL;
 
-    switch(type)
+    return iusHLPulseCreate(type, label);
+}
+
+iup_t iusHLPulseLoad
+(
+    hid_t handle,
+    char *parentPath
+)
+{
+    iup_t pulse=NULL;
+
+    pulse = iusHLBasePulseLoad(handle,parentPath);
+    switch(pulse->type)
     {
         case IUS_PARAMETRIC_PULSETYPE:
-          pulse = (iup_t) iusHLParametricPulseLoad(handle,parentPath,label);
+          pulse = (iup_t) iusHLParametricPulseLoad(handle, parentPath, pulse->label);
           break;
         case IUS_NON_PARAMETRIC_PULSETYPE:
-          pulse = (iup_t) iusHLNonParametricPulseLoad(handle,parentPath,label);
+          pulse = (iup_t) iusHLNonParametricPulseLoad(handle, parentPath, pulse->label);
         break;
         default:
           break;

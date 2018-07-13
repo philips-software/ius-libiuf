@@ -14,10 +14,10 @@
 struct IusInputInstance
 {
     iun_t              iusNode;
-    iue_t              pExperiment;      /**< experiment settings */
-    iut_t              pTransducer;      /**< transducer that has been used */
-    iurs_t             pReceiveSettings; /**< data receive settings */
-    iuds_t             pDrivingScheme;   /**< data transmit settings */
+//    iue_t              pExperiment;      /**< experiment settings */
+//    iut_t              pTransducer;      /**< transducer that has been used */
+//    iurs_t             pReceiveSettings; /**< data receive settings */
+//    iuds_t             pDrivingScheme;   /**< data transmit settings */
 
     int                numFrames;        /**< The number of frames in the data */
     int                IusVersion;       /**< version of input file format */
@@ -26,7 +26,7 @@ struct IusInputInstance
 
 iuii_t iusHLInputInstanceCreate
 (
-void
+    void
 )
 {
     iuii_t created = calloc(1,sizeof(IusInputInstance));
@@ -39,16 +39,16 @@ void
     }
     created->numFrames = IUS_DEFAULT_NUM_FRAMES;
     created->IusVersion = iusGetVersionMajor();
-    created->pReceiveSettings = NULL;
-    created->pDrivingScheme = NULL;
-    created->pTransducer = NULL;
-    created->pExperiment = NULL;
+//    created->pReceiveSettings = NULL;
+//    created->pDrivingScheme = NULL;
+//    created->pTransducer = NULL;
+//    created->pExperiment = NULL;
     return created;
 }
 
 int iusHLInputInstanceDelete
 (
-iuii_t iusInputInstance
+    iuii_t iusInputInstance
 )
 {
     int status = IUS_ERR_VALUE;
@@ -80,21 +80,21 @@ iuii_t actual
         return IUS_FALSE;
     }
 
-    if(iusHLExperimentCompare(reference->pExperiment, actual->pExperiment) == IUS_FALSE ){
-        return IUS_FALSE;
-    }
-
-    if(iusHLTransducerCompare(reference->pTransducer, actual->pTransducer) == IUS_FALSE ){
-        return IUS_FALSE;
-    }
-
-    if(iusHLDrivingSchemeCompare(reference->pDrivingScheme, actual->pDrivingScheme) == IUS_FALSE ){
-        return IUS_FALSE;
-    }
-
-    if(iusHLReceiveSettingsCompare(reference->pReceiveSettings, actual->pReceiveSettings) == IUS_FALSE ){
-        return IUS_FALSE;
-    }
+//    if(iusHLExperimentCompare(reference->pExperiment, actual->pExperiment) == IUS_FALSE ){
+//        return IUS_FALSE;
+//    }
+//
+//    if(iusHLTransducerCompare(reference->pTransducer, actual->pTransducer) == IUS_FALSE ){
+//        return IUS_FALSE;
+//    }
+//
+//    if(iusHLDrivingSchemeCompare(reference->pDrivingScheme, actual->pDrivingScheme) == IUS_FALSE ){
+//        return IUS_FALSE;
+//    }
+//
+//    if(iusHLReceiveSettingsCompare(reference->pReceiveSettings, actual->pReceiveSettings) == IUS_FALSE ){
+//        return IUS_FALSE;
+//    }
     return IUS_TRUE;
 }
 
@@ -119,64 +119,64 @@ iun_t iusHLInputInstanceGetNode
     return instance->iusNode;
 }
 
-
-iue_t iusHLInputInstanceGetExperiment
-(
-    iuii_t instance
-)
-{
-    if( instance == NULL ) return IUE_INVALID;
-    return instance->pExperiment;
-}
-
-iut_t iusHLInputInstanceGetTransducer
-(
-    iuii_t instance
-)
-{
-    if( instance == NULL ) return IUT_INVALID;
-    return instance->pTransducer;
-}
-
-
-iuds_t iusHLInputInstanceGetDrivingScheme
-(
-    iuii_t instance
-)
-{
-    if( instance == NULL ) return IUDS_INVALID;
-    return instance->pDrivingScheme;
-}
-
-// setters
-int iusHLHeaderSetExperiment(iuii_t instance, iue_t experiment)
-{
-    if( instance == NULL ) return IUS_ERR_VALUE;
-    instance->pExperiment = experiment;
-    return IUS_E_OK;
-}
-
-int iusHLInputInstanceSetTransducer
-(
-    iuii_t instance,
-    iut_t transducer
-)
-{
-    if( instance == NULL ) return IUS_ERR_VALUE;
-    instance->pTransducer = transducer;
-    return IUS_E_OK;
-}
-
-int iusHLInputInstanceSetDrivingScheme
-(
-    iuii_t instance,
-    iuds_t scheme
-)
-{
-    if( instance == NULL ) return IUS_ERR_VALUE;
-    instance->pDrivingScheme = scheme;
-    return IUS_E_OK;
-}
+//
+//iue_t iusHLInputInstanceGetExperiment
+//(
+//    iuii_t instance
+//)
+//{
+//    if( instance == NULL ) return IUE_INVALID;
+//    return instance->pExperiment;
+//}
+//
+//iut_t iusHLInputInstanceGetTransducer
+//(
+//    iuii_t instance
+//)
+//{
+//    if( instance == NULL ) return IUT_INVALID;
+//    return instance->pTransducer;
+//}
+//
+//
+//iuds_t iusHLInputInstanceGetDrivingScheme
+//(
+//    iuii_t instance
+//)
+//{
+//    if( instance == NULL ) return IUDS_INVALID;
+//    return instance->pDrivingScheme;
+//}
+//
+//// setters
+//int iusHLHeaderSetExperiment(iuii_t instance, iue_t experiment)
+//{
+//    if( instance == NULL ) return IUS_ERR_VALUE;
+//    instance->pExperiment = experiment;
+//    return IUS_E_OK;
+//}
+//
+//int iusHLInputInstanceSetTransducer
+//(
+//    iuii_t instance,
+//    iut_t transducer
+//)
+//{
+//    if( instance == NULL ) return IUS_ERR_VALUE;
+//    instance->pTransducer = transducer;
+//    return IUS_E_OK;
+//}
+//
+//int iusHLInputInstanceSetDrivingScheme
+//(
+//    iuii_t instance,
+//    iuds_t scheme
+//)
+//{
+//    if( instance == NULL ) return IUS_ERR_VALUE;
+//    instance->pDrivingScheme = scheme;
+//    return IUS_E_OK;
+//}
 
 int iusHLInputInstanceSetNode
 (

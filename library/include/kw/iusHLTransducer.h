@@ -10,7 +10,9 @@
 #include <iusHLTransducerElement.h>
 
 
+//
 // ADT
+//
 struct IusTransducer;
 typedef struct IusTransducer IusTransducer;
 

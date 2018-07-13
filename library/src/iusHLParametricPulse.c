@@ -63,7 +63,7 @@ int iusHLParametricPulseDelete
 }
 
 
-int iusHLParametricPulseCompare
+IUS_BOOL iusHLParametricPulseCompare
 (
     iupp_t reference,
     iupp_t actual
@@ -74,7 +74,7 @@ int iusHLParametricPulseCompare
     if( reference->pulseCount != actual->pulseCount ) return IUS_FALSE;
     if( IUS_EQUAL_FLOAT(reference->pulseAmplitude, actual->pulseAmplitude) == IUS_FALSE ) return IUS_FALSE;
     if( IUS_EQUAL_FLOAT(reference->pulseFrequency, actual->pulseFrequency) == IUS_FALSE ) return IUS_FALSE;
-    return iusHLPulseCompare((iup_t)reference,(iup_t)actual);
+    return iusHLBasePulseCompare((iup_t)reference,(iup_t)actual);
 }
 
 
@@ -127,6 +127,7 @@ int iusHLParametricPulseSave
     int status=0;
     char path[64];
 
+    status = iusHLBasePulseSave((iup_t)pulse,parentPath,handle);
     sprintf(path, FREQUENCYFMT, parentPath);
     status |= iusHdf5WriteFloat(handle, path, &(pulse->pulseFrequency), 1);
     sprintf(path, AMPLITUDEFMT, parentPath);

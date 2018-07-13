@@ -1130,41 +1130,6 @@ herr_t iusWriteDrivingSchemeTransmitApodization(hid_t group_id, char *pVariableS
     return IUS_ERR_VALUE;
 }
 
-herr_t iusWriteNonParametricPulseList( IusDrivingScheme *pDrivingScheme, hid_t group_id, int verbose ) {
-    herr_t status = 0;
-//    hsize_t dims[1] = { 1 };
-//    IusNonParametricTransmitPulseList *pPulseList = (IusNonParametricTransmitPulseList *) pDrivingScheme->pTransmitPulses;
-//    H5LTmake_dataset_int( group_id,   "/DrivingScheme/TransmitPulse/numPulseValues",  1, dims, &(pPulseList->pTransmitPulses[0]->numPulseValues) );
-//    if ( pPulseList->pTransmitPulses[0]->numPulseValues > 0 )
-//    {
-//        dims[0] = pPulseList->pTransmitPulses[0]->numPulseValues;
-//        H5LTmake_dataset_float( group_id, "/DrivingScheme/TransmitPulse/rawPulseAmplitudes", 1, dims, pPulseList->pTransmitPulsespRawPulseAmplitudes );
-//        H5LTmake_dataset_float( group_id, "/DrivingScheme/TransmitPulse/rawPulseTimes", 1, dims, pInst->pDrivingScheme->pTransmitPulse.pRawPulseTimes );
-//    }
-    return status;
-}
-
-herr_t iusWriteParametricPulseList( IusDrivingScheme *pDrivingScheme, hid_t group_id, int verbose ) {
-    herr_t status = 0;
-//    hsize_t dims[1] = { 1 };
-
-//    dims[0] = 1;
-//    H5LTmake_dataset_float( group_id,"/DrivingScheme/TransmitPulse/pulseFrequency",  1, dims, &(pInst->pDrivingScheme->pTransmitPulse.pulseFrequency) );
-//    H5LTmake_dataset_float( group_id,"/DrivingScheme/TransmitPulse/pulseAmplitude",  1, dims, &(pInst->pDrivingScheme->pTransmitPulse.pulseAmplitude) );
-//    H5LTmake_dataset_int( group_id,  "/DrivingScheme/TransmitPulse/pulseCount",  1, dims, &(pInst->pDrivingScheme->pTransmitPulse.pulseCount) );
-    return status;
-}
-
-herr_t iusWriteTransmitPulseList( IusDrivingScheme *pDrivingScheme, hid_t group_id, int verbose ) {
-    herr_t status = 0;
-    hsize_t dims[1] = { 1 };
-
-//TODO
-    assert(IUS_FALSE);
-    return -1;
-
-}
-
 herr_t iusWriteBaseDrivingScheme( IusDrivingScheme *pDrivingScheme, hid_t group_id, int verbose)
 {
     herr_t  status;

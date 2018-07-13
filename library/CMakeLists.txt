@@ -34,7 +34,8 @@ add_library(ius STATIC
 #        src/iusInputFile.c
         src/iusUuid.c
 #        src/iusHLInput.c
-#        src/iusHLInputFile.c
+        src/iusHLInputFile.c
+		include/iusHLInputFile.h
 #        src/iusHLExperiment.c
 #        src/iusHLTransducer.c
         src/iusHLNode.c
@@ -72,8 +73,6 @@ add_library(ius STATIC
         include/iusHLNonParametricPulse.h
         src/iusHLParametricPulse.c
         src/iusHLNonParametricPulse.c
-		include/iusHLPulseList.h
-		src/iusHLPulseList.c
 		include/iusHLPulseDict.h
 		src/iusHLPulseDict.c
 		include/iusHL2DTransducerElement.h

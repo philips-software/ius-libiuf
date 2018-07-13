@@ -8,7 +8,7 @@
 
 #include <iusTypes.h>
 #include <iusHLPulse.h>
-#include <iusHLPulseList.h>
+#include <iusHLPulseDict.h>
 #include <iusHLPosition.h>
 #include <iusHLSourceListOld.h>
 #include <iusHLTransmitPattern.h>
@@ -26,7 +26,7 @@ iuds_t iusHLDrivingSchemeCreate
     IusDrivingSchemeType type,
     IusShape shape,       // determines whether to use 2D or 3D positions/Angles
     iusl_t transmitSources,
-    iupl_t transmitPulses,
+    iupd_t transmitPulses,
     iutpal_t transmitPatterns,
     iual_t apodizations,
     int numElements

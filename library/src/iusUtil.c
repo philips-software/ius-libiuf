@@ -18,12 +18,23 @@ int iusGetVersionMajor(void) {
     return IUS_VERSION_MAJOR;
 }
 
+IUS_BOOL fileExists(const char *fname)
+{
+    FILE *file;
+    if ((file = fopen(fname, "r")))
+    {
+        fclose(file);
+        return IUS_TRUE;
+    }
+    return IUS_FALSE;
+}
+
 IUS_BOOL  equalFloat
-    (
-        const float delta,
-        const float expected,
-        const float actual
-    )
+(
+    const float delta,
+    const float expected,
+    const float actual
+)
 {
     float diff = actual - expected;
     float pos_delta = delta;

@@ -1,44 +1,59 @@
-//
-// Created by Ruijzendaal on 12/03/2018.
-//
+// Created by nlv09165 on 11/07/2018.
 #ifndef IUSLIBRARY_IUSHLINPUTFILE_H
 #define IUSLIBRARY_IUSHLINPUTFILE_H
 
+#include <iusHLPulseDict.h>
+
 // ADT
-struct IusInputFile;
 typedef struct IusInputFile IusInputFile;
-typedef  IusInputFile * iuf_t;
+typedef IusInputFile *iuif_t;
+#define IUIF_INVALID (iuif_t) NULL
+#define IUS_DEFAULT_NUM_FRAMES  1
 
-
-iuf_t iusHLInputFileOpen
+iuif_t iusHLInputFileCreate
 (
     const char *filename
 );
 
-iuf_t iusHLInputFileCreate
+int iusHLInputFileDelete
+(
+    iuif_t iusInputFile
+);
+
+// operations
+iuif_t iusHLInputFileLoad
 (
     const char *filename
 );
 
 int iusHLInputFileSave
 (
-    iuf_t fileHandle
+    iuif_t fileHandle
 );
 
 int iusHLInputFileClose
 (
-    iuf_t fileHandle
+    iuif_t fileHandle
 );
 
-iuii_t iusHLInputFileGetInstance
+int iusHLInputFileCompare
 (
-    iuf_t fileHandle
+    iuif_t reference,
+    iuif_t actual
 );
 
-int iusHLInputFileSetInstance
+// Getters
+iupd_t iusHLInputFileGetPulseDict
 (
-    iuf_t fileHandle,
-    iuii_t instance
+    iuif_t fileHandle
+);
+
+
+// Setters
+int iusHLInputFileSetPulseDict
+(
+    iuif_t inputFile,
+    iupd_t pulseDict
 );
 
 #endif //IUSLIBRARY_IUSHLINPUTFILE_H

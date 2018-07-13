@@ -8,7 +8,7 @@
 
 #include <ius.h>
 #include <iusHLInputInstance.h>
-#include <iusHLInputFile.h>
+#include <iusHLInputFileOld.h>
 #include <iusHLDrivingScheme.h>
 
 #include <testDataGenerators.h>

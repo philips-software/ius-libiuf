@@ -84,9 +84,8 @@ int iusHLNonParametricPulseCompare
         if( IUS_EQUAL_FLOAT(reference->pRawPulseTimes[i], actual->pRawPulseTimes[i]) == IUS_FALSE ) return IUS_FALSE;
         if( IUS_EQUAL_FLOAT(reference->pRawPulseAmplitudes[i], actual->pRawPulseAmplitudes[i]) == IUS_FALSE ) return IUS_FALSE;
     }
-    return IUS_TRUE;
+    return iusHLBasePulseCompare((iup_t)reference,(iup_t)actual);
 }
-
 
 
 int iusHLNonParametricPulseGetNumValues
@@ -161,6 +160,7 @@ int iusHLNonParametricPulseSave
     if(parentPath == NULL || handle == H5I_INVALID_HID)
         return IUS_ERR_VALUE;
 
+    status = iusHLBasePulseSave((iup_t)pulse,parentPath,handle);
     sprintf(path, NUMPULSEVALUESFMT, parentPath);
     status |= iusHdf5WriteInt(handle, path, &(pulse->numPulseValues), 1);
 

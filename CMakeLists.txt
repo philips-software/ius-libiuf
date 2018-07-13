@@ -6,6 +6,8 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/external/cmake_modules")
 if(MSVC)
     # disable the security warnings for sprintf() in bee2.c
     add_definitions(/D _CRT_SECURE_NO_WARNINGS /D _CRT_NONSTDC_NO_DEPRECATE)
+else()
+    set(CMAKE_CXX_CPPCHECK "cppcheck")
 endif()
 
 #set (UTHASH_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/external/uthash/include")

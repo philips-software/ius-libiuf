@@ -7,6 +7,11 @@
 #include <iusHL2DTransducer.h>
 #include <iusHL3DTransducer.h>
 
+
+// Todo:
+// nlv09165 - Are we going to use factory methods?
+//            if so, also introduce in other ADTs
+//            for the sake of consistency
 iut_t iusHLTransducerFactoryCreate
 (
   char *name,

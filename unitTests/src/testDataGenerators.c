@@ -3,19 +3,39 @@
 //
 #include <unity.h>
 
-#include <ius.h>
-#include <iusError.h>
-#include <iusHLSourceListOld.h>
-#include <iusHLPosition.h>
-#include <iusHLNonParametricPulse.h>
-#include <iusHLPulseList.h>
-#include <iusHLParametricPulse.h>
-#include <iusHLTransmitPatternList.h>
-#include <iusHLTransmitPattern.h>
-#include <iusHLDrivingScheme.h>
-#include <iusHL2DSourceList.h>
-#include <iusHL3DSourceList.h>
+#include <include/ius.h>
+#include <include/iusHLPulseDict.h>
+#include <include/iusHLParametricPulse.h>
+#include <include/iusHLNonParametricPulse.h>
 
+iupd_t dgGeneratePulseDict()
+{
+  int numPulses = 10;
+  int numPulseValues=10;
+  float   pulseFrequency=8000000.0f;   /**< frequency that the pulse represents in Hz */
+  float   pulseAmplitude=800.0f;       /**< (max) amplitude of the pulse in Volts */
+  int     pulseCount=10;               /**< number of cycles that the pulse represents */
+  int     status=10;
+
+  // create
+  iupd_t dict = iusHLPulseDictCreate();
+  TEST_ASSERT(dict != IUPD_INVALID);
+
+  // fill
+  char *parametricLabel = "parametricPulseLabel";
+  char *nonParametricLabel = "nonParametricPulseLabel";
+  iupp_t parametricPulse = iusHLParametricPulseCreate(parametricLabel, pulseFrequency, pulseAmplitude, pulseCount);
+  iunpp_t nonParametricPulse = iusHLNonParametricPulseCreate(nonParametricLabel,numPulseValues);
+  iusHLNonParametricPulseSetValue(nonParametricPulse,0,10.0f,10.0f);
+  iusHLNonParametricPulseSetValue(nonParametricPulse,1,20.0f,10.0f);
+  status = iusHLPulseDictSet(dict,nonParametricLabel, (iup_t) nonParametricPulse);
+  TEST_ASSERT(status == IUS_E_OK);
+  status = iusHLPulseDictSet(dict,parametricLabel, (iup_t) parametricPulse);
+  TEST_ASSERT(status == IUS_E_OK);
+  return dict;
+}
+
+#if 0
 int fill3DSourceLocationList
 (
     iusl_t sourceLocationList
@@ -130,9 +150,12 @@ int fillTransmitPulseList
 }
 
 
+
+
+
 int fillTransmitPatternList
 (
-iutpal_t transmitPatterns
+    iutpal_t transmitPatterns
 )
 {
     int status=0;
@@ -246,3 +269,4 @@ iuds_t dgCreateDrivingScheme
                                                           numElements );
     return parametrizedDrivingScheme;
 }
+#endif

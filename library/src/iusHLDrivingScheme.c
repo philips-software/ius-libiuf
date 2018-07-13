@@ -25,7 +25,7 @@ struct IusDrivingScheme
 
 // TODO    IusFrameList *                pTransmitFrames;          /**< array of numFrames */
     iutpal_t      pTransmitPatterns;       /**< array (time, index) of length numTransmitPulses */
-    iupl_t       pTransmitPulses;          /**< waveform of the transmit pulse */
+  iupd_t       pTransmitPulses;          /**< waveform of the transmit pulse */
     iusl_t       pSourceLocations;
 //TODO    IusChannelMapList *           pChannelMaps;
     iual_t        pApodizations;   /**< 2D array: per transmit event we have numElements gains */
@@ -49,7 +49,7 @@ iuds_t iusHLDrivingSchemeCreate
 IusDrivingSchemeType type,
 IusShape shape,       // determines whether to use 2D or 3D positions/Angles
 iusl_t transmitSources,
-iupl_t transmitPulses,
+iupd_t transmitPulses,
 iutpal_t transmitPatterns,
 iual_t apodizations,
 int numElements
@@ -74,7 +74,7 @@ int numElements
     baseDrivingScheme->pApodizations = apodizations;
     baseDrivingScheme->numElements = numElements;
     baseDrivingScheme->numTransmitSources = iusHLSourceListGetSize( transmitSources );
-    baseDrivingScheme->numTransmitPulses = iusHLPulseListGetSize(transmitPulses);
+    baseDrivingScheme->numTransmitPulses = iusHLPulseDictGetSize(transmitPulses);
     baseDrivingScheme->shape = shape;
     baseDrivingScheme->type = type;
     return baseDrivingScheme;
@@ -118,7 +118,7 @@ iuds_t actual
     reference->pApodizations,
     actual->pApodizations) == IUS_FALSE) return IUS_FALSE;
 
-    if(iusHLPulseListCompare(
+    if(iusHLPulseDictCompare(
     reference->pTransmitPulses,
     actual->pTransmitPulses) == IUS_FALSE) return IUS_FALSE;
 

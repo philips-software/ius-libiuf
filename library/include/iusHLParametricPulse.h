@@ -26,7 +26,7 @@ int iusHLParametricPulseDelete
 
 // operations
 
-int iusHLParametricPulseCompare
+IUS_BOOL iusHLParametricPulseCompare
 (
     iupp_t reference,
     iupp_t actual

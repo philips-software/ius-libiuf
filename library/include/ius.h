@@ -4,12 +4,21 @@
 #ifndef IUS_H
 #define IUS_H
 
-#include <stdio.h>
+#include <iusTypes.h>
 
 #define  IUS_E_OK  0
 #define  IUH_INVALID NULL
 #define  IUF_INVALID NULL
 #define  IUS_INPUT_TYPE "IUSINPUTFILETYPE_V3"
 
-int iusGetVersionMajor(void);
+int iusGetVersionMajor
+(
+  void
+);
+
+IUS_BOOL fileExists
+(
+  const char *fname
+);
+
 #endif //IUS_H

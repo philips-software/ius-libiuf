@@ -113,15 +113,14 @@ TEST(IusPulseDict, testIusSerialization)
     char *nonParametricLabel = "nonParametricPulseLabel";
     iupp_t parametricPulse = iusHLParametricPulseCreate(parametricLabel, pulseFrequency, pulseAmplitude, pulseCount);
     iunpp_t nonParametricPulse = iusHLNonParametricPulseCreate(nonParametricLabel,numPulseValues);
-//    iusHLNonParametricPulseSetValue(nonParametricPulse,0,10.0f,10.0f);
-//    iusHLNonParametricPulseSetValue(nonParametricPulse,1,20.0f,10.0f);
+    iusHLNonParametricPulseSetValue(nonParametricPulse,0,10.0f,10.0f);
+    iusHLNonParametricPulseSetValue(nonParametricPulse,1,20.0f,10.0f);
     status = iusHLPulseDictSet(dict,nonParametricLabel, (iup_t) nonParametricPulse);
     TEST_ASSERT(status == IUS_E_OK);
     status = iusHLPulseDictSet(dict,parametricLabel, (iup_t) parametricPulse);
     TEST_ASSERT(status == IUS_E_OK);
 
-
-  // save
+    // save
     hid_t handle = H5Fcreate( filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT );
     TEST_ASSERT(handle > 0);
     status = iusHLPulseDictSave(dict, dictPath, handle);

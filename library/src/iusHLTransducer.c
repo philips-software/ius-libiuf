@@ -18,6 +18,11 @@
 #include <iusHL2DTransducerElementList.h>
 #include <iusHL3DTransducerElementList.h>
 
+// Todo:
+//
+// nlv09165 -ADt should not be public?
+// Refactor to BaseClass routines like PulseDict?
+//
 // ADT
 iut_t iusHLTransducerCreate
 (

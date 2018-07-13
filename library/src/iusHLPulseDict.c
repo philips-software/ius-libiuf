@@ -213,10 +213,11 @@ iupd_t iusHLPulseDictLoad
     int i;
     char memb_name[MAX_NAME];
 
-    if(parentPath == NULL || handle == H5I_INVALID_HID)
-        return NULL;
 
     hid_t grpid = H5Gopen(handle, parentPath, H5P_DEFAULT);
+    if(parentPath == NULL || handle == H5I_INVALID_HID || grpid == H5I_INVALID_HID)
+        return NULL;
+
     hsize_t nobj;
     status = H5Gget_num_objs(grpid, &nobj);
 
