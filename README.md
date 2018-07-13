@@ -9,7 +9,7 @@ The ius C_v3 library consists of 3 folders:
 
 #### Build requirements
 - Install cmake
-
+- Install hdf5 library
 
 #### Build instructions for Mac/Linux
 
