@@ -106,18 +106,6 @@ int iusHL3DTransducerSetElement
   return iusHL3DTransducerElementListSet(transducer->elements,element,elementIndex);
 }
 
-<<<<<<< Updated upstream
-hid_t iusHL3DTransducerSave
-(
-	iu3dt_t transducer,
-	char * parentPath,
-	hid_t handle
-)
-{
-	return handle;
-}
-=======
-
 int ius3DTransducerWriteElementPositions(Ius3DTransducer *pTransducer, hid_t subgroup_id, int verbose)
 {
 	herr_t        status = 0;
@@ -252,4 +240,3 @@ herr_t ius3DTransducerWrite
 	return status;
 }
 
->>>>>>> Stashed changes

@@ -49,14 +49,12 @@ int iusHL3DTransducerSetElement(
     iu3dte_t element
 );
 
-<<<<<<< Updated upstream
-=======
+
 herr_t iusHL3DTransducerWrite
 (
 	iu3dt_t transducer,
 	hid_t subgroup_id,
 	int verbose
 );
->>>>>>> Stashed changes
 
 #endif //IUSLIBRARY_IUSHL3DTRANSDUCER_H

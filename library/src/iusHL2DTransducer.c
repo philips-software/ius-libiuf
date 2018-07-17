@@ -109,8 +109,6 @@ int iusHL2DTransducerSetElement
     return iusHL2DTransducerElementListSet(transducer->elements,element,elementIndex);
 }
 
-<<<<<<< Updated upstream
-=======
 int ius2DTransducerWriteElementPositions(Ius2DTransducer *pTransducer, hid_t subgroup_id, int verbose)
 {
 	herr_t        status = 0;
@@ -236,4 +234,4 @@ herr_t ius2DTransducerWrite(Ius2DTransducer *pTransducer, hid_t group_id, int ve
 	status |= ius2DTransducerWriteElementAngles(pTransducer, group_id, verbose);
 	return status;
 }
->>>>>>> Stashed changes
+
