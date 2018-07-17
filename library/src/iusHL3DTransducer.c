@@ -6,6 +6,7 @@
 #include <string.h>
 
 #include <ius.h>
+#include <iusHDF5.h>
 #include <iusError.h>
 #include <iusTypes.h>
 #include <iusUtil.h>
@@ -103,4 +104,14 @@ int iusHL3DTransducerSetElement
 {
   if( transducer == NULL ) return IUS_TRUE;
   return iusHL3DTransducerElementListSet(transducer->elements,element,elementIndex);
+}
+
+hid_t iusHL3DTransducerSave
+(
+	iu3dt_t transducer,
+	char * parentPath,
+	hid_t handle
+)
+{
+	return handle;
 }

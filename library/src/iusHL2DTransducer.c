@@ -6,14 +6,18 @@
 #include <string.h>
 
 #include <ius.h>
+#include <iusHDF5.h>
 #include <iusError.h>
 #include <iusTypes.h>
 #include <iusUtil.h>
 #include <iusHLTransducer.h>
 #include <iusHLTransducerImp.h>
 #include <iusHL2DTransducer.h>
+#include <iusHL2DTransducerElement.h>
 #include <iusHL2DTransducerElementList.h>
-
+#include <iusHL3DTransducer.h>
+#include <iusHL3DTransducerElement.h>
+#include <iusHL3DTransducerElementList.h>
 
 
 struct Ius2DTransducer
@@ -104,3 +108,4 @@ int iusHL2DTransducerSetElement
     if( transducer == NULL ) return IUS_TRUE;
     return iusHL2DTransducerElementListSet(transducer->elements,element,elementIndex);
 }
+
