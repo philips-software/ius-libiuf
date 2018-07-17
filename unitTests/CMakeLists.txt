@@ -15,6 +15,7 @@ add_executable(unitTests
         src/testIusPulseDict.c
         src/testIusPulse.c
         src/testIusInputFile.c
+        src/testIusPattern.c
         src/util.c
 #        src/testNode.c
 #        src/testTransducer.c

@@ -36,6 +36,8 @@ add_library(ius STATIC
 #        src/iusHLInput.c
         src/iusHLInputFile.c
 		include/iusHLInputFile.h
+		src/iusHLPattern.c
+		include/iusHLPattern.h
 #        src/iusHLExperiment.c
 #        src/iusHLTransducer.c
         src/iusHLNode.c
