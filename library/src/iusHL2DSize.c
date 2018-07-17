@@ -11,11 +11,11 @@
 #include <iusUtil.h>
 #include <iusHL2DSize.h>
 
-struct Ius2DSize
-{
-  float sx;
-  float sz;
-} ;
+//struct Ius2DSize
+//{
+//  float sx;
+//  float sz;
+//} ;
 
 // ADT
 

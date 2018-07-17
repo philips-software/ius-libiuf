@@ -3,7 +3,12 @@
 #define IUSLIBRARY_IUSHL3DANGLE_H
 
 // ADT
-typedef struct Ius3DAngle Ius3DAngle;
+typedef struct Ius3DAngle
+{
+	float theta; /**< rotation over z axis */
+	float phi;   /**< rotation over x axis */
+} Ius3DAngle;
+
 typedef Ius3DAngle *iu3da_t;
 #define  IU3DA_INVALID (iu3da_t) NULL
 

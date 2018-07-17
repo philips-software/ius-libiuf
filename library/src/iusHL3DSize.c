@@ -11,14 +11,6 @@
 #include <iusUtil.h>
 #include <iusHL3DSize.h>
 
-struct Ius3DSize
-{
-  float sx;
-  float sy;
-  float sz;
-} ;
-
-
 // ADT
 iu3ds_t iusHL3DSizeCreate
 (

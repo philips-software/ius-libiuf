@@ -77,3 +77,26 @@ int iusHL2DTransducerElementCompare
 
 
 // Getters
+iu2dp_t iusHL2DTransducerElementGetPosition
+(
+	iu2dte_t ius2DTransducerElement
+)
+{
+	return ius2DTransducerElement->position;
+}
+
+float iusHL2DTransducerElementGetAngle
+(
+	iu2dte_t ius2DTransducerElement
+)
+{
+	return ius2DTransducerElement->theta;
+}
+
+iu2ds_t iusHL2DTransducerElementGetSize
+(
+	iu2dte_t ius2DTransducerElement
+)
+{
+	return ius2DTransducerElement->size;
+}

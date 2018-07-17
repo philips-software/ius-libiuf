@@ -72,3 +72,29 @@ int iusHL3DTransducerElementCompare
       return IUS_FALSE;
     return IUS_TRUE;
 }
+
+
+// Getters
+iu3dp_t iusHL3DTransducerElementGetPosition
+(
+	iu3dte_t ius3DTransducerElement
+)
+{
+	return ius3DTransducerElement->position;
+}
+
+iu3da_t iusHL3DTransducerElementGetAngle
+(
+	iu3dte_t ius3DTransducerElement
+)
+{
+	return ius3DTransducerElement->angle;
+}
+
+iu3ds_t iusHL3DTransducerElementGetSize
+(
+	iu3dte_t ius3DTransducerElement
+)
+{
+	return ius3DTransducerElement->size;
+}

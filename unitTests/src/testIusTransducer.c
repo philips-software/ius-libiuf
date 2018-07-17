@@ -322,7 +322,11 @@ TEST(IusTransducer, testIusTransducerSerialization)
 	// save
 	hid_t handle = H5Fcreate(filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
 	TEST_ASSERT(handle > 0);
+<<<<<<< Updated upstream
 	status = iusHLTransducerSave(transducer, path, handle);
+=======
+	status = iusHLTransducerWrite(transducer, path, handle);
+>>>>>>> Stashed changes
 	H5Fclose(handle);
 	TEST_ASSERT_EQUAL(IUS_E_OK, status);
 

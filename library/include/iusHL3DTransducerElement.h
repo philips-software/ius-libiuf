@@ -31,4 +31,19 @@ int iusHL3DTransducerElementCompare
     iu3dte_t actual
 );
 
+// Getters
+iu3dp_t iusHL3DTransducerElementGetPosition
+(
+	iu3dte_t ius3DTransducerElement
+);
+
+iu3da_t iusHL3DTransducerElementGetAngle
+(
+	iu3dte_t ius3DTransducerElement
+);
+
+iu3ds_t iusHL3DTransducerElementGetSize
+(
+	iu3dte_t ius3DTransducerElement
+);
 #endif //IUSLIBRARY_IUSHL3DTRANSDUCERELEMENT_H

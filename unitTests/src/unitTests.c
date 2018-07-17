@@ -26,9 +26,12 @@ static void RunAllTests(void)
     RUN_TEST_GROUP(IusNonParametricPulse);
     RUN_TEST_GROUP(IusPulseDict);
     RUN_TEST_GROUP(IusTransducer);
+<<<<<<< Updated upstream
 
 //    RUN_TEST_GROUP(IusNonParametricPulse);
 //    RUN_TEST_GROUP(IusPulseList);
+=======
+>>>>>>> Stashed changes
 
 //    RUN_TEST_GROUP(IusDrivingScheme);
 }
