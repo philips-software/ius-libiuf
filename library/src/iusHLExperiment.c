@@ -139,15 +139,16 @@ int iusHLExperimentSave
 {
     int status=0;
     char path[64];
+	const int verbose = 1;
 
     // Make dataset for Experiment
     hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
     sprintf(path, PULSETYPEFMT, parentPath);
-    status |= iusHdf5WriteFloat(group_id, path, &experiment->speedOfSound, 1);
+    status |= iusHdf5WriteFloat(group_id, path, &experiment->speedOfSound, 1, verbose);
     sprintf(path, DATEFMT, parentPath);
     status |= iusHdf5WriteInt(group_id, path, &experiment->date, 1);
     sprintf(path, LABELFMT, parentPath);
-    status |= iusHdf5WriteString(group_id, path, experiment->pDescription, 1);
+    status |= iusHdf5WriteString(group_id, path, experiment->pDescription, verbose);
     status |= H5Gclose(group_id );
     return status;
 }

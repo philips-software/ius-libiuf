@@ -170,7 +170,8 @@ herr_t iusHdf5WriteFloat
     hid_t        handle,
     const char * pVariableString,
     float *      pValues,
-    int          numValues
+    int          numValues,
+	int			 verbose
 );
 //return H5LTmake_dataset_float( handle,  "centerFrequency",  1, dims,
 //    &(pInst->centerFrequency));

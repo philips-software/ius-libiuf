@@ -264,7 +264,8 @@ herr_t iusHdf5WriteFloat
     hid_t               handle,
     const char * const  pVariableString,
     const float * const pValues,
-    int                 numValues
+    int                 numValues,
+	int					verbose
 )
 {
     herr_t   returnValue;
