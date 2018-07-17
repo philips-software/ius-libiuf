@@ -3,7 +3,7 @@
 #define IUSLIBRARY_IUSHLTRANSDUCER_H
 
 #include <iusTypes.h>
-#include <iusHdf5.h>
+#include <iusHDF5.h>
 #include <iusHLTransducerElement.h>
 
 // ADT
