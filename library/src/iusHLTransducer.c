@@ -245,7 +245,7 @@ static herr_t iusWriteBaseTransducer
 {
 	herr_t status = 0;
 	status |= iusWriteShape(group_id, "shape", pTransducer->shape, verbose);
-	status |= iusHdf5WriteString(group_id, "transducerName", pTransducer->pTransducerName, 1, verbose);
+	status |= iusHdf5WriteString(group_id, "transducerName", pTransducer->pTransducerName, verbose);
 	status |= iusHdf5WriteFloat(group_id, "centerFrequency", &(pTransducer->centerFrequency), 1, verbose);
 	return status;
 }
