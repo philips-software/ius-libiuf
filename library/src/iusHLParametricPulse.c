@@ -126,12 +126,13 @@ int iusHLParametricPulseSave
 {
     int status=0;
     char path[64];
+	const int verbose = 1;
 
     status = iusHLBasePulseSave((iup_t)pulse,parentPath,handle);
     sprintf(path, FREQUENCYFMT, parentPath);
-    status |= iusHdf5WriteFloat(handle, path, &(pulse->pulseFrequency), 1);
+    status |= iusHdf5WriteFloat(handle, path, &(pulse->pulseFrequency), 1, verbose);
     sprintf(path, AMPLITUDEFMT, parentPath);
-    status |= iusHdf5WriteFloat(handle, path, &(pulse->pulseAmplitude), 1);
+    status |= iusHdf5WriteFloat(handle, path, &(pulse->pulseAmplitude), 1, verbose);
     sprintf(path, COUNTFMT, parentPath);
     status |= iusHdf5WriteInt(handle, path, &(pulse->pulseCount), 1);
     return status;

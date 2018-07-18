@@ -305,17 +305,18 @@ TEST(IusTransducer, testIusTransducerSerialization)
 	char *path = "/Transducer";
 	char *transducerName = "S5-1";
 	const int numTransducerElements = 128;
-	
+	int i = 0;
+
 	// create and fill
-	const float transducerPitch = 0.000005;
+	const float transducerPitch = 0.000005f;
 
 	iut_t transducer = iusHLTransducerFactoryCreate(transducerName, IUS_LINE, 2500000.0f, numTransducerElements);
-	for (int i = 0; i < numTransducerElements; i++)
+	for (i = 0; i < numTransducerElements; i++)
 	{
 		iu2dp_t elemPos = iusHL2DPositionCreate((i - numTransducerElements / 2)*transducerPitch, 0.0f);	
-		iu2ds_t elemSize = iusHL2DSizeCreate(0.0001,0.0001);
+		iu2ds_t elemSize = iusHL2DSizeCreate(0.0001f,0.0001f);
 		iu2dte_t element = iusHL2DTransducerElementCreate(elemPos, 0.0f, elemSize);
-		iusHLTransducerSetElement(transducer, i, element);
+		iusHLTransducerSetElement(transducer, i, (iute_t)element);
 	}
 	TEST_ASSERT(transducer != IUT_INVALID);
 
