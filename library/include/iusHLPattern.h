@@ -9,50 +9,67 @@
 
 // ADT
 typedef struct IusPattern IusPattern;
-typedef IusPattern *iup_t;
-#define  IUP_INVALID (iup_t) NULL
+typedef IusPattern *iupa_t;
+#define  IUP_INVALID (iupa_t) NULL
 
-iup_t iusHLPatternCreate
+iupa_t iusHLPatternCreate
 (
-    char* pLabel,
-    float timeInFrame
+    const char *pLabel,
+    float timeInFrame,
+    const char *pPulseLabel,
+    const char *pSourceLabel,
+    const char *pChannelMapLabel,
+    const char *pApodizationLabel,
+    const char *pReceiveSettingsLabel
 );
 
 int iusHLPatternDelete
 (
-    iup_t iusPattern
+    iupa_t iusPattern
 );
 
 
 // operations
 int iusHLPatternCompare
 (
-    iup_t reference,
-    iup_t actual
+    iupa_t reference,
+    iupa_t actual
 );
 
 // Getters
-int iusHLPatternGetIntParam
+const char * iusHLPatternGetLabel
 (
-    iup_t iusPattern
+    iupa_t iusPattern
 );
 
-float iusHLPatternGetFloatParam
+const char * iusHLPatternGetPulseLabel
 (
-    iup_t iusPattern
+    iupa_t iusPattern
 );
 
-// Setters
-int iusHLPatternSetIntParam
+const char * iusHLPatternGetSourceLabel
 (
-    iup_t iusPattern,
-    int intParam
+    iupa_t iusPattern
 );
 
-int iusHLPatternSetFloatParam
+const char * iusHLPatternGetChannelMapLabel
 (
-    iup_t iusPattern,
-    float floatParam
+    iupa_t iusPattern
+);
+
+const char * iusHLPatternGetApodizationLabel
+(
+    iupa_t iusPattern
+);
+
+const char * iusHLPatternGetReceivesettingsLabel
+(
+    iupa_t iusPattern
+);
+
+float iusHLPatternGetTimeInFrame
+(
+    iupa_t iusPattern
 );
 
 

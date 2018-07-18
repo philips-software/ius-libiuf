@@ -263,7 +263,7 @@ void iusNodeSaveParents
 
 
 int iusReadNode(IusNode *pNode, hid_t handle, int verbose) {
-    char *pString;
+    const char *pString;
     int status = 0;
     status |= iusHdf5ReadString( handle, "/ID", &pString );
     if( status == 0 ) strcpy(pNode->pId,pString);

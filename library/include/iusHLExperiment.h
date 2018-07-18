@@ -14,7 +14,7 @@ iue_t iusHLExperimentCreate
 (
     float speedOfSound, /**< speed of sound in m/s */
     int date,           /**< interger concatenation of year-month-day  */
-    char *pDescription  /**< Experiment notes */
+    const char *pDescription  /**< Experiment notes */
 );
 
 int iusHLExperimentDelete
