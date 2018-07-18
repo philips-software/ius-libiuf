@@ -11,12 +11,6 @@
 #include <iusUtil.h>
 #include <iusHL3DAngle.h>
 
-struct Ius3DAngle
-{
-  float theta; /**< rotation over z axis */
-  float phi;   /**< rotation over x axis */
-} ;
-
 // ADT
 iu3da_t iusHL3DAngleCreate
 (

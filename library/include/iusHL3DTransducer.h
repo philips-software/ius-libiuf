@@ -3,6 +3,7 @@
 #define IUSLIBRARY_IUSHL3DTRANSDUCER_H
 
 #include <iusHL3DTransducerElement.h>
+#include <iusHDF5.h>
 
 // ADT
 typedef struct Ius3DTransducer Ius3DTransducer;
@@ -46,6 +47,14 @@ int iusHL3DTransducerSetElement(
     iu3dt_t transducer,
     int elementIndex,
     iu3dte_t element
+);
+
+
+herr_t iusHL3DTransducerWrite
+(
+	iu3dt_t transducer,
+	hid_t subgroup_id,
+	int verbose
 );
 
 #endif //IUSLIBRARY_IUSHL3DTRANSDUCER_H

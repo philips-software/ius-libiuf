@@ -6,7 +6,11 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include <hdf5.h>
+#include <hdf5_hl.h>
+
 #include <ius.h>
+#include <iusHDF5.h>
 #include <iusError.h>
 #include <iusTypes.h>
 #include <iusUtil.h>
@@ -198,3 +202,92 @@ int iusHLTransducerSetElement
   return status;
 }
 
+
+hid_t iusWriteTransducerType
+(
+	hid_t handle,
+	char *path,
+	IusShape transducerType
+)
+{
+
+	return handle;
+}
+
+
+
+#define TRANSDUCER_FMT "%s/"
+#define TRANSDUCER_ELEMENTS_FMT "%s/Elements/"
+
+static herr_t iusWriteShape(hid_t group_id, const char *pVariableString, IusTransducerShape shape, int verbose)
+{
+	herr_t status = 0;
+	hsize_t dims[1] = { 1 };
+	/* Based on a native signed short */
+	hid_t hdf_shapeType = H5Tcreate(H5T_ENUM, sizeof(short));
+	short enumValue;
+	status |= H5Tenum_insert(hdf_shapeType, TRANSDUCER_SHAPE_LINE, (enumValue = IUS_LINE, &enumValue));
+	status |= H5Tenum_insert(hdf_shapeType, TRANSDUCER_SHAPE_CIRCLE, (enumValue = IUS_CIRCLE, &enumValue));
+	status |= H5Tenum_insert(hdf_shapeType, TRANSDUCER_SHAPE_PLANE, (enumValue = IUS_PLANE, &enumValue));
+	status |= H5Tenum_insert(hdf_shapeType, TRANSDUCER_SHAPE_CYLINDER, (enumValue = IUS_CYLINDER, &enumValue));
+	status |= H5Tenum_insert(hdf_shapeType, TRANSDUCER_SHAPE_SPHERE, (enumValue = IUS_SPHERE, &enumValue));
+	enumValue = shape;
+	status |= H5LTmake_dataset(group_id, pVariableString, 1, dims, hdf_shapeType, &enumValue);
+	return status;
+}
+
+static herr_t iusWriteBaseTransducer
+(
+	IusTransducer * pTransducer,
+	hid_t group_id,
+	int verbose
+)
+{
+	herr_t status = 0;
+	status |= iusWriteShape(group_id, "shape", pTransducer->shape, verbose);
+	status |= iusHdf5WriteString(group_id, "transducerName", pTransducer->pTransducerName, verbose);
+	status |= iusHdf5WriteFloat(group_id, "centerFrequency", &(pTransducer->centerFrequency), 1, verbose);
+	return status;
+}
+
+herr_t iusHLTransducerWrite
+(
+	iut_t transducer,
+	char *groupPathName,
+	hid_t group_id
+)
+{
+	/* write the /Transducer data */
+	herr_t  status;
+	hsize_t dims[1] = { 1 };
+	hid_t   transducerGroup_id;
+	hid_t   Elementsgroup_id;
+	//char    pathName[128];
+
+	transducerGroup_id = H5Gcreate(group_id, groupPathName, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+	
+	status = iusWriteBaseTransducer(transducer, transducerGroup_id, 1);
+
+	if (status < 0)
+	{
+		return status;
+	}
+
+	//snprintf(pathName, 128, "%s/Elements", groupPathName);
+	Elementsgroup_id = H5Gcreate(transducerGroup_id, "Elements", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+	if (transducer->type == IUS_3D_SHAPE)
+	{
+		Ius3DTransducer *p3DTransducer = (Ius3DTransducer *)transducer;
+		status |= ius3DTransducerWrite(p3DTransducer, Elementsgroup_id, 1);
+	}
+
+	if (transducer->type == IUS_2D_SHAPE)
+	{
+		Ius2DTransducer *p2DTransducer = (Ius2DTransducer *)transducer;
+		status |= ius2DTransducerWrite(p2DTransducer, Elementsgroup_id, 1);
+	}
+	status |= H5Gclose(Elementsgroup_id);
+	status |= H5Gclose(transducerGroup_id);
+
+	return status;
+}

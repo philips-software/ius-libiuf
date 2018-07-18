@@ -3,7 +3,14 @@
 #define IUSLIBRARY_IUSHL3DSIZE_H
 
 // ADT
-typedef struct Ius3DSize Ius3DSize;
+typedef 
+struct Ius3DSize
+{
+	float sx;
+	float sy;
+	float sz;
+} Ius3DSize;
+
 typedef Ius3DSize *iu3ds_t;
 #define  IU3DS_INVALID (iu3ds_t) NULL
 

@@ -6,6 +6,7 @@
 #include <unity_internals.h>
 #include <unity_fixture.h>
 
+#include <hdf5.h>
 #include <ius.h>
 #include <iusError.h>
 #include <iusTypes.h>
@@ -259,8 +260,6 @@ TEST(IusTransducer,  testIusHLCompare3DTransducer)
   iusHLTransducerDelete(differentTransducer);
 }
 
-
-
 TEST(IusTransducer, testIusSetGetTransducer)
 {
     char *pTransducerName = "created in testIusHLCompareTransducer";
@@ -298,6 +297,39 @@ TEST(IusTransducer, testIusSetGetTransducer)
     TEST_ASSERT_EQUAL(IUS_TRUE,isEqual);
 }
 
+TEST(IusTransducer, testIusTransducerSerialization)
+
+{
+	int status = 0;
+	char *filename = "testIusTransducerSerialization.hdf5";
+	char *path = "/Transducer";
+	char *transducerName = "S5-1";
+	const int numTransducerElements = 128;
+	
+	// create and fill
+	const float transducerPitch = 0.000005;
+
+	iut_t transducer = iusHLTransducerFactoryCreate(transducerName, IUS_LINE, 2500000.0f, numTransducerElements);
+	for (int i = 0; i < numTransducerElements; i++)
+	{
+		iu2dp_t elemPos = iusHL2DPositionCreate((i - numTransducerElements / 2)*transducerPitch, 0.0f);	
+		iu2ds_t elemSize = iusHL2DSizeCreate(0.0001,0.0001);
+		iu2dte_t element = iusHL2DTransducerElementCreate(elemPos, 0.0f, elemSize);
+		iusHLTransducerSetElement(transducer, i, element);
+	}
+	TEST_ASSERT(transducer != IUT_INVALID);
+
+	// save
+	hid_t handle = H5Fcreate(filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
+	TEST_ASSERT(handle > 0);
+	status = iusHLTransducerWrite(transducer, path, handle);
+	H5Fclose(handle);
+	TEST_ASSERT_EQUAL(IUS_E_OK, status);
+
+
+	TEST_ASSERT(status == IUS_E_OK);
+}
+
 
 
 TEST_GROUP_RUNNER(IusTransducer)
@@ -307,4 +339,5 @@ TEST_GROUP_RUNNER(IusTransducer)
     RUN_TEST_CASE(IusTransducer, testIusHLCompare3DTransducer);
     RUN_TEST_CASE(IusTransducer, testIusHLCompare2DTransducer);
     RUN_TEST_CASE(IusTransducer, testIusSetGetTransducer);
+	RUN_TEST_CASE(IusTransducer, testIusTransducerSerialization);
 }

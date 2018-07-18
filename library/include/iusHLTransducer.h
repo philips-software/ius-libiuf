@@ -3,6 +3,7 @@
 #define IUSLIBRARY_IUSHLTRANSDUCER_H
 
 #include <iusTypes.h>
+#include <iusHDF5.h>
 #include <iusHLTransducerElement.h>
 
 // ADT
@@ -63,6 +64,13 @@ int iusHLTransducerSetElement
     iut_t transducer,
     int elementIndex,
     iute_t transducerElement
+);
+
+herr_t iusHLTransducerWrite
+(
+	iut_t transducer,
+	char *groupPathName,
+	hid_t group_id
 );
 
 #endif //IUSLIBRARY_IUSHLTRANSDUCER_H
