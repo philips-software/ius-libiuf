@@ -6,7 +6,7 @@
 #include <unity_internals.h>
 #include <unity_fixture.h>
 #include <include/iusHLPattern.h>
-#include <include/iusHLPatternList.h>
+#include <include/iusHLPatternListImp.h>
 #include <include/ius.h>
 
 static const char *pBmodePatternLabel = "bmode";
@@ -103,9 +103,11 @@ TEST(IusPatternList, testIusComparePatternList)
 
 TEST(IusPatternList, testIusSerialization)
 {
-  int numPatterns = 100;
+  int numPatterns = 2;
   int status;
   IUS_BOOL equal;
+  char *pFilename = "testIusPatternListSerialization.hdf5";
+  char *pPatternListPath =  "/PatternList";
 
   // fill list
   iupal_t patternList = iusHLPatternListCreate(numPatterns);
@@ -120,7 +122,7 @@ TEST(IusPatternList, testIusSerialization)
                                            pReceivesettingsLabel);
 
   iupa_t dopplerPattern = iusHLPatternCreate(pDopplerPatternLabel,
-                                             0.01f,
+                                             0.02f,
                                              pPulseLabel,
                                              pSourceLabel,
                                              pChannelMapLabel,
@@ -132,10 +134,22 @@ TEST(IusPatternList, testIusSerialization)
   TEST_ASSERT_EQUAL(IUS_E_OK, status);
 
   // save
+  hid_t handle = H5Fcreate( pFilename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT );
+  TEST_ASSERT(handle > 0);
+  status = iusHLPatternListSave( patternList, pPatternListPath, handle);
+  status |= H5Fclose(handle);
+  TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
   // read back
+  handle = H5Fopen(pFilename, H5F_ACC_RDONLY, H5P_DEFAULT);
+  iupal_t savedPatternList = iusHLPatternListLoad(handle, pPatternListPath);
+  TEST_ASSERT_NOT_EQUAL(IUPAL_INVALID,savedPatternList);
+  status |= H5Fclose(handle);
+  TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
   // compare
+  equal = iusHLPatternListCompare(patternList,savedPatternList);
+  TEST_ASSERT_EQUAL(IUS_TRUE,equal);
 
   iusHLPatternListDelete(patternList);
   iusHLPatternDelete(bmodePattern);
@@ -148,5 +162,5 @@ TEST_GROUP_RUNNER(IusPatternList)
 {
     RUN_TEST_CASE(IusPatternList, testIusCreatePatternList);
     RUN_TEST_CASE(IusPatternList, testIusComparePatternList);
-//    RUN_TEST_CASE(IusPatternList, testIusSerialization);
+    RUN_TEST_CASE(IusPatternList, testIusSerialization);
 }

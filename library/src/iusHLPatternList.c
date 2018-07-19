@@ -6,12 +6,12 @@
 //
 #include <stdlib.h>
 #include <math.h>
-#include <include/iusHLPatternList.h>
+#include <include/iusHLPatternListImp.h>
 #include <include/ius.h>
 #include <include/iusError.h>
 #include <include/iusUtil.h>
-
-
+#include <include/iusHLPatternImp.h>
+#include <include/iusHDF5.h>
 
 // ADT
 struct IusPatternList
@@ -104,3 +104,77 @@ int iusHLPatternListSet
     list->pPatterns[index] = member;
     return IUS_E_OK;
 }
+
+#define PATTERNLISTFMT "%s/Pattern[%d]"
+#define PATTERNLISTSIZEFMT "%s/Size"
+
+
+
+iupal_t iusHLPatternListLoad
+(
+    hid_t handle,
+    char *parentPath
+)
+{
+    char path[64];
+    int numPatterns,i;
+    sprintf(path, PATTERNLISTSIZEFMT, parentPath);
+    int status = iusHdf5ReadInt(handle, path, &(numPatterns));
+    if(status!=0) return IUPA_INVALID;
+
+    iupal_t patternList = iusHLPatternListCreate(numPatterns);
+    iupa_t sourceElement;
+
+    // Load patterns
+    for (i=0;i < numPatterns;i++)
+    {
+        sprintf(path, PATTERNLISTFMT, parentPath, i);
+        sourceElement = iusHLPatternLoad(handle,path);
+        if(sourceElement==IUPA_INVALID)
+        {
+            break;
+        }
+        iusHLPatternListSet(patternList,sourceElement,i);
+    }
+
+    return patternList;
+}
+
+int iusHLPatternListSave
+(
+    iupal_t list,
+    char *parentPath,
+    hid_t handle
+)
+{
+    int status=0;
+    int i,size;
+    char path[64];
+
+    if(list == NULL)
+        return IUS_ERR_VALUE;
+    if(parentPath == NULL || handle == H5I_INVALID_HID)
+        return IUS_ERR_VALUE;
+
+    hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+    iupa_t sourceElement;
+    size = iusHLPatternListGetSize(list);
+    sprintf(path, PATTERNLISTSIZEFMT, parentPath);
+    status |= iusHdf5WriteInt(handle, path, &(size), 1);
+
+    // iterate over source list elements and save'em
+    for (i=0;i < size;i++)
+    {
+        sourceElement = iusHLPatternListGet(list,i);
+        sprintf(path, PATTERNLISTFMT, parentPath, i);
+        status = iusHLPatternSave(sourceElement,path,group_id);
+        if(status!=IUS_E_OK)
+        {
+            break;
+        }
+    }
+
+    status |= H5Gclose(group_id );
+    return status;
+}
+
