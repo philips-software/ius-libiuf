@@ -49,8 +49,8 @@ TEST(IusPattern, testIusPatternCreate)
                                          pChannelMapLabel,
                                          pApodizationLabel,
                                          pReceivesettingsLabel);
-    TEST_ASSERT(obj != IUP_INVALID);
-    TEST_ASSERT(notherObj != IUP_INVALID);
+    TEST_ASSERT(obj != IUPA_INVALID);
+    TEST_ASSERT(notherObj != IUPA_INVALID);
     iusHLPatternDelete(obj);
     iusHLPatternDelete(notherObj);
 
@@ -62,7 +62,7 @@ TEST(IusPattern, testIusPatternCreate)
                              pChannelMapLabel,
                              pApodizationLabel,
                              pReceivesettingsLabel);
-    TEST_ASSERT(obj == IUP_INVALID);
+    TEST_ASSERT(obj == IUPA_INVALID);
 
     obj = iusHLPatternCreate("",
                              0.01f,
@@ -71,7 +71,7 @@ TEST(IusPattern, testIusPatternCreate)
                              pChannelMapLabel,
                              pApodizationLabel,
                              pReceivesettingsLabel);
-    TEST_ASSERT(obj == IUP_INVALID);
+    TEST_ASSERT(obj == IUPA_INVALID);
 
     obj = iusHLPatternCreate(pBmodePatternLabel,
                              0.01f,
@@ -80,7 +80,7 @@ TEST(IusPattern, testIusPatternCreate)
                              pChannelMapLabel,
                              pApodizationLabel,
                              pReceivesettingsLabel);
-    TEST_ASSERT(obj == IUP_INVALID);
+    TEST_ASSERT(obj == IUPA_INVALID);
 
     obj = iusHLPatternCreate(pBmodePatternLabel,
                              0.01f,
@@ -89,7 +89,7 @@ TEST(IusPattern, testIusPatternCreate)
                              pChannelMapLabel,
                              pApodizationLabel,
                              pReceivesettingsLabel);
-    TEST_ASSERT(obj == IUP_INVALID);
+    TEST_ASSERT(obj == IUPA_INVALID);
 
     obj = iusHLPatternCreate(pBmodePatternLabel,
                              0.01f,
@@ -98,7 +98,7 @@ TEST(IusPattern, testIusPatternCreate)
                              "",
                              pApodizationLabel,
                              pReceivesettingsLabel);
-    TEST_ASSERT(obj == IUP_INVALID);
+    TEST_ASSERT(obj == IUPA_INVALID);
 
     obj = iusHLPatternCreate(pBmodePatternLabel,
                              0.01f,
@@ -107,7 +107,7 @@ TEST(IusPattern, testIusPatternCreate)
                              pChannelMapLabel,
                              "",
                              pReceivesettingsLabel);
-    TEST_ASSERT(obj == IUP_INVALID);
+    TEST_ASSERT(obj == IUPA_INVALID);
 
     obj = iusHLPatternCreate(pBmodePatternLabel,
                              0.01f,
@@ -116,7 +116,7 @@ TEST(IusPattern, testIusPatternCreate)
                              pChannelMapLabel,
                              pApodizationLabel,
                                "");
-    TEST_ASSERT(obj == IUP_INVALID);
+    TEST_ASSERT(obj == IUPA_INVALID);
 
 }
 
@@ -129,7 +129,7 @@ TEST(IusPattern, testIusPatternDelete)
                                  pChannelMapLabel,
                                  pApodizationLabel,
                                  pReceivesettingsLabel);
-    TEST_ASSERT(obj != IUP_INVALID);
+    TEST_ASSERT(obj != IUPA_INVALID);
     int status = iusHLPatternDelete(obj);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
@@ -158,7 +158,7 @@ int createAndCompare
                                     pChannelMapLabel,
                                     pApodizationLabel,
                                     pReceiveSettingsLabel);
-  if(actual == IUP_INVALID) return IUS_ERR_VALUE;
+  if(actual == IUPA_INVALID) return IUS_ERR_VALUE;
   int equal = iusHLPatternCompare(reference,actual);
   iusHLPatternDelete(actual);
   return equal;
@@ -217,7 +217,7 @@ TEST(IusPattern, testIusPatternSetGet)
                                    pChannelMapLabel,
                                    pApodizationLabel,
                                    pReceivesettingsLabel);
-    TEST_ASSERT(obj != IUP_INVALID);
+    TEST_ASSERT(obj != IUPA_INVALID);
     
     // label
     TEST_ASSERT_EQUAL_STRING(pBmodePatternLabel, iusHLPatternGetLabel(obj));
@@ -231,7 +231,7 @@ TEST(IusPattern, testIusPatternSetGet)
 
     // invalid param
     iusHLPatternDelete(obj);
-    obj = IUP_INVALID;
+    obj = IUPA_INVALID;
     TEST_ASSERT_EQUAL(NULL, iusHLPatternGetLabel(obj));
     TEST_ASSERT_EQUAL(NULL, iusHLPatternGetPulseLabel(obj));
     TEST_ASSERT_EQUAL(NULL, iusHLPatternGetSourceLabel(obj));
@@ -268,7 +268,7 @@ TEST(IusPattern, testIusSerialization)
                                           pApodizationLabel,
                                           pReceivesettingsLabel);
     // fill
-    TEST_ASSERT(obj != IUP_INVALID);
+    TEST_ASSERT(obj != IUPA_INVALID);
 
     hid_t handle = H5Fcreate( filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT );
     TEST_ASSERT(handle > 0);

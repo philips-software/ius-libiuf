@@ -10,7 +10,7 @@
 // ADT
 typedef struct IusPattern IusPattern;
 typedef IusPattern *iupa_t;
-#define  IUP_INVALID (iupa_t) NULL
+#define  IUPA_INVALID (iupa_t) NULL
 
 iupa_t iusHLPatternCreate
 (

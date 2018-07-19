@@ -27,6 +27,7 @@ static void RunAllTests(void)
     RUN_TEST_GROUP(IusPulseDict);
     RUN_TEST_GROUP(IusPattern);
     RUN_TEST_GROUP(IusTransducer);
+    RUN_TEST_GROUP(IusPatternList);
 
 //    RUN_TEST_GROUP(IusDrivingScheme);
 }

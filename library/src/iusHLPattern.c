@@ -54,7 +54,7 @@ iupa_t iusHLPatternCreate
         pChannelMapLabel == NULL ||
         pApodizationLabel == NULL ||
         pReceiveSettingsLabel == NULL
-    ) return IUP_INVALID;
+    ) return IUPA_INVALID;
 
     if( strcmp(pLabel,"") == 0 ||
         strcmp(pPulseLabel,"") == 0 ||
@@ -62,9 +62,9 @@ iupa_t iusHLPatternCreate
         strcmp(pChannelMapLabel,"") == 0 ||
         strcmp(pApodizationLabel,"") == 0 ||
         strcmp(pReceiveSettingsLabel,"") == 0
-    ) return IUP_INVALID;
+    ) return IUPA_INVALID;
 
-    if( timeInFrame <= 0.0f ) return IUP_INVALID;
+    if( timeInFrame <= 0.0f ) return IUPA_INVALID;
     iupa_t created = calloc(1, sizeof(IusPattern));
     created->pLabel = pLabel;
     created->timeInFrame = timeInFrame;
@@ -82,7 +82,7 @@ int iusHLPatternDelete
 )
 {
     int status = IUS_ERR_VALUE;
-    if(iusPattern != IUP_INVALID)
+    if(iusPattern != IUPA_INVALID)
     {
         free(iusPattern);
         iusPattern = NULL;
@@ -100,7 +100,7 @@ int iusHLPatternCompare
 )
 {
     if( reference == actual ) return IUS_TRUE;
-    if( reference == IUP_INVALID || actual == IUP_INVALID ) return IUS_FALSE;
+    if( reference == IUPA_INVALID || actual == IUPA_INVALID ) return IUS_FALSE;
     if( IUS_EQUAL_FLOAT(reference->timeInFrame, actual->timeInFrame ) == IUS_FALSE ) return IUS_FALSE;
 
     if( strcmp(reference->pLabel,actual->pLabel) != 0 ) return IUS_FALSE;
@@ -196,7 +196,7 @@ const char * iusHLPatternGetLabel
     iupa_t iusPattern
 )
 {
-    if(iusPattern == IUP_INVALID) return NULL;
+    if(iusPattern == IUPA_INVALID) return NULL;
     return iusPattern->pLabel;
 }
 
@@ -205,7 +205,7 @@ const char * iusHLPatternGetPulseLabel
     iupa_t iusPattern
 )
 {
-    if(iusPattern == IUP_INVALID) return NULL;
+    if(iusPattern == IUPA_INVALID) return NULL;
     return iusPattern->pPulseLabel;
 }
 
@@ -214,7 +214,7 @@ const char * iusHLPatternGetSourceLabel
     iupa_t iusPattern
 )
 {
-    if(iusPattern == IUP_INVALID) return NULL;
+    if(iusPattern == IUPA_INVALID) return NULL;
     return iusPattern->pSourceLabel;
 }
 
@@ -223,7 +223,7 @@ const char * iusHLPatternGetChannelMapLabel
     iupa_t iusPattern
 )
 {
-    if(iusPattern == IUP_INVALID) return NULL;
+    if(iusPattern == IUPA_INVALID) return NULL;
     return iusPattern->pChannelMapLabel;
 }
 
@@ -232,7 +232,7 @@ const char * iusHLPatternGetApodizationLabel
     iupa_t iusPattern
 )
 {
-    if(iusPattern == IUP_INVALID) return NULL;
+    if(iusPattern == IUPA_INVALID) return NULL;
     return iusPattern->pApodizationLabel;
 }
 
@@ -241,7 +241,7 @@ const char * iusHLPatternGetReceivesettingsLabel
     iupa_t iusPattern
 )
 {
-    if(iusPattern == IUP_INVALID) return NULL;
+    if(iusPattern == IUPA_INVALID) return NULL;
     return iusPattern->pReceiveSettingsLabel;
 }
 
@@ -250,7 +250,7 @@ float iusHLPatternGetTimeInFrame
     iupa_t iusPattern
 )
 {
-    if(iusPattern == IUP_INVALID) return NAN;
+    if(iusPattern == IUPA_INVALID) return NAN;
     return iusPattern->timeInFrame;
 }
 
