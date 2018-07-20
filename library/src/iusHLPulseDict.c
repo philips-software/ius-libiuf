@@ -50,8 +50,6 @@ int iusHLPulseDictDelete
   iupd_t dict
 )
 {
-    HashablePulse *el;
-    HashablePulse *tmp;
     if(dict == NULL) return IUS_ERR_VALUE;
     /* Free all allocated resources associated with map and reset its state */
     hashmap_destroy(&dict->map);
@@ -66,7 +64,6 @@ static int iusHLPulseDictSourceInTarget
     iupd_t target
 )
 {
-    iup_t sourcePulse;
     HashablePulse *targetElement;
     HashablePulse *sourceElement;
     IUS_BOOL sourceInTarget = IUS_FALSE;
@@ -94,11 +91,9 @@ int iusHLPulseDictCompare
   iupd_t actual
 )
 {
-    HashablePulse *referenceElement;
-    HashablePulse *actualElement;
     if( reference == actual ) return IUS_TRUE;
     if( reference == NULL || actual == NULL ) return IUS_FALSE;
-    if( hashmap_size(&reference->map) != hashmap_size(&reference->map) ) return IUS_FALSE;
+    if( hashmap_size(&reference->map) != hashmap_size(&actual->map) ) return IUS_FALSE;
     if( hashmap_size(&reference->map) == 0) return IUS_TRUE;
 
     // check if elements of source hash are in target hash
@@ -126,12 +121,16 @@ iup_t iusHLPulseDictGet
     char * key
 )
 {
-    HashablePulse * search;
+#if 0
+	HashablePulse * search;
     if( dict == NULL ) return NULL;
   assert(0==1);
 
     if( search != NULL ) return NULL;
+
     return search->pulse;
+#endif
+	return NULL;
 }
 
 int iusHLPulseDictSet
@@ -197,7 +196,6 @@ int iusHLPulseDictSave
     return status;
 }
 
-// TODO refactor!
 
 #define MAX_NAME 1024
 
@@ -209,7 +207,7 @@ iupd_t iusHLPulseDictLoad
 {
     int status = 0;
     char path[64];
-    iunpp_t  pulse;
+    //iunpp_t  pulse;
     int i;
     char memb_name[MAX_NAME];
 

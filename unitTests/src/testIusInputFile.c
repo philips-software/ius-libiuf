@@ -11,8 +11,12 @@
 #include <include/iusError.h>
 #include <include/iusTypes.h>
 #include <include/iusHLInputFile.h>
+#include <include/iusHLPulseDict.h>
+#include <include/iusHLReceiveChannelMapDict.h>
+
 #include <include/iusHLParametricPulse.h>
 #include <include/iusHLNonParametricPulse.h>
+
 #include <testDataGenerators.h>
 
 static const char *pFilename = "IusInputFile.hdf5";
@@ -113,6 +117,7 @@ TEST(IusInputFile, testIusInputFileSetGet)
 {
     IUS_BOOL equal;
     iupd_t pulseDict = iusHLPulseDictCreate();
+	iurcmd_t receiveChannelMapDict = iusHLReceiveChannelMapDictCreate();
     iuif_t obj = iusHLInputFileCreate(pFilename);
     TEST_ASSERT(obj != IUIF_INVALID);
 
@@ -128,7 +133,18 @@ TEST(IusInputFile, testIusInputFileSetGet)
     TEST_ASSERT_EQUAL(IUS_TRUE, equal);
 
 
+	// receiveChannelMapDict param
+	status = iusHLInputFileSetReceiveChannelMapDict(obj, receiveChannelMapDict);
+	TEST_ASSERT_EQUAL(IUS_E_OK, status);
+
+	iurcmd_t gotMeAReceiveChannelMapDict = iusHLInputFileGetReceiveChannelMapDict(obj);
+	TEST_ASSERT_NOT_EQUAL(NULL, gotMeAReceiveChannelMapDict);
+
+	equal = iusHLReceiveChannelMapDictCompare(receiveChannelMapDict, gotMeAReceiveChannelMapDict);
+	TEST_ASSERT_EQUAL(IUS_TRUE, equal);
+
     // invalid param
+	  //todo
 
 	status = iusHLInputFileClose(obj);
 	TEST_ASSERT(status == IUS_E_OK);
@@ -145,9 +161,13 @@ TEST(IusInputFile, testIusInputFileSerialization)
     TEST_ASSERT(inputFile != IUIF_INVALID);
 
     // fill
-    iupd_t dict = dgGeneratePulseDict();
-    int status = iusHLInputFileSetPulseDict(inputFile,dict);
+    iupd_t pulseDict = dgGeneratePulseDict();
+    int status = iusHLInputFileSetPulseDict(inputFile, pulseDict);
     TEST_ASSERT(status == IUS_E_OK);
+
+	iurcmd_t receiveChannelMapDict = dgGenerateReceiveChannelMapDict();
+	status = iusHLInputFileSetReceiveChannelMapDict(inputFile, receiveChannelMapDict);
+	TEST_ASSERT(status == IUS_E_OK);
 
     // save
     status = iusHLInputFileSave(inputFile);
@@ -163,7 +183,9 @@ TEST(IusInputFile, testIusInputFileSerialization)
 	status = iusHLInputFileClose(savedObj);
 	TEST_ASSERT(status == IUS_E_OK);
 
-    iusHLPulseDictDelete(dict);
+    iusHLPulseDictDelete(pulseDict);
+	iusHLReceiveChannelMapDictDelete(receiveChannelMapDict);
+
     iusHLInputFileDelete(inputFile);
     iusHLInputFileDelete(savedObj);
 }

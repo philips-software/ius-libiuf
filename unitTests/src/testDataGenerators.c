@@ -7,6 +7,7 @@
 #include <include/iusHLPulseDict.h>
 #include <include/iusHLParametricPulse.h>
 #include <include/iusHLNonParametricPulse.h>
+#include <include/iusHLReceiveChannelMapDict.h>
 
 iupd_t dgGeneratePulseDict()
 {
@@ -33,6 +34,33 @@ iupd_t dgGeneratePulseDict()
   status = iusHLPulseDictSet(dict,parametricLabel, (iup_t) parametricPulse);
   TEST_ASSERT(status == IUS_E_OK);
   return dict;
+}
+
+
+iurcmd_t dgGenerateReceiveChannelMapDict
+(
+	void
+)
+{
+	int status;
+	int numChannels = 8;
+	int channelMap[8] = { 0, 1, 2, 3, 4, 5, 6, 7 };
+	char *label = "one-to-one";
+
+	iurcmd_t dict = iusHLReceiveChannelMapDictCreate();
+	TEST_ASSERT(dict != IURCMD_INVALID);
+
+	// fill
+	iurcm_t receiveChannelMap = iusHLReceiveChannelMapCreate(numChannels);
+	TEST_ASSERT(receiveChannelMap != NULL);
+
+	status |= iusHLReceiveChannelMapSetMap(receiveChannelMap, channelMap);
+	TEST_ASSERT(status == IUS_E_OK);
+
+	status = iusHLReceiveChannelMapDictSet(dict, label, receiveChannelMap);
+	TEST_ASSERT(status == IUS_E_OK);
+
+	return dict;
 }
 
 #if 0

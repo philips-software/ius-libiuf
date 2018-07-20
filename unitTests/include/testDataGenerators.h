@@ -5,8 +5,14 @@
 #define IUSLIBRARY_TESTDATAGENERATORS_H
 
 #include <include/iusHLPulseDict.h>
+#include <include/iusHLReceiveChannelMapDict.h>
 
 iupd_t dgGeneratePulseDict
+(
+  void
+);
+
+iurcmd_t dgGenerateReceiveChannelMapDict
 (
   void
 );

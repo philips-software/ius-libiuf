@@ -3,6 +3,7 @@
 #define IUSLIBRARY_IUSHLINPUTFILE_H
 
 #include <iusHLPulseDict.h>
+#include <iusHLReceiveChannelMapDict.h>
 
 // ADT
 typedef struct IusInputFile IusInputFile;
@@ -48,12 +49,23 @@ iupd_t iusHLInputFileGetPulseDict
     iuif_t fileHandle
 );
 
+iurcmd_t iusHLInputFileGetReceiveChannelMapDict
+(
+	iuif_t fileHandle
+);
 
 // Setters
+
 int iusHLInputFileSetPulseDict
 (
+	iuif_t inputFile,
+	iupd_t pulseDict
+);
+
+int iusHLInputFileSetReceiveChannelMapDict
+(
     iuif_t inputFile,
-    iupd_t pulseDict
+    iurcmd_t receiveChannelMapDict
 );
 
 #endif //IUSLIBRARY_IUSHLINPUTFILE_H

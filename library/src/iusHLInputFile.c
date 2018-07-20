@@ -14,12 +14,15 @@
 #include <iusUtil.h>
 #include <include/iusHLPulseDictImp.h>
 #include <include/iusHLPulseDict.h>
+#include <include/iusHLReceiveChannelMapDict.h>
+
 #include "include/iusHLInputFile.h"
 
 struct IusInputFile
 {
     const char *pFilename;
     iupd_t pulseDict;
+	iurcmd_t receiveChannelMapDict;
 
     //  state variables
     hid_t fileChunkConfig;                /**< file chunck handle */
@@ -49,6 +52,7 @@ static iuif_t iusHLInputFileAlloc
 	pFileInst->rfDataset = H5I_INVALID_HID;
 	pFileInst->fileChunkConfig = H5I_INVALID_HID;
 	pFileInst->pulseDict = IUPD_INVALID;
+	pFileInst->receiveChannelMapDict = IURCMD_INVALID;
 	if (pFileInst->handle < 0)
 	{
 		return IUIF_INVALID;
@@ -136,6 +140,13 @@ iuif_t iusHLInputFileLoad
         fprintf( stderr, "Warning from iusHLInputFileLoad: could not load pulses: %s\n", pFilename );
         return IUIF_INVALID;
     }
+
+	pFileInst->receiveChannelMapDict = iusHLReceiveChannelMapDictLoad(pFileInst->handle, "/ReceiveChannelMap");
+	if (pFileInst->receiveChannelMapDict == IURCMD_INVALID)
+	{
+		fprintf(stderr, "Warning from iusHLInputFileLoad: could not load receiveChannelMap: %s\n", pFilename);
+		return IUIF_INVALID;
+	}
     return pFileInst;
 }
 
@@ -172,6 +183,7 @@ int iusHLInputFileSave
 //    iusWriteDrivingScheme(pInst->pDrivingScheme, group_id, verbose);
 //    status |= H5Gclose(group_id );
     status |= iusHLPulseDictSave(fileHandle->pulseDict,"/Pulses",fileHandle->handle);
+	status |= iusHLReceiveChannelMapDictSave(fileHandle->receiveChannelMapDict, "/ReceiveChannelMap", fileHandle->handle);
     return status;
 }
 
@@ -212,6 +224,7 @@ int iusHLInputFileCompare
     if( reference == actual ) return IUS_TRUE;
     if( reference == NULL || actual == NULL ) return IUS_FALSE;
     if( iusHLPulseDictCompare(reference->pulseDict, actual->pulseDict)  == IUS_FALSE ) return IUS_FALSE;
+	if (iusHLReceiveChannelMapDictCompare(reference->receiveChannelMapDict, actual->receiveChannelMapDict) == IUS_FALSE) return IUS_FALSE;
     return IUS_TRUE;
 }
 
@@ -243,4 +256,33 @@ int iusHLInputFileSetPulseDict
         status = IUS_E_OK;
     }
     return status;
+}
+
+iurcmd_t iusHLInputFileGetReceiveChannelMapDict
+(
+	iuif_t iusInputFile
+)
+{
+	if (iusInputFile != NULL)
+	{
+		return iusInputFile->receiveChannelMapDict;
+	}
+	return NULL;
+}
+
+// Setters
+int iusHLInputFileSetReceiveChannelMapDict
+(
+	iuif_t inputFile,
+	iurcmd_t receiveChannelMapDict
+)
+{
+	int status = IUS_ERR_VALUE;
+
+	if (inputFile != NULL)
+	{
+		inputFile->receiveChannelMapDict = receiveChannelMapDict;
+		status = IUS_E_OK;
+	}
+	return status;
 }

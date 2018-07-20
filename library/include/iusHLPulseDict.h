@@ -2,6 +2,7 @@
 #ifndef IUSLIBRARY_IUSHLPULSEDICT_H
 #define IUSLIBRARY_IUSHLPULSEDICT_H
 
+#include <iusHDF5.h>
 #include <iusHLPulse.h>
 
 // ADT
@@ -41,6 +42,19 @@ int iusHLPulseDictSet
     iupd_t dict,
     char * key,
     iup_t member
+);
+
+int iusHLPulseDictSave
+(
+	iupd_t dict,
+	char *path,
+	hid_t handle
+);
+
+iupd_t iusHLPulseDictLoad
+(
+	hid_t handle,
+	char *path
 );
 
 #endif //IUSLIBRARY_IUSHLPULSEDICT_H
