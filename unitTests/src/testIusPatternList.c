@@ -29,15 +29,16 @@ TEST_TEAR_DOWN(IusPatternList)
 
 TEST(IusPatternList, testIusCreatePatternList)
 {
-    // Put your test code here
+  // Put your test code here
   int numPatterns = 100;
-  int i, status;
   iupal_t patternList = iusHLPatternListCreate(numPatterns);
-  TEST_ASSERT_NOT_EQUAL(IUPAL_INVALID,patternList);
-  TEST_ASSERT_EQUAL(numPatterns,iusHLPatternListGetSize(patternList));
+  TEST_ASSERT_NOT_EQUAL(IUPAL_INVALID, patternList);
+  TEST_ASSERT_EQUAL(numPatterns, iusHLPatternListGetSize(patternList));
+
+  patternList = iusHLPatternListCreate(-1);
+  TEST_ASSERT_EQUAL(IUPAL_INVALID, patternList);
   iusHLPatternListDelete(patternList);
 }
-
 
 TEST(IusPatternList, testIusComparePatternList)
 {
@@ -48,12 +49,11 @@ TEST(IusPatternList, testIusComparePatternList)
 
   // Empty lists should be equal
   iupal_t patternList = iusHLPatternListCreate(numPatterns);
-  TEST_ASSERT_NOT_EQUAL(IUPAL_INVALID,patternList);
+  TEST_ASSERT_NOT_EQUAL(IUPAL_INVALID, patternList);
   iupal_t notherPatternList = iusHLPatternListCreate(numPatterns);
-  TEST_ASSERT_NOT_EQUAL(IUPAL_INVALID,notherPatternList);
-  equal = iusHLPatternListCompare(patternList,notherPatternList);
-  TEST_ASSERT_EQUAL(IUS_TRUE,equal);
-
+  TEST_ASSERT_NOT_EQUAL(IUPAL_INVALID, notherPatternList);
+  equal = iusHLPatternListCompare(patternList, notherPatternList);
+  TEST_ASSERT_EQUAL(IUS_TRUE, equal);
 
   iupa_t bmodePattern = iusHLPatternCreate(pBmodePatternLabel,
                                            0.01f,
@@ -72,29 +72,29 @@ TEST(IusPatternList, testIusComparePatternList)
                                              pReceivesettingsLabel);
 
   // Change one list..add bmode
-  status = iusHLPatternListSet(patternList,bmodePattern,0);
+  status = iusHLPatternListSet(patternList, bmodePattern, 0);
   TEST_ASSERT_EQUAL(IUS_E_OK, status);
-  equal = iusHLPatternListCompare(patternList,notherPatternList);
-  TEST_ASSERT_EQUAL(IUS_FALSE,equal);
+  equal = iusHLPatternListCompare(patternList, notherPatternList);
+  TEST_ASSERT_EQUAL(IUS_FALSE, equal);
 
   // Change other
-  status = iusHLPatternListSet(notherPatternList,bmodePattern,0);
+  status = iusHLPatternListSet(notherPatternList, bmodePattern, 0);
   TEST_ASSERT_EQUAL(IUS_E_OK, status);
-  equal = iusHLPatternListCompare(patternList,notherPatternList);
-  TEST_ASSERT_EQUAL(IUS_TRUE,equal);
+  equal = iusHLPatternListCompare(patternList, notherPatternList);
+  TEST_ASSERT_EQUAL(IUS_TRUE, equal);
 
 
   // Change one list..add doppler
-  status = iusHLPatternListSet(patternList,dopplerPattern,1);
+  status = iusHLPatternListSet(patternList, dopplerPattern, 1);
   TEST_ASSERT_EQUAL(IUS_E_OK, status);
-  equal = iusHLPatternListCompare(patternList,notherPatternList);
-  TEST_ASSERT_EQUAL(IUS_FALSE,equal);
+  equal = iusHLPatternListCompare(patternList, notherPatternList);
+  TEST_ASSERT_EQUAL(IUS_FALSE, equal);
 
   // Change other
-  status = iusHLPatternListSet(notherPatternList,dopplerPattern,1);
+  status = iusHLPatternListSet(notherPatternList, dopplerPattern, 1);
   TEST_ASSERT_EQUAL(IUS_E_OK, status);
-  equal = iusHLPatternListCompare(patternList,notherPatternList);
-  TEST_ASSERT_EQUAL(IUS_TRUE,equal);
+  equal = iusHLPatternListCompare(patternList, notherPatternList);
+  TEST_ASSERT_EQUAL(IUS_TRUE, equal);
 
   iusHLPatternListDelete(patternList);
   iusHLPatternDelete(bmodePattern);
@@ -107,11 +107,11 @@ TEST(IusPatternList, testIusSerialization)
   int status;
   IUS_BOOL equal;
   char *pFilename = "testIusPatternListSerialization.hdf5";
-  char *pPatternListPath =  "/PatternList";
+  char *pPatternListPath = "/PatternList";
 
   // fill list
   iupal_t patternList = iusHLPatternListCreate(numPatterns);
-  TEST_ASSERT_NOT_EQUAL(IUPAL_INVALID,patternList);
+  TEST_ASSERT_NOT_EQUAL(IUPAL_INVALID, patternList);
 
   iupa_t bmodePattern = iusHLPatternCreate(pBmodePatternLabel,
                                            0.01f,
@@ -128,28 +128,29 @@ TEST(IusPatternList, testIusSerialization)
                                              pChannelMapLabel,
                                              pApodizationLabel,
                                              pReceivesettingsLabel);
-  status = iusHLPatternListSet(patternList,bmodePattern,0);
+  status = iusHLPatternListSet(patternList, bmodePattern, 0);
   TEST_ASSERT_EQUAL(IUS_E_OK, status);
-  status = iusHLPatternListSet(patternList,dopplerPattern,1);
+  status = iusHLPatternListSet(patternList, dopplerPattern, 1);
   TEST_ASSERT_EQUAL(IUS_E_OK, status);
 
   // save
-  hid_t handle = H5Fcreate( pFilename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT );
+  hid_t handle = H5Fcreate(pFilename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
   TEST_ASSERT(handle > 0);
-  status = iusHLPatternListSave( patternList, pPatternListPath, handle);
-  status |= H5Fclose(handle);
-  TEST_ASSERT_EQUAL(IUS_E_OK,status);
+  status = iusHLPatternListSave(patternList, pPatternListPath, handle);
+  TEST_ASSERT_EQUAL(IUS_E_OK, status);
+  status = H5Fclose(handle);
+  TEST_ASSERT_EQUAL(IUS_E_OK, status);
 
   // read back
   handle = H5Fopen(pFilename, H5F_ACC_RDONLY, H5P_DEFAULT);
   iupal_t savedPatternList = iusHLPatternListLoad(handle, pPatternListPath);
-  TEST_ASSERT_NOT_EQUAL(IUPAL_INVALID,savedPatternList);
+  TEST_ASSERT_NOT_EQUAL(IUPAL_INVALID, savedPatternList);
   status |= H5Fclose(handle);
-  TEST_ASSERT_EQUAL(IUS_E_OK,status);
+  TEST_ASSERT_EQUAL(IUS_E_OK, status);
 
   // compare
-  equal = iusHLPatternListCompare(patternList,savedPatternList);
-  TEST_ASSERT_EQUAL(IUS_TRUE,equal);
+  equal = iusHLPatternListCompare(patternList, savedPatternList);
+  TEST_ASSERT_EQUAL(IUS_TRUE, equal);
 
   iusHLPatternListDelete(patternList);
   iusHLPatternDelete(bmodePattern);
@@ -157,10 +158,9 @@ TEST(IusPatternList, testIusSerialization)
 
 }
 
-
 TEST_GROUP_RUNNER(IusPatternList)
 {
-    RUN_TEST_CASE(IusPatternList, testIusCreatePatternList);
-    RUN_TEST_CASE(IusPatternList, testIusComparePatternList);
-    RUN_TEST_CASE(IusPatternList, testIusSerialization);
+  RUN_TEST_CASE(IusPatternList, testIusCreatePatternList);
+  RUN_TEST_CASE(IusPatternList, testIusComparePatternList);
+  RUN_TEST_CASE(IusPatternList, testIusSerialization);
 }

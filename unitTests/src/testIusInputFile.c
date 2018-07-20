@@ -14,6 +14,7 @@
 #include <include/iusHLParametricPulse.h>
 #include <include/iusHLNonParametricPulse.h>
 #include <testDataGenerators.h>
+#include <include/iusHLPatternList.h>
 
 static const char *pFilename = "IusInputFile.hdf5";
 static const char *pNotherFilename = "AnotherIusInputFile.hdf5";
@@ -147,6 +148,10 @@ TEST(IusInputFile, testIusInputFileSerialization)
     // fill
     iupd_t dict = dgGeneratePulseDict();
     int status = iusHLInputFileSetPulseDict(inputFile,dict);
+    TEST_ASSERT(status == IUS_E_OK);
+
+    iupal_t patternList = dgGeneratePatternList();
+    status = iusHLInputFileSetPatternList(inputFile,patternList);
     TEST_ASSERT(status == IUS_E_OK);
 
     // save

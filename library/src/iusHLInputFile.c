@@ -14,12 +14,17 @@
 #include <iusUtil.h>
 #include <include/iusHLPulseDictImp.h>
 #include <include/iusHLPulseDict.h>
+#include <include/iusHLPatternListImp.h>
 #include "include/iusHLInputFile.h"
+
+static const char PULSES_PATH[]="/Pulses";
+static const char PATTERN_LIST_PATH[]="/PatternList";
 
 struct IusInputFile
 {
     const char *pFilename;
     iupd_t pulseDict;
+    iupal_t patternList;
 
     //  state variables
     hid_t fileChunkConfig;                /**< file chunck handle */
@@ -130,12 +135,20 @@ iuif_t iusHLInputFileLoad
     }
 
     // Load instance data
-    pFileInst->pulseDict = iusHLPulseDictLoad(pFileInst->handle, "/Pulses");
+    pFileInst->pulseDict = iusHLPulseDictLoad(pFileInst->handle, PULSES_PATH);
     if (pFileInst->pulseDict == IUPD_INVALID)
     {
         fprintf( stderr, "Warning from iusHLInputFileLoad: could not load pulses: %s\n", pFilename );
         return IUIF_INVALID;
     }
+
+    pFileInst->patternList = iusHLPatternListLoad(pFileInst->handle, PATTERN_LIST_PATH);
+    if (pFileInst->patternList == IUPAL_INVALID)
+    {
+        fprintf( stderr, "Warning from iusHLInputFileLoad: could not load patterns: %s\n", pFilename );
+        return IUIF_INVALID;
+    }
+
     return pFileInst;
 }
 
@@ -171,7 +184,8 @@ int iusHLInputFileSave
 //    group_id = H5Gcreate(handle, "/DrivingScheme", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 //    iusWriteDrivingScheme(pInst->pDrivingScheme, group_id, verbose);
 //    status |= H5Gclose(group_id );
-    status |= iusHLPulseDictSave(fileHandle->pulseDict,"/Pulses",fileHandle->handle);
+    status |= iusHLPulseDictSave(fileHandle->pulseDict,PULSES_PATH,fileHandle->handle);
+    status |= iusHLPatternListSave(fileHandle->patternList,PATTERN_LIST_PATH,fileHandle->handle);
     return status;
 }
 
@@ -212,6 +226,7 @@ int iusHLInputFileCompare
     if( reference == actual ) return IUS_TRUE;
     if( reference == NULL || actual == NULL ) return IUS_FALSE;
     if( iusHLPulseDictCompare(reference->pulseDict, actual->pulseDict)  == IUS_FALSE ) return IUS_FALSE;
+    if( iusHLPatternListCompare(reference->patternList, actual->patternList)  == IUS_FALSE ) return IUS_FALSE;
     return IUS_TRUE;
 }
 
@@ -228,6 +243,19 @@ iupd_t iusHLInputFileGetPulseDict
     return NULL;
 }
 
+
+iupal_t iusHLInputFileGetPatternList
+(
+    iuif_t iusInputFile
+)
+{
+  if(iusInputFile != NULL)
+  {
+    return iusInputFile->patternList;
+  }
+  return NULL;
+}
+
 // Setters
 int iusHLInputFileSetPulseDict
 (
@@ -241,6 +269,22 @@ int iusHLInputFileSetPulseDict
     {
         inputFile->pulseDict = pulseDict;
         status = IUS_E_OK;
+    }
+    return status;
+}
+
+int iusHLInputFileSetPatternList
+(
+    iuif_t inputFile,
+    iupal_t paternList
+)
+{
+    int status = IUS_ERR_VALUE;
+
+    if(inputFile != NULL)
+    {
+      inputFile->patternList = paternList;
+      status = IUS_E_OK;
     }
     return status;
 }

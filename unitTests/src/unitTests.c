@@ -18,8 +18,8 @@ static void RunAllTests(void)
 //    RUN_TEST_GROUP(InputfileTransmitPattern);
 //    RUN_TEST_GROUP(InputfileTransmitPatternList);
 //    RUN_TEST_GROUP(InputfileNode);
-//    RUN_TEST_GROUP(Inputfile);
 //    RUN_TEST_GROUP(IusInputInstance);
+    RUN_TEST_GROUP(IusInputFile);
     RUN_TEST_GROUP(IusExperiment);
     RUN_TEST_GROUP(IusPulse);
     RUN_TEST_GROUP(IusParametricPulse);

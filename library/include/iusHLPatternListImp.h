@@ -11,14 +11,14 @@
 int iusHLPatternListSave
 (
   iupal_t list,
-  char *parentPath,
+  const char *parentPath,
   hid_t handle
 );
 
 iupal_t iusHLPatternListLoad
 (
   hid_t handle,
-  char *parentPath
+  const char *parentPath
 );
 
 #endif //IUSLIBRARY_IUSHLPATTERNLISTIMP_H

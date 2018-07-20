@@ -13,6 +13,11 @@
 #include <include/iusHLPatternImp.h>
 #include <include/iusHDF5.h>
 
+
+#define PATTERNLISTFMT "%s/Pattern[%d]"
+#define PATTERNLISTSIZEFMT "%s/Size"
+
+
 // ADT
 struct IusPatternList
 {
@@ -105,22 +110,18 @@ int iusHLPatternListSet
     return IUS_E_OK;
 }
 
-#define PATTERNLISTFMT "%s/Pattern[%d]"
-#define PATTERNLISTSIZEFMT "%s/Size"
-
-
 
 iupal_t iusHLPatternListLoad
 (
     hid_t handle,
-    char *parentPath
+    const char *parentPath
 )
 {
     char path[64];
     int numPatterns,i;
     sprintf(path, PATTERNLISTSIZEFMT, parentPath);
     int status = iusHdf5ReadInt(handle, path, &(numPatterns));
-    if(status!=0) return IUPA_INVALID;
+    if(status!=0) return IUPAL_INVALID;
 
     iupal_t patternList = iusHLPatternListCreate(numPatterns);
     iupa_t sourceElement;
@@ -140,10 +141,28 @@ iupal_t iusHLPatternListLoad
     return patternList;
 }
 
+IUS_BOOL iusHLPatternListFull
+(
+    iupal_t list
+)
+{
+    IUS_BOOL isFull = IUS_TRUE;
+    int i;
+    for (i=0;i < list->count;i++)
+    {
+        if(list->pPatterns[i] == IUPA_INVALID)
+        {
+            isFull = IUS_FALSE;
+            break;
+        }
+    }
+    return isFull;
+}
+
 int iusHLPatternListSave
 (
     iupal_t list,
-    char *parentPath,
+    const char *parentPath,
     hid_t handle
 )
 {
@@ -154,6 +173,8 @@ int iusHLPatternListSave
     if(list == NULL)
         return IUS_ERR_VALUE;
     if(parentPath == NULL || handle == H5I_INVALID_HID)
+        return IUS_ERR_VALUE;
+    if(iusHLPatternListFull(list) == IUS_FALSE)
         return IUS_ERR_VALUE;
 
     hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
@@ -166,12 +187,11 @@ int iusHLPatternListSave
     for (i=0;i < size;i++)
     {
         sourceElement = iusHLPatternListGet(list,i);
+        if(sourceElement == IUPA_INVALID) continue;
+
         sprintf(path, PATTERNLISTFMT, parentPath, i);
         status = iusHLPatternSave(sourceElement,path,group_id);
-        if(status!=IUS_E_OK)
-        {
-            break;
-        }
+        if(status != IUS_E_OK) break;
     }
 
     status |= H5Gclose(group_id );

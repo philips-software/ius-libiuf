@@ -7,10 +7,58 @@
 #include <include/iusHLPulseDict.h>
 #include <include/iusHLParametricPulse.h>
 #include <include/iusHLNonParametricPulse.h>
+#include <testDataGenerators.h>
 
-iupd_t dgGeneratePulseDict()
+
+static const char *pBmodePatternLabel = "bmode";
+static const char *pDopplerPatternLabel = "doppler";
+static const char *pPulseLabel = "pulseLabel";
+static const char *pSourceLabel = "sourceLabel";
+static const char *pChannelMapLabel = "channelMapLabel";
+static const char *pApodizationLabel = "apodizationLabel";
+static const char *pReceivesettingsLabel = "receivesettingsLabel";
+
+
+iupal_t dgGeneratePatternList
+(
+  void
+)
 {
-  int numPulses = 10;
+  int numPatterns = 2;
+  int status;
+
+  // fill list
+  iupal_t patternList = iusHLPatternListCreate(numPatterns);
+  TEST_ASSERT_NOT_EQUAL(IUPAL_INVALID, patternList);
+
+  iupa_t bmodePattern = iusHLPatternCreate(pBmodePatternLabel,
+                                           0.01f,
+                                           pPulseLabel,
+                                           pSourceLabel,
+                                           pChannelMapLabel,
+                                           pApodizationLabel,
+                                           pReceivesettingsLabel);
+
+  iupa_t dopplerPattern = iusHLPatternCreate(pDopplerPatternLabel,
+                                             0.02f,
+                                             pPulseLabel,
+                                             pSourceLabel,
+                                             pChannelMapLabel,
+                                             pApodizationLabel,
+                                             pReceivesettingsLabel);
+  status = iusHLPatternListSet(patternList, bmodePattern, 0);
+  TEST_ASSERT_EQUAL(IUS_E_OK, status);
+  status = iusHLPatternListSet(patternList, dopplerPattern, 1);
+  TEST_ASSERT_EQUAL(IUS_E_OK, status);
+  return patternList;
+}
+
+
+iupd_t dgGeneratePulseDict
+(
+  void
+)
+{
   int numPulseValues=10;
   float   pulseFrequency=8000000.0f;   /**< frequency that the pulse represents in Hz */
   float   pulseAmplitude=800.0f;       /**< (max) amplitude of the pulse in Volts */
@@ -34,6 +82,7 @@ iupd_t dgGeneratePulseDict()
   TEST_ASSERT(status == IUS_E_OK);
   return dict;
 }
+
 
 #if 0
 
