@@ -22,10 +22,13 @@ static void RunAllTests(void)
 //    RUN_TEST_GROUP(IusInputInstance);
     RUN_TEST_GROUP(IusExperiment);
     RUN_TEST_GROUP(IusPulse);
+	RUN_TEST_GROUP(IusReceiveChannelMap);
     RUN_TEST_GROUP(IusParametricPulse);
     RUN_TEST_GROUP(IusNonParametricPulse);
-    RUN_TEST_GROUP(IusPulseDict);
+//    RUN_TEST_GROUP(IusPulseDict);
+	RUN_TEST_GROUP(IusReceiveChannelMapDict);
     RUN_TEST_GROUP(IusTransducer);
+	
 //    RUN_TEST_GROUP(IusDrivingScheme);
 }
 
