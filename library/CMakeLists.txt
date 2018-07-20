@@ -104,7 +104,7 @@ add_library(ius STATIC
 		src/iusHLReceiveChannelMapDict.c
 		include/iusHLReceiveChannelMap.h
 		include/iusHLReceiveChannelMapDict.h
-		include/iusHLReceiveChannelMapDictImp.h)
+		include/iusHLReceiveChannelMapImp.h)
 
 target_include_directories(ius PUBLIC
         ${CMAKE_CURRENT_LIST_DIR}
