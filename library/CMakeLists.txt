@@ -99,7 +99,12 @@ add_library(ius STATIC
 		include/iusHLExperimentImp.h
 		include/iusHLParametricPulseImp.h
 		include/iusHLNonParametricPulseImp.h
-		include/iusHLPulseDictImp.h)
+		include/iusHLPulseDictImp.h
+		src/iusHLReceiveChannelMap.c
+		src/iusHLReceiveChannelMapDict.c
+		include/iusHLReceiveChannelMap.h
+		include/iusHLReceiveChannelMapDict.h
+		include/iusHLReceiveChannelMapDictImp.h)
 
 target_include_directories(ius PUBLIC
         ${CMAKE_CURRENT_LIST_DIR}
