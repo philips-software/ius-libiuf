@@ -204,7 +204,7 @@ int iusHLPulseDictSave
 iupd_t iusHLPulseDictLoad
 (
     hid_t handle,
-    char *parentPath
+    const char *parentPath
 )
 {
     int status = 0;

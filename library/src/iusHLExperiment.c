@@ -30,9 +30,9 @@ struct IusExperiment
 
 iue_t iusHLExperimentCreate
 (
-float speedOfSound, /**< speed of sound in m/s */
-int date,           /**< interger concatenation of year-month-day  */
-char *pDescription  /**< Experiment notes */
+    float speedOfSound, /**< speed of sound in m/s */
+    int date,           /**< interger concatenation of year-month-day  */
+    const char *pDescription  /**< Experiment notes */
 )
 {
     if( speedOfSound < 0.0f ) return IUE_INVALID;
@@ -162,7 +162,7 @@ iue_t iusHLExperimentLoad
     int status = 0;
     float speedOfSound;
     int date;
-    char *pDescription;
+    const char *pDescription;
     char path[64];
     iue_t experiment;
 
