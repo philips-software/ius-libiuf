@@ -12,6 +12,14 @@ typedef  struct IusPulse IusPulse;
 typedef  IusPulse    * iup_t;
 #define  IUP_INVALID (iup_t) NULL
 
+
+typedef enum {
+  IUS_INVALID_PULSETYPE = 0,
+  IUS_PARAMETRIC_PULSETYPE,
+  IUS_NON_PARAMETRIC_PULSETYPE
+} IusPulseType;
+
+
 iup_t  iusHLPulseCreate
 (
 IusPulseType type,

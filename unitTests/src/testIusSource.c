@@ -10,6 +10,11 @@
 #include <include/ius.h>
 #include <include/iusError.h>
 #include <include/iusTypes.h>
+#include <include/iusHL3DSize.h>
+#include <include/iusHL3DParametricSource.h>
+#include <include/iusHL3DNonParametricSource.h>
+#include <include/iusHL2DParametricSource.h>
+#include <include/iusHL2DNonParametricSource.h>
 #include "include/iusHLSource.h"
 
 
@@ -24,27 +29,27 @@ TEST_TEAR_DOWN(IusSource)
 {
 }
 
+
 TEST(IusSource, testIusSourceCreate)
 {
     IUS_BOOL equal;
-    TEST_ASSERT(0==0);
-#if 0
-    char *label = "label for IUS_PARAMETRIC_PULSETYPE";
-    char *notherLabel = "label for IUS_NON_PARAMETRIC_PULSETYPE";
+    char *_3d_non_parametric_label = "label for 3d non parametric source";
+    char *_3d_parametric_label = "label for 3d parametric source";
+    char *_2d_non_parametric_label = "label for 2d non parametric source";
+    char *_2d_parametric_label = "label for 2d parametric source";
 
-    iup_t obj = iusHLPulseCreate(IUS_PARAMETRIC_PULSETYPE,label);
-    iup_t notherObj = iusHLPulseCreate(IUS_NON_PARAMETRIC_PULSETYPE,notherLabel);
-    TEST_ASSERT(obj != IUP_INVALID);
-    TEST_ASSERT(notherObj != IUP_INVALID);
-    iusHLPulseDelete(obj);
-    iusHLPulseDelete(notherObj);
+    // Happy flow
+    iu3dps_t _3dps = (iu3dps_t) iusHLSourceCreate(IUS_3D_PARAMETRIC_SOURCE,_3d_parametric_label);
+    TEST_ASSERT(_3dps != IU3DPS_INVALID);
+    iu3dnps_t _3dnps = (iu3dnps_t) iusHLSourceCreate(IUS_3D_NON_PARAMETRIC_SOURCE,_3d_non_parametric_label);
+    TEST_ASSERT(_3dnps != IU3DNPS_INVALID);
+    iu2dps_t _2dps = (iu2dps_t) iusHLSourceCreate(IUS_2D_PARAMETRIC_SOURCE,_2d_parametric_label);
+    TEST_ASSERT(_2dps != IU2DPS_INVALID);
+    iu2dnps_t _2dnps = (iu2dnps_t) iusHLSourceCreate(IUS_2D_NON_PARAMETRIC_SOURCE,_2d_non_parametric_label);
+    TEST_ASSERT(_2dnps != IU2DNPS_INVALID);
+
 
     // invalid params
-    obj = iusHLPulseCreate(IUS_PARAMETRIC_PULSETYPE,NULL);
-    TEST_ASSERT(obj == IUP_INVALID);
-    iusHLPulseCreate(-1,label);
-    TEST_ASSERT(obj == IUP_INVALID);
-#endif
 
 }
 

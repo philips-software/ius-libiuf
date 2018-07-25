@@ -13,7 +13,9 @@
 #include <string.h>
 #include <include/iusHDF5.h>
 
+#include "include/iusHLPulse.h"
 #include "include/iusHLPatternImp.h"
+
 
 #define PULSELABELFMT "%s/PulseLabel"
 #define PATTERNLABELFMT "%s/PatternLabel"

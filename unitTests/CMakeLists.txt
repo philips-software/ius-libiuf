@@ -8,7 +8,7 @@ add_executable(unitTests
         include/testDataGenerators.h
         src/testDataGenerators.c
         src/unitTests.c
-        src/testIusExperiment.c
+#        src/testIusExperiment.c
         src/testIusTransducer.c
         src/testIusParametricPulse.c
         src/testIusNonParametricPulse.c
