@@ -16,6 +16,8 @@ add_executable(unitTests
         src/testIusPulse.c
         src/testIusReceiveChannelMap.c
         src/testIusReceiveChannelMapDict.c
+        src/testIusTransmitApodization.c
+        src/testIusTransmitApodizationDict.c
         src/testIusInputFile.c
         src/util.c
 #        src/testNode.c
