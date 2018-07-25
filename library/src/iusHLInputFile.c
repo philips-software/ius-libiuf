@@ -21,8 +21,9 @@
 struct IusInputFile
 {
     const char *pFilename;
-    iupd_t pulseDict;
-	iurcmd_t receiveChannelMapDict;
+    iupd_t pulseDict;                    /**< a dictionary of pulses */
+	iurcmd_t receiveChannelMapDict;      /**< a dictionary of receiveChannelMaps */
+	iutad_t transmitApodizationDict;     /**< a dictionary of transmitApodizations */
 
     //  state variables
     hid_t fileChunkConfig;                /**< file chunck handle */
@@ -184,6 +185,7 @@ int iusHLInputFileSave
 //    status |= H5Gclose(group_id );
     status |= iusHLPulseDictSave(fileHandle->pulseDict,"/Pulses",fileHandle->handle);
 	status |= iusHLReceiveChannelMapDictSave(fileHandle->receiveChannelMapDict, "/ReceiveChannelMap", fileHandle->handle);
+	status |= iusHLTransmitApodizationDictSave(fileHandle->transmitApodizationDict, "/TransmitApodization", fileHandle->handle);
     return status;
 }
 
@@ -270,6 +272,18 @@ iurcmd_t iusHLInputFileGetReceiveChannelMapDict
 	return NULL;
 }
 
+iutad_t iusHLInputFileGetTransmitApodizationDict
+(
+	iuif_t fileHandle
+)
+{
+	if (fileHandle != NULL)
+	{
+		return fileHandle->transmitApodizationDict;
+	}
+	return NULL;
+}
+
 // Setters
 int iusHLInputFileSetReceiveChannelMapDict
 (
@@ -282,6 +296,22 @@ int iusHLInputFileSetReceiveChannelMapDict
 	if (inputFile != NULL)
 	{
 		inputFile->receiveChannelMapDict = receiveChannelMapDict;
+		status = IUS_E_OK;
+	}
+	return status;
+}
+
+int iusHLInputFileSetTransmitApodizationDict
+(
+	iuif_t inputFile,
+	iutad_t transmitApodizationDict
+)
+{
+	int status = IUS_ERR_VALUE;
+
+	if (inputFile != NULL)
+	{
+		inputFile->transmitApodizationDict = transmitApodizationDict;
 		status = IUS_E_OK;
 	}
 	return status;

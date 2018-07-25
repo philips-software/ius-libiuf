@@ -4,6 +4,7 @@
 
 #include <iusHLPulseDict.h>
 #include <iusHLReceiveChannelMapDict.h>
+#include <iusHLTransmitApodizationDict.h>
 
 // ADT
 typedef struct IusInputFile IusInputFile;
@@ -54,6 +55,11 @@ iurcmd_t iusHLInputFileGetReceiveChannelMapDict
 	iuif_t fileHandle
 );
 
+iutad_t  iusHLInputFileGetTransmitApodizationDict
+(
+	iuif_t fileHandle
+);
+
 // Setters
 
 int iusHLInputFileSetPulseDict
@@ -68,4 +74,9 @@ int iusHLInputFileSetReceiveChannelMapDict
     iurcmd_t receiveChannelMapDict
 );
 
+int iusHLInputFileSetTransmitApodizationDict
+(
+	iuif_t inputFile,
+	iutad_t transmitApodizationDict
+);
 #endif //IUSLIBRARY_IUSHLINPUTFILE_H

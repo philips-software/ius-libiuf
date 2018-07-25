@@ -27,7 +27,6 @@ TEST_TEAR_DOWN(IusPulse)
 
 TEST(IusPulse, testIusPulseCreate)
 {
-    IUS_BOOL equal;
     char *label = "label for IUS_PARAMETRIC_PULSETYPE";
     char *notherLabel = "label for IUS_NON_PARAMETRIC_PULSETYPE";
 
@@ -47,7 +46,6 @@ TEST(IusPulse, testIusPulseCreate)
 
 TEST(IusPulse, testIusPulseDelete)
 {
-    IUS_BOOL equal;
     char *label = "label for IUS_PARAMETRIC_PULSETYPE";
 
     iup_t obj = iusHLPulseCreate(IUS_PARAMETRIC_PULSETYPE,label);
@@ -91,7 +89,6 @@ TEST(IusPulse, testIusPulseCompare)
 
 TEST(IusPulse, testIusPulseGet)
 {
-    IUS_BOOL equal;
     char *label = "label for IUS_PARAMETRIC_PULSETYPE";
 
     iup_t obj = iusHLPulseCreate(IUS_PARAMETRIC_PULSETYPE,label);

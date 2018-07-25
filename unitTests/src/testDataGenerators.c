@@ -8,6 +8,7 @@
 #include <include/iusHLParametricPulse.h>
 #include <include/iusHLNonParametricPulse.h>
 #include <include/iusHLReceiveChannelMapDict.h>
+#include <include/iusHLTransmitApodizationDict.h>
 
 iupd_t dgGeneratePulseDict()
 {
@@ -54,10 +55,36 @@ iurcmd_t dgGenerateReceiveChannelMapDict
 	iurcm_t receiveChannelMap = iusHLReceiveChannelMapCreate(numChannels);
 	TEST_ASSERT(receiveChannelMap != NULL);
 
-	status |= iusHLReceiveChannelMapSetMap(receiveChannelMap, channelMap);
+	status = iusHLReceiveChannelMapSetMap(receiveChannelMap, channelMap);
 	TEST_ASSERT(status == IUS_E_OK);
 
 	status = iusHLReceiveChannelMapDictSet(dict, label, receiveChannelMap);
+	TEST_ASSERT(status == IUS_E_OK);
+
+	return dict;
+}
+
+iutad_t dgGenerateTransmitApodizationDict
+(
+    void
+)
+{
+	int status;
+	int numElements = 8;
+	float apodizaton[8] = { 0.5f, 1.0f, 1.0f, 1.0f, .0f, 1.0f, .0f, 0.5f };
+	char *label = "rolloff";
+
+	iutad_t dict = iusHLTransmitApodizationDictCreate();
+	TEST_ASSERT(dict != IUTAD_INVALID);
+
+	// fill
+	iuta_t transmitApodization = iusHLTransmitApodizationCreate(numElements);
+	TEST_ASSERT(transmitApodization != NULL);
+
+	status = iusHLTransmitApodizationSetApodization(transmitApodization, apodizaton);
+	TEST_ASSERT(status == IUS_E_OK);
+
+	status = iusHLTransmitApodizationDictSet(dict, label, transmitApodization);
 	TEST_ASSERT(status == IUS_E_OK);
 
 	return dict;

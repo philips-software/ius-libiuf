@@ -23,18 +23,16 @@ TEST_TEAR_DOWN(IusExperiment)
 
 TEST(IusExperiment, testIusCreateExperiment)
 {
-    IUS_BOOL equal;
     float speedOfSound = 1498.1f;
     int date = 20160124;
     char *pDescription = "My important experiment notes, by testIusCreateExperiment";
-    int status;
 
     iue_t obj = iusHLExperimentCreate(speedOfSound, date, pDescription);
     iue_t notherObj = iusHLExperimentCreate(speedOfSound, date, pDescription);
     TEST_ASSERT(obj != IUE_INVALID);
     TEST_ASSERT(notherObj != IUE_INVALID);
-  iusHLExperimentDelete(obj);
-  iusHLExperimentDelete(notherObj);
+    iusHLExperimentDelete(obj);
+    iusHLExperimentDelete(notherObj);
 
     // invalid params
     obj = iusHLExperimentCreate(-1.0f, date, pDescription);
@@ -47,7 +45,6 @@ TEST(IusExperiment, testIusCreateExperiment)
 
 TEST(IusExperiment, testIusDeleteExperiment)
 {
-    IUS_BOOL equal;
     float speedOfSound = 1498.1f;
     int date = 20160124;
     char *pDescription = "My important experiment notes, by testIusCreateExperiment";

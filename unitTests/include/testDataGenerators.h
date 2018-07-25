@@ -6,6 +6,7 @@
 
 #include <include/iusHLPulseDict.h>
 #include <include/iusHLReceiveChannelMapDict.h>
+#include <include/iusHLTransmitApodizationDict.h>
 
 iupd_t dgGeneratePulseDict
 (
@@ -17,4 +18,8 @@ iurcmd_t dgGenerateReceiveChannelMapDict
   void
 );
 
+iutad_t dgGenerateTransmitApodizationDict
+(
+	void
+);
 #endif //IUSLIBRARY_TESTDATAGENERATORS_H
