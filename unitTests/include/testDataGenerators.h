@@ -5,10 +5,16 @@
 #define IUSLIBRARY_TESTDATAGENERATORS_H
 
 #include <include/iusHLPulseDict.h>
+#include <include/iusHLExperiment.h>
 
 iupd_t dgGeneratePulseDict
 (
   void
+);
+
+iue_t dgGenerateExperiment
+(
+	void
 );
 
 #endif //IUSLIBRARY_TESTDATAGENERATORS_H

@@ -3,6 +3,7 @@
 #define IUSLIBRARY_IUSHLINPUTFILE_H
 
 #include <iusHLPulseDict.h>
+#include <iusHLExperiment.h>
 
 // ADT
 typedef struct IusInputFile IusInputFile;
@@ -48,12 +49,22 @@ iupd_t iusHLInputFileGetPulseDict
     iuif_t fileHandle
 );
 
+iue_t iusHLInputFileGetExperiment
+(
+	iuif_t fileHandle
+);
 
 // Setters
 int iusHLInputFileSetPulseDict
 (
     iuif_t inputFile,
     iupd_t pulseDict
+);
+
+int iusHLInputFileSetExperiment
+(
+	iuif_t inputFile,
+	iue_t  experiment
 );
 
 #endif //IUSLIBRARY_IUSHLINPUTFILE_H

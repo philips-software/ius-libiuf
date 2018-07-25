@@ -12,14 +12,12 @@
 int iusHLExperimentSave
 (
     iue_t experiment,
-    char *parentPath,
     hid_t handle
 );
 
 iue_t iusHLExperimentLoad
 (
-    hid_t handle,
-    char *parentPath
+    hid_t handle
 );
 
 #endif //IUSLIBRARY_IUSHLEXPERIMENTIMP_H

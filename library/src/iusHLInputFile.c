@@ -14,12 +14,15 @@
 #include <iusUtil.h>
 #include <include/iusHLPulseDictImp.h>
 #include <include/iusHLPulseDict.h>
-#include "include/iusHLInputFile.h"
+#include <include/iusHLInputFile.h>
+#include <include/iusHLExperiment.h>
+#include <include/iusHLExperimentImp.h>
 
 struct IusInputFile
 {
     const char *pFilename;
     iupd_t pulseDict;
+	iue_t experiment;
 
     //  state variables
     hid_t fileChunkConfig;                /**< file chunck handle */
@@ -49,6 +52,7 @@ static iuif_t iusHLInputFileAlloc
 	pFileInst->rfDataset = H5I_INVALID_HID;
 	pFileInst->fileChunkConfig = H5I_INVALID_HID;
 	pFileInst->pulseDict = IUPD_INVALID;
+	pFileInst->experiment = IUE_INVALID;
 	if (pFileInst->handle < 0)
 	{
 		return IUIF_INVALID;
@@ -136,6 +140,16 @@ iuif_t iusHLInputFileLoad
         fprintf( stderr, "Warning from iusHLInputFileLoad: could not load pulses: %s\n", pFilename );
         return IUIF_INVALID;
     }
+
+	hid_t group_id = H5Gopen(pFileInst->handle, "/Experiment", H5P_DEFAULT);
+	pFileInst->experiment = iusHLExperimentLoad(group_id);
+	if (pFileInst->experiment == IUE_INVALID)
+	{
+		fprintf(stderr, "Warning from iusHLInputFileLoad: could not load experiment: %s\n", pFilename);
+		return IUIF_INVALID;
+	}
+	H5Gclose(group_id);
+
     return pFileInst;
 }
 
@@ -172,6 +186,11 @@ int iusHLInputFileSave
 //    iusWriteDrivingScheme(pInst->pDrivingScheme, group_id, verbose);
 //    status |= H5Gclose(group_id );
     status |= iusHLPulseDictSave(fileHandle->pulseDict,"/Pulses",fileHandle->handle);
+
+	hid_t group_id = H5Gcreate(fileHandle->handle, "/Experiment", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+	status |= iusHLExperimentSave(fileHandle->experiment, group_id);
+	status |= H5Gclose(group_id);
+
     return status;
 }
 
@@ -212,6 +231,7 @@ int iusHLInputFileCompare
     if( reference == actual ) return IUS_TRUE;
     if( reference == NULL || actual == NULL ) return IUS_FALSE;
     if( iusHLPulseDictCompare(reference->pulseDict, actual->pulseDict)  == IUS_FALSE ) return IUS_FALSE;
+	if (iusHLExperimentCompare(reference->experiment, actual->experiment) == IUS_FALSE) return IUS_FALSE;
     return IUS_TRUE;
 }
 
@@ -228,6 +248,19 @@ iupd_t iusHLInputFileGetPulseDict
     return NULL;
 }
 
+iue_t iusHLInputFileGetExperiment
+(
+	iuif_t iusInputFile
+)
+{
+	if (iusInputFile != NULL)
+	{
+		return iusInputFile->experiment;
+	}
+	return NULL;
+}
+
+
 // Setters
 int iusHLInputFileSetPulseDict
 (
@@ -243,4 +276,20 @@ int iusHLInputFileSetPulseDict
         status = IUS_E_OK;
     }
     return status;
+}
+
+int iusHLInputFileSetExperiment
+(
+	iuif_t inputFile,
+	iue_t experiment
+)
+{
+	int status = IUS_ERR_VALUE;
+
+	if (inputFile != NULL)
+	{
+		inputFile->experiment = experiment;
+		status = IUS_E_OK;
+	}
+	return status;
 }

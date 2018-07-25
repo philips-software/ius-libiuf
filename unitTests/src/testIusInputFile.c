@@ -149,6 +149,10 @@ TEST(IusInputFile, testIusInputFileSerialization)
     int status = iusHLInputFileSetPulseDict(inputFile,dict);
     TEST_ASSERT(status == IUS_E_OK);
 
+	iue_t experiment = dgGenerateExperiment();
+	status = iusHLInputFileSetExperiment(inputFile, experiment);
+	TEST_ASSERT(status == IUS_E_OK);
+
     // save
     status = iusHLInputFileSave(inputFile);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
@@ -163,6 +167,7 @@ TEST(IusInputFile, testIusInputFileSerialization)
 	status = iusHLInputFileClose(savedObj);
 	TEST_ASSERT(status == IUS_E_OK);
 
+	iusHLExperimentDelete(experiment);
     iusHLPulseDictDelete(dict);
     iusHLInputFileDelete(inputFile);
     iusHLInputFileDelete(savedObj);

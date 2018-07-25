@@ -7,6 +7,7 @@
 #include <include/iusHLPulseDict.h>
 #include <include/iusHLParametricPulse.h>
 #include <include/iusHLNonParametricPulse.h>
+#include <include/iusHLExperiment.h>
 
 iupd_t dgGeneratePulseDict()
 {
@@ -33,6 +34,18 @@ iupd_t dgGeneratePulseDict()
   status = iusHLPulseDictSet(dict,parametricLabel, (iup_t) parametricPulse);
   TEST_ASSERT(status == IUS_E_OK);
   return dict;
+}
+
+iue_t dgGenerateExperiment()
+{
+	int date = 20180416;
+	char *pDescription = "a nice experiment that almost won me the nobel prize";
+	float speedOfSound = 1540.0f;
+
+	iue_t experiment = iusHLExperimentCreate(speedOfSound, date, pDescription);
+	TEST_ASSERT(experiment != IUE_INVALID);
+
+	return experiment;
 }
 
 #if 0
