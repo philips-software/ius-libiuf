@@ -6,15 +6,21 @@
 
 #include <include/iusHLPulseDict.h>
 #include <include/iusHLPatternList.h>
+#include <include/iusHLExperiment.h>
 
 iupd_t dgGeneratePulseDict
 (
-  void
+  	void
 );
 
 iupal_t dgGeneratePatternList
 (
-  void
+  	void
+);
+
+iue_t dgGenerateExperiment
+(
+	void
 );
 
 #endif //IUSLIBRARY_TESTDATAGENERATORS_H

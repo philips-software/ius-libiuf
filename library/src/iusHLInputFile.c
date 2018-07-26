@@ -12,10 +12,10 @@
 #include <iusError.h>
 #include <iusTypes.h>
 #include <iusUtil.h>
+#include <include/iusHLInputFile.h>
 #include <include/iusHLPulseDictImp.h>
-#include <include/iusHLPulseDict.h>
 #include <include/iusHLPatternListImp.h>
-#include "include/iusHLInputFile.h"
+#include <include/iusHLExperimentImp.h>
 
 static const char PULSES_PATH[]="/Pulses";
 static const char PATTERN_LIST_PATH[]="/PatternList";
@@ -25,6 +25,7 @@ struct IusInputFile
     const char *pFilename;
     iupd_t pulseDict;
     iupal_t patternList;
+	iue_t experiment;
 
     //  state variables
     hid_t fileChunkConfig;                /**< file chunck handle */
@@ -54,6 +55,7 @@ static iuif_t iusHLInputFileAlloc
 	pFileInst->rfDataset = H5I_INVALID_HID;
 	pFileInst->fileChunkConfig = H5I_INVALID_HID;
 	pFileInst->pulseDict = IUPD_INVALID;
+	pFileInst->experiment = IUE_INVALID;
 	if (pFileInst->handle < 0)
 	{
 		return IUIF_INVALID;
@@ -135,6 +137,7 @@ iuif_t iusHLInputFileLoad
     }
 
     // Load instance data
+    // Todo: create group @here instead of in Load, see experiment
     pFileInst->pulseDict = iusHLPulseDictLoad(pFileInst->handle, PULSES_PATH);
     if (pFileInst->pulseDict == IUPD_INVALID)
     {
@@ -142,6 +145,7 @@ iuif_t iusHLInputFileLoad
         return IUIF_INVALID;
     }
 
+    // Todo: create group @here instead of in Load, see experiment
     pFileInst->patternList = iusHLPatternListLoad(pFileInst->handle, PATTERN_LIST_PATH);
     if (pFileInst->patternList == IUPAL_INVALID)
     {
@@ -149,6 +153,14 @@ iuif_t iusHLInputFileLoad
         return IUIF_INVALID;
     }
 
+	hid_t group_id = H5Gopen(pFileInst->handle, "/Experiment", H5P_DEFAULT);
+	pFileInst->experiment = iusHLExperimentLoad(group_id);
+	if (pFileInst->experiment == IUE_INVALID)
+	{
+		fprintf(stderr, "Warning from iusHLInputFileLoad: could not load experiment: %s\n", pFilename);
+		return IUIF_INVALID;
+	}
+	H5Gclose(group_id);
     return pFileInst;
 }
 
@@ -184,9 +196,15 @@ int iusHLInputFileSave
 //    group_id = H5Gcreate(handle, "/DrivingScheme", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 //    iusWriteDrivingScheme(pInst->pDrivingScheme, group_id, verbose);
 //    status |= H5Gclose(group_id );
+
+    // Todo: Handle creation in iusHLInputFileSave iso iusHLPulseDictSave, iusHLPatternListSave
+    // new signature: iusHLPulseDictSave(fileHandle->pulseDict,fileHandle->handle);
     status |= iusHLPulseDictSave(fileHandle->pulseDict,PULSES_PATH,fileHandle->handle);
     status |= iusHLPatternListSave(fileHandle->patternList,PATTERN_LIST_PATH,fileHandle->handle);
-    return status;
+	hid_t group_id = H5Gcreate(fileHandle->handle, "/Experiment", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+	status |= iusHLExperimentSave(fileHandle->experiment, group_id);
+	status |= H5Gclose(group_id);
+	return status;
 }
 
 int iusHLInputFileClose
@@ -227,6 +245,7 @@ int iusHLInputFileCompare
     if( reference == NULL || actual == NULL ) return IUS_FALSE;
     if( iusHLPulseDictCompare(reference->pulseDict, actual->pulseDict)  == IUS_FALSE ) return IUS_FALSE;
     if( iusHLPatternListCompare(reference->patternList, actual->patternList)  == IUS_FALSE ) return IUS_FALSE;
+	if (iusHLExperimentCompare(reference->experiment, actual->experiment) == IUS_FALSE) return IUS_FALSE;
     return IUS_TRUE;
 }
 
@@ -255,6 +274,19 @@ iupal_t iusHLInputFileGetPatternList
   }
   return NULL;
 }
+
+iue_t iusHLInputFileGetExperiment
+(
+	iuif_t iusInputFile
+)
+{
+	if (iusInputFile != NULL)
+	{
+		return iusInputFile->experiment;
+	}
+	return NULL;
+}
+
 
 // Setters
 int iusHLInputFileSetPulseDict
@@ -287,4 +319,20 @@ int iusHLInputFileSetPatternList
       status = IUS_E_OK;
     }
     return status;
+}
+
+int iusHLInputFileSetExperiment
+(
+	iuif_t inputFile,
+	iue_t experiment
+)
+{
+	int status = IUS_ERR_VALUE;
+
+	if (inputFile != NULL)
+	{
+		inputFile->experiment = experiment;
+		status = IUS_E_OK;
+	}
+	return status;
 }

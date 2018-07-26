@@ -4,9 +4,10 @@
 #include <unity.h>
 
 #include <include/ius.h>
+#include <include/iusHLExperiment.h>
+#include <include/iusHLNonParametricPulse.h>
 #include <include/iusHLPulseDict.h>
 #include <include/iusHLParametricPulse.h>
-#include <include/iusHLNonParametricPulse.h>
 #include <testDataGenerators.h>
 
 
@@ -83,6 +84,17 @@ iupd_t dgGeneratePulseDict
   return dict;
 }
 
+iue_t dgGenerateExperiment()
+{
+	int date = 20180416;
+	char *pDescription = "a nice experiment that almost won me the nobel prize";
+	float speedOfSound = 1540.0f;
+
+	iue_t experiment = iusHLExperimentCreate(speedOfSound, date, pDescription);
+	TEST_ASSERT(experiment != IUE_INVALID);
+
+	return experiment;
+}
 
 #if 0
 
