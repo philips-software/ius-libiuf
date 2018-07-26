@@ -11,8 +11,13 @@
 #include <include/iusError.h>
 #include <include/iusTypes.h>
 #include <include/iusHLInputFile.h>
+#include <include/iusHLPulseDict.h>
+#include <include/iusHLReceiveChannelMapDict.h>
+#include <include/iusHLTransmitApodizationDict.h>
+
 #include <include/iusHLParametricPulse.h>
 #include <include/iusHLNonParametricPulse.h>
+
 #include <testDataGenerators.h>
 #include <include/iusHLPatternList.h>
 
@@ -27,14 +32,13 @@ TEST_SETUP(IusInputFile)
 
 TEST_TEAR_DOWN(IusInputFile)
 {
-	int return_value = 0;
     if( fileExists(pFilename) == IUS_TRUE )
     {
-		return_value = remove(pFilename);
+		remove(pFilename);
     }
     if( fileExists(pNotherFilename) == IUS_TRUE )
     {
-		return_value = remove(pNotherFilename);
+		remove(pNotherFilename);
     }
 }
 
@@ -99,7 +103,6 @@ TEST(IusInputFile, testIusInputFileCompare)
     TEST_ASSERT_EQUAL(IUS_FALSE,equal);
     equal = iusHLInputFileCompare(NULL,obj);
     TEST_ASSERT_EQUAL(IUS_FALSE,equal);
-    
 
 	int status = iusHLInputFileClose(obj);
 	TEST_ASSERT(status == IUS_E_OK);
@@ -114,6 +117,8 @@ TEST(IusInputFile, testIusInputFileSetGet)
 {
     IUS_BOOL equal;
     iupd_t pulseDict = iusHLPulseDictCreate();
+	iurcmd_t receiveChannelMapDict = iusHLReceiveChannelMapDictCreate();
+	iutad_t transmitApodizationDict = iusHLTransmitApodizationDictCreate();
     iuif_t obj = iusHLInputFileCreate(pFilename);
     TEST_ASSERT(obj != IUIF_INVALID);
 
@@ -129,7 +134,28 @@ TEST(IusInputFile, testIusInputFileSetGet)
     TEST_ASSERT_EQUAL(IUS_TRUE, equal);
 
 
+	// receiveChannelMapDict param
+	status = iusHLInputFileSetReceiveChannelMapDict(obj, receiveChannelMapDict);
+	TEST_ASSERT_EQUAL(IUS_E_OK, status);
+
+	iurcmd_t gotMeAReceiveChannelMapDict = iusHLInputFileGetReceiveChannelMapDict(obj);
+	TEST_ASSERT_NOT_EQUAL(NULL, gotMeAReceiveChannelMapDict);
+
+	equal = iusHLReceiveChannelMapDictCompare(receiveChannelMapDict, gotMeAReceiveChannelMapDict);
+	TEST_ASSERT_EQUAL(IUS_TRUE, equal);
+
+	// transmitApodizationDict param
+	status = iusHLInputFileSetTransmitApodizationDict(obj, transmitApodizationDict);
+	TEST_ASSERT_EQUAL(IUS_E_OK, status);
+
+	iutad_t gotMeATransmitApodizationDict = iusHLInputFileGetTransmitApodizationDict(obj);
+	TEST_ASSERT_NOT_EQUAL(NULL, gotMeATransmitApodizationDict);
+
+	equal = iusHLTransmitApodizationDictCompare(transmitApodizationDict, gotMeATransmitApodizationDict);
+	TEST_ASSERT_EQUAL(IUS_TRUE, equal);
+
     // invalid param
+	  //todo
 
 	status = iusHLInputFileClose(obj);
 	TEST_ASSERT(status == IUS_E_OK);
@@ -146,15 +172,30 @@ TEST(IusInputFile, testIusInputFileSerialization)
     TEST_ASSERT(inputFile != IUIF_INVALID);
 
     // fill
-    iupd_t dict = dgGeneratePulseDict();
-    int status = iusHLInputFileSetPulseDict(inputFile,dict);
+    iupd_t pulseDict = dgGeneratePulseDict();
+    int status = iusHLInputFileSetPulseDict(inputFile, pulseDict);
     TEST_ASSERT(status == IUS_E_OK);
 
+
+	iurcmd_t receiveChannelMapDict = dgGenerateReceiveChannelMapDict();
+	status = iusHLInputFileSetReceiveChannelMapDict(inputFile, receiveChannelMapDict);
+	TEST_ASSERT(status == IUS_E_OK);
+
+
+	iutad_t transmitApodizationDict = dgGenerateTransmitApodizationDict();
+	status = iusHLInputFileSetTransmitApodizationDict(inputFile, transmitApodizationDict);
+	TEST_ASSERT(status == IUS_E_OK);
+
+    // save
     iupal_t patternList = dgGeneratePatternList();
     status = iusHLInputFileSetPatternList(inputFile,patternList);
     TEST_ASSERT(status == IUS_E_OK);
 
-    // save
+	iue_t experiment = dgGenerateExperiment();
+	status = iusHLInputFileSetExperiment(inputFile, experiment);
+	TEST_ASSERT(status == IUS_E_OK);
+
+	// save
     status = iusHLInputFileSave(inputFile);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
     status = iusHLInputFileClose(inputFile);
@@ -168,7 +209,11 @@ TEST(IusInputFile, testIusInputFileSerialization)
 	status = iusHLInputFileClose(savedObj);
 	TEST_ASSERT(status == IUS_E_OK);
 
-    iusHLPulseDictDelete(dict);
+    iusHLPulseDictDelete(pulseDict);
+	iusHLReceiveChannelMapDictDelete(receiveChannelMapDict);
+	iusHLTransmitApodizationDictDelete(transmitApodizationDict);
+
+	iusHLExperimentDelete(experiment);
     iusHLInputFileDelete(inputFile);
     iusHLInputFileDelete(savedObj);
 }

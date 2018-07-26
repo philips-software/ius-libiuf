@@ -15,5 +15,5 @@ BuildFolder=C_v3/build/$(uname)
 echo === Building ius in $BuildFolder
 mkdir -p $BuildFolder
 cd $BuildFolder
-$CMAKE ../..
+$CMAKE -DCMAKE_BUILD_TYPE=Debug ../..
 exec make

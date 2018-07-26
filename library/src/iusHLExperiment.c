@@ -9,13 +9,11 @@
 #include <ius.h>
 #include <iusUtil.h>
 #include <iusError.h>
-#include <iusHLInputInstance.h>
 #include <iusHLExperimentImp.h>
 #include <include/iusHDF5.h>
 
 // ADT
 #define PULSETYPEFMT "%s/speedOfSound"
-#define DATEFMT "%s/date"
 #define LABELFMT "%s/description"
 
 
@@ -35,8 +33,8 @@ iue_t iusHLExperimentCreate
     const char *pDescription  /**< Experiment notes */
 )
 {
-    if( speedOfSound < 0.0f ) return IUE_INVALID;
-    if( date <= 0 ) return IUE_INVALID;
+    if ( speedOfSound < 0.0f ) return IUE_INVALID;
+    if ( date <= 0 ) return IUE_INVALID;
 
     IusExperiment *pExperiment = (IusExperiment *) calloc(1, sizeof(IusExperiment));
     pExperiment->speedOfSound = speedOfSound;
@@ -50,11 +48,10 @@ iue_t iusHLExperimentCreate
 
 int iusHLExperimentDelete
 (
-iue_t experiment
+    iue_t experiment
 )
 {
     if( experiment == NULL ) return IUS_ERR_VALUE;
-    IusExperiment *pExperiment = experiment;
     free(experiment->pDescription);
     free(experiment);
     return IUS_E_OK;
@@ -62,8 +59,8 @@ iue_t experiment
 
 IUS_BOOL iusHLExperimentCompare
 (
-iue_t reference,
-iue_t actual
+    iue_t reference,
+    iue_t actual
 )
 {
     if( reference == actual ) return IUS_TRUE;
@@ -74,6 +71,8 @@ iue_t actual
         return IUS_FALSE;
     if( IUS_EQUAL_FLOAT(reference->speedOfSound, actual->speedOfSound) == IUS_FALSE )
         return IUS_FALSE;
+	if (strcmp(reference->pDescription, actual->pDescription) != 0)
+		return IUS_FALSE;
     return IUS_TRUE;
 }
 
@@ -105,7 +104,7 @@ char * iusHLExperimentGetDescription
     return experiment->pDescription;
 }
 
-
+#if 0
 // old routines
 int LF_copyExperimentData
 (
@@ -128,50 +127,39 @@ int LF_copyExperimentData
 
     return 0;
 }
+#endif
 
 // serialization
 int iusHLExperimentSave
 (
     iue_t experiment,
-    char *parentPath,
-    hid_t handle
+    hid_t group_id
 )
 {
     int status=0;
-    char path[64];
 	const int verbose = 1;
 
-    // Make dataset for Experiment
-    hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-    sprintf(path, PULSETYPEFMT, parentPath);
-    status |= iusHdf5WriteFloat(group_id, path, &experiment->speedOfSound, 1, verbose);
-    sprintf(path, DATEFMT, parentPath);
-    status |= iusHdf5WriteInt(group_id, path, &experiment->date, 1);
-    sprintf(path, LABELFMT, parentPath);
-    status |= iusHdf5WriteString(group_id, path, experiment->pDescription, verbose);
-    status |= H5Gclose(group_id );
+    status |= iusHdf5WriteFloat(group_id, "speedOfSound", &experiment->speedOfSound, 1, verbose);
+    status |= iusHdf5WriteInt(group_id, "date", &experiment->date, 1);
+    status |= iusHdf5WriteString(group_id, "description", experiment->pDescription, verbose);
+
     return status;
 }
 
 iue_t iusHLExperimentLoad
 (
-    hid_t handle,
-    char *parentPath
+    hid_t handle
 )
 {
     int status = 0;
     float speedOfSound;
     int date;
     const char *pDescription;
-    char path[64];
     iue_t experiment;
 
-    sprintf(path, PULSETYPEFMT, parentPath);
-    status |= iusHdf5ReadFloat( handle , path, &(speedOfSound));
-    sprintf(path, DATEFMT, parentPath);
-    status |= iusHdf5ReadInt( handle,    path, &(date));
-    sprintf(path, LABELFMT, parentPath);
-    status |= iusHdf5ReadString( handle, path, &(pDescription));
+    status |= iusHdf5ReadFloat( handle , "speedOfSound", &(speedOfSound));
+    status |= iusHdf5ReadInt( handle,    "date", &(date));
+    status |= iusHdf5ReadString( handle, "description", &(pDescription));
 
     if( status < 0 )
         return NULL;

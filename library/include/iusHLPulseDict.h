@@ -2,6 +2,7 @@
 #ifndef IUSLIBRARY_IUSHLPULSEDICT_H
 #define IUSLIBRARY_IUSHLPULSEDICT_H
 
+#include <iusHDF5.h>
 #include <iusHLPulse.h>
 
 // ADT

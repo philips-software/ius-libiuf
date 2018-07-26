@@ -12,19 +12,26 @@
 #include <iusError.h>
 #include <iusTypes.h>
 #include <iusUtil.h>
-#include <include/iusHLPulseDictImp.h>
-#include <include/iusHLPulseDict.h>
+#include <include/iusHLExperimentImp.h>
+#include <include/iusHLInputFile.h>
 #include <include/iusHLPatternListImp.h>
-#include "include/iusHLInputFile.h"
+#include <include/iusHLPulseDictImp.h>
+#include <include/iusHLReceiveChannelMapDictImp.h>
+
 
 static const char PULSES_PATH[]="/Pulses";
 static const char PATTERN_LIST_PATH[]="/PatternList";
 
+
 struct IusInputFile
 {
     const char *pFilename;
-    iupd_t pulseDict;
+    iupd_t pulseDict;                    /**< a dictionary of pulses */
+	iurcmd_t receiveChannelMapDict;      /**< a dictionary of receiveChannelMaps */
+	iutad_t transmitApodizationDict;     /**< a dictionary of transmitApodizations */
     iupal_t patternList;
+	iue_t experiment;
+
 
     //  state variables
     hid_t fileChunkConfig;                /**< file chunck handle */
@@ -54,6 +61,8 @@ static iuif_t iusHLInputFileAlloc
 	pFileInst->rfDataset = H5I_INVALID_HID;
 	pFileInst->fileChunkConfig = H5I_INVALID_HID;
 	pFileInst->pulseDict = IUPD_INVALID;
+	pFileInst->receiveChannelMapDict = IURCMD_INVALID;
+	pFileInst->experiment = IUE_INVALID;
 	if (pFileInst->handle < 0)
 	{
 		return IUIF_INVALID;
@@ -135,6 +144,7 @@ iuif_t iusHLInputFileLoad
     }
 
     // Load instance data
+    // Todo: create group @here instead of in Load, see experiment
     pFileInst->pulseDict = iusHLPulseDictLoad(pFileInst->handle, PULSES_PATH);
     if (pFileInst->pulseDict == IUPD_INVALID)
     {
@@ -142,12 +152,30 @@ iuif_t iusHLInputFileLoad
         return IUIF_INVALID;
     }
 
+
+	pFileInst->receiveChannelMapDict = iusHLReceiveChannelMapDictLoad(pFileInst->handle, "/ReceiveChannelMap");
+	if (pFileInst->receiveChannelMapDict == IURCMD_INVALID)
+	{
+		fprintf(stderr, "Warning from iusHLInputFileLoad: could not load receiveChannelMap: %s\n", pFilename);
+		return IUIF_INVALID;
+	}
+
+    // Todo: create group @here instead of in Load, see experiment
     pFileInst->patternList = iusHLPatternListLoad(pFileInst->handle, PATTERN_LIST_PATH);
     if (pFileInst->patternList == IUPAL_INVALID)
     {
         fprintf( stderr, "Warning from iusHLInputFileLoad: could not load patterns: %s\n", pFilename );
         return IUIF_INVALID;
     }
+
+	hid_t group_id = H5Gopen(pFileInst->handle, "/Experiment", H5P_DEFAULT);
+	pFileInst->experiment = iusHLExperimentLoad(group_id);
+	if (pFileInst->experiment == IUE_INVALID)
+	{
+		fprintf(stderr, "Warning from iusHLInputFileLoad: could not load experiment: %s\n", pFilename);
+		return IUIF_INVALID;
+	}
+	H5Gclose(group_id);
 
     return pFileInst;
 }
@@ -184,9 +212,19 @@ int iusHLInputFileSave
 //    group_id = H5Gcreate(handle, "/DrivingScheme", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 //    iusWriteDrivingScheme(pInst->pDrivingScheme, group_id, verbose);
 //    status |= H5Gclose(group_id );
+
+
+    // Todo: Handle creation in iusHLInputFileSave iso iusHLPulseDictSave, iusHLPatternListSave, iusHLReceiveChannelMapDictSave,iusHLTransmitApodizationDictSave
+    // new signature: iusHLPulseDictSave(fileHandle->pulseDict,fileHandle->handle);
     status |= iusHLPulseDictSave(fileHandle->pulseDict,PULSES_PATH,fileHandle->handle);
+	status |= iusHLReceiveChannelMapDictSave(fileHandle->receiveChannelMapDict, "/ReceiveChannelMap", fileHandle->handle);
+	status |= iusHLTransmitApodizationDictSave(fileHandle->transmitApodizationDict, "/TransmitApodization", fileHandle->handle);
     status |= iusHLPatternListSave(fileHandle->patternList,PATTERN_LIST_PATH,fileHandle->handle);
-    return status;
+	hid_t group_id = H5Gcreate(fileHandle->handle, "/Experiment", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+	status |= iusHLExperimentSave(fileHandle->experiment, group_id);
+	status |= H5Gclose(group_id);
+	return status;
+
 }
 
 int iusHLInputFileClose
@@ -223,10 +261,12 @@ int iusHLInputFileCompare
     iuif_t actual
 )
 {
-    if( reference == actual ) return IUS_TRUE;
-    if( reference == NULL || actual == NULL ) return IUS_FALSE;
-    if( iusHLPulseDictCompare(reference->pulseDict, actual->pulseDict)  == IUS_FALSE ) return IUS_FALSE;
-    if( iusHLPatternListCompare(reference->patternList, actual->patternList)  == IUS_FALSE ) return IUS_FALSE;
+    if ( reference == actual ) return IUS_TRUE;
+    if ( reference == NULL || actual == NULL ) return IUS_FALSE;
+    if ( iusHLPulseDictCompare(reference->pulseDict, actual->pulseDict)  == IUS_FALSE ) return IUS_FALSE;
+	if ( iusHLReceiveChannelMapDictCompare(reference->receiveChannelMapDict, actual->receiveChannelMapDict) == IUS_FALSE) return IUS_FALSE;
+	if ( iusHLPatternListCompare(reference->patternList, actual->patternList)  == IUS_FALSE ) return IUS_FALSE;
+	if ( iusHLExperimentCompare(reference->experiment, actual->experiment) == IUS_FALSE) return IUS_FALSE;
     return IUS_TRUE;
 }
 
@@ -236,7 +276,7 @@ iupd_t iusHLInputFileGetPulseDict
     iuif_t iusInputFile
 )
 {
-    if(iusInputFile != NULL)
+    if ( iusInputFile != NULL )
     {
         return iusInputFile->pulseDict;
     }
@@ -249,12 +289,25 @@ iupal_t iusHLInputFileGetPatternList
     iuif_t iusInputFile
 )
 {
-  if(iusInputFile != NULL)
+  if ( iusInputFile != NULL )
   {
     return iusInputFile->patternList;
   }
   return NULL;
 }
+
+iue_t iusHLInputFileGetExperiment
+(
+	iuif_t iusInputFile
+)
+{
+	if ( iusInputFile != NULL )
+	{
+		return iusInputFile->experiment;
+	}
+	return NULL;
+}
+
 
 // Setters
 int iusHLInputFileSetPulseDict
@@ -265,12 +318,69 @@ int iusHLInputFileSetPulseDict
 {
     int status = IUS_ERR_VALUE;
 
-    if(inputFile != NULL)
+    if ( inputFile != NULL )
     {
         inputFile->pulseDict = pulseDict;
         status = IUS_E_OK;
     }
     return status;
+}
+
+iurcmd_t iusHLInputFileGetReceiveChannelMapDict
+(
+	iuif_t iusInputFile
+)
+{
+	if (iusInputFile != NULL)
+	{
+		return iusInputFile->receiveChannelMapDict;
+	}
+	return NULL;
+}
+
+iutad_t iusHLInputFileGetTransmitApodizationDict
+(
+	iuif_t fileHandle
+)
+{
+	if (fileHandle != NULL)
+	{
+		return fileHandle->transmitApodizationDict;
+	}
+	return NULL;
+}
+
+// Setters
+int iusHLInputFileSetReceiveChannelMapDict
+(
+	iuif_t inputFile,
+	iurcmd_t receiveChannelMapDict
+)
+{
+	int status = IUS_ERR_VALUE;
+
+	if(inputFile != NULL)
+	{
+		inputFile->receiveChannelMapDict = receiveChannelMapDict;
+		status = IUS_E_OK;
+	}
+	return status;
+}
+
+int iusHLInputFileSetTransmitApodizationDict
+(
+	iuif_t inputFile,
+	iutad_t transmitApodizationDict
+)
+{
+	int status = IUS_ERR_VALUE;
+
+	if(inputFile != NULL)
+	{
+		inputFile->transmitApodizationDict = transmitApodizationDict;
+		status = IUS_E_OK;
+	}
+	return status;
 }
 
 int iusHLInputFileSetPatternList
@@ -287,4 +397,20 @@ int iusHLInputFileSetPatternList
       status = IUS_E_OK;
     }
     return status;
+}
+
+int iusHLInputFileSetExperiment
+(
+	iuif_t inputFile,
+	iue_t experiment
+)
+{
+	int status = IUS_ERR_VALUE;
+
+	if (inputFile != NULL)
+	{
+		inputFile->experiment = experiment;
+		status = IUS_E_OK;
+	}
+	return status;
 }

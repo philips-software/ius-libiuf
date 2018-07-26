@@ -90,11 +90,10 @@ TEST(IusPulseDict, testIusComparePulseDict)
     iusHLPulseDictDelete(notherDict);
 }
 
-
+#if 0
 TEST(IusPulseDict, testIusSerialization)
 
 {
-    IUS_BOOL equal;
     int numPulses = 10;
     int numPulseValues=10;
     float   pulseFrequency=8000000.0f;   /**< frequency that the pulse represents in Hz */
@@ -138,10 +137,11 @@ TEST(IusPulseDict, testIusSerialization)
     iusHLPulseDictDelete(dict);
     iusHLPulseDictDelete(savedObj);
 }
+#endif
 
 TEST_GROUP_RUNNER(IusPulseDict)
 {
     RUN_TEST_CASE(IusPulseDict, testIusCreatePulseDict);
     RUN_TEST_CASE(IusPulseDict, testIusComparePulseDict);
-    RUN_TEST_CASE(IusPulseDict, testIusSerialization);
+    //RUN_TEST_CASE(IusPulseDict, testIusSerialization);
 }

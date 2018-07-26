@@ -8,6 +8,7 @@
 #include <hdf5.h>
 #include <iusHLPulseDict.h>
 
+
 int iusHLPulseDictSave
 (
     iupd_t dict,
@@ -20,5 +21,6 @@ iupd_t iusHLPulseDictLoad
     hid_t handle,
     const char *path
 );
+
 
 #endif //IUSLIBRARY_IUSHLPULSEDICTIMP_H

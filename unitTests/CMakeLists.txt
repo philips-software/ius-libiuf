@@ -8,15 +8,19 @@ add_executable(unitTests
         include/testDataGenerators.h
         src/testDataGenerators.c
         src/unitTests.c
-#        src/testIusExperiment.c
+        src/testIusExperiment.c
         src/testIusTransducer.c
         src/testIusParametricPulse.c
         src/testIusNonParametricPulse.c
         src/testIusPulseDict.c
         src/testIusPulse.c
+        src/testIusReceiveChannelMap.c
+        src/testIusReceiveChannelMapDict.c
+        src/testIusTransmitApodization.c
+        src/testIusTransmitApodizationDict.c
         src/testIusInputFile.c
-#        src/testIusPattern.c
-#        src/testIusPatternList.c
+        src/testIusPattern.c
+        src/testIusPatternList.c
         src/testIusSource.c
         src/testIus3DParametricSource.c
         src/testIusPattern.c

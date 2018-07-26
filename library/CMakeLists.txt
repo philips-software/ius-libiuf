@@ -44,7 +44,7 @@ add_library(ius STATIC
 		include/iusHLPatternListImp.h
 		src/iusHLSource.c
 		include/iusHLSource.h
-#        src/iusHLExperiment.c
+        src/iusHLExperiment.c
 #        src/iusHLTransducer.c
 #        src/iusHLNode.c
         src/iusHDF5.c
@@ -115,7 +115,17 @@ add_library(ius STATIC
 #		include/iusHLExperimentImp.h
 		include/iusHLParametricPulseImp.h
 		include/iusHLNonParametricPulseImp.h
-		include/iusHLPulseDictImp.h)
+		include/iusHLPulseDictImp.h
+		src/iusHLReceiveChannelMap.c
+		src/iusHLReceiveChannelMapDict.c
+		include/iusHLReceiveChannelMap.h
+		include/iusHLReceiveChannelMapDict.h
+		include/iusHLReceiveChannelMapImp.h
+		src/iusHLTransmitApodization.c
+		src/iusHLTransmitApodizationDict.c
+		include/iusHLTransmitApodization.h
+		include/iusHLTransmitApodizationDict.h
+		include/iusHLTransmitApodizationImp.h)
 
 target_include_directories(ius PUBLIC
         ${CMAKE_CURRENT_LIST_DIR}
