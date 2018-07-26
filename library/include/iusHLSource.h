@@ -10,7 +10,7 @@
 
 
 typedef enum {
-  IUS_INVALID_SOURCE = 0,
+  IUS_INVALID_SOURCE_TYPE = 0,
   IUS_2D_NON_PARAMETRIC_SOURCE,
   IUS_3D_NON_PARAMETRIC_SOURCE,
   IUS_2D_PARAMETRIC_SOURCE,
@@ -43,12 +43,12 @@ int iusHLSourceCompare
 );
 
 // Getters
-int iusHLSourceGetIntParam
+IusSourceType iusHLSourceGetType
 (
     ius_t iusSource
 );
 
-float iusHLSourceGetFloatParam
+char * iusHLSourceGetLabel
 (
     ius_t iusSource
 );

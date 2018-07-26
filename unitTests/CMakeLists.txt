@@ -18,6 +18,7 @@ add_executable(unitTests
 #        src/testIusPattern.c
 #        src/testIusPatternList.c
         src/testIusSource.c
+        src/testIus3DParametricSource.c
         src/testIusPattern.c
         src/testIusPatternList.c
         src/util.c

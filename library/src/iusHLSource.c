@@ -28,8 +28,13 @@ ius_t iusHLSourceCreate
     char *pSourceLabel
 )
 {
-    if( sourceType == IUS_INVALID_SOURCE ) return IUS_INVALID;
+    if( sourceType == IUS_INVALID_SOURCE_TYPE ) return IUS_INVALID;
+    if( sourceType != IUS_2D_NON_PARAMETRIC_SOURCE &&
+        sourceType != IUS_2D_PARAMETRIC_SOURCE &&
+        sourceType != IUS_3D_NON_PARAMETRIC_SOURCE &&
+        sourceType != IUS_3D_PARAMETRIC_SOURCE) return IUS_INVALID;
     if( pSourceLabel == NULL ) return IUS_INVALID;
+    if( strcmp(pSourceLabel, "") == 0 ) return IUS_INVALID;
     ius_t created = calloc(1,sizeof(IusSource));
     created->type = sourceType;
     created->label = strdup(pSourceLabel);
@@ -85,4 +90,29 @@ IUS_BOOL iusHLSourceCompare
   return IUS_FALSE;
 }
 
+
+// Getters
+IusSourceType iusHLSourceGetType
+(
+    ius_t iusSource
+)
+{
+    if( iusSource == IUS_INVALID )
+    {
+        return IUS_INVALID_SOURCE_TYPE;
+    }
+    return iusSource->type;
+}
+
+char * iusHLSourceGetLabel
+(
+    ius_t iusSource
+)
+{
+    if( iusSource == IUS_INVALID )
+    {
+        return NULL;
+    }
+    return iusSource->label;
+}
 

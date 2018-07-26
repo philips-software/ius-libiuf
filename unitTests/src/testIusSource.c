@@ -32,7 +32,6 @@ TEST_TEAR_DOWN(IusSource)
 
 TEST(IusSource, testIusSourceCreate)
 {
-    IUS_BOOL equal;
     char *_3d_non_parametric_label = "label for 3d non parametric source";
     char *_3d_parametric_label = "label for 3d parametric source";
     char *_2d_non_parametric_label = "label for 2d non parametric source";
@@ -50,22 +49,43 @@ TEST(IusSource, testIusSourceCreate)
 
 
     // invalid params
+    _3dps = (iu3dps_t) iusHLSourceCreate(IUS_3D_PARAMETRIC_SOURCE,"");
+    TEST_ASSERT(_3dps == IU3DPS_INVALID);
+    _3dps = (iu3dps_t) iusHLSourceCreate(IUS_3D_PARAMETRIC_SOURCE,NULL);
+    TEST_ASSERT(_3dps == IU3DPS_INVALID);
+    _3dnps = (iu3dnps_t) iusHLSourceCreate(IUS_3D_NON_PARAMETRIC_SOURCE,"");
+    TEST_ASSERT(_3dnps == IU3DNPS_INVALID);
+    _3dnps = (iu3dnps_t) iusHLSourceCreate(IUS_3D_NON_PARAMETRIC_SOURCE,NULL);
+    TEST_ASSERT(_3dnps == IU3DNPS_INVALID);
+    _2dps = (iu2dps_t) iusHLSourceCreate(IUS_2D_PARAMETRIC_SOURCE,"");
+    TEST_ASSERT(_2dps == IU2DPS_INVALID);
+    _2dps = (iu2dps_t) iusHLSourceCreate(IUS_2D_PARAMETRIC_SOURCE,NULL);
+    TEST_ASSERT(_2dps == IU2DPS_INVALID);
+    _2dnps = (iu2dnps_t) iusHLSourceCreate(IUS_2D_NON_PARAMETRIC_SOURCE,"");
+    TEST_ASSERT(_2dnps == IU2DNPS_INVALID);
+    _2dnps = (iu2dnps_t) iusHLSourceCreate(IUS_2D_NON_PARAMETRIC_SOURCE,NULL);
+    TEST_ASSERT(_2dnps == IU2DNPS_INVALID);
+    _3dps = (iu3dps_t) iusHLSourceCreate( 2139, "invalid type");
+    TEST_ASSERT(_3dps == IU3DPS_INVALID);
 
 }
 
-#if 0
 TEST(IusSource, testIusSourceDelete)
 {
-    IUS_BOOL equal;
-    char *label = "label for IUS_PARAMETRIC_PULSETYPE";
+    char *_3d_parametric_label = "label for 3d parametric source";
 
-    iup_t obj = iusHLPulseCreate(IUS_PARAMETRIC_PULSETYPE,label);
-    TEST_ASSERT(obj != IUP_INVALID);
-    int status = iusHLPulseDelete(obj);
+    iu3dps_t _3dps = (iu3dps_t) iusHLSourceCreate(IUS_3D_PARAMETRIC_SOURCE,_3d_parametric_label);
+    TEST_ASSERT(_3dps != IU3DPS_INVALID);
+    int status = iusHLSourceDelete((ius_t)_3dps);
+    TEST_ASSERT_EQUAL(IUS_E_OK,status);
+
+    ius_t obj = iusHLSourceCreate(IUS_3D_PARAMETRIC_SOURCE,_3d_parametric_label);
+    TEST_ASSERT(obj != IUS_INVALID);
+    status = iusHLSourceDelete(obj);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
     // invalid params
-    status = iusHLPulseDelete(NULL);
+    status = iusHLSourceDelete(NULL);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
 }
 
@@ -74,49 +94,58 @@ TEST(IusSource, testIusSourceDelete)
 TEST(IusSource, testIusSourceCompare)
 {
     IUS_BOOL equal;
-    char *label = "label for IUS_PARAMETRIC_PULSETYPE";
-    char *notherLabel = "label for IUS_NON_PARAMETRIC_PULSETYPE";
+    char *_3d_non_parametric_label = "label for 3d non parametric source";
+    char *_3d_parametric_label = "label for 3d parametric source";
 
-    iup_t obj = iusHLPulseCreate(IUS_PARAMETRIC_PULSETYPE,label);
-    iup_t notherObj = iusHLPulseCreate(IUS_NON_PARAMETRIC_PULSETYPE,notherLabel);
-    TEST_ASSERT(obj != IUP_INVALID);
-
-    TEST_ASSERT(notherObj != IUP_INVALID);
-    equal = iusHLPulseCompare(obj,obj);
+    // Happy flow
+    ius_t obj = iusHLSourceCreate(IUS_3D_PARAMETRIC_SOURCE,_3d_parametric_label);
+    TEST_ASSERT(obj != IUS_INVALID);
+    ius_t notherObj = iusHLSourceCreate(IUS_3D_PARAMETRIC_SOURCE,_3d_parametric_label);
+    TEST_ASSERT(notherObj != IUS_INVALID);
+    ius_t differentObj = iusHLSourceCreate(IUS_3D_NON_PARAMETRIC_SOURCE,_3d_non_parametric_label);
+    TEST_ASSERT(differentObj != IUS_INVALID);
+    equal = iusHLSourceCompare(obj,obj);
     TEST_ASSERT_EQUAL(IUS_TRUE,equal);
-    equal = iusHLPulseCompare(obj,notherObj);
+    equal = iusHLSourceCompare(obj,notherObj);
+    TEST_ASSERT_EQUAL(IUS_TRUE,equal);
+    equal = iusHLSourceCompare(obj,differentObj);
     TEST_ASSERT_EQUAL(IUS_FALSE,equal);
 
     // invalid params
-    equal = iusHLPulseCompare(obj,NULL);
+    equal = iusHLSourceCompare(obj,NULL);
     TEST_ASSERT_EQUAL(IUS_FALSE,equal);
-    equal = iusHLPulseCompare(NULL,obj);
+    equal = iusHLSourceCompare(NULL,obj);
     TEST_ASSERT_EQUAL(IUS_FALSE,equal);
 
-    iusHLPulseDelete(obj);
-    iusHLPulseDelete(notherObj);
+    int status = iusHLSourceDelete(obj);
+    TEST_ASSERT_EQUAL(IUS_E_OK, status);
+    status = iusHLSourceDelete(notherObj);
+    TEST_ASSERT_EQUAL(IUS_E_OK, status);
+    status = iusHLSourceDelete(differentObj);
+    TEST_ASSERT_EQUAL(IUS_E_OK, status);
 }
 
 
-TEST(IusSource, testIusSourceGet)
+TEST(IusSource, testIusSourceGetSet)
 {
     IUS_BOOL equal;
-    char *label = "label for IUS_PARAMETRIC_PULSETYPE";
+    char *_3d_non_parametric_label = "label for 3d non parametric source";
 
-    iup_t obj = iusHLPulseCreate(IUS_PARAMETRIC_PULSETYPE,label);
+    // Happy flow
+    ius_t obj = iusHLSourceCreate(IUS_3D_NON_PARAMETRIC_SOURCE,_3d_non_parametric_label);
+    TEST_ASSERT(obj != IUS_INVALID);
 
-    // int param
-    TEST_ASSERT_EQUAL(IUS_PARAMETRIC_PULSETYPE,iusHLPulseGetType(obj));
-    TEST_ASSERT_EQUAL_STRING(label,iusHLPulseGetLabel(obj));
+    TEST_ASSERT_EQUAL(IUS_3D_NON_PARAMETRIC_SOURCE,iusHLSourceGetType(obj));
+    TEST_ASSERT_EQUAL_STRING(_3d_non_parametric_label,iusHLSourceGetLabel(obj));
 
 
     // invalid param
-    TEST_ASSERT_EQUAL(IUS_INVALID_PULSETYPE,iusHLPulseGetType(NULL));
-    TEST_ASSERT_EQUAL(NULL,iusHLPulseGetLabel(NULL));
-
-    iusHLPulseDelete(obj);
+    TEST_ASSERT_EQUAL(IUS_INVALID_SOURCE_TYPE,iusHLSourceGetType(NULL));
+    TEST_ASSERT_EQUAL(NULL,iusHLSourceGetLabel(NULL));
+    iusHLSourceDelete(obj);
 }
 
+#if 0
 
 TEST(IusSource, testIusSerialization)
 {
@@ -163,8 +192,8 @@ TEST(IusSource, testIusSerialization)
 TEST_GROUP_RUNNER(IusSource)
 {
     RUN_TEST_CASE(IusSource, testIusSourceCreate);
-//    RUN_TEST_CASE(IusSource, testIusSourceDelete);
-//    RUN_TEST_CASE(IusSource, testIusSourceCompare);
-//    RUN_TEST_CASE(IusSource, testIusSourceGet);
+    RUN_TEST_CASE(IusSource, testIusSourceDelete);
+    RUN_TEST_CASE(IusSource, testIusSourceCompare);
+    RUN_TEST_CASE(IusSource, testIusSourceGetSet);
 //    RUN_TEST_CASE(IusSource, testIusSerialization);
 }
