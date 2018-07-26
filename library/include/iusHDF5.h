@@ -124,7 +124,7 @@ herr_t iusHdf5ReadString
 (
     hid_t        handle,
     const char * pVariableString,
-    char * *     ppReturnString
+    const char * *     ppReturnString
 );
 
 /** 
@@ -233,7 +233,7 @@ herr_t iusHdf5WriteString
 (
     hid_t        handle,
     const char * pVariableString,
-    char *       pString,
+    const char *       pString,
 	int			 verbose
 );
 

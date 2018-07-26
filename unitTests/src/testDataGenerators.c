@@ -4,15 +4,63 @@
 #include <unity.h>
 
 #include <include/ius.h>
-#include <include/iusHLPulseDict.h>
-#include <include/iusHLParametricPulse.h>
+#include <include/iusHLExperiment.h>
 #include <include/iusHLNonParametricPulse.h>
+#include <include/iusHLParametricPulse.h>
+#include <include/iusHLPulseDict.h>
 #include <include/iusHLReceiveChannelMapDict.h>
 #include <include/iusHLTransmitApodizationDict.h>
 
-iupd_t dgGeneratePulseDict()
+#include <testDataGenerators.h>
+
+static const char *pBmodePatternLabel = "bmode";
+static const char *pDopplerPatternLabel = "doppler";
+static const char *pPulseLabel = "pulseLabel";
+static const char *pSourceLabel = "sourceLabel";
+static const char *pChannelMapLabel = "channelMapLabel";
+static const char *pApodizationLabel = "apodizationLabel";
+static const char *pReceivesettingsLabel = "receivesettingsLabel";
+
+
+iupal_t dgGeneratePatternList
+(
+  void
+)
 {
-  int numPulses = 10;
+  int numPatterns = 2;
+  int status;
+
+  // fill list
+  iupal_t patternList = iusHLPatternListCreate(numPatterns);
+  TEST_ASSERT_NOT_EQUAL(IUPAL_INVALID, patternList);
+
+  iupa_t bmodePattern = iusHLPatternCreate(pBmodePatternLabel,
+                                           0.01f,
+                                           pPulseLabel,
+                                           pSourceLabel,
+                                           pChannelMapLabel,
+                                           pApodizationLabel,
+                                           pReceivesettingsLabel);
+
+  iupa_t dopplerPattern = iusHLPatternCreate(pDopplerPatternLabel,
+                                             0.02f,
+                                             pPulseLabel,
+                                             pSourceLabel,
+                                             pChannelMapLabel,
+                                             pApodizationLabel,
+                                             pReceivesettingsLabel);
+  status = iusHLPatternListSet(patternList, bmodePattern, 0);
+  TEST_ASSERT_EQUAL(IUS_E_OK, status);
+  status = iusHLPatternListSet(patternList, dopplerPattern, 1);
+  TEST_ASSERT_EQUAL(IUS_E_OK, status);
+  return patternList;
+}
+
+iupd_t dgGeneratePulseDict
+(
+  void
+)
+{
   int numPulseValues=10;
   float   pulseFrequency=8000000.0f;   /**< frequency that the pulse represents in Hz */
   float   pulseAmplitude=800.0f;       /**< (max) amplitude of the pulse in Volts */
@@ -43,25 +91,40 @@ iurcmd_t dgGenerateReceiveChannelMapDict
 	void
 )
 {
-	int status;
-	int numChannels = 8;
-	int channelMap[8] = { 0, 1, 2, 3, 4, 5, 6, 7 };
-	char *label = "one-to-one";
+    int status;
+    int numChannels = 8;
+    int channelMap[8] = {0, 1, 2, 3, 4, 5, 6, 7};
+    char *label = "one-to-one";
 
-	iurcmd_t dict = iusHLReceiveChannelMapDictCreate();
-	TEST_ASSERT(dict != IURCMD_INVALID);
+    iurcmd_t dict = iusHLReceiveChannelMapDictCreate();
+    TEST_ASSERT(dict != IURCMD_INVALID);
 
-	// fill
-	iurcm_t receiveChannelMap = iusHLReceiveChannelMapCreate(numChannels);
-	TEST_ASSERT(receiveChannelMap != NULL);
+    // fill
+    iurcm_t receiveChannelMap = iusHLReceiveChannelMapCreate(numChannels);
+    TEST_ASSERT(receiveChannelMap != NULL);
 
-	status = iusHLReceiveChannelMapSetMap(receiveChannelMap, channelMap);
+    status = iusHLReceiveChannelMapSetMap(receiveChannelMap, channelMap);
+    TEST_ASSERT(status == IUS_E_OK);
+
+    status = iusHLReceiveChannelMapSetMap(receiveChannelMap, channelMap);
 	TEST_ASSERT(status == IUS_E_OK);
 
-	status = iusHLReceiveChannelMapDictSet(dict, label, receiveChannelMap);
-	TEST_ASSERT(status == IUS_E_OK);
+    status = iusHLReceiveChannelMapDictSet(dict, label, receiveChannelMap);
+    TEST_ASSERT(status == IUS_E_OK);
 
-	return dict;
+    return dict;
+}
+
+iue_t dgGenerateExperiment()
+{
+	int date = 20180416;
+	char *pDescription = "a nice experiment that almost won me the nobel prize";
+	float speedOfSound = 1540.0f;
+
+	iue_t experiment = iusHLExperimentCreate(speedOfSound, date, pDescription);
+	TEST_ASSERT(experiment != IUE_INVALID);
+
+	return experiment;
 }
 
 iutad_t dgGenerateTransmitApodizationDict

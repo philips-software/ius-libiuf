@@ -26,8 +26,8 @@
 
 iup_t  iusHLPulseCreate
 (
-    IusPulseType type,
-    char *label
+IusPulseType type,
+const char *label
 )
 {
     iup_t transmitPulse = IUP_INVALID;
@@ -207,7 +207,7 @@ iup_t iusHLBasePulseLoad
 {
     int status = 0;
     IusPulseType type;
-    char *label;
+    const char *label;
     char path[64];
 
     sprintf(path, PULSETYPEFMT, parentPath);

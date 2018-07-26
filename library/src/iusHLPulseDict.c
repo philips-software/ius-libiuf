@@ -64,19 +64,22 @@ static int iusHLPulseDictSourceInTarget
     iupd_t target
 )
 {
-    HashablePulse *targetElement;
-    HashablePulse *sourceElement;
+    iup_t targetElement;
+    iup_t sourceElement;
+    HashablePulse *iterElement;
+
     IUS_BOOL sourceInTarget = IUS_FALSE;
     struct hashmap_iter *iter;
 
     // iterate over source list elements using the hash double linked list
     for (iter = hashmap_iter(&source->map); iter; iter = hashmap_iter_next(&source->map, iter)) {
-      sourceElement = HashablePulse_hashmap_iter_get_data(iter);
-      targetElement = HashablePulse_hashmap_get(&target->map, sourceElement->pulse->label);
-      if( targetElement == NULL)
+      iterElement = HashablePulse_hashmap_iter_get_data(iter);
+      sourceElement=iterElement->pulse;
+      targetElement = iusHLPulseDictGet(target, iusHLPulseGetLabel(sourceElement));
+      if( targetElement == IUP_INVALID)
         return IUS_FALSE;
 
-      if( iusHLPulseCompare(sourceElement->pulse,targetElement->pulse) == IUS_FALSE )
+      if( iusHLPulseCompare(sourceElement, targetElement) == IUS_FALSE )
         return IUS_FALSE;
       sourceInTarget = IUS_TRUE;
     }
@@ -110,9 +113,9 @@ int iusHLPulseDictGetSize
     iupd_t dict
 )
 {
-  assert(0==1);
-
-  return -1;
+    if( dict == NULL )
+        return -1;
+    return (int) hashmap_size(&dict->map);
 }
 
 iup_t iusHLPulseDictGet
@@ -121,16 +124,11 @@ iup_t iusHLPulseDictGet
     char * key
 )
 {
-#if 0
-	HashablePulse * search;
-    if( dict == NULL ) return NULL;
-  assert(0==1);
-
-    if( search != NULL ) return NULL;
-
+    HashablePulse * search;
+    search = HashablePulse_hashmap_get(&dict->map, key);
+    if( dict == NULL )
+        return IUP_INVALID;
     return search->pulse;
-#endif
-	return NULL;
 }
 
 int iusHLPulseDictSet
@@ -202,13 +200,12 @@ int iusHLPulseDictSave
 iupd_t iusHLPulseDictLoad
 (
     hid_t handle,
-    char *parentPath
+    const char *parentPath
 )
 {
+    int i;
     int status = 0;
     char path[64];
-    //iunpp_t  pulse;
-    int i;
     char memb_name[MAX_NAME];
 
 

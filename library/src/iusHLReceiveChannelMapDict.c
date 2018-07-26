@@ -107,7 +107,7 @@ size_t iusHLReceiveChannelMapDictGetSize
 	iurcmd_t dict
 )
 {
-	if (dict == NULL) return 0;
+	if (dict == NULL) return -1;
 	return hashmap_size(&dict->map);
 }
 
@@ -118,11 +118,11 @@ iurcm_t iusHLReceiveChannelMapDictGet
 )
 {
 	HashableReceiveChannelMap *search;
-	if (dict == NULL) return NULL;
+	if (dict == NULL) return IURCM_INVALID;
 
 	search = HashableReceiveChannelMap_hashmap_get(&dict->map, key);
+	if (search == NULL) return IURCM_INVALID;
 
-	if (search == NULL) return NULL;
 	return search->receiveChannelMap;
 }
 

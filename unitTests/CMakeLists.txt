@@ -19,6 +19,8 @@ add_executable(unitTests
         src/testIusTransmitApodization.c
         src/testIusTransmitApodizationDict.c
         src/testIusInputFile.c
+        src/testIusPattern.c
+        src/testIusPatternList.c
         src/util.c
 #        src/testNode.c
 #        src/testTransducer.c

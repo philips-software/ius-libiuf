@@ -44,18 +44,5 @@ int iusHLReceiveChannelMapDictSet
 	iurcm_t member
 );
 
-herr_t iusHLReceiveChannelMapDictSave
-(
-	iurcmd_t dict,
-	char *parentPath,
-	hid_t handle
-);
-
-iurcmd_t iusHLReceiveChannelMapDictLoad
-(
-	hid_t handle,
-	char *parentPath
-);
-
 #endif //IUSLIBRARY_IUSHLRECEIVECHANNELMAPDICT_H
 

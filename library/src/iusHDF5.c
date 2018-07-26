@@ -131,7 +131,7 @@ herr_t iusHdf5ReadString
 (
     hid_t        handle,
     const char * pVariableString,
-    char * *     ppReturnString
+    const char * *     ppReturnString
 )
 {
     herr_t status = -1;
@@ -140,12 +140,12 @@ herr_t iusHdf5ReadString
     IUS_ASSERT_MEMORY( pVariableString && ppReturnString );
 
     *ppReturnString = (char *)calloc( IUS_MAX_STRING_LENGTH, sizeof(char) );
-    status = H5LTread_dataset_string( handle, pVariableString, *ppReturnString );
+    status = H5LTread_dataset_string( handle, pVariableString, (char *) *ppReturnString );
     if ( status < 0 )
     {
         fprintf( stderr,"iusInputFileOpen: H5LTread_dataset_string %s failed\n",
             pVariableString );
-        free( *ppReturnString );
+        free( (char *) *ppReturnString );
         return status;
     }
     if ( verbose )
