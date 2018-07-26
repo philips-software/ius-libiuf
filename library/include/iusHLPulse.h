@@ -14,8 +14,8 @@ typedef  IusPulse    * iup_t;
 
 iup_t  iusHLPulseCreate
 (
-    IusPulseType type,
-    char *label
+IusPulseType type,
+const char *label
 );
 
 int iusHLPulseDelete

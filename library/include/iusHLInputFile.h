@@ -2,6 +2,8 @@
 #ifndef IUSLIBRARY_IUSHLINPUTFILE_H
 #define IUSLIBRARY_IUSHLINPUTFILE_H
 
+#include <iusHLExperiment.h>
+#include <iusHLPatternList.h>
 #include <iusHLPulseDict.h>
 #include <iusHLReceiveChannelMapDict.h>
 
@@ -49,7 +51,13 @@ iupd_t iusHLInputFileGetPulseDict
     iuif_t fileHandle
 );
 
+
 iurcmd_t iusHLInputFileGetReceiveChannelMapDict
+(
+	iuif_t fileHandle
+);
+
+iue_t iusHLInputFileGetExperiment
 (
 	iuif_t fileHandle
 );
@@ -66,6 +74,18 @@ int iusHLInputFileSetReceiveChannelMapDict
 (
     iuif_t inputFile,
     iurcmd_t receiveChannelMapDict
+);
+
+int iusHLInputFileSetPatternList
+(
+    iuif_t inputFile,
+    iupal_t paternList
+);
+
+int iusHLInputFileSetExperiment
+(
+	iuif_t inputFile,
+	iue_t  experiment
 );
 
 #endif //IUSLIBRARY_IUSHLINPUTFILE_H

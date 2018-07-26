@@ -32,7 +32,6 @@ iunpp_t iusHLNonParametricPulseCreate
 )
 {
     IusNonParametricPulse *pulse;
-    int i;
 
     if( label == NULL ) return NULL;
     if( strcmp(label,"") == 0 ) return NULL;

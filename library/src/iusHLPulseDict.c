@@ -121,6 +121,7 @@ iup_t iusHLPulseDictGet
     char * key
 )
 {
+    // Todo: Implement!
 #if 0
 	HashablePulse * search;
     if( dict == NULL ) return NULL;
@@ -202,13 +203,12 @@ int iusHLPulseDictSave
 iupd_t iusHLPulseDictLoad
 (
     hid_t handle,
-    char *parentPath
+    const char *parentPath
 )
 {
+    int i;
     int status = 0;
     char path[64];
-    //iunpp_t  pulse;
-    int i;
     char memb_name[MAX_NAME];
 
 

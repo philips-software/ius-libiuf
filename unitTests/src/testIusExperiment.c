@@ -23,18 +23,16 @@ TEST_TEAR_DOWN(IusExperiment)
 
 TEST(IusExperiment, testIusCreateExperiment)
 {
-    IUS_BOOL equal;
     float speedOfSound = 1498.1f;
     int date = 20160124;
     char *pDescription = "My important experiment notes, by testIusCreateExperiment";
-    int status;
 
     iue_t obj = iusHLExperimentCreate(speedOfSound, date, pDescription);
     iue_t notherObj = iusHLExperimentCreate(speedOfSound, date, pDescription);
     TEST_ASSERT(obj != IUE_INVALID);
     TEST_ASSERT(notherObj != IUE_INVALID);
-  iusHLExperimentDelete(obj);
-  iusHLExperimentDelete(notherObj);
+    iusHLExperimentDelete(obj);
+    iusHLExperimentDelete(notherObj);
 
     // invalid params
     obj = iusHLExperimentCreate(-1.0f, date, pDescription);
@@ -47,7 +45,6 @@ TEST(IusExperiment, testIusCreateExperiment)
 
 TEST(IusExperiment, testIusDeleteExperiment)
 {
-    IUS_BOOL equal;
     float speedOfSound = 1498.1f;
     int date = 20160124;
     char *pDescription = "My important experiment notes, by testIusCreateExperiment";
@@ -117,22 +114,29 @@ TEST(IusExperiment, testIusSerialization)
     float speedOfSound = 1498.1f;
     int date = 20160124;
     char *pDescription = "My important experiment notes, by testIusCreateExperiment";
-    char *filename = "testIusSerialization.hdf5";
+    char *filename = "testIusExperiment.hdf5";
     char *experimentPath =  "/Experiment";
 
     // create and save
     iue_t obj = iusHLExperimentCreate(speedOfSound, date, pDescription);
-    iue_t notherObj = iusHLExperimentCreate(speedOfSound+1, date+1, pDescription);
+    iue_t notherObj = iusHLExperimentCreate(speedOfSound+1.0f, date+1, pDescription);
 
     hid_t handle = H5Fcreate( filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT );
     TEST_ASSERT(handle > 0);
-    int status = iusHLExperimentSave(obj, experimentPath, handle);
+	hid_t group_id = H5Gcreate(handle, experimentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+	TEST_ASSERT(group_id > 0);
+    int status = iusHLExperimentSave(obj, group_id);
+	H5Gclose(group_id);
     H5Fclose(handle);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
     // read back
     handle = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT );
-    iue_t savedObj = iusHLExperimentLoad(handle, experimentPath);
+	TEST_ASSERT(handle > 0);
+	group_id = H5Gopen(handle, experimentPath, H5P_DEFAULT);
+	TEST_ASSERT(group_id > 0);
+    iue_t savedObj = iusHLExperimentLoad(group_id);
+	H5Gclose(group_id);
     H5Fclose(handle);
 
     TEST_ASSERT_EQUAL(IUS_TRUE, iusHLExperimentCompare(obj,savedObj));

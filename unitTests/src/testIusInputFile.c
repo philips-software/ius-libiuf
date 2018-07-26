@@ -18,6 +18,7 @@
 #include <include/iusHLNonParametricPulse.h>
 
 #include <testDataGenerators.h>
+#include <include/iusHLPatternList.h>
 
 static const char *pFilename = "IusInputFile.hdf5";
 static const char *pNotherFilename = "AnotherIusInputFile.hdf5";
@@ -30,14 +31,13 @@ TEST_SETUP(IusInputFile)
 
 TEST_TEAR_DOWN(IusInputFile)
 {
-	int return_value = 0;
     if( fileExists(pFilename) == IUS_TRUE )
     {
-		return_value = remove(pFilename);
+		remove(pFilename);
     }
     if( fileExists(pNotherFilename) == IUS_TRUE )
     {
-		return_value = remove(pNotherFilename);
+		remove(pNotherFilename);
     }
 }
 
@@ -102,7 +102,6 @@ TEST(IusInputFile, testIusInputFileCompare)
     TEST_ASSERT_EQUAL(IUS_FALSE,equal);
     equal = iusHLInputFileCompare(NULL,obj);
     TEST_ASSERT_EQUAL(IUS_FALSE,equal);
-    
 
 	int status = iusHLInputFileClose(obj);
 	TEST_ASSERT(status == IUS_E_OK);
@@ -165,11 +164,20 @@ TEST(IusInputFile, testIusInputFileSerialization)
     int status = iusHLInputFileSetPulseDict(inputFile, pulseDict);
     TEST_ASSERT(status == IUS_E_OK);
 
+
 	iurcmd_t receiveChannelMapDict = dgGenerateReceiveChannelMapDict();
 	status = iusHLInputFileSetReceiveChannelMapDict(inputFile, receiveChannelMapDict);
 	TEST_ASSERT(status == IUS_E_OK);
 
-    // save
+    iupal_t patternList = dgGeneratePatternList();
+    status = iusHLInputFileSetPatternList(inputFile,patternList);
+    TEST_ASSERT(status == IUS_E_OK);
+
+	iue_t experiment = dgGenerateExperiment();
+	status = iusHLInputFileSetExperiment(inputFile, experiment);
+	TEST_ASSERT(status == IUS_E_OK);
+
+	// save
     status = iusHLInputFileSave(inputFile);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
     status = iusHLInputFileClose(inputFile);
@@ -185,7 +193,7 @@ TEST(IusInputFile, testIusInputFileSerialization)
 
     iusHLPulseDictDelete(pulseDict);
 	iusHLReceiveChannelMapDictDelete(receiveChannelMapDict);
-
+	iusHLExperimentDelete(experiment);
     iusHLInputFileDelete(inputFile);
     iusHLInputFileDelete(savedObj);
 }

@@ -17,6 +17,8 @@ add_executable(unitTests
         src/testIusReceiveChannelMap.c
         src/testIusReceiveChannelMapDict.c
         src/testIusInputFile.c
+        src/testIusPattern.c
+        src/testIusPatternList.c
         src/util.c
 #        src/testNode.c
 #        src/testTransducer.c

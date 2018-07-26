@@ -94,7 +94,6 @@ TEST(IusPulseDict, testIusComparePulseDict)
 TEST(IusPulseDict, testIusSerialization)
 
 {
-    IUS_BOOL equal;
     int numPulses = 10;
     int numPulseValues=10;
     float   pulseFrequency=8000000.0f;   /**< frequency that the pulse represents in Hz */
