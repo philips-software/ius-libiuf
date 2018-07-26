@@ -9,27 +9,46 @@
 #include <iusTypes.h>
 #include <iusUtil.h>
 
+#include <include/iusHLSourceImp.h>
+#include <memory.h>
 #include "include/iusHL3DParametricSource.h"
 
 struct Ius3DParametricSource
 {
-    int intParam;
-    float floatParam;
+    struct IusSource base;
+
+    float fNumber;          /**< distance in [m] of sources to transducer for POLAR */
+    float deltaTheta;     /**< angle in [rad] between sources */
+    float startTheta;       /**< angle in [rad] between sources */
+    float deltaPhi;          /**< angle in [rad] between sources */
+    float startPhi;       /**< angle in [rad] between sources */
 } ;
+
+
 
 // ADT
 
 iu3dps_t iusHL3DParametricSourceCreate
 (
-    int intParam,
-    float floatParam
+    char *pLabel,
+    float fNumber,
+    float deltaTheta,
+    float startTheta,
+    float deltaPhi,
+    float startPhi
 )
 {
-    if( intParam < 0 ) return IU3DPS_INVALID;
-    if( floatParam <= 0.0f ) return IU3DPS_INVALID;
+    if( pLabel == NULL ) return NULL;
+    if( strcmp(pLabel,"") == 0 ) return NULL;
+
     iu3dps_t created = calloc(1,sizeof(Ius3DParametricSource));
-    created->intParam = intParam;
-    created->floatParam = floatParam;
+    created->base.type = IUS_3D_PARAMETRIC_SOURCE;
+    created->base.label = strdup(pLabel);
+    created->deltaTheta = deltaTheta;
+    created->startTheta = startTheta;
+    created->deltaPhi = deltaPhi;
+    created->startPhi = startPhi;
+    created->fNumber = fNumber;
     return created;
 }
 
@@ -58,58 +77,12 @@ int iusHL3DParametricSourceCompare
 {
     if( reference == actual ) return IUS_TRUE;
     if( reference == NULL || actual == NULL ) return IUS_FALSE;
-    if( reference->intParam != actual->intParam ) return IUS_FALSE;
-    if( IUS_EQUAL_FLOAT(reference->floatParam, actual->floatParam ) == IUS_FALSE ) return IUS_FALSE;
-    return IUS_TRUE;
+    if( IUS_EQUAL_FLOAT(reference->fNumber, actual->fNumber) == IUS_FALSE ) return IUS_FALSE;
+    if( IUS_EQUAL_FLOAT(reference->startPhi, actual->startPhi) == IUS_FALSE ) return IUS_FALSE;
+    if( IUS_EQUAL_FLOAT(reference->deltaPhi, actual->deltaPhi) == IUS_FALSE ) return IUS_FALSE;
+    if( IUS_EQUAL_FLOAT(reference->startTheta, actual->startTheta) == IUS_FALSE ) return IUS_FALSE;
+    if( IUS_EQUAL_FLOAT(reference->deltaTheta, actual->deltaTheta) == IUS_FALSE ) return IUS_FALSE;
+    return iusHLBaseSourceCompare((ius_t)reference,(ius_t)actual);
 }
 
 // Getters
-int iusHL3DParametricSourceGetIntParam
-(
-    iu3dps_t ius3DParametricSource
-)
-{
-    return ius3DParametricSource->intParam;
-}
-
-float iusHL3DParametricSourceGetFloatParam
-(
-    iu3dps_t ius3DParametricSource
-)
-{
-    return ius3DParametricSource->floatParam;
-}
-
-// Setters
-int iusHL3DParametricSourceSetFloatParam
-(
-    iu3dps_t ius3DParametricSource,
-    float floatParam
-)
-{
-    int status = IUS_ERR_VALUE;
-
-    if(ius3DParametricSource != NULL)
-    {
-        ius3DParametricSource->floatParam = floatParam;
-        status = IUS_E_OK;
-    }
-    return status;
-}
-
-
-int iusHL3DParametricSourceSetIntParam
-(
-    iu3dps_t ius3DParametricSource,
-    int intParam
-)
-{
-    int status = IUS_ERR_VALUE;
-
-    if(ius3DParametricSource != NULL)
-    {
-        ius3DParametricSource->intParam = intParam;
-        status = IUS_E_OK;
-    }
-    return status;
-}

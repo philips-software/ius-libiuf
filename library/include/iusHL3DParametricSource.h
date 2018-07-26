@@ -10,9 +10,14 @@ typedef Ius3DParametricSource *iu3dps_t;
 
 iu3dps_t iusHL3DParametricSourceCreate
 (
-    int intParam,
-    float floatParam
+    char *pLabel,
+    float fNumber,
+    float deltaTheta,
+    float startTheta,
+    float deltaPhi,
+    float startPhi
 );
+
 
 int iusHL3DParametricSourceDelete
 (

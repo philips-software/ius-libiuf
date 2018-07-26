@@ -11,14 +11,9 @@
 #include <iusUtil.h>
 #include <string.h>
 
-#include "include/iusHLSource.h"
+#include "include/iusHLSourceImp.h"
 #include "include/iusHL3DParametricSource.h"
 
-struct IusSource
-{
-    IusSourceType type;
-    char *label;
-} ;
 
 // ADT
 
@@ -35,7 +30,7 @@ ius_t iusHLSourceCreate
         sourceType != IUS_3D_PARAMETRIC_SOURCE) return IUS_INVALID;
     if( pSourceLabel == NULL ) return IUS_INVALID;
     if( strcmp(pSourceLabel, "") == 0 ) return IUS_INVALID;
-    ius_t created = calloc(1,sizeof(IusSource));
+    ius_t created = calloc(1,sizeof(struct IusSource));
     created->type = sourceType;
     created->label = strdup(pSourceLabel);
     return created;
