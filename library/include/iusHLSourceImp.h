@@ -13,6 +13,7 @@ struct IusSource
 {
     IusSourceType type;
     char *label;
+    int locationCount; /**< number of locations */
 } ;
 
 

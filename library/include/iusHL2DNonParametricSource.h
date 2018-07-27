@@ -14,8 +14,8 @@ typedef Ius2DNonParametricSource *iu2dnps_t;
 
 iu2dnps_t iusHL2DNonParametricSourceCreate
 (
-    int intParam,
-    float floatParam
+    char *pLabel,
+    int numLocations
 );
 
 int iusHL2DNonParametricSourceDelete

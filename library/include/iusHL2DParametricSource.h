@@ -14,8 +14,11 @@ typedef Ius2DParametricSource *iu2dps_t;
 
 iu2dps_t iusHL2DParametricSourceCreate
 (
-    int intParam,
-    float floatParam
+    char *pLabel,
+    int numLocations,
+    float fNumber,
+    float angularDelta,
+    float startAngle
 );
 
 int iusHL2DParametricSourceDelete

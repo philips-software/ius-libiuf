@@ -23,22 +23,6 @@ typedef int IUS_BOOL;
 #define IUS_TRUE  (1)
 #define IUS_FALSE (0)
 
-/** \brief Position in 3D in meters */    
-typedef struct
-{
-    float x; 
-    float y;
-    float z;
-} Ius3DPosition;
-
-
-/** \brief Position in 3D in meters */
-typedef struct
-{
-    float x;
-    float z;
-} Ius2DPosition;
-
 
 
 /** \brief velocity vector in x,y,z dimensions */

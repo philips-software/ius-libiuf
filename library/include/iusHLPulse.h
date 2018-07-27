@@ -7,7 +7,7 @@
 #include <iusTypes.h>
 
 // ADT
-struct IusPulse;
+struct   IusPulse;
 typedef  struct IusPulse IusPulse;
 typedef  IusPulse    * iup_t;
 #define  IUP_INVALID (iup_t) NULL
@@ -22,8 +22,8 @@ typedef enum {
 
 iup_t  iusHLPulseCreate
 (
-IusPulseType type,
-const char *label
+    IusPulseType type,
+    const char *label
 );
 
 int iusHLPulseDelete

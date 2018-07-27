@@ -26,8 +26,8 @@
 
 iup_t  iusHLPulseCreate
 (
-IusPulseType type,
-const char *label
+    IusPulseType type,
+    const char *label
 )
 {
     iup_t transmitPulse = IUP_INVALID;

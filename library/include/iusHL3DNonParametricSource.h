@@ -14,8 +14,8 @@ typedef Ius3DNonParametricSource *iu3dnps_t;
 
 iu3dnps_t iusHL3DNonParametricSourceCreate
 (
-    int intParam,
-    float floatParam
+    char *pLabel,
+    int numLocations
 );
 
 int iusHL3DNonParametricSourceDelete

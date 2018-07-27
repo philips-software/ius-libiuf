@@ -26,8 +26,10 @@ typedef IusSource *ius_t;
 
 ius_t iusHLSourceCreate
 (
-  IusSourceType sourceType,
-  char *pSourceLabel
+    IusSourceType sourceType,
+    char *pSourceLabel,
+    int numLocations,
+    ...
 );
 
 int iusHLSourceDelete

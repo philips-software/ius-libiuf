@@ -10,27 +10,51 @@
 #include <iusTypes.h>
 #include <iusUtil.h>
 
+#include <include/iusHLSourceImp.h>
+#include <include/iusHLPositionImp.h>
+#include <memory.h>
 #include "include/iusHL2DParametricSource.h"
 
 struct Ius2DParametricSource
 {
-    int intParam;
-    float floatParam;
+    struct IusSource base;
+    struct Ius2DPosition *pLocations;
+
+    float fNumber;          /**< distance in [m] of sources to transducer for POLAR */
+    float angularDelta;     /**< angle in [rad] between sources */
+    float startAngle;       /**< angle in [rad] between sources */
 } ;
 
 // ADT
 
 iu2dps_t iusHL2DParametricSourceCreate
 (
-    int intParam,
-    float floatParam
+    char *pLabel,
+    int numLocations,
+    float fNumber,
+    float angularDelta,
+    float startAngle
 )
 {
-    if( intParam < 0 ) return IU2DPS_INVALID;
-    if( floatParam <= 0.0f ) return IU2DPS_INVALID;
+    if ( pLabel == NULL ) return NULL;
+    if ( strcmp(pLabel,"") == 0 ) return NULL;
+    if ( numLocations <= 0 ) return  NULL;
     iu2dps_t created = calloc(1,sizeof(Ius2DParametricSource));
-    created->intParam = intParam;
-    created->floatParam = floatParam;
+    if( created == NULL ) return NULL;
+
+    created->pLocations = (struct Ius2DPosition *) calloc(numLocations, sizeof(Ius2DPosition));
+    if( created->pLocations == NULL )
+    {
+        free(created);
+        return NULL;
+    }
+
+    created->base.type = IUS_2D_PARAMETRIC_SOURCE;
+    created->base.label = strdup(pLabel);
+    created->base.locationCount = numLocations;
+    created->angularDelta = angularDelta;
+    created->startAngle = startAngle;
+    created->fNumber = fNumber;
     return created;
 }
 
@@ -59,58 +83,10 @@ int iusHL2DParametricSourceCompare
 {
     if( reference == actual ) return IUS_TRUE;
     if( reference == NULL || actual == NULL ) return IUS_FALSE;
-    if( reference->intParam != actual->intParam ) return IUS_FALSE;
-    if( IUS_EQUAL_FLOAT(reference->floatParam, actual->floatParam ) == IUS_FALSE ) return IUS_FALSE;
-    return IUS_TRUE;
+    return IUS_FALSE;
 }
 
 // Getters
-int iusHL2DParametricSourceGetIntParam
-(
-    iu2dps_t ius2DParametricSource
-)
-{
-    return ius2DParametricSource->intParam;
-}
 
-float iusHL2DParametricSourceGetFloatParam
-(
-    iu2dps_t ius2DParametricSource
-)
-{
-    return ius2DParametricSource->floatParam;
-}
 
 // Setters
-int iusHL2DParametricSourceSetFloatParam
-(
-    iu2dps_t ius2DParametricSource,
-    float floatParam
-)
-{
-    int status = IUS_ERR_VALUE;
-
-    if(ius2DParametricSource != NULL)
-    {
-        ius2DParametricSource->floatParam = floatParam;
-        status = IUS_E_OK;
-    }
-    return status;
-}
-
-
-int iusHL2DParametricSourceSetIntParam
-(
-    iu2dps_t ius2DParametricSource,
-    int intParam
-)
-{
-    int status = IUS_ERR_VALUE;
-
-    if(ius2DParametricSource != NULL)
-    {
-        ius2DParametricSource->intParam = intParam;
-        status = IUS_E_OK;
-    }
-    return status;
-}

@@ -9,28 +9,40 @@
 #include <iusError.h>
 #include <iusTypes.h>
 #include <iusUtil.h>
-
+#include <memory.h>
+#include <include/iusHLSourceImp.h>
 #include "include/iusHL3DNonParametricSource.h"
+#include <include/iusHLPositionImp.h>
 
 struct Ius3DNonParametricSource
 {
-    int intParam;
-    float floatParam;
+    struct IusSource base;
+    struct Ius3DPosition *pLocations;
 } ;
 
 // ADT
-
 iu3dnps_t iusHL3DNonParametricSourceCreate
 (
-    int intParam,
-    float floatParam
+    char *pLabel,
+    int numLocations
 )
 {
-    if( intParam < 0 ) return IU3DNPS_INVALID;
-    if( floatParam <= 0.0f ) return IU3DNPS_INVALID;
+    if ( pLabel == NULL ) return NULL;
+    if ( strcmp(pLabel,"") == 0 ) return NULL;
+    if ( numLocations <= 0 ) return  NULL;
     iu3dnps_t created = calloc(1,sizeof(Ius3DNonParametricSource));
-    created->intParam = intParam;
-    created->floatParam = floatParam;
+    if( created == NULL ) return NULL;
+
+    created->pLocations = (struct Ius3DPosition *) calloc(numLocations, sizeof(Ius3DPosition));
+    if( created->pLocations == NULL )
+    {
+        free(created);
+        return NULL;
+    }
+
+    created->base.type = IUS_3D_NON_PARAMETRIC_SOURCE;
+    created->base.label = strdup(pLabel);
+    created->base.locationCount = numLocations;
     return created;
 }
 
@@ -59,58 +71,10 @@ int iusHL3DNonParametricSourceCompare
 {
     if( reference == actual ) return IUS_TRUE;
     if( reference == NULL || actual == NULL ) return IUS_FALSE;
-    if( reference->intParam != actual->intParam ) return IUS_FALSE;
-    if( IUS_EQUAL_FLOAT(reference->floatParam, actual->floatParam ) == IUS_FALSE ) return IUS_FALSE;
-    return IUS_TRUE;
+    return IUS_FALSE;
 }
 
 // Getters
-int iusHL3DNonParametricSourceGetIntParam
-(
-    iu3dnps_t ius3DNonParametricSource
-)
-{
-    return ius3DNonParametricSource->intParam;
-}
 
-float iusHL3DNonParametricSourceGetFloatParam
-(
-    iu3dnps_t ius3DNonParametricSource
-)
-{
-    return ius3DNonParametricSource->floatParam;
-}
 
 // Setters
-int iusHL3DNonParametricSourceSetFloatParam
-(
-    iu3dnps_t ius3DNonParametricSource,
-    float floatParam
-)
-{
-    int status = IUS_ERR_VALUE;
-
-    if(ius3DNonParametricSource != NULL)
-    {
-        ius3DNonParametricSource->floatParam = floatParam;
-        status = IUS_E_OK;
-    }
-    return status;
-}
-
-
-int iusHL3DNonParametricSourceSetIntParam
-(
-    iu3dnps_t ius3DNonParametricSource,
-    int intParam
-)
-{
-    int status = IUS_ERR_VALUE;
-
-    if(ius3DNonParametricSource != NULL)
-    {
-        ius3DNonParametricSource->intParam = intParam;
-        status = IUS_E_OK;
-    }
-    return status;
-}
