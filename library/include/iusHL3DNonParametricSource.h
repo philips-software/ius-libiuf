@@ -3,9 +3,7 @@
 #ifndef IUSLIBRARY_IUSHL3DNONPARAMETRICSOURCE_H
 #define IUSLIBRARY_IUSHL3DNONPARAMETRICSOURCE_H
 
-//#ifndef IUSLIBRARY_IMPLEMENTATION
-//typedef struct Ius3DNonParametricSource Ius3DNonParametricSource;
-//#endif // IUSLIBRARY_IMPLEMENTATION
+#include "iusHLPosition.h"
 
 // ADT
 typedef struct Ius3DNonParametricSource Ius3DNonParametricSource;
@@ -17,6 +15,7 @@ iu3dnps_t iusHL3DNonParametricSourceCreate
     char *pLabel,
     int numLocations
 );
+
 
 int iusHL3DNonParametricSourceDelete
 (
@@ -32,28 +31,18 @@ int iusHL3DNonParametricSourceCompare
 );
 
 // Getters
-int iusHL3DNonParametricSourceGetIntParam
+iu3dp_t iusHL3DNonParametricSourceGetPosition
 (
-    iu3dnps_t ius3DNonParametricSource
-);
-
-float iusHL3DNonParametricSourceGetFloatParam
-(
-    iu3dnps_t ius3DNonParametricSource
+    iu3dnps_t ius3DNonParametricSource,
+    int index
 );
 
 // Setters
-int iusHL3DNonParametricSourceSetIntParam
+int iusHL3DNonParametricSourceSetPosition
 (
     iu3dnps_t ius3DNonParametricSource,
-    int intParam
+    iu3dp_t  pos,
+    int index
 );
-
-int iusHL3DNonParametricSourceSetFloatParam
-(
-    iu3dnps_t ius3DNonParametricSource,
-    float floatParam
-);
-
 
 #endif //IUSLIBRARY_IUSHL3DNONPARAMETRICSOURCE_H

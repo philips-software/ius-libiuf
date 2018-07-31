@@ -13,7 +13,7 @@ struct IusSource
 {
     IusSourceType type;
     char *label;
-    int locationCount; /**< number of locations */
+//    int locationCount; /**< number of locations */
 } ;
 
 
@@ -22,5 +22,13 @@ IUS_BOOL iusHLBaseSourceCompare
     ius_t reference,
     ius_t actual
 );
+
+int iusHLBaseSourceSave
+(
+    ius_t source,
+    char *parentPath,
+    hid_t handle
+);
+
 
 #endif //IUSLIBRARY_IUSHLSOURCEIMP_H

@@ -5,6 +5,7 @@
 #ifndef IUSLIBRARY_IUSHLPOSITIONIMP_H
 #define IUSLIBRARY_IUSHLPOSITIONIMP_H
 
+#include <hdf5.h>
 #include "iusHLPosition.h"
 
 
@@ -25,5 +26,32 @@ struct Ius2DPosition
   float z;
 } ;
 
+
+int iusHL3DPositionSave
+(
+    iu3dp_t position,
+    char *parentPath,
+    hid_t handle
+);
+
+iu3dp_t iusHL3DPositionLoad
+(
+    hid_t handle,
+    char *parentPath
+);
+
+
+int iusHL2DPositionSave
+(
+    iu2dp_t position,
+    char *parentPath,
+    hid_t handle
+);
+
+iu2dp_t iusHL2DPositionLoad
+(
+    hid_t handle,
+    char *parentPath
+);
 
 #endif //IUSLIBRARY_IUSHLPOSITIONIMP_H

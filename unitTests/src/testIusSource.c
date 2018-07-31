@@ -36,36 +36,39 @@ TEST(IusSource, testIusSourceCreate)
     char *_3d_parametric_label = "label for 3d parametric source";
     char *_2d_non_parametric_label = "label for 2d non parametric source";
     char *_2d_parametric_label = "label for 2d parametric source";
+    int locationCount = 5; /**< number of locations */
 
     // Happy flow
-    iu3dps_t _3dps = (iu3dps_t) iusHLSourceCreate(IUS_3D_PARAMETRIC_SOURCE,_3d_parametric_label);
+    iu3dps_t _3dps = (iu3dps_t) iusHLSourceCreate(IUS_3D_PARAMETRIC_SOURCE, _3d_parametric_label, locationCount);
     TEST_ASSERT(_3dps != IU3DPS_INVALID);
-    iu3dnps_t _3dnps = (iu3dnps_t) iusHLSourceCreate(IUS_3D_NON_PARAMETRIC_SOURCE,_3d_non_parametric_label);
+    iu3dnps_t _3dnps = (iu3dnps_t) iusHLSourceCreate(IUS_3D_NON_PARAMETRIC_SOURCE, _3d_non_parametric_label, locationCount);
     TEST_ASSERT(_3dnps != IU3DNPS_INVALID);
-    iu2dps_t _2dps = (iu2dps_t) iusHLSourceCreate(IUS_2D_PARAMETRIC_SOURCE,_2d_parametric_label);
+    iu2dps_t _2dps = (iu2dps_t) iusHLSourceCreate(IUS_2D_PARAMETRIC_SOURCE, _2d_parametric_label, locationCount);
     TEST_ASSERT(_2dps != IU2DPS_INVALID);
-    iu2dnps_t _2dnps = (iu2dnps_t) iusHLSourceCreate(IUS_2D_NON_PARAMETRIC_SOURCE,_2d_non_parametric_label);
+    iu2dnps_t _2dnps = (iu2dnps_t) iusHLSourceCreate(IUS_2D_NON_PARAMETRIC_SOURCE, _2d_non_parametric_label, locationCount);
     TEST_ASSERT(_2dnps != IU2DNPS_INVALID);
 
 
     // invalid params
-    _3dps = (iu3dps_t) iusHLSourceCreate(IUS_3D_PARAMETRIC_SOURCE,"");
+    _3dps = (iu3dps_t) iusHLSourceCreate(IUS_3D_PARAMETRIC_SOURCE, _3d_parametric_label, 0);
     TEST_ASSERT(_3dps == IU3DPS_INVALID);
-    _3dps = (iu3dps_t) iusHLSourceCreate(IUS_3D_PARAMETRIC_SOURCE,NULL);
+    _3dps = (iu3dps_t) iusHLSourceCreate(IUS_3D_PARAMETRIC_SOURCE, "", locationCount);
     TEST_ASSERT(_3dps == IU3DPS_INVALID);
-    _3dnps = (iu3dnps_t) iusHLSourceCreate(IUS_3D_NON_PARAMETRIC_SOURCE,"");
+    _3dps = (iu3dps_t) iusHLSourceCreate(IUS_3D_PARAMETRIC_SOURCE, NULL, locationCount);
+    TEST_ASSERT(_3dps == IU3DPS_INVALID);
+    _3dnps = (iu3dnps_t) iusHLSourceCreate(IUS_3D_NON_PARAMETRIC_SOURCE, "", locationCount);
     TEST_ASSERT(_3dnps == IU3DNPS_INVALID);
-    _3dnps = (iu3dnps_t) iusHLSourceCreate(IUS_3D_NON_PARAMETRIC_SOURCE,NULL);
+    _3dnps = (iu3dnps_t) iusHLSourceCreate(IUS_3D_NON_PARAMETRIC_SOURCE, NULL, locationCount);
     TEST_ASSERT(_3dnps == IU3DNPS_INVALID);
-    _2dps = (iu2dps_t) iusHLSourceCreate(IUS_2D_PARAMETRIC_SOURCE,"");
+    _2dps = (iu2dps_t) iusHLSourceCreate(IUS_2D_PARAMETRIC_SOURCE, "", locationCount);
     TEST_ASSERT(_2dps == IU2DPS_INVALID);
-    _2dps = (iu2dps_t) iusHLSourceCreate(IUS_2D_PARAMETRIC_SOURCE,NULL);
+    _2dps = (iu2dps_t) iusHLSourceCreate(IUS_2D_PARAMETRIC_SOURCE, NULL, locationCount);
     TEST_ASSERT(_2dps == IU2DPS_INVALID);
-    _2dnps = (iu2dnps_t) iusHLSourceCreate(IUS_2D_NON_PARAMETRIC_SOURCE,"");
+    _2dnps = (iu2dnps_t) iusHLSourceCreate(IUS_2D_NON_PARAMETRIC_SOURCE, "", locationCount);
     TEST_ASSERT(_2dnps == IU2DNPS_INVALID);
-    _2dnps = (iu2dnps_t) iusHLSourceCreate(IUS_2D_NON_PARAMETRIC_SOURCE,NULL);
+    _2dnps = (iu2dnps_t) iusHLSourceCreate(IUS_2D_NON_PARAMETRIC_SOURCE, NULL, locationCount);
     TEST_ASSERT(_2dnps == IU2DNPS_INVALID);
-    _3dps = (iu3dps_t) iusHLSourceCreate( 2139, "invalid type");
+    _3dps = (iu3dps_t) iusHLSourceCreate(2139, "invalid type", locationCount);
     TEST_ASSERT(_3dps == IU3DPS_INVALID);
 
 }
@@ -73,13 +76,14 @@ TEST(IusSource, testIusSourceCreate)
 TEST(IusSource, testIusSourceDelete)
 {
     char *_3d_parametric_label = "label for 3d parametric source";
+    int locationCount = 5;
 
-    iu3dps_t _3dps = (iu3dps_t) iusHLSourceCreate(IUS_3D_PARAMETRIC_SOURCE,_3d_parametric_label);
+    iu3dps_t _3dps = (iu3dps_t) iusHLSourceCreate(IUS_3D_PARAMETRIC_SOURCE, _3d_parametric_label, locationCount);
     TEST_ASSERT(_3dps != IU3DPS_INVALID);
     int status = iusHLSourceDelete((ius_t)_3dps);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
-    ius_t obj = iusHLSourceCreate(IUS_3D_PARAMETRIC_SOURCE,_3d_parametric_label);
+    ius_t obj = iusHLSourceCreate(IUS_3D_PARAMETRIC_SOURCE, _3d_parametric_label, locationCount);
     TEST_ASSERT(obj != IUS_INVALID);
     status = iusHLSourceDelete(obj);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
@@ -96,13 +100,14 @@ TEST(IusSource, testIusSourceCompare)
     IUS_BOOL equal;
     char *_3d_non_parametric_label = "label for 3d non parametric source";
     char *_3d_parametric_label = "label for 3d parametric source";
+    int locationCount = 5;
 
     // Happy flow
-    ius_t obj = iusHLSourceCreate(IUS_3D_PARAMETRIC_SOURCE,_3d_parametric_label);
+    ius_t obj = iusHLSourceCreate(IUS_3D_PARAMETRIC_SOURCE, _3d_parametric_label, locationCount);
     TEST_ASSERT(obj != IUS_INVALID);
-    ius_t notherObj = iusHLSourceCreate(IUS_3D_PARAMETRIC_SOURCE,_3d_parametric_label);
+    ius_t notherObj = iusHLSourceCreate(IUS_3D_PARAMETRIC_SOURCE, _3d_parametric_label, locationCount);
     TEST_ASSERT(notherObj != IUS_INVALID);
-    ius_t differentObj = iusHLSourceCreate(IUS_3D_NON_PARAMETRIC_SOURCE,_3d_non_parametric_label);
+    ius_t differentObj = iusHLSourceCreate(IUS_3D_NON_PARAMETRIC_SOURCE, _3d_non_parametric_label, locationCount);
     TEST_ASSERT(differentObj != IUS_INVALID);
     equal = iusHLSourceCompare(obj,obj);
     TEST_ASSERT_EQUAL(IUS_TRUE,equal);
@@ -128,11 +133,11 @@ TEST(IusSource, testIusSourceCompare)
 
 TEST(IusSource, testIusSourceGetSet)
 {
-    IUS_BOOL equal;
+    int locationCount = 5;
     char *_3d_non_parametric_label = "label for 3d non parametric source";
 
     // Happy flow
-    ius_t obj = iusHLSourceCreate(IUS_3D_NON_PARAMETRIC_SOURCE,_3d_non_parametric_label);
+    ius_t obj = iusHLSourceCreate(IUS_3D_NON_PARAMETRIC_SOURCE, _3d_non_parametric_label, locationCount);
     TEST_ASSERT(obj != IUS_INVALID);
 
     TEST_ASSERT_EQUAL(IUS_3D_NON_PARAMETRIC_SOURCE,iusHLSourceGetType(obj));

@@ -20,6 +20,8 @@
 struct Ius2DNonParametricSource
 {
     struct IusSource base;
+    int locationCount;
+
     struct Ius2DPosition *pLocations;
 } ;
 
@@ -46,7 +48,7 @@ iu2dnps_t iusHL2DNonParametricSourceCreate
 
     created->base.type = IUS_2D_NON_PARAMETRIC_SOURCE;
     created->base.label = strdup(pLabel);
-    created->base.locationCount = numLocations;
+    created->locationCount = numLocations;
     return created;
 }
 

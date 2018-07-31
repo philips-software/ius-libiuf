@@ -1,9 +1,9 @@
-
 //
-// Created by nlv09165 on 25/07/2018.
+// Created by nlv09165 on 30/07/2018.
 //
 #include <stdlib.h>
-#define IUSLIBRARY_IMPLEMENTATION
+#include <memory.h>
+#include <math.h>
 
 #include <ius.h>
 #include <iusError.h>
@@ -12,12 +12,13 @@
 
 #include <include/iusHLSourceImp.h>
 #include <include/iusHLPositionImp.h>
-#include <memory.h>
-#include "include/iusHL2DParametricSource.h"
+#include <include/iusHL2DParametricSource.h>
+#include <include/iusHDF5.h>
 
 struct Ius2DParametricSource
 {
     struct IusSource base;
+    int locationCount;
     struct Ius2DPosition *pLocations;
 
     float fNumber;          /**< distance in [m] of sources to transducer for POLAR */
@@ -25,8 +26,18 @@ struct Ius2DParametricSource
     float startAngle;       /**< angle in [rad] between sources */
 } ;
 
-// ADT
+#define FNUMBERFMT       "%s/fNumber"
+#define ANGULARDELTAFMT  "%s/angularDelta"
+#define STARTANGLEFMT    "%s/startAngle"
+#define DELTAPHIFMT      "%s/deltaPhi"
+#define STARTPHIFMT      "%s/startPhi"
+#define LOCATIONSFMT     "%s/Locations"
+#define LOCATIONSSIZEFMT "%s/Size"
+#define LOCATIONFMT      "%s/Location[%d]"
 
+
+
+// ADT
 iu2dps_t iusHL2DParametricSourceCreate
 (
     char *pLabel,
@@ -51,7 +62,7 @@ iu2dps_t iusHL2DParametricSourceCreate
 
     created->base.type = IUS_2D_PARAMETRIC_SOURCE;
     created->base.label = strdup(pLabel);
-    created->base.locationCount = numLocations;
+    created->locationCount = numLocations;
     created->angularDelta = angularDelta;
     created->startAngle = startAngle;
     created->fNumber = fNumber;
@@ -81,12 +92,231 @@ int iusHL2DParametricSourceCompare
     iu2dps_t actual
 )
 {
-    if( reference == actual ) return IUS_TRUE;
-    if( reference == NULL || actual == NULL ) return IUS_FALSE;
-    return IUS_FALSE;
+    if (reference == actual ) return IUS_TRUE;
+    if (reference == NULL || actual == NULL ) return IUS_FALSE;
+    if (reference->locationCount != actual->locationCount) return IUS_FALSE;
+    if (iusHLBaseSourceCompare((ius_t)reference, (ius_t)actual) == IUS_FALSE ) return IUS_FALSE;
+    if (IUS_EQUAL_FLOAT(reference->fNumber, actual->fNumber) == IUS_FALSE ) return IUS_FALSE;
+    if (IUS_EQUAL_FLOAT(reference->startAngle, actual->startAngle) == IUS_FALSE ) return IUS_FALSE;
+    if (IUS_EQUAL_FLOAT(reference->angularDelta, actual->angularDelta) == IUS_FALSE ) return IUS_FALSE;
+    int i;
+    for( i = 0; i < reference->locationCount; i++ )
+    {
+        if( iusHL2DPositionCompare(&reference->pLocations[i],&actual->pLocations[i]) == IUS_FALSE )
+        {
+            return IUS_FALSE;
+        }
+    }
+    return IUS_TRUE;
 }
 
 // Getters
+float iusHL2DParametricSourceGetFNumber
+(
+    iu2dps_t ius2DParametricSource
+)
+{
+    if( ius2DParametricSource == NULL  ) return NAN;
+    return ius2DParametricSource->fNumber;
+}
 
+float iusHL2DParametricSourceGetAngularDelta
+(
+    iu2dps_t ius2DParametricSource
+)
+{
+    if( ius2DParametricSource == NULL  ) return NAN;
+    return ius2DParametricSource->angularDelta;
+}
+
+float iusHL2DParametricSourceGetStartAngle
+(
+    iu2dps_t ius2DParametricSource
+)
+{
+    if( ius2DParametricSource == NULL  ) return NAN;
+    return ius2DParametricSource->startAngle;
+}
+
+iu2dp_t iusHL2DParametricSourceGetPosition
+(
+    iu2dps_t ius2DParametricSource,
+    int index
+)
+{
+    if ( ius2DParametricSource == NULL  ) return IU2DP_INVALID;
+    if ( index >= ius2DParametricSource->locationCount || index < 0) return IU2DP_INVALID;
+    return &ius2DParametricSource->pLocations[index];
+}
 
 // Setters
+int iusHL2DParametricSourceSetPosition
+(
+    iu2dps_t ius2DParametricSource,
+    iu2dp_t  pos,
+    int index
+)
+{
+    if (ius2DParametricSource == NULL) return IUS_ERR_VALUE;
+    if (pos == NULL) return IUS_ERR_VALUE;
+    if (index >= ius2DParametricSource->locationCount) return IUS_ERR_VALUE;
+
+    ius2DParametricSource->pLocations[index] = *pos;
+    return IUS_E_OK;
+}
+
+int iusHL2DParametricSourceSetFNumber
+(
+    iu2dps_t ius2DParametricSource,
+    float FNumber
+)
+{
+    if (ius2DParametricSource == NULL) return IUS_ERR_VALUE;
+    ius2DParametricSource->fNumber = FNumber;
+    return IUS_E_OK;
+}
+
+int iusHL2DParametricSourceSetAngularDelta
+(
+    iu2dps_t ius2DParametricSource,
+    float angularDelta
+    )
+{
+    if (ius2DParametricSource == NULL) return IUS_ERR_VALUE;
+    ius2DParametricSource->angularDelta = angularDelta;
+    return IUS_E_OK;
+}
+
+int iusHL2DParametricSourceSetStartAngle
+(
+    iu2dps_t ius2DParametricSource,
+    float startAngle
+)
+{
+    if (ius2DParametricSource == NULL) return IUS_ERR_VALUE;
+    ius2DParametricSource->startAngle = startAngle;
+    return IUS_E_OK;
+}
+
+
+// serialization
+static int iusHL2DParametricSourceSaveLocations
+(
+    iu2dps_t pSource,
+    char *parentPath,
+    hid_t handle
+)
+{
+    char path[64];
+    hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+    iu2dp_t sourceElement;
+    int i,size = pSource->locationCount;
+    sprintf(path, LOCATIONSSIZEFMT, parentPath);
+    int status = iusHdf5WriteInt(group_id, path, &(size), 1);
+
+//     iterate over source list elements and save'em
+    for (i=0;i < size;i++)
+    {
+        sourceElement = &pSource->pLocations[i];
+        if(sourceElement == IU2DP_INVALID) continue;
+        sprintf(path, LOCATIONFMT, parentPath, i);
+        status = iusHL2DPositionSave(sourceElement,path,group_id);
+        if(status != IUS_E_OK) break;
+    }
+
+    status |= H5Gclose(group_id );
+    return status;
+}
+
+static int iusHL2DParametricSourceLoadLocations
+(
+    iu2dps_t source,
+    char *parentPath,
+    hid_t handle
+)
+{
+    int p,status=IUS_E_OK;
+    char path[64];
+    iu2dp_t pos;
+
+    for (p = 0; p < source->locationCount; p++)
+    {
+        sprintf(path, LOCATIONFMT, parentPath, p);
+        pos = iusHL2DPositionLoad(handle,path);
+        if (pos == IU2DP_INVALID)
+        {
+            status = IUS_ERR_VALUE;
+            break;
+        }
+        iusHL2DParametricSourceSetPosition(source, pos, p);
+    }
+    return status;
+};
+
+int iusHL2DParametricSourceSave
+(
+    iu2dps_t source,
+    char *parentPath,
+    hid_t handle
+)
+{
+    int status=0;
+    char path[64];
+    const int verbose = 1;
+
+    // Base
+    status = iusHLBaseSourceSave((ius_t)source,parentPath,handle);
+
+    // Parametric stuff
+    sprintf(path, FNUMBERFMT, parentPath);
+    status |= iusHdf5WriteFloat( handle, path, &(source->fNumber), 1, verbose);
+    sprintf(path, ANGULARDELTAFMT, parentPath);
+    status |= iusHdf5WriteFloat( handle, path, &(source->angularDelta), 1, verbose);
+    sprintf(path, STARTANGLEFMT, parentPath);
+    status |= iusHdf5WriteFloat( handle, path, &(source->startAngle), 1, verbose);
+    sprintf(path, LOCATIONSFMT, parentPath);
+
+    // Save locations
+    status |= iusHL2DParametricSourceSaveLocations(source,path,handle);
+    return status;
+}
+
+
+iu2dps_t iusHL2DParametricSourceLoad
+(
+    hid_t handle,
+    char *parentPath,
+    char *label
+)
+{
+    int status = 0;
+    char path[64];
+    char lpath[64];
+
+    float fNumber;          /**< distance in [m] of sources to transducer for POLAR */
+    float angularDelta;     /**< angle in [rad] between sources */
+    float startAngle;       /**< angle in [rad] between sources */
+    int locationCount;
+    iu2dps_t  source;
+
+
+    sprintf(path, FNUMBERFMT, parentPath);
+    status |= iusHdf5ReadFloat( handle, path, &(fNumber));
+    sprintf(path, ANGULARDELTAFMT, parentPath);
+    status |= iusHdf5ReadFloat( handle, path, &(angularDelta));
+    sprintf(path, STARTANGLEFMT, parentPath);
+    status |= iusHdf5ReadFloat( handle, path, &(startAngle));
+    sprintf(lpath, LOCATIONSFMT, parentPath);
+    sprintf(path, LOCATIONSSIZEFMT, lpath);
+    status |= iusHdf5ReadInt(handle, path, &(locationCount));
+    if (status < 0)
+        return NULL;
+
+    source = iusHL2DParametricSourceCreate(label,locationCount,fNumber,angularDelta,startAngle);
+
+    sprintf(path, LOCATIONSFMT, parentPath);
+    status = iusHL2DParametricSourceLoadLocations(source,path,handle);
+    if (status <-0)
+        return NULL;
+    return source;
+}
