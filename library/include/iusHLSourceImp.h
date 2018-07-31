@@ -13,7 +13,6 @@ struct IusSource
 {
     IusSourceType type;
     char *label;
-//    int locationCount; /**< number of locations */
 } ;
 
 
@@ -30,5 +29,17 @@ int iusHLBaseSourceSave
     hid_t handle
 );
 
+int iusHLSourceSave
+(
+    ius_t source,
+    char *parentPath,
+    hid_t handle
+);
+
+ius_t iusHLSourceLoad
+(
+    hid_t handle,
+    char *parentPath
+);
 
 #endif //IUSLIBRARY_IUSHLSOURCEIMP_H

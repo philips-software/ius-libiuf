@@ -349,6 +349,7 @@ iu3dps_t iusHL3DParametricSourceLoad
 {
     int status = 0;
     char path[64];
+    char lpath[64];
 
     float fNumber;          /**< distance in [m] of sources to transducer for POLAR */
     float angularDelta;     /**< angle in [rad] between sources */
@@ -369,8 +370,12 @@ iu3dps_t iusHL3DParametricSourceLoad
     status |= iusHdf5ReadFloat( handle, path, &(deltaPhi));
     sprintf(path, STARTPHIFMT, parentPath);
     status |= iusHdf5ReadFloat( handle, path, &(startPhi));
+    sprintf(lpath, LOCATIONSFMT, parentPath);
+    sprintf(path, LOCATIONSSIZEFMT, lpath);
+    status |= iusHdf5ReadInt(handle, path, &(locationCount));
     if (status < 0)
         return NULL;
+    
     source = iusHL3DParametricSourceCreate(label,locationCount,fNumber,angularDelta,startAngle,deltaPhi,startPhi);
 
     sprintf(path, LOCATIONSFMT, parentPath);

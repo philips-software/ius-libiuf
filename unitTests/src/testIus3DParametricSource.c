@@ -186,8 +186,6 @@ TEST(Ius3DParametricSource, testIus3DParametricSourceSerialization)
     {
         iu3dp_t pos = iusHL3DPositionCreate(p * 1.0, p * 2.0, p * 3.0);
         iusHL3DParametricSourceSetPosition(obj, pos, p);
-        iu3dp_t get = iusHL3DParametricSourceGetPosition(obj, p);
-        TEST_ASSERT_EQUAL(IUS_TRUE, iusHL3DPositionCompare(pos, get));
     }
 
     // save

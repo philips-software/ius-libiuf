@@ -16,66 +16,16 @@
 #include <include/iusHL2DNonParametricSource.h>
 #include <include/iusHDF5.h>
 #include <hdf5_hl.h>
+#include <include/iusHL2DNonParametricSourceImp.h>
+#include <include/iusHL2DParametricSourceImp.h>
+#include <include/iusHL3DNonParametricSourceImp.h>
+#include <include/iusHL3DParametricSourceImp.h>
 
 #include "include/iusHLSourceImp.h"
 #include "include/iusHL3DParametricSource.h"
 
 
 // ADT
-ius_t iusHLSourceCreate
-(
-    IusSourceType sourceType,
-    char *pSourceLabel,
-    int numLocations,
-    ...
-)
-{
-    va_list ap;
-    ius_t source = IUS_INVALID;
-    va_start(ap,numLocations);
-    if (sourceType == IUS_2D_PARAMETRIC_SOURCE)
-    {
-        float fNumber = va_arg(ap,double);
-        float angularDelta = va_arg(ap,double);
-        float startAngle = va_arg(ap,double);
-        iu2dps_t obj = iusHL2DParametricSourceCreate(pSourceLabel,
-                                                     numLocations,
-                                                     fNumber,
-                                                     angularDelta,
-                                                     startAngle);
-        source = (ius_t) obj;
-    }
-    if (sourceType == IUS_3D_PARAMETRIC_SOURCE)
-    {
-        float fNumber = va_arg(ap,double);
-        float angularDelta = va_arg(ap,double);
-        float startAngle = va_arg(ap,double);
-        float deltaPhi = va_arg(ap,double);
-        float startPhi = va_arg(ap,double);
-        iu3dps_t obj = iusHL3DParametricSourceCreate(pSourceLabel,
-                                                    numLocations,
-                                                    fNumber,
-                                                    angularDelta,
-                                                    startAngle,
-                                                    deltaPhi,
-                                                    startPhi);
-        source = (ius_t) obj;
-    }
-    if (sourceType == IUS_2D_NON_PARAMETRIC_SOURCE)
-    {
-        iu2dnps_t obj = iusHL2DNonParametricSourceCreate(pSourceLabel,numLocations);
-        source = (ius_t) obj;
-    }
-    if (sourceType == IUS_3D_NON_PARAMETRIC_SOURCE)
-    {
-        iu3dnps_t obj = iusHL3DNonParametricSourceCreate(pSourceLabel,numLocations);
-        source = (ius_t) obj;
-    }
-    va_end(ap);
-    return source;
-}
-
-
 int iusHLSourceDelete
 (
     ius_t iusSource
@@ -218,6 +168,11 @@ int iusHLBaseSourceSave
     int status=IUS_E_OK;
     char path[64];
 
+    if( source == IUS_INVALID )
+    {
+        return IUS_ERR_VALUE;
+    }
+
     hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
     sprintf(path, SOURCETYPEFMT, parentPath);
     status |= iusWriteSourceType(group_id, path, source->type);
@@ -227,3 +182,114 @@ int iusHLBaseSourceSave
     return status;
 }
 
+static ius_t iusHLSourceCreate
+(
+    IusSourceType type,
+    const char *label
+)
+{
+    ius_t source = (ius_t) calloc (1,sizeof(ius_t));
+    if(source == NULL) return IUS_INVALID;
+    source->label = strdup(label);
+    source->type = type;
+    return source;
+}
+
+
+ius_t iusHLBaseSourceLoad
+(
+    hid_t handle,
+    char *parentPath
+)
+{
+    int status = 0;
+    IusSourceType type;
+    const char *label;
+    char path[64];
+
+    sprintf(path, SOURCETYPEFMT, parentPath);
+    status |= iusReadSourceType( handle, path, &(type));
+    sprintf(path, LABELFMT, parentPath);
+    status |= iusHdf5ReadString( handle, path, &(label));
+    if( status < 0 )
+        return NULL;
+
+    return iusHLSourceCreate(type, label);
+}
+
+ius_t iusHLSourceLoad
+(
+    hid_t handle,
+    char *parentPath
+)
+{
+    ius_t source=NULL;
+
+    source = iusHLBaseSourceLoad(handle,parentPath);
+    switch(source->type)
+    {
+        case IUS_2D_NON_PARAMETRIC_SOURCE:
+        {
+            source = (ius_t) iusHL2DNonParametricSourceLoad(handle,parentPath,source->label);
+            break;
+        }
+        case IUS_2D_PARAMETRIC_SOURCE:
+        {
+            source = (ius_t) iusHL2DParametricSourceLoad(handle,parentPath,source->label);
+            break;
+        }
+        case IUS_3D_NON_PARAMETRIC_SOURCE:
+        {
+            source = (ius_t) iusHL3DNonParametricSourceLoad(handle,parentPath,source->label);
+            break;
+        }
+        case IUS_3D_PARAMETRIC_SOURCE:
+        {
+            source = (ius_t) iusHL3DParametricSourceLoad(handle,parentPath,source->label);
+            break;
+        }
+        case IUS_INVALID_SOURCE_TYPE:
+        {
+            source = IUS_INVALID;
+            break;
+        }
+    }
+    return source;
+}
+
+
+
+int iusHLSourceSave
+(
+    ius_t source,
+    char *parentPath,
+    hid_t handle
+)
+{
+    if( source == IUS_INVALID )
+    {
+        return IUS_ERR_VALUE;
+    }
+    switch (source->type)
+    {
+        case IUS_2D_NON_PARAMETRIC_SOURCE:
+        {
+            return iusHL2DNonParametricSourceSave((iu2dnps_t) source,parentPath,handle);
+        }
+        case IUS_2D_PARAMETRIC_SOURCE:
+        {
+            return iusHL2DParametricSourceSave((iu2dps_t) source,parentPath,handle);
+        }
+        case IUS_3D_NON_PARAMETRIC_SOURCE:
+        {
+            return iusHL3DNonParametricSourceSave((iu3dnps_t) source,parentPath,handle);
+        }
+        case IUS_3D_PARAMETRIC_SOURCE:
+        {
+            return iusHL3DParametricSourceSave((iu3dps_t) source,parentPath,handle);
+        }
+        case IUS_INVALID_SOURCE_TYPE:
+            break;
+    }
+    return IUS_ERR_VALUE;
+}

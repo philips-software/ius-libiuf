@@ -24,13 +24,6 @@ typedef struct IusSource IusSource;
 typedef IusSource *ius_t;
 #define  IUS_INVALID (ius_t) NULL
 
-ius_t iusHLSourceCreate
-(
-    IusSourceType sourceType,
-    char *pSourceLabel,
-    int numLocations,
-    ...
-);
 
 int iusHLSourceDelete
 (
@@ -54,19 +47,6 @@ IusSourceType iusHLSourceGetType
 char * iusHLSourceGetLabel
 (
     ius_t iusSource
-);
-
-// Setters
-int iusHLSourceSetIntParam
-(
-    ius_t iusSource,
-    int intParam
-);
-
-int iusHLSourceSetFloatParam
-(
-    ius_t iusSource,
-    float floatParam
 );
 
 
