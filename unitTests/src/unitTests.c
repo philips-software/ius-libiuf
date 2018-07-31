@@ -32,6 +32,8 @@ static void RunAllTests(void)
     RUN_TEST_GROUP(Ius3DParametricSource);
     RUN_TEST_GROUP(Ius3DNonParametricSource);
     RUN_TEST_GROUP(Ius2DParametricSource);
+    RUN_TEST_GROUP(Ius2DNonParametricSource);
+    RUN_TEST_GROUP(Ius2DParametricSource);
     RUN_TEST_GROUP(IusPulse);
     RUN_TEST_GROUP(IusPulseDict);
 	RUN_TEST_GROUP(IusReceiveChannelMap);

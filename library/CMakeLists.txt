@@ -69,6 +69,7 @@ add_library(ius STATIC
 		include/iusHL3DNonParametricSource.h
 		src/iusHL2DNonParametricSource.c
 		include/iusHL2DNonParametricSource.h
+		include/iusHL2DNonParametricSourceImp.h
 #        src/iusHLDrivingScheme.c
 #        include/iusHLDrivingScheme.h
 		include/iusHLPosition.h
