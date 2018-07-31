@@ -61,12 +61,34 @@ IUS_BOOL iusHLSourceCompare
   ius_t actual
 )
 {
-  if( reference == actual )
-    return IUS_TRUE;
-  if( reference == NULL || actual == NULL )
-    return IUS_FALSE;
-  if( reference->type == IUS_3D_PARAMETRIC_SOURCE )
-    return iusHL3DParametricSourceCompare((iu3dps_t) reference, (iu3dps_t)actual);
+    if( reference == actual )
+        return IUS_TRUE;
+    if( reference == NULL || actual == NULL )
+        return IUS_FALSE;
+    if( reference->type == IUS_3D_PARAMETRIC_SOURCE )
+        return iusHL3DParametricSourceCompare((iu3dps_t) reference, (iu3dps_t)actual);
+    switch (reference->type)
+    {
+        case IUS_2D_NON_PARAMETRIC_SOURCE:
+        {
+            return iusHL2DNonParametricSourceCompare((iu2dnps_t) reference, (iu2dnps_t)actual);
+        }
+        case IUS_2D_PARAMETRIC_SOURCE:
+        {
+            return iusHL2DParametricSourceCompare((iu2dps_t) reference, (iu2dps_t)actual);
+        }
+        case IUS_3D_NON_PARAMETRIC_SOURCE:
+        {
+            return iusHL3DNonParametricSourceCompare((iu3dnps_t) reference, (iu3dnps_t)actual);
+        }
+        case IUS_3D_PARAMETRIC_SOURCE:
+        {
+            return iusHL3DParametricSourceCompare((iu3dps_t) reference, (iu3dps_t)actual);
+        }
+        case IUS_INVALID_SOURCE_TYPE:
+            break;
+    }
+
   return IUS_FALSE;
 }
 
@@ -166,7 +188,7 @@ int iusHLBaseSourceSave
 )
 {
     int status=IUS_E_OK;
-    char path[64];
+    char path[IUS_MAX_HDF5_PATH];
 
     if( source == IUS_INVALID )
     {
@@ -205,7 +227,7 @@ ius_t iusHLBaseSourceLoad
     int status = 0;
     IusSourceType type;
     const char *label;
-    char path[64];
+    char path[IUS_MAX_HDF5_PATH];
 
     sprintf(path, SOURCETYPEFMT, parentPath);
     status |= iusReadSourceType( handle, path, &(type));

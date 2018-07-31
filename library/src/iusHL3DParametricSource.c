@@ -258,7 +258,7 @@ static int iusHL3DParametricSourceSaveLocations
     hid_t handle
 )
 {
-    char path[64];
+    char path[IUS_MAX_HDF5_PATH];
     hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
     iu3dp_t sourceElement;
     int i,size = pSource->locationCount;
@@ -287,7 +287,7 @@ static int iusHL3DParametricSourceLoadLocations
 )
 {
     int p;
-    char path[64];
+    char path[IUS_MAX_HDF5_PATH];
     iu3dp_t pos;
 
     sprintf(path, LOCATIONSSIZEFMT, parentPath);
@@ -315,7 +315,7 @@ int iusHL3DParametricSourceSave
 )
 {
     int status=0;
-    char path[64];
+    char path[IUS_MAX_HDF5_PATH];
     const int verbose = 1;
 
     // Base
@@ -348,8 +348,8 @@ iu3dps_t iusHL3DParametricSourceLoad
 )
 {
     int status = 0;
-    char path[64];
-    char lpath[64];
+    char path[IUS_MAX_HDF5_PATH];
+    char lpath[IUS_MAX_HDF5_PATH];
 
     float fNumber;          /**< distance in [m] of sources to transducer for POLAR */
     float angularDelta;     /**< angle in [rad] between sources */
@@ -375,7 +375,7 @@ iu3dps_t iusHL3DParametricSourceLoad
     status |= iusHdf5ReadInt(handle, path, &(locationCount));
     if (status < 0)
         return NULL;
-    
+
     source = iusHL3DParametricSourceCreate(label,locationCount,fNumber,angularDelta,startAngle,deltaPhi,startPhi);
 
     sprintf(path, LOCATIONSFMT, parentPath);

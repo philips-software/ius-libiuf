@@ -90,7 +90,7 @@ iu3dp_t iusHL3DPositionLoad
 )
 {
     int status=0;
-    char path[64];
+    char path[IUS_MAX_HDF5_PATH];
     float x,y,z;
 
     sprintf(path, POSTIONXFMT, parentPath);
@@ -111,7 +111,7 @@ iu2dp_t iusHL2DPositionLoad
 )
 {
     int status=0;
-    char path[64];
+    char path[IUS_MAX_HDF5_PATH];
     float x,z;
 
     sprintf(path, POSTIONXFMT, parentPath);
@@ -131,7 +131,7 @@ int iusHL3DPositionSave
 )
 {
     int status=0;
-    char path[64];
+    char path[IUS_MAX_HDF5_PATH];
     const int verbose = 1;
     hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
     sprintf(path, POSTIONXFMT, parentPath);
@@ -152,7 +152,7 @@ int iusHL2DPositionSave
 )
 {
     int status=0;
-    char path[64];
+    char path[IUS_MAX_HDF5_PATH];
     const int verbose = 1;
     hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
     sprintf(path, POSTIONXFMT, parentPath);

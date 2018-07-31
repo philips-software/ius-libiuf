@@ -236,7 +236,7 @@ static int iusHL2DParametricSourceLoadLocations
 )
 {
     int p,status=IUS_E_OK;
-    char path[64];
+    char path[IUS_MAX_HDF5_PATH];
     iu2dp_t pos;
 
     for (p = 0; p < source->locationCount; p++)
@@ -261,7 +261,7 @@ int iusHL2DParametricSourceSave
 )
 {
     int status=0;
-    char path[64];
+    char path[IUS_MAX_HDF5_PATH];
     const int verbose = 1;
 
     // Base
@@ -290,8 +290,8 @@ iu2dps_t iusHL2DParametricSourceLoad
 )
 {
     int status = 0;
-    char path[64];
-    char lpath[64];
+    char path[IUS_MAX_HDF5_PATH];
+    char lpath[IUS_MAX_HDF5_PATH];
 
     float fNumber;          /**< distance in [m] of sources to transducer for POLAR */
     float angularDelta;     /**< angle in [rad] between sources */

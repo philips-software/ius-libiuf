@@ -153,7 +153,7 @@ int iusHLNonParametricPulseSave
 )
 {
     int status=0;
-    char path[64];
+    char path[IUS_MAX_HDF5_PATH];
     if(pulse == NULL || iusHLPulseGetType( (iup_t)pulse ) != IUS_NON_PARAMETRIC_PULSETYPE)
         return IUS_ERR_VALUE;
     if(parentPath == NULL || handle == H5I_INVALID_HID)
@@ -180,7 +180,7 @@ iunpp_t iusHLNonParametricPulseLoad
 )
 {
     int status = 0;
-    char path[64];
+    char path[IUS_MAX_HDF5_PATH];
     int  numPulseValues;
     iunpp_t  pulse;
 

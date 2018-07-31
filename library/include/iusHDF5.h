@@ -265,6 +265,7 @@ herr_t iusHdf5WriteGrid
 
 herr_t iusHdf5DisableMessages();
 
+#define IUS_MAX_HDF5_PATH	1024
 
 #ifdef __cplusplus
 }

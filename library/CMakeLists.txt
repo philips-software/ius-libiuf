@@ -43,6 +43,8 @@ add_library(ius STATIC
         include/iusHLPatternList.h
 		include/iusHLPatternListImp.h
 		src/iusHLSource.c
+		src/iusHLSourceDict.c
+		include/iusHLSourceDict.h
 		include/iusHLSource.h
 		include/iusHLSourceImp.h
         src/iusHLExperiment.c

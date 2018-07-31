@@ -117,7 +117,7 @@ iupal_t iusHLPatternListLoad
     const char *parentPath
 )
 {
-    char path[64];
+    char path[IUS_MAX_HDF5_PATH];
     int numPatterns,i;
     sprintf(path, PATTERNLISTSIZEFMT, parentPath);
     int status = iusHdf5ReadInt(handle, path, &(numPatterns));
@@ -168,7 +168,7 @@ int iusHLPatternListSave
 {
     int status=0;
     int i,size;
-    char path[64];
+    char path[IUS_MAX_HDF5_PATH];
 
     if(list == NULL)
         return IUS_ERR_VALUE;

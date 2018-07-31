@@ -133,7 +133,7 @@ static int iusHL3DNonParametricSourceSaveLocations
     hid_t handle
 )
 {
-    char path[64];
+    char path[IUS_MAX_HDF5_PATH];
     hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
     iu3dp_t sourceElement;
 
@@ -163,7 +163,7 @@ static int iusHL3DNonParametricSourceLoadLocations
 )
 {
     int p, status = IUS_E_OK;
-    char path[64];
+    char path[IUS_MAX_HDF5_PATH];
     iu3dp_t pos;
 
 
@@ -188,7 +188,7 @@ int iusHL3DNonParametricSourceSave
     hid_t handle
 )
 {
-    char path[64];
+    char path[IUS_MAX_HDF5_PATH];
 
     // Base
     int status = iusHLBaseSourceSave((ius_t)source,parentPath,handle);
@@ -207,8 +207,8 @@ iu3dnps_t iusHL3DNonParametricSourceLoad
     char *label
 )
 {
-    char path[64];
-    char lpath[64];
+    char path[IUS_MAX_HDF5_PATH];
+    char lpath[IUS_MAX_HDF5_PATH];
 
     int locationCount;
     iu3dnps_t  source;
