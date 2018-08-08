@@ -18,7 +18,6 @@
 
 struct IusTGC
 {
-    char  * pLabel;
     int     numTGCValues;
     float * pGains;
     float * pTimes;
@@ -27,14 +26,11 @@ struct IusTGC
 // ADT
 iutgc_t iusHLTGCCreate
 (
-    char *pLabel,
     int numTGCValues
 )
 {
     IusTGC *tgc;
 
-    if( pLabel == NULL ) return NULL;
-    if( strcmp(pLabel,"") == 0 ) return NULL;
     if( numTGCValues < 0 ) return NULL;
 
     tgc = (IusTGC *) calloc (1,sizeof(IusTGC));
@@ -45,7 +41,6 @@ iutgc_t iusHLTGCCreate
     if(tgc->pTimes == NULL || tgc->pGains == NULL ) return NULL;
 
     tgc->numTGCValues = numTGCValues;
-    tgc->pLabel = strdup(pLabel);
     return tgc;
 }
 
@@ -193,7 +188,7 @@ iutgc_t iusHLTGCLoad
     if( status < 0 )
         return NULL;
 
-    tgc = iusHLTGCCreate(label,numTGCValues);
+    tgc = iusHLTGCCreate(numTGCValues);
     sprintf(path, TGCTIMESFMT, parentPath);
     status |= H5LTread_dataset_float( handle, path, tgc->pTimes );
     sprintf(path, TGCGAINSFMT, parentPath);

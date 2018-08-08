@@ -30,13 +30,11 @@ TEST(IusTGC, testIusTGCCreate)
     iutgc_t tgc;
 
     numTGCValues = 20;
-    tgc = iusHLTGCCreate("Created_in_testIusTGCCreate", numTGCValues);
+    tgc = iusHLTGCCreate(numTGCValues);
     TEST_ASSERT(tgc != IUTGC_INVALID);
 
     // Invalid operation on nonparametric dta type
-    TEST_ASSERT_EQUAL(NULL, iusHLTGCCreate("Also_Created_in_testIusTGCCreate", -1));
-    TEST_ASSERT_EQUAL(NULL, iusHLTGCCreate("", numTGCValues));
-    TEST_ASSERT_EQUAL(NULL, iusHLTGCCreate(NULL, numTGCValues));
+    TEST_ASSERT_EQUAL(NULL, iusHLTGCCreate(-1));
 
     status = iusHLTGCDelete(tgc);
     TEST_ASSERT(status == IUS_E_OK);
@@ -45,7 +43,7 @@ TEST(IusTGC, testIusTGCCreate)
 TEST(IusTGC, testIusTGCDelete)
 {
     int numTGCValues=2;
-    iutgc_t obj = iusHLTGCCreate("Created_in_testIusTGCCreate", numTGCValues);
+    iutgc_t obj = iusHLTGCCreate(numTGCValues);
     TEST_ASSERT(obj != IUTGC_INVALID);
     int status = iusHLTGCDelete(obj);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
@@ -61,9 +59,9 @@ TEST(IusTGC, testIusTGCCompare)
 {
     IUS_BOOL equal;
     int numTGCValues=2;
-    iutgc_t obj = iusHLTGCCreate("Created_in_testIusTGCCreate", numTGCValues);
-    iutgc_t sameObj = iusHLTGCCreate("Created_in_testIusTGCCreate", numTGCValues);
-    iutgc_t notherObj = iusHLTGCCreate("Created_in_testIusTGCCreate", numTGCValues+10);
+    iutgc_t obj = iusHLTGCCreate(numTGCValues);
+    iutgc_t sameObj = iusHLTGCCreate(numTGCValues);
+    iutgc_t notherObj = iusHLTGCCreate(numTGCValues + 10);
     TEST_ASSERT(obj != IUTGC_INVALID);
     TEST_ASSERT(notherObj != IUTGC_INVALID);
 
@@ -98,7 +96,7 @@ TEST(IusTGC, testIusTGCSetGet)
 {
     IUS_BOOL equal;
     int numTGCValues=2;
-    iutgc_t obj = iusHLTGCCreate("Created_in_testIusTGCCreate", numTGCValues);
+    iutgc_t obj = iusHLTGCCreate(numTGCValues);
     TEST_ASSERT(obj != IUTGC_INVALID);
 
     iusHLTGCSet(obj,0,1.0f,2.0f);
@@ -125,7 +123,7 @@ TEST(IusTGC, testIusSerialization)
     int numTGCValues = 20;
 
     // create
-    iutgc_t TGC = iusHLTGCCreate(label, numTGCValues);
+    iutgc_t TGC = iusHLTGCCreate(numTGCValues);
 
     // fill
     int i,status;

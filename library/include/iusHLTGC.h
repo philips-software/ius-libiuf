@@ -9,10 +9,7 @@ typedef IusTGC *iutgc_t;
 
 
 iutgc_t iusHLTGCCreate
-(
-    char *pLabel,
-    int numTGCValues
-);
+(int numTGCValues);
 
 int iusHLTGCDelete
 (
