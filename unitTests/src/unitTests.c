@@ -22,6 +22,7 @@ static void RunAllTests(void)
 //    RUN_TEST_GROUP(IusDrivingScheme);
     RUN_TEST_GROUP(IusInputFile);
     RUN_TEST_GROUP(IusPulse);
+    RUN_TEST_GROUP(IusTGC);
     RUN_TEST_GROUP(IusParametricPulse);
     RUN_TEST_GROUP(IusExperiment);
     RUN_TEST_GROUP(IusNonParametricPulse);

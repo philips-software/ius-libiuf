@@ -93,7 +93,7 @@ int iusHLNonParametricPulseGetNumValues
 )
 {
     if(pulse == NULL || iusHLPulseGetType( (iup_t)pulse ) != IUS_NON_PARAMETRIC_PULSETYPE)
-        return IUS_ERR_VALUE;
+        return -1;
     return ((IusNonParametricPulse *)pulse)->numPulseValues;
 }
 

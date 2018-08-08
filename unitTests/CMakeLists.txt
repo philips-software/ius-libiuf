@@ -29,6 +29,7 @@ add_executable(unitTests
         src/testIus2DNonParametricSource.c
         src/testIusPattern.c
         src/testIusPatternList.c
+        src/testIusTGC.c
         src/util.c
 #        src/testNode.c
 #        src/testTransducer.c
