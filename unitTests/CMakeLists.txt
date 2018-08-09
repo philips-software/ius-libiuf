@@ -14,6 +14,7 @@ add_executable(unitTests
         src/testIusNonParametricPulse.c
         src/testIusPulseDict.c
         src/testIusPulse.c
+        src/testIusReceiveSettings.c
         src/testIusReceiveChannelMap.c
         src/testIusReceiveChannelMapDict.c
         src/testIusTransmitApodization.c

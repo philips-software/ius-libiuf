@@ -2,6 +2,8 @@
 #ifndef IUSLIBRARY_IUSHLRECEIVESETTINGS_H
 #define IUSLIBRARY_IUSHLRECEIVESETTINGS_H
 
+#include <iusHLTGC.h>
+
 // ADT
 typedef struct IusReceiveSettings IusReceiveSettings;
 typedef IusReceiveSettings *iurs_t;
@@ -9,8 +11,11 @@ typedef IusReceiveSettings *iurs_t;
 
 iurs_t iusHLReceiveSettingsCreate
 (
-    int intParam,
-    float floatParam
+    char *pLabel,
+    float sampleFrequency,
+    int numDelays,
+    int numSamplesPerLine,
+    int numTGCentries
 );
 
 int iusHLReceiveSettingsDelete
@@ -27,27 +32,48 @@ int iusHLReceiveSettingsCompare
 );
 
 // Getters
-int iusHLReceiveSettingsGetIntParam
+char *iusHLReceiveSettingsGetLabel
 (
     iurs_t iusReceiveSettings
 );
 
-float iusHLReceiveSettingsGetFloatParam
+float iusHLReceiveSettingsGetSampleFrequency
+(
+    iurs_t iusReceiveSettings
+);
+
+int iusHLReceiveSettingsGetNumSamplesPerLine
+(
+    iurs_t iusReceiveSettings
+);
+
+int iusHLReceiveSettingsGetNumDelays
+(
+    iurs_t iusReceiveSettings
+);
+
+int iusHLReceiveSettingsGetNumTGCentries
+(
+    iurs_t iusReceiveSettings
+);
+
+float iusHLReceiveSettingsGetStartDelay
+(
+    iurs_t iusReceiveSettings,
+    int index
+);
+
+iutgc_t iusHLReceiveSettingsGetTGC
 (
     iurs_t iusReceiveSettings
 );
 
 // Setters
-int iusHLReceiveSettingsSetIntParam
+int iusHLReceiveSettingsSetStartDelay
 (
     iurs_t iusReceiveSettings,
-    int intParam
-);
-
-int iusHLReceiveSettingsSetFloatParam
-(
-    iurs_t iusReceiveSettings,
-    float floatParam
+    int index,
+    float delay
 );
 
 #endif //IUSLIBRARY_IUSHLRECEIVESETTINGS_H
