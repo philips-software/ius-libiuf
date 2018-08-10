@@ -92,6 +92,9 @@ add_library(ius STATIC
 #		src/iusHLInputInstance.c
 		include/iusHLReceiveSettings.h
 		src/iusHLReceiveSettings.c
+		src/iusHLReceiveSettingsDict.c
+		include/iusHLReceiveSettingsDict.h
+		include/iusHLReceiveSettingsDictImp.h
         include/iusHLParametricPulse.h
         include/iusHLNonParametricPulse.h
         src/iusHLParametricPulse.c

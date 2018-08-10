@@ -39,6 +39,7 @@ static void RunAllTests(void)
     RUN_TEST_GROUP(IusPulse);
     RUN_TEST_GROUP(IusPulseDict);
     RUN_TEST_GROUP(IusReceiveSettings);
+    RUN_TEST_GROUP(IusReceiveSettingsDict);
     RUN_TEST_GROUP(IusReceiveChannelMap);
     RUN_TEST_GROUP(IusReceiveChannelMapDict);
     RUN_TEST_GROUP(IusTransducer);
