@@ -18,8 +18,7 @@ int iusHLTGCSave
 iutgc_t iusHLTGCLoad
 (
     hid_t handle,
-    char *parentPath,
-    char *label
+    char *parentPath
 );
 
 

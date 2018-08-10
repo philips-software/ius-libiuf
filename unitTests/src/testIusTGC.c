@@ -142,7 +142,7 @@ TEST(IusTGC, testIusSerialization)
 
     // read back
     handle = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT );
-    iutgc_t savedObj = iusHLTGCLoad(handle, pulsePath, label);
+    iutgc_t savedObj = iusHLTGCLoad(handle, pulsePath);
     TEST_ASSERT(savedObj != NULL);
     H5Fclose(handle);
 

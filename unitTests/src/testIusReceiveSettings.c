@@ -11,7 +11,7 @@
 #include <include/iusError.h>
 #include <include/iusTypes.h>
 #include <include/iusHLTGC.h>
-#include "include/iusHLReceiveSettings.h"
+#include "include/iusHLReceiveSettingsImp.h"
 
 TEST_GROUP(IusReceiveSettings);
 
@@ -157,6 +157,57 @@ TEST(IusReceiveSettings, testIusReceiveSettingsSetGet)
 
 }
 
+TEST(IusReceiveSettings, testIusSerialization)
+{
+    char *filename = "testIusReceiveSettings.hdf5";
+    char *receiveSettingsPath =  "/ReceiveSettings";
+    char *pLabel = "Label for IusReceiveSettings, created in testIusSerialization";
+    float sampleFrequency=4000;
+    int numDelays=10;
+    int numSamplesPerLine=10;
+    int numTGCentries = 1;
+    int i;
+    int status;
+
+    // Create
+    iurs_t obj = iusHLReceiveSettingsCreate(pLabel, sampleFrequency, numDelays, numSamplesPerLine, numTGCentries);
+
+    // fill
+
+    // Delays
+    for(i=0;i<numDelays;i++)
+    {
+        float delay = i*3.14f;
+        status = iusHLReceiveSettingsSetStartDelay(obj, i, delay);
+        TEST_ASSERT(status == IUS_E_OK);
+        TEST_ASSERT_EQUAL_FLOAT(delay, iusHLReceiveSettingsGetStartDelay(obj, i));
+    }
+
+
+    iutgc_t tgc = iusHLReceiveSettingsGetTGC(obj);
+    for (i=0;i<numTGCentries;i++)
+    {
+        status = iusHLTGCSet(tgc,i,i*1.314f,i*2.314f);
+        TEST_ASSERT_EQUAL(IUS_E_OK,status);
+    }
+
+    // save
+    hid_t handle = H5Fcreate( filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT );
+    TEST_ASSERT(handle > 0);
+    status = iusHLReceiveSettingsSave(obj, receiveSettingsPath, handle);
+    H5Fclose(handle);
+    TEST_ASSERT_EQUAL(IUS_E_OK,status);
+
+    // read back
+    handle = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT );
+    iurs_t savedObj = iusHLReceiveSettingsLoad(handle, receiveSettingsPath, pLabel);
+    TEST_ASSERT(savedObj != NULL);
+    H5Fclose(handle);
+
+    TEST_ASSERT_EQUAL(IUS_TRUE, iusHLReceiveSettingsCompare(obj, savedObj));
+    iusHLReceiveSettingsDelete(obj);
+    iusHLReceiveSettingsDelete(savedObj);
+}
 
 TEST_GROUP_RUNNER(IusReceiveSettings)
 {
@@ -165,4 +216,5 @@ TEST_GROUP_RUNNER(IusReceiveSettings)
     RUN_TEST_CASE(IusReceiveSettings, testIusReceiveSettingsDelete);
     RUN_TEST_CASE(IusReceiveSettings, testIusReceiveSettingsCompare);
     RUN_TEST_CASE(IusReceiveSettings, testIusReceiveSettingsSetGet);
+    RUN_TEST_CASE(IusReceiveSettings, testIusSerialization);
 }
