@@ -49,11 +49,11 @@ TEST(IusInputFile, testIusInputFileCreate)
     const char *pSpecialCharsFilename = "*&/";
 
     iuif_t ifh = iusHLInputFileCreate(pFilename);
-    TEST_ASSERT(ifh != IUF_INVALID);
+    TEST_ASSERT(ifh != IUIF_INVALID);
 
     // Create file that is already open should result in error
     iuif_t ifh2 = iusHLInputFileCreate(pFilename);
-    TEST_ASSERT(ifh2 == IUF_INVALID);
+    TEST_ASSERT(ifh2 == IUIF_INVALID);
 
     int status = iusHLInputFileClose(ifh);
     TEST_ASSERT(status == IUS_E_OK);
@@ -64,9 +64,9 @@ TEST(IusInputFile, testIusInputFileCreate)
 
     // Invalid argument should result in error.
     ifh = iusHLInputFileCreate(pEmptyFilename);
-    TEST_ASSERT(ifh == IUF_INVALID);
+    TEST_ASSERT(ifh == IUIF_INVALID);
     ifh = iusHLInputFileCreate(pSpecialCharsFilename);
-    TEST_ASSERT(ifh == IUF_INVALID);
+    TEST_ASSERT(ifh == IUIF_INVALID);
 }
 
 TEST(IusInputFile, testIusInputFileDelete)

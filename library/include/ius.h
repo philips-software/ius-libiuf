@@ -8,7 +8,6 @@
 
 #define  IUS_E_OK  0
 #define  IUH_INVALID NULL
-#define  IUF_INVALID NULL
 #define  IUS_INPUT_TYPE "IUSINPUTFILETYPE_V3"
 
 int iusGetVersionMajor

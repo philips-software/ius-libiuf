@@ -59,10 +59,10 @@ typedef IusSampleLine * IusPage;
 typedef IusPage * IusTransmitWave;            
 
 //! a frame is an array of #IusTransmitWave
-typedef IusTransmitWave * IusFrame;    
+//typedef IusTransmitWave * IusFrame;
 
 //! RFData is an array of #IusFrame               
-typedef IusFrame * IusRFData;                 
+//typedef IusFrame * IusRFData;
 
 //! Different type of interpolation when resampling signals  
 enum IusInterpolationMethod
