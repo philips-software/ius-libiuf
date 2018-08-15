@@ -11,7 +11,8 @@ typedef IusFrame *iuf_t;
 iuf_t iusHLFrameCreate
 (
     int patternListIndex,
-    int dataIndex
+    int dataIndex,
+    float time
 );
 
 int iusHLFrameDelete
@@ -27,6 +28,11 @@ int iusHLFrameCompare
 );
 
 // Getters
+float iusHLFrameGetTime
+(
+    iuf_t iusFrame
+);
+
 int iusHLFrameGetPatternListIndex
 (
     iuf_t iusFrame

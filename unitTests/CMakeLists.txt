@@ -13,6 +13,7 @@ add_executable(unitTests
         src/testIus3DNonParametricSource.c
         src/testIus3DParametricSource.c
         src/testIusExperiment.c
+        src/testIusFrame.c
         src/testIusInputFile.c
         src/testIusNonParametricPulse.c
         src/testIusParametricPulse.c
