@@ -19,6 +19,7 @@ static void RunAllTests(void)
     RUN_TEST_GROUP(Ius3DParametricSource);
     RUN_TEST_GROUP(IusExperiment);
     RUN_TEST_GROUP(IusFrame);
+    RUN_TEST_GROUP(IusFrameList);
     RUN_TEST_GROUP(IusInputFile);
     RUN_TEST_GROUP(IusNonParametricPulse);
     RUN_TEST_GROUP(IusParametricPulse);
