@@ -8,29 +8,27 @@ add_executable(unitTests
         include/testDataGenerators.h
         src/testDataGenerators.c
         src/unitTests.c
+        src/testIus2DNonParametricSource.c
+        src/testIus2DParametricSource.c
+        src/testIus3DNonParametricSource.c
+        src/testIus3DParametricSource.c
         src/testIusExperiment.c
-        src/testIusTransducer.c
-        src/testIusParametricPulse.c
+        src/testIusInputFile.c
         src/testIusNonParametricPulse.c
+        src/testIusParametricPulse.c
+        src/testIusPattern.c
+        src/testIusPatternList.c
         src/testIusPulseDict.c
         src/testIusPulse.c
         src/testIusReceiveSettings.c
         src/testIusReceiveSettingsDict.c
         src/testIusReceiveChannelMap.c
         src/testIusReceiveChannelMapDict.c
-        src/testIusTransmitApodization.c
-        src/testIusTransmitApodizationDict.c
-        src/testIusInputFile.c
-        src/testIusPattern.c
-        src/testIusPatternList.c
         src/testIusSourceDict.c
         src/testIusSource.c
-        src/testIus3DNonParametricSource.c
-        src/testIus3DParametricSource.c
-        src/testIus2DParametricSource.c
-        src/testIus2DNonParametricSource.c
-        src/testIusPattern.c
-        src/testIusPatternList.c
+        src/testIusTransducer.c
+        src/testIusTransmitApodization.c
+        src/testIusTransmitApodizationDict.c
         src/testIusTGC.c
         src/util.c
 #        src/testNode.c
