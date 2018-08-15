@@ -85,6 +85,41 @@ iupd_t dgGeneratePulseDict
   return dict;
 }
 
+iursd_t dgGenerateReceiveSettingsDict
+(
+    void
+)
+{
+    char *pObjLabel = "Label for IusReceiveSettingsDict, created in testIusCompareSourceDict";
+    char *pNotherObjLabel = "Another Label for IusReceiveSettingsDict, created in testIusCompareSourceDict";
+    float sampleFrequency=4000;
+    int numDelays=10;
+    int numSamplesPerLine=10;
+    int numTGCentries = 1;
+    int status=0,i;
+
+    iurs_t obj = iusHLReceiveSettingsCreate(pObjLabel, sampleFrequency, numDelays, numSamplesPerLine, numTGCentries);
+    iurs_t notherObj = iusHLReceiveSettingsCreate(pNotherObjLabel, sampleFrequency, numDelays, numSamplesPerLine, numTGCentries);
+
+    // Create
+    iursd_t  dict = iusHLReceiveSettingsDictCreate();
+
+    // Fill
+
+    // Delays
+    for(i=0;i<numDelays;i++)
+    {
+        float delay = i*2.0f;
+        status |= iusHLReceiveSettingsSetStartDelay(obj, i, delay);
+        status |= iusHLReceiveSettingsSetStartDelay(notherObj, i, delay*3.14f);
+        TEST_ASSERT(status == IUS_E_OK);
+    }
+
+    status |= iusHLReceiveSettingsDictSet(dict,pObjLabel,obj);
+    status |= iusHLReceiveSettingsDictSet(dict,pNotherObjLabel,notherObj);
+    TEST_ASSERT_EQUAL(IUS_E_OK,status);
+    return dict;
+};
 
 iurcmd_t dgGenerateReceiveChannelMapDict
 (

@@ -34,6 +34,9 @@ add_library(ius STATIC
 #        src/iusInputFile.c
         src/iusUuid.c
 #        src/iusHLInput.c
+		src/iusHLTGC.c
+        include/iusHLTGC.h
+		include/iusHLTGCImp.h
         src/iusHLInputFile.c
 		include/iusHLInputFile.h
 		src/iusHLPattern.c
@@ -42,9 +45,14 @@ add_library(ius STATIC
         src/iusHLPatternList.c
         include/iusHLPatternList.h
 		include/iusHLPatternListImp.h
-#        src/iusHLExperiment.c
+		src/iusHLSource.c
+		src/iusHLSourceDict.c
+		include/iusHLSourceDict.h
+		include/iusHLSource.h
+		include/iusHLSourceImp.h
+        src/iusHLExperiment.c
 #        src/iusHLTransducer.c
-        src/iusHLNode.c
+#        src/iusHLNode.c
         src/iusHDF5.c
         src/iusUtil.c
 		src/iusHL2DSize.c
@@ -52,14 +60,23 @@ add_library(ius STATIC
 		src/iusHL3DSize.c
 		include/iusHL3DSize.h
         include/iusUtil.h
-        include/iusHLExperiment.h
-        src/iusHLExperiment.c
+#        include/iusHLExperiment.h
+#        src/iusHLExperiment.c
         src/iusHLTransducer.c
 		include/iusHLTransducer.h
 		src/iusHLTransducerFactory.c
 		include/iusHLTransducerFactory.h
-        src/iusHLDrivingScheme.c
-        include/iusHLDrivingScheme.h
+		src/iusHL3DParametricSource.c
+		include/iusHL3DParametricSource.h
+		src/iusHL2DParametricSource.c
+		include/iusHL2DParametricSource.h
+		src/iusHL3DNonParametricSource.c
+		include/iusHL3DNonParametricSource.h
+		src/iusHL2DNonParametricSource.c
+		include/iusHL2DNonParametricSource.h
+		include/iusHL2DNonParametricSourceImp.h
+#        src/iusHLDrivingScheme.c
+#        include/iusHLDrivingScheme.h
 		include/iusHLPosition.h
 		src/iusHLPosition.c
 		include/iusHLPulse.h
@@ -71,10 +88,13 @@ add_library(ius STATIC
 		include/iusTypes.h
 		include/iusHLApodizationList.h
 		src/iusHLApodizationList.c
-		include/iusHLInputInstance.h
-		src/iusHLInputInstance.c
+#		include/iusHLInputInstance.h
+#		src/iusHLInputInstance.c
 		include/iusHLReceiveSettings.h
 		src/iusHLReceiveSettings.c
+		src/iusHLReceiveSettingsDict.c
+		include/iusHLReceiveSettingsDict.h
+		include/iusHLReceiveSettingsDictImp.h
         include/iusHLParametricPulse.h
         include/iusHLNonParametricPulse.h
         src/iusHLParametricPulse.c
@@ -102,7 +122,7 @@ add_library(ius STATIC
         include/iusHLPulseImp.h
 		include/iusHLTransducerImp.h
 		include/iusHLTransducerElementImp.h
-		include/iusHLExperimentImp.h
+#		include/iusHLExperimentImp.h
 		include/iusHLParametricPulseImp.h
 		include/iusHLNonParametricPulseImp.h
 		include/iusHLPulseDictImp.h

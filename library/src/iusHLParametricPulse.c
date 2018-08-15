@@ -125,7 +125,7 @@ int iusHLParametricPulseSave
 )
 {
     int status=0;
-    char path[64];
+    char path[IUS_MAX_HDF5_PATH];
 	const int verbose = 1;
 
     status = iusHLBasePulseSave((iup_t)pulse,parentPath,handle);
@@ -146,7 +146,7 @@ iupp_t iusHLParametricPulseLoad
 )
 {
     int status = 0;
-    char path[64];
+    char path[IUS_MAX_HDF5_PATH];
     float   pulseFrequency;       /**< frequency that the pulse represents in Hz */
     float   pulseAmplitude;       /**< (max) amplitude of the pulse in Volts */
     int     pulseCount;           /**< number of cycles that the pulse represents */

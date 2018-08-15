@@ -13,7 +13,9 @@
 #include <string.h>
 #include <include/iusHDF5.h>
 
+#include "include/iusHLPulse.h"
 #include "include/iusHLPatternImp.h"
+
 
 #define PULSELABELFMT "%s/PulseLabel"
 #define PATTERNLABELFMT "%s/PatternLabel"
@@ -123,7 +125,7 @@ int iusHLPatternSave
 )
 {
   int status=IUS_E_OK;
-  char path[64];
+  char path[IUS_MAX_HDF5_PATH];
 
   hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
   sprintf(path, PATTERNLABELFMT, parentPath);
@@ -160,7 +162,7 @@ iupa_t iusHLPatternLoad
   const char *pChannelMapLabel;
   const char *pApodizationLabel;
   const char *pReceiveSettingsLabel;
-  char path[64];
+  char path[IUS_MAX_HDF5_PATH];
 
   sprintf(path, PATTERNLABELFMT, parentPath);
   status |= iusHdf5ReadString(handle, path, &(pLabel));

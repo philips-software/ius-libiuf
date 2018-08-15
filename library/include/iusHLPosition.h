@@ -7,8 +7,14 @@
 #include <iusTypes.h>
 
 // ADT
-typedef Ius3DPosition *iu3dp_t;
-typedef Ius2DPosition *iu2dp_t;
+struct   Ius3DPosition;
+typedef  struct Ius3DPosition Ius3DPosition;
+typedef  Ius3DPosition    * iu3dp_t;
+#define  IU3DP_INVALID (iu3dp_t) NULL
+
+typedef  struct Ius2DPosition Ius2DPosition;
+typedef  Ius2DPosition    * iu2dp_t;
+#define  IU2DP_INVALID (iu2dp_t) NULL
 
 
 iu2dp_t iusHL2DPositionCreate
@@ -34,7 +40,6 @@ void iusHL2DPositionDelete
 (
     iu2dp_t iusPos
 );
-
 
 
 IUS_BOOL iusHL2DPositionCompare

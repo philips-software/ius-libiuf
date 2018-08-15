@@ -26,8 +26,8 @@
 
 iup_t  iusHLPulseCreate
 (
-IusPulseType type,
-const char *label
+    IusPulseType type,
+    const char *label
 )
 {
     iup_t transmitPulse = IUP_INVALID;
@@ -163,7 +163,7 @@ int iusHLBasePulseSave
 )
 {
     int status=IUS_E_OK;
-    char path[64];
+    char path[IUS_MAX_HDF5_PATH];
 
     hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
     sprintf(path, PULSETYPEFMT, parentPath);
@@ -208,7 +208,7 @@ iup_t iusHLBasePulseLoad
     int status = 0;
     IusPulseType type;
     const char *label;
-    char path[64];
+    char path[IUS_MAX_HDF5_PATH];
 
     sprintf(path, PULSETYPEFMT, parentPath);
     status |= iusReadPulseType( handle, path, &(type));

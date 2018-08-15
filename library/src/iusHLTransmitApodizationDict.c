@@ -12,6 +12,7 @@
 #include <iusHLTransmitApodizationDict.h>
 #include <assert.h>
 #include <string.h>
+#include <include/iusHDF5.h>
 
 // ADT
 struct HashableTransmitApodization
@@ -156,7 +157,7 @@ herr_t iusHLTransmitApodizationDictSave
 )
 {
 	herr_t status = 0;
-	char path[64];
+	char path[IUS_MAX_HDF5_PATH];
 	struct hashmap_iter *iter;
 
 	if (dict == NULL)

@@ -10,6 +10,7 @@
 #include <iusError.h>
 #include <iusTypes.h>
 #include <iusUtil.h>
+#include <iusHLPositionImp.h>
 #include <iusHLTransducer.h>
 #include <iusHL3DTransducer.h>
 #include <iusHLTransducerImp.h>

@@ -14,6 +14,8 @@ add_executable(unitTests
         src/testIusNonParametricPulse.c
         src/testIusPulseDict.c
         src/testIusPulse.c
+        src/testIusReceiveSettings.c
+        src/testIusReceiveSettingsDict.c
         src/testIusReceiveChannelMap.c
         src/testIusReceiveChannelMapDict.c
         src/testIusTransmitApodization.c
@@ -21,6 +23,15 @@ add_executable(unitTests
         src/testIusInputFile.c
         src/testIusPattern.c
         src/testIusPatternList.c
+        src/testIusSourceDict.c
+        src/testIusSource.c
+        src/testIus3DNonParametricSource.c
+        src/testIus3DParametricSource.c
+        src/testIus2DParametricSource.c
+        src/testIus2DNonParametricSource.c
+        src/testIusPattern.c
+        src/testIusPatternList.c
+        src/testIusTGC.c
         src/util.c
 #        src/testNode.c
 #        src/testTransducer.c

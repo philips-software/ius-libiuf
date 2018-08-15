@@ -3,41 +3,39 @@
 //
 #include <stdlib.h>
 #include <math.h>
+#include <assert.h>
+#include <string.h>
 
 #include <hashmap.h>
 #include <ius.h>
 #include <iusError.h>
 #include <iusUtil.h>
-#include <iusHLPulseImp.h>
-#include <iusHLParametricPulseImp.h>
-#include <iusHLNonParametricPulseImp.h>
-#include <iusHLPulseDict.h>
-#include <assert.h>
-#include <string.h>
+#include <iusHLReceiveSettingsImp.h>
+#include <iusHLReceiveSettingsDict.h>
 
 // ADT
-struct HashablePulse
+struct HashableReceiveSettings
 {
-    iup_t pulse;
+    iurs_t receiveSettings;
     char key[256];
 } ;
 
-typedef struct HashablePulse HashablePulse;
+typedef struct HashableReceiveSettings HashableReceiveSettings;
 
-struct IusPulseDict
+struct IusReceiveSettingsDict
 {
     struct hashmap map;
 } ;
 
 /* Declare type-specific blob_hashmap_* functions with this handy macro */
-HASHMAP_FUNCS_CREATE(HashablePulse, const char, struct HashablePulse)
+HASHMAP_FUNCS_CREATE(HashableReceiveSettings, const char, struct HashableReceiveSettings)
 
 // ADT
-iupd_t iusHLPulseDictCreate
+iursd_t iusHLReceiveSettingsDictCreate
 (
 )
 {
-    iupd_t list = calloc(1, sizeof(IusPulseDict));
+    iursd_t list = calloc(1, sizeof(IusReceiveSettingsDict));
     if(list!=NULL)
     {
       hashmap_init(&list->map, hashmap_hash_string, hashmap_compare_string, 0);
@@ -45,9 +43,9 @@ iupd_t iusHLPulseDictCreate
     return list;
 }
 
-int iusHLPulseDictDelete
+int iusHLReceiveSettingsDictDelete
 (
-  iupd_t dict
+  iursd_t dict
 )
 {
     if(dict == NULL) return IUS_ERR_VALUE;
@@ -58,28 +56,28 @@ int iusHLPulseDictDelete
 }
 
 
-static int iusHLPulseDictSourceInTarget
+static int iusHLReceiveSettingsDictSourceInTarget
 (
-    iupd_t source,
-    iupd_t target
+    iursd_t source,
+    iursd_t target
 )
 {
-    iup_t targetElement;
-    iup_t sourceElement;
-    HashablePulse *iterElement;
+    iurs_t targetElement;
+    iurs_t sourceElement;
+    HashableReceiveSettings *iterElement;
 
     IUS_BOOL sourceInTarget = IUS_FALSE;
     struct hashmap_iter *iter;
 
     // iterate over source list elements using the hash double linked list
     for (iter = hashmap_iter(&source->map); iter; iter = hashmap_iter_next(&source->map, iter)) {
-      iterElement = HashablePulse_hashmap_iter_get_data(iter);
-      sourceElement=iterElement->pulse;
-      targetElement = iusHLPulseDictGet(target, iusHLPulseGetLabel(sourceElement));
-      if( targetElement == IUP_INVALID)
+      iterElement = HashableReceiveSettings_hashmap_iter_get_data(iter);
+      sourceElement=iterElement->receiveSettings;
+      targetElement = iusHLReceiveSettingsDictGet(target, iusHLReceiveSettingsGetLabel(sourceElement));
+      if( targetElement == IURS_INVALID)
         return IUS_FALSE;
 
-      if( iusHLPulseCompare(sourceElement, targetElement) == IUS_FALSE )
+      if( iusHLReceiveSettingsCompare(sourceElement, targetElement) == IUS_FALSE )
         return IUS_FALSE;
       sourceInTarget = IUS_TRUE;
     }
@@ -88,10 +86,10 @@ static int iusHLPulseDictSourceInTarget
 }
 
 // operations
-int iusHLPulseDictCompare
+int iusHLReceiveSettingsDictCompare
 (
-  iupd_t reference,
-  iupd_t actual
+  iursd_t reference,
+  iursd_t actual
 )
 {
     if( reference == actual ) return IUS_TRUE;
@@ -100,17 +98,17 @@ int iusHLPulseDictCompare
     if( hashmap_size(&reference->map) == 0) return IUS_TRUE;
 
     // check if elements of source hash are in target hash
-    if( iusHLPulseDictSourceInTarget(reference,actual) == IUS_FALSE )
+    if( iusHLReceiveSettingsDictSourceInTarget(reference,actual) == IUS_FALSE )
         return IUS_FALSE;
 
     // check if elements of target hash are in source hash
-    return iusHLPulseDictSourceInTarget(actual,reference);
+    return iusHLReceiveSettingsDictSourceInTarget(actual,reference);
 }
 
 
-int iusHLPulseDictGetSize
+int iusHLReceiveSettingsDictGetSize
 (
-    iupd_t dict
+    iursd_t dict
 )
 {
     if( dict == NULL )
@@ -118,33 +116,33 @@ int iusHLPulseDictGetSize
     return (int) hashmap_size(&dict->map);
 }
 
-iup_t iusHLPulseDictGet
+iurs_t iusHLReceiveSettingsDictGet
 (
-    iupd_t dict,
+    iursd_t dict,
     char * key
 )
 {
-    HashablePulse * search;
-    search = HashablePulse_hashmap_get(&dict->map, key);
+    HashableReceiveSettings * search;
+    search = HashableReceiveSettings_hashmap_get(&dict->map, key);
     if( dict == NULL )
-        return IUP_INVALID;
-    return search->pulse;
+        return IURS_INVALID;
+    return search->receiveSettings;
 }
 
-int iusHLPulseDictSet
+int iusHLReceiveSettingsDictSet
 (
-    iupd_t dict,
+    iursd_t dict,
     char * key,
-    iup_t member
+    iurs_t member
 )
 {
     if( dict == NULL ) return IUS_ERR_VALUE;
     if( key == NULL ) return IUS_ERR_VALUE;
 
-    HashablePulse *newMember = calloc(1, sizeof(HashablePulse));
-    newMember->pulse = member;
+    HashableReceiveSettings *newMember = calloc(1, sizeof(HashableReceiveSettings));
+    newMember->receiveSettings = member;
     strcpy(newMember->key,key);
-    if (HashablePulse_hashmap_put(&dict->map, newMember->key, newMember) != newMember)
+    if (HashableReceiveSettings_hashmap_put(&dict->map, newMember->key, newMember) != newMember)
     {
       printf("discarding blob with duplicate key: %s\n", newMember->key);
       free(newMember);
@@ -155,15 +153,15 @@ int iusHLPulseDictSet
 
 
 // serialization
-#define NUMPULSEVALUESFMT  "%s/numPulseValues"
-#define PULSEAMPLITUDESFMT "%s/rawPulseAmplitudes"
-#define PULSETIMESFMT      "%s/rawPulseTimes"
+#define NUMPULSEVALUESFMT  "%s/numReceiveSettingsValues"
+#define PULSEAMPLITUDESFMT "%s/rawReceiveSettingsAmplitudes"
+#define PULSETIMESFMT      "%s/rawReceiveSettingsTimes"
 
 
 #define LABELPATH          "%s/%s"
-int iusHLPulseDictSave
+int iusHLReceiveSettingsDictSave
 (
-    iupd_t dict,
+    iursd_t dict,
     char *parentPath,
     hid_t handle
 )
@@ -180,14 +178,15 @@ int iusHLPulseDictSave
 
 
     hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-    HashablePulse *sourceElement;
-
+    HashableReceiveSettings *sourceElement;
+    char *label;
     // iterate over source list elements and save'em
     for (iter = hashmap_iter(&dict->map); iter; iter = hashmap_iter_next(&dict->map, iter))
     {
-        sourceElement = HashablePulse_hashmap_iter_get_data(iter);
-        sprintf(path, LABELPATH, parentPath, sourceElement->pulse->label);
-        iusHLPulseSave(sourceElement->pulse,path,handle);
+        sourceElement = HashableReceiveSettings_hashmap_iter_get_data(iter);
+        label = iusHLReceiveSettingsGetLabel(sourceElement->receiveSettings);
+        sprintf(path, LABELPATH, parentPath, label);
+        iusHLReceiveSettingsSave(sourceElement->receiveSettings,path,handle);
     }
 
     status |= H5Gclose(group_id );
@@ -197,7 +196,7 @@ int iusHLPulseDictSave
 
 #define MAX_NAME 1024
 
-iupd_t iusHLPulseDictLoad
+iursd_t iusHLReceiveSettingsDictLoad
 (
     hid_t handle,
     const char *parentPath
@@ -216,14 +215,14 @@ iupd_t iusHLPulseDictLoad
     hsize_t nobj;
     status = H5Gget_num_objs(grpid, &nobj);
 
-    iupd_t dict = iusHLPulseDictCreate();
+    iursd_t dict = iusHLReceiveSettingsDictCreate();
     for (i = 0; i < nobj; i++)
     {
         H5Gget_objname_by_idx(grpid, (hsize_t) i,
                                     memb_name, (size_t) MAX_NAME);
         sprintf(path,"%s/%s", parentPath,memb_name);
-        iup_t pulse = iusHLPulseLoad(handle,path);
-        status = iusHLPulseDictSet(dict, memb_name, pulse);
+        iurs_t receiveSettings = iusHLReceiveSettingsLoad(handle,path,memb_name);
+        status = iusHLReceiveSettingsDictSet(dict, memb_name, receiveSettings);
     }
 
     H5Gclose(handle);

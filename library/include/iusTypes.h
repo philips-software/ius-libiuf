@@ -23,22 +23,6 @@ typedef int IUS_BOOL;
 #define IUS_TRUE  (1)
 #define IUS_FALSE (0)
 
-/** \brief Position in 3D in meters */    
-typedef struct
-{
-    float x; 
-    float y;
-    float z;
-} Ius3DPosition;
-
-
-/** \brief Position in 3D in meters */
-typedef struct
-{
-    float x;
-    float z;
-} Ius2DPosition;
-
 
 
 /** \brief velocity vector in x,y,z dimensions */
@@ -173,19 +157,6 @@ typedef enum
 #define DRIVINGSCHEME_SINGLE_ELEMENT                 "SINGLE_ELEMENT"
 #define DRIVINGSCHEME_CUSTOM_WAVES                   "CUSTOM_WAVES"
 
-typedef enum {
-	IUS_INVALID_PULSETYPE = 0,
-    IUS_PARAMETRIC_PULSETYPE,
-    IUS_NON_PARAMETRIC_PULSETYPE
-} IusPulseType;
-
-typedef enum {
-	IUS_INVALID_SOURCE_LOCATION = 0,
-	IUS_2D_SOURCE_LOCATION,
-	IUS_3D_SOURCE_LOCATION,
-	IUS_PARAMETRIC_2D_SOURCE_LOCATION,
-	IUS_PARAMETRIC_3D_SOURCE_LOCATION
-} IusSourceType;
 
 
 

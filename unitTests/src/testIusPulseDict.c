@@ -90,7 +90,6 @@ TEST(IusPulseDict, testIusComparePulseDict)
     iusHLPulseDictDelete(notherDict);
 }
 
-#if 0
 TEST(IusPulseDict, testIusSerialization)
 
 {
@@ -137,11 +136,10 @@ TEST(IusPulseDict, testIusSerialization)
     iusHLPulseDictDelete(dict);
     iusHLPulseDictDelete(savedObj);
 }
-#endif
 
 TEST_GROUP_RUNNER(IusPulseDict)
 {
     RUN_TEST_CASE(IusPulseDict, testIusCreatePulseDict);
     RUN_TEST_CASE(IusPulseDict, testIusComparePulseDict);
-    //RUN_TEST_CASE(IusPulseDict, testIusSerialization);
+    RUN_TEST_CASE(IusPulseDict, testIusSerialization);
 }
