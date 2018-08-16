@@ -12,6 +12,9 @@
 #include <include/iusHLTransmitApodizationDict.h>
 
 #include <testDataGenerators.h>
+#include <include/iusHLSourceDict.h>
+#include <include/iusHL3DParametricSource.h>
+#include <include/iusHL3DNonParametricSource.h>
 
 static const char *pBmodePatternLabel = "bmode";
 static const char *pDopplerPatternLabel = "doppler";
@@ -20,6 +23,26 @@ static const char *pSourceLabel = "sourceLabel";
 static const char *pChannelMapLabel = "channelMapLabel";
 static const char *pApodizationLabel = "apodizationLabel";
 static const char *pReceivesettingsLabel = "receivesettingsLabel";
+
+
+iufl_t dgGenerateFrameList
+(
+    void
+)
+{
+    iuf_t obj;
+    int status,i,numFrames=100;
+    iufl_t frameList = iusHLFrameListCreate(numFrames);
+    TEST_ASSERT_NOT_EQUAL(IUFL_INVALID, frameList);
+
+    for (i=0;i<numFrames;i++)
+    {
+        obj = iusHLFrameCreate(i+1,i+2,i*0.01f);
+        status = iusHLFrameListSet(frameList, obj, i);
+        TEST_ASSERT_EQUAL(IUS_E_OK, status);
+    }
+    return frameList;
+}
 
 
 iupal_t dgGeneratePatternList
@@ -83,6 +106,43 @@ iupd_t dgGeneratePulseDict
   status = iusHLPulseDictSet(dict,parametricLabel, (iup_t) parametricPulse);
   TEST_ASSERT(status == IUS_E_OK);
   return dict;
+}
+
+iusd_t dgGenerateSourceDict
+(
+    void
+)
+{
+    int locationCount = 5; /**< number of locations */
+    float angularDelta = 0.13f;
+    float FNumber = -0.955f;
+    float startAngle = 3.14f;
+    float startPhi = startAngle;
+    float deltaPhi = angularDelta;
+    char *_3d_non_parametric_label = "label for 3d non parametric source";
+    char *_3d_parametric_label = "label for 3d parametric source";
+
+    iu3dps_t parametricSource = iusHL3DParametricSourceCreate(_3d_parametric_label, locationCount, FNumber,
+                                                              angularDelta, startAngle, deltaPhi, startPhi);
+
+    TEST_ASSERT(parametricSource != IU3DPS_INVALID);
+    iu3dps_t _nother3dps = iusHL3DParametricSourceCreate(_3d_parametric_label, locationCount, FNumber,
+                                                         angularDelta, startAngle, deltaPhi, startPhi);
+
+    TEST_ASSERT(_nother3dps != IU3DPS_INVALID);
+    iu3dnps_t nonParametricSource = iusHL3DNonParametricSourceCreate(_3d_non_parametric_label, locationCount);
+    TEST_ASSERT(nonParametricSource != IU3DNPS_INVALID);
+
+    // create
+    iusd_t dict = iusHLSourceDictCreate();
+    TEST_ASSERT(dict != IUSD_INVALID);
+
+    // fill
+    int status = iusHLSourceDictSet(dict, _3d_parametric_label,(ius_t) parametricSource);
+    TEST_ASSERT_EQUAL(IUS_E_OK,status);
+    status = iusHLSourceDictSet(dict, _3d_non_parametric_label,(ius_t) nonParametricSource);
+    TEST_ASSERT_EQUAL(IUS_E_OK,status);
+    return dict;
 }
 
 iursd_t dgGenerateReceiveSettingsDict

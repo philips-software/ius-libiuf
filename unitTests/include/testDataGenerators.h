@@ -10,6 +10,8 @@
 #include <include/iusHLReceiveChannelMapDict.h>
 #include <include/iusHLTransmitApodizationDict.h>
 #include <include/iusHLReceiveSettingsDict.h>
+#include <include/iusHLFrameList.h>
+#include <include/iusHLSourceDict.h>
 
 iupd_t dgGeneratePulseDict
 (
@@ -21,7 +23,17 @@ iupal_t dgGeneratePatternList
   	void
 );
 
+iusd_t dgGenerateSourceDict
+(
+	void
+);
+
 iue_t dgGenerateExperiment
+(
+	void
+);
+
+iufl_t dgGenerateFrameList
 (
 	void
 );
