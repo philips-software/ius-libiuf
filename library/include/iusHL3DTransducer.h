@@ -53,8 +53,7 @@ int iusHL3DTransducerSetElement(
 herr_t iusHL3DTransducerWrite
 (
 	iu3dt_t transducer,
-	hid_t subgroup_id,
-	int verbose
+	hid_t subgroup_id
 );
 
 #endif //IUSLIBRARY_IUSHL3DTRANSDUCER_H

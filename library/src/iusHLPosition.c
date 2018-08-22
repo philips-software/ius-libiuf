@@ -79,9 +79,9 @@ void iusHL2DPositionDelete
 }
 
 
-#define POSTIONXFMT "%s/x"
-#define POSTIONYFMT "%s/y"
-#define POSTIONZFMT "%s/z"
+#define SIZEXFMT "%s/x"
+#define SIZEYFMT "%s/y"
+#define SIZEZFMT "%s/z"
 
 iu3dp_t iusHL3DPositionLoad
 (
@@ -93,11 +93,11 @@ iu3dp_t iusHL3DPositionLoad
     char path[IUS_MAX_HDF5_PATH];
     float x,y,z;
 
-    sprintf(path, POSTIONXFMT, parentPath);
+    sprintf(path, SIZEXFMT, parentPath);
     status |= iusHdf5ReadFloat(handle, path, &(x));
-    sprintf(path, POSTIONYFMT, parentPath);
+    sprintf(path, SIZEYFMT, parentPath);
     status |= iusHdf5ReadFloat(handle, path, &(y));
-    sprintf(path, POSTIONZFMT, parentPath);
+    sprintf(path, SIZEZFMT, parentPath);
     status |= iusHdf5ReadFloat(handle, path, &(z));
     if (status < 0)
         return IU3DP_INVALID;
@@ -114,9 +114,9 @@ iu2dp_t iusHL2DPositionLoad
     char path[IUS_MAX_HDF5_PATH];
     float x,z;
 
-    sprintf(path, POSTIONXFMT, parentPath);
+    sprintf(path, SIZEXFMT, parentPath);
     status |= iusHdf5ReadFloat(handle, path, &(x));
-    sprintf(path, POSTIONZFMT, parentPath);
+    sprintf(path, SIZEZFMT, parentPath);
     status |= iusHdf5ReadFloat(handle, path, &(z));
     if (status < 0)
         return IU2DP_INVALID;
@@ -134,11 +134,11 @@ int iusHL3DPositionSave
     char path[IUS_MAX_HDF5_PATH];
     const int verbose = 1;
     hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-    sprintf(path, POSTIONXFMT, parentPath);
+    sprintf(path, SIZEXFMT, parentPath);
     status |= iusHdf5WriteFloat(group_id, path, &(position->x), 1, verbose);
-    sprintf(path, POSTIONYFMT, parentPath);
+    sprintf(path, SIZEYFMT, parentPath);
     status |= iusHdf5WriteFloat(group_id, path, &(position->y), 1, verbose);
-    sprintf(path, POSTIONZFMT, parentPath);
+    sprintf(path, SIZEZFMT, parentPath);
     status |= iusHdf5WriteFloat(group_id, path, &(position->z), 1, verbose);
     status |= H5Gclose(group_id );
     return status;
@@ -155,9 +155,9 @@ int iusHL2DPositionSave
     char path[IUS_MAX_HDF5_PATH];
     const int verbose = 1;
     hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-    sprintf(path, POSTIONXFMT, parentPath);
+    sprintf(path, SIZEXFMT, parentPath);
     status |= iusHdf5WriteFloat(group_id, path, &(position->x), 1, verbose);
-    sprintf(path, POSTIONZFMT, parentPath);
+    sprintf(path, SIZEZFMT, parentPath);
     status |= iusHdf5WriteFloat(group_id, path, &(position->z), 1, verbose);
     status |= H5Gclose(group_id );
     return status;

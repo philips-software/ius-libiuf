@@ -122,6 +122,9 @@ TEST(IusFrameList, testIusSerialization)
   equal = iusHLFrameListCompare(frameList, savedFrameList);
   TEST_ASSERT_EQUAL(IUS_TRUE, equal);
 
+  // TODO: Non-happy flow
+  // for lists it should not be posible to save, if not all elements have been
+  // filled.
   iusHLFrameListDelete(frameList);
   iusHLFrameDelete(obj);
   iusHLFrameDelete(notherObj);

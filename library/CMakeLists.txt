@@ -34,17 +34,23 @@ add_library(ius STATIC
 		include/iusHL2DNonParametricSourceImp.h
 		include/iusHL2DParametricSource.h
 		include/iusHL2DSize.h
+		include/iusHL2DSizeImp.h
 		include/iusHL2DTransducer.h
 		include/iusHL2DTransducerElement.h
+		include/iusHL2DTransducerElementImp.h
 		include/iusHL2DTransducerElementList.h
+		include/iusHL2DTransducerElementListImp.h
 		include/iusHL3DAngle.h
+		include/iusHL3DAngleImp.h
 		include/iusHL3DNonParametricSource.h
 		include/iusHL3DParametricSource.h
 		include/iusHL3DSize.h
+		include/iusHL3DSizeImp.h
 		include/iusHL3DTransducer.h
 		include/iusHL3DTransducerElement.h
+		include/iusHL3DTransducerElementImp.h
 		include/iusHL3DTransducerElementList.h
-		include/iusHLApodizationList.h
+        include/iusHL3DTransducerElementListImp.h
 		include/iusHLFrame.h
 		include/iusHLFrameList.h
 		include/iusHLInputFile.h
@@ -76,13 +82,12 @@ add_library(ius STATIC
 		include/iusHLTransducerElement.h
 		include/iusHLTransducerElement.h
 		include/iusHLTransducerElementImp.h
-		include/iusHLTransducerFactory.h
 		include/iusHLTransducerImp.h
+        include/iusHL2DTransducerImp.h
+        include/iusHL3DTransducerImp.h
 		include/iusHLTransmitApodization.h
 		include/iusHLTransmitApodizationDict.h
 		include/iusHLTransmitApodizationImp.h
-		include/iusHLTransmitPattern.h
-		include/iusHLTransmitPatternList.h
 		include/iusTypes.h
 		include/iusUtil.h
 		src/iusHDF5.c
@@ -99,7 +104,6 @@ add_library(ius STATIC
 		src/iusHL3DTransducer.c
 		src/iusHL3DTransducerElement.c
 		src/iusHL3DTransducerElementList.c
-		src/iusHLApodizationList.c
 		src/iusHLExperiment.c
 		src/iusHLFrame.c
 		src/iusHLFrameList.c
@@ -120,12 +124,8 @@ add_library(ius STATIC
 		src/iusHLTGC.c
 		src/iusHLTransducer.c
 		src/iusHLTransducerElement.c
-		src/iusHLTransducerFactory.c
-		src/iusHLTransducerFactory.c include/iusHLTransducerFactory.h
 		src/iusHLTransmitApodization.c
 		src/iusHLTransmitApodizationDict.c
-		src/iusHLTransmitPattern.c
-		src/iusHLTransmitPatternList.c
 		src/iusUuid.c
 		src/iusUtil.c
 

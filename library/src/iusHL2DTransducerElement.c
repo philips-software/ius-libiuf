@@ -9,17 +9,15 @@
 #include <iusError.h>
 #include <iusTypes.h>
 #include <iusUtil.h>
-#include <iusHL2DSize.h>
+#include <iusHL2DSizeImp.h>
 #include <iusHLTransducerElement.h>
 #include <iusHLTransducerElementImp.h>
-#include <iusHL2DTransducerElement.h>
-#include <iusHL3DTransducerElement.h>
-
-
+#include <iusHL2DTransducerElementImp.h>
+#include <iusHL3DTransducerElementImp.h>
+#include <include/iusHLPositionImp.h>
 
 struct Ius2DTransducerElement
 {
-  struct IusTransducerElement base;
   iu2dp_t   position;
   float     theta;
   iu2ds_t   size;
@@ -35,9 +33,10 @@ iu2dte_t iusHL2DTransducerElementCreate
 )
 {
     if( pos == NULL || siz == NULL ) return IU2DTE_INVALID;
-    if( theta == NAN ) return IU2DTE_INVALID;
+    // According to the IEEE standard, NaN values have the odd property that comparisons involving them are always false.
+    // That is, for a float theta, theta != theta will be true only if f is NaN.
+    if( theta != theta ) return IU2DTE_INVALID;
     iu2dte_t created = (Ius2DTransducerElement *) calloc(1,sizeof(struct Ius2DTransducerElement));
-    created->base.shape = IUS_2D_SHAPE;
     created->position = pos;
     created->theta = theta;
     created->size = siz;
@@ -74,6 +73,64 @@ int iusHL2DTransducerElementCompare
     if( IUS_EQUAL_FLOAT(reference->theta, actual->theta ) == IUS_FALSE ) return IUS_FALSE;
     return IUS_TRUE;
 }
+
+
+#define ELEMENTSIZEPATH "%s/Size"
+#define ELEMENTPOSITIONPATH  "%s/Position"
+#define ELEMENTANGLEPATH  "%s/Angle"
+
+int iusHL2DTransducerElementSave
+(
+    iu2dte_t element,
+    const char *parentPath,
+    hid_t handle
+)
+{
+    char path[IUS_MAX_HDF5_PATH];
+    if( element == IU2DTE_INVALID ) return IUS_ERR_VALUE;
+
+    hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+
+    sprintf(path, ELEMENTSIZEPATH, parentPath);
+    int status = iusHL2DSizeSave(element->size,path,group_id);
+
+    sprintf(path, ELEMENTPOSITIONPATH, parentPath);
+    status |= iusHL2DPositionSave(element->position,path,group_id);
+
+    sprintf(path, ELEMENTANGLEPATH, parentPath);
+    status |= iusHdf5WriteFloat(group_id,path,&(element->theta),1,1);
+    status |= H5Gclose(group_id );
+
+    return status;
+}
+
+
+
+iu2dte_t iusHL2DTransducerElementLoad
+(
+    hid_t handle,
+    const char *parentPath
+)
+{
+    char path[IUS_MAX_HDF5_PATH];
+    float theta;
+    int status;
+
+    sprintf(path, ELEMENTPOSITIONPATH, parentPath);
+    iu2dp_t elemPos = iusHL2DPositionLoad(handle,path);
+    if (elemPos == IU2DP_INVALID) return IU2DTE_INVALID;
+
+    sprintf(path, ELEMENTSIZEPATH, parentPath);
+    iu2ds_t elemSize = iusHL2DSizeLoad(handle,path);
+    if (elemSize == IU2DS_INVALID) return IU2DTE_INVALID;
+
+    sprintf(path, ELEMENTANGLEPATH, parentPath);
+    status = iusHdf5ReadFloat(handle,path,&theta);
+    if (status < 0) return IU2DTE_INVALID;
+
+    return iusHL2DTransducerElementCreate(elemPos, theta, elemSize);
+}
+
 
 
 // Getters

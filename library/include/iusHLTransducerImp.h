@@ -5,7 +5,7 @@
 #define IUSLIBRARY_IUSHLTRANSDUCERIMP_H
 
 #include <iusHDF5.h>
-#include <iusHL2DTransducer.h>
+#include <iusHLTransducer.h>
 #include <iusHL3DTransducer.h>
 
 struct IusTransducer
@@ -16,18 +16,38 @@ struct IusTransducer
     IusTransducerShape     shape;
 } ;
 
-herr_t ius3DTransducerWrite
+int iusHLBaseTransducerCompare
 (
-	iu3dt_t transducer,
-	hid_t subgroup_id,
-	int verbose
+    iut_t reference,
+    iut_t actual
 );
 
-herr_t ius2DTransducerWrite
+herr_t iusHLTransducerSave
 (
-	iu2dt_t transducer,
-	hid_t subgroup_id,
-	int verbose
+	iut_t transducer,
+	char *parentPath,
+	hid_t handle
 );
+
+iut_t iusHLTransducerLoad
+(
+    hid_t handle,
+    char *parentPath
+);
+
+herr_t iusHLBaseTransducerSave
+(
+    iut_t transducer,
+    char *parentPath,
+    hid_t handle
+);
+
+iut_t iusHLBaseTransducerLoad
+(
+    hid_t handle,
+    char *parentPath
+);
+
+
 
 #endif //IUSLIBRARY_IUSHLTRANSDUCERIMP_H

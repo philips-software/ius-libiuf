@@ -185,17 +185,12 @@ int iusHLPulseSave
     int status=IUS_ERR_VALUE;
 
     // Make dataset for Experiment
-    switch(pulse->type)
-    {
-      case IUS_PARAMETRIC_PULSETYPE:
+    if( pulse->type == IUS_PARAMETRIC_PULSETYPE )
         status = iusHLParametricPulseSave((iupp_t)pulse, parentPath, handle);
-        break;
-      case IUS_NON_PARAMETRIC_PULSETYPE:
+
+    if( pulse->type == IUS_NON_PARAMETRIC_PULSETYPE )
         status = iusHLNonParametricPulseSave((iunpp_t)pulse, parentPath, handle);
-        break;
-      default:
-        break;
-    }
+
     return status;
 }
 
@@ -229,16 +224,9 @@ iup_t iusHLPulseLoad
     iup_t pulse=NULL;
 
     pulse = iusHLBasePulseLoad(handle,parentPath);
-    switch(pulse->type)
-    {
-        case IUS_PARAMETRIC_PULSETYPE:
+    if( pulse->type == IUS_PARAMETRIC_PULSETYPE )
           pulse = (iup_t) iusHLParametricPulseLoad(handle, parentPath, pulse->label);
-          break;
-        case IUS_NON_PARAMETRIC_PULSETYPE:
+    if( pulse->type == IUS_NON_PARAMETRIC_PULSETYPE )
           pulse = (iup_t) iusHLNonParametricPulseLoad(handle, parentPath, pulse->label);
-        break;
-        default:
-          break;
-    }
     return pulse;
 }

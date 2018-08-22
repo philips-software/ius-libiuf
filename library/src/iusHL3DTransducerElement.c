@@ -10,13 +10,15 @@
 #include <iusUtil.h>
 #include <iusHLPosition.h>
 #include <iusHLTransducerElement.h>
-#include <iusHL3DTransducerElement.h>
+#include <iusHL3DTransducerElementImp.h>
 #include <iusHLTransducerElementImp.h>
-
+#include <include/iusHL3DSizeImp.h>
+#include <include/iusHDF5.h>
+#include <include/iusHLPositionImp.h>
+#include <include/iusHL3DAngleImp.h>
 
 struct Ius3DTransducerElement
 {
-  struct IusTransducerElement base;
   iu3dp_t   position; /**< 3D Location of the element */
   iu3da_t      angle;    /**< orientation of the elements */
   iu3ds_t       size;     /**< size of the element */
@@ -32,7 +34,6 @@ iu3dte_t iusHL3DTransducerElementCreate
 {
     if( pos == NULL || ang == NULL || siz == NULL ) return IU3DTE_INVALID;
     iu3dte_t created = calloc(1,sizeof(Ius3DTransducerElement));
-    created->base.shape = IUS_3D_SHAPE;
     created->position = pos;
     created->angle = ang;
     created->size = siz;
@@ -72,6 +73,64 @@ int iusHL3DTransducerElementCompare
       return IUS_FALSE;
     return IUS_TRUE;
 }
+
+
+#define ELEMENTSIZEPATH "%s/Size"
+#define ELEMENTPOSITIONPATH  "%s/Position"
+#define ELEMENTANGLEPATH  "%s/Angle"
+
+int iusHL3DTransducerElementSave
+(
+    iu3dte_t element,
+    const char *parentPath,
+    hid_t handle
+)
+{
+    char path[IUS_MAX_HDF5_PATH];
+    if( element == IU3DTE_INVALID ) return IUS_ERR_VALUE;
+
+    hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+
+    sprintf(path, ELEMENTSIZEPATH, parentPath);
+    int status = iusHL3DSizeSave(element->size,path,group_id);
+
+    sprintf(path, ELEMENTPOSITIONPATH, parentPath);
+    status |= iusHL3DPositionSave(element->position,path,group_id);
+
+    sprintf(path, ELEMENTANGLEPATH, parentPath);
+    status |= iusHL3DAngleSave(element->angle,path,group_id);
+    status |= H5Gclose(group_id );
+
+    return status;
+}
+
+
+
+iu3dte_t iusHL3DTransducerElementLoad
+(
+    hid_t handle,
+    const char *parentPath
+)
+{
+    char path[IUS_MAX_HDF5_PATH];
+    iu3dte_t element = IU3DTE_INVALID;
+    sprintf(path, ELEMENTPOSITIONPATH, parentPath);
+    iu3dp_t elemPos = iusHL3DPositionLoad(handle,path);
+    if (elemPos == IU3DP_INVALID) return element;
+
+    sprintf(path, ELEMENTSIZEPATH, parentPath);
+    iu3ds_t elemSize = iusHL3DSizeLoad(handle,path);
+    if (elemSize == IU3DS_INVALID) return element;
+
+    sprintf(path, ELEMENTANGLEPATH, parentPath);
+    iu3da_t elemAngle = iusHL3DAngleLoad(handle,path);
+    if (elemAngle == IU3DA_INVALID) return element;
+
+    element = iusHL3DTransducerElementCreate(elemPos, elemAngle, elemSize);
+    return element;
+}
+
+
 
 
 // Getters

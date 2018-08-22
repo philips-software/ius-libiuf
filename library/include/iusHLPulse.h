@@ -20,11 +20,11 @@ typedef enum {
 } IusPulseType;
 
 
-iup_t  iusHLPulseCreate
-(
-    IusPulseType type,
-    const char *label
-);
+//iup_t  iusHLPulseCreate
+//(
+//    IusPulseType type,
+//    const char *label
+//);
 
 int iusHLPulseDelete
 (

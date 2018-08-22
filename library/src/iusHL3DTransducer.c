@@ -15,6 +15,7 @@
 #include <iusHL3DTransducer.h>
 #include <iusHLTransducerImp.h>
 #include <iusHL3DTransducerElementList.h>
+#include <include/iusHL3DTransducerElementListImp.h>
 
 struct Ius3DTransducer
 {
@@ -23,7 +24,6 @@ struct Ius3DTransducer
 }  ;
 
 // ADT
-
 iu3dt_t iusHL3DTransducerCreate
 (
   char *name,
@@ -32,15 +32,22 @@ iu3dt_t iusHL3DTransducerCreate
   int numElements
 )
 {
-  if( numElements < 0 ) return IU3DT_INVALID;
-  iu3dt_t created = calloc(1,sizeof(Ius3DTransducer));
-  created->elements = iusHL3DTransducerElementListCreate(numElements);
-  created->baseTransducer.pTransducerName = strdup(name);
-  created->baseTransducer.shape = shape;
-  created->baseTransducer.centerFrequency = centerFrequency;
-  created->baseTransducer.type = IUS_3D_SHAPE;
+    if ( name == NULL ) return IU3DT_INVALID;
+    if ( shape == IUS_INVALID_TRANSDUCER_SHAPE ) return IU3DT_INVALID;
+    if ( shape == IUS_LINE || shape == IUS_CIRCLE) return IU3DT_INVALID;
 
-  return created;
+    // NAN check
+    if ( centerFrequency != centerFrequency ) return IU3DT_INVALID;
+    if ( numElements < 0 ) return IU3DT_INVALID;
+
+    iu3dt_t created = calloc(1,sizeof(Ius3DTransducer));
+    created->elements = iusHL3DTransducerElementListCreate(numElements);
+    created->baseTransducer.pTransducerName = strdup(name);
+    created->baseTransducer.shape = shape;
+    created->baseTransducer.centerFrequency = centerFrequency;
+    created->baseTransducer.type = IUS_3D_SHAPE;
+
+    return created;
 }
 
 
@@ -72,7 +79,7 @@ int iusHL3DTransducerCompare
   if( iusHL3DTransducerElementListGetSize(reference->elements) !=
   iusHL3DTransducerElementListGetSize(actual->elements) ) return IUS_FALSE;
   if( iusHL3DTransducerElementListCompare(reference->elements,actual->elements) == IUS_FALSE )  return IUS_FALSE;
-  return IUS_TRUE;
+  return iusHLBaseTransducerCompare((iut_t) reference, (iut_t) actual);
 }
 
 // getters
@@ -103,7 +110,11 @@ int iusHL3DTransducerSetElement
   iu3dte_t element
 )
 {
-  if( transducer == NULL ) return IUS_TRUE;
+  if( transducer == NULL ) return IUS_ERR_VALUE;
+  if( elementIndex >= iusHL3DTransducerElementListGetSize(transducer->elements) ) return IUS_ERR_VALUE;
+  if( elementIndex < 0 ) return IUS_ERR_VALUE;
+  if( element == NULL ) return IUS_ERR_VALUE;
+
   return iusHL3DTransducerElementListSet(transducer->elements,element,elementIndex);
 }
 
@@ -227,17 +238,44 @@ int ius3DTransducerWriteElementAngles(Ius3DTransducer *pTransducer, hid_t subgro
 	return status;
 }
 
-herr_t ius3DTransducerWrite
+#define ELEMENTSFMT "%s/Elements"
+
+herr_t iusHL3DTransducerSave
 (
-	iu3dt_t transducer,
-	hid_t subgroup_id,
-	int verbose
+    iu3dt_t transducer,
+    char *parentPath,
+    hid_t handle
 )
 {
-	herr_t status;
-	status = ius3DTransducerWriteElementPositions(transducer, subgroup_id, verbose);
-	status |= ius3DTransducerWriteElementSizes(transducer, subgroup_id, verbose);
-	status |= ius3DTransducerWriteElementAngles(transducer, subgroup_id, verbose);
-	return status;
+	herr_t status=0;
+    char path[IUS_MAX_HDF5_PATH];
+    status = iusHLBaseTransducerSave((iut_t)transducer,parentPath,handle);
+    if (status != 0)
+        return status;
+
+
+    sprintf(path, ELEMENTSFMT, parentPath);
+    status = iusHL3DTransducerElementListSave(transducer->elements, path,handle);
+    return status;
+}
+
+
+iu3dt_t iusHL3DTransducerLoad
+(
+	hid_t handle,
+	char *parentPath
+)
+{
+    char path[IUS_MAX_HDF5_PATH];
+    sprintf(path, ELEMENTSFMT, parentPath);
+    iut_t baseTransducer = iusHLBaseTransducerLoad(handle,parentPath);
+	iu3dtel_t elements = iusHL3DTransducerElementListLoad(handle,path);
+	int numElements = iusHL3DTransducerElementListGetSize(elements);
+	iu3dt_t transducer = iusHL3DTransducerCreate( baseTransducer->pTransducerName,
+	                                              baseTransducer->shape,
+	                                              baseTransducer->centerFrequency,
+	                                              numElements);
+	transducer->elements = elements;
+	return transducer;
 }
 

@@ -66,7 +66,6 @@ int iusHLNonParametricPulseDelete
 }
 
 
-
 int iusHLNonParametricPulseCompare
 (
     iunpp_t reference,

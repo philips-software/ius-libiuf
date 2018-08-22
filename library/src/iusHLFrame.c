@@ -99,8 +99,6 @@ int iusHLFrameGetDataIndex
 }
 
 
-
-
 int iusHLFrameSave
 (
     iuf_t frame,

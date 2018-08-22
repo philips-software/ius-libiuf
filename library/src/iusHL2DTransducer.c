@@ -20,7 +20,7 @@
 #include <iusHL3DTransducerElement.h>
 #include <iusHL3DTransducerElementList.h>
 #include <iusHLPositionImp.h>
-
+#include <include/iusHL2DTransducerElementListImp.h>
 
 struct Ius2DTransducer
 {
@@ -38,7 +38,14 @@ iu2dt_t iusHL2DTransducerCreate
     int numElements
 )
 {
-    if( numElements < 0 ) return IU2DT_INVALID;
+    if ( name == NULL ) return IU2DT_INVALID;
+    if ( shape == IUS_INVALID_TRANSDUCER_SHAPE ) return IU2DT_INVALID;
+    if ( shape == IUS_LINE || shape == IUS_CIRCLE) return IU2DT_INVALID;
+
+    // NAN check
+    if ( centerFrequency != centerFrequency ) return IU2DT_INVALID;
+    if ( numElements < 0 ) return IU2DT_INVALID;
+
     iu2dt_t created = calloc(1,sizeof(Ius2DTransducer));
     created->elements = iusHL2DTransducerElementListCreate(numElements);
     created->baseTransducer.type = IUS_2D_SHAPE;
@@ -51,14 +58,13 @@ iu2dt_t iusHL2DTransducerCreate
 
 int iusHL2DTransducerDelete
 (
-iu2dt_t ius2DTransducer
+	iu2dt_t ius2DTransducer
 )
 {
     int status = IUS_ERR_VALUE;
     if(ius2DTransducer != NULL)
     {
         free(ius2DTransducer);
-        ius2DTransducer = NULL;
         status = IUS_E_OK;
     }
     return status;
@@ -73,10 +79,8 @@ int iusHL2DTransducerCompare
 {
     if( reference == actual ) return IUS_TRUE;
     if( reference == NULL || actual == NULL ) return IUS_FALSE;
-    if( iusHL2DTransducerElementListGetSize(reference->elements) !=
-        iusHL2DTransducerElementListGetSize(actual->elements) ) return IUS_FALSE;
     if( iusHL2DTransducerElementListCompare(reference->elements,actual->elements) == IUS_FALSE )  return IUS_FALSE;
-    return IUS_TRUE;
+    return iusHLBaseTransducerCompare((iut_t) reference, (iut_t) actual);
 }
 
 // getters
@@ -92,11 +96,11 @@ iu2dte_t iusHL2DTransducerGetElement
 
 int iusHL2DTransducerGetNumElements
 (
-  iu2dt_t transducer
+	iu2dt_t transducer
 )
 {
-  if( transducer == NULL ) return -1;
-  return iusHL2DTransducerElementListGetSize(transducer->elements);
+	if( transducer == NULL ) return -1;
+	return iusHL2DTransducerElementListGetSize(transducer->elements);
 }
 
 // setters
@@ -107,7 +111,10 @@ int iusHL2DTransducerSetElement
     iu2dte_t element
 )
 {
-    if( transducer == NULL ) return IUS_TRUE;
+    if( transducer == NULL ) return IUS_ERR_VALUE;
+    if( elementIndex >= iusHL2DTransducerElementListGetSize(transducer->elements) ) return IUS_ERR_VALUE;
+    if( elementIndex < 0 ) return IUS_ERR_VALUE;
+    if( element == NULL ) return IUS_ERR_VALUE;
     return iusHL2DTransducerElementListSet(transducer->elements,element,elementIndex);
 }
 
@@ -227,13 +234,44 @@ int ius2DTransducerWriteElementAngles(Ius2DTransducer *pTransducer, hid_t subgro
 }
 
 
-herr_t ius2DTransducerWrite(Ius2DTransducer *pTransducer, hid_t group_id, int verbose)
+#define ELEMENTSFMT "%s/Elements"
+
+herr_t iusHL2DTransducerSave
+(
+    iu2dt_t transducer,
+    char *parentPath,
+    hid_t handle
+)
 {
-	herr_t  status = 0;
-	
-	status |= ius2DTransducerWriteElementPositions(pTransducer, group_id, verbose);
-	status |= ius2DTransducerWriteElementSizes(pTransducer, group_id, verbose);
-	status |= ius2DTransducerWriteElementAngles(pTransducer, group_id, verbose);
-	return status;
+    herr_t status=0;
+    char path[IUS_MAX_HDF5_PATH];
+    status = iusHLBaseTransducerSave((iut_t)transducer,parentPath,handle);
+    if (status != 0)
+        return status;
+
+
+    sprintf(path, ELEMENTSFMT, parentPath);
+    status = iusHL2DTransducerElementListSave(transducer->elements, path,handle);
+    return status;
+}
+
+
+iu2dt_t iusHL2DTransducerLoad
+(
+    hid_t handle,
+    char *parentPath
+)
+{
+    char path[IUS_MAX_HDF5_PATH];
+    sprintf(path, ELEMENTSFMT, parentPath);
+    iut_t baseTransducer = iusHLBaseTransducerLoad(handle,parentPath);
+    iu2dtel_t elements = iusHL2DTransducerElementListLoad(handle,path);
+    int numElements = iusHL2DTransducerElementListGetSize(elements);
+    iu2dt_t transducer = iusHL2DTransducerCreate( baseTransducer->pTransducerName,
+                                                  baseTransducer->shape,
+                                                  baseTransducer->centerFrequency,
+                                                  numElements);
+    transducer->elements = elements;
+    return transducer;
 }
 

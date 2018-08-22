@@ -152,7 +152,7 @@ iuif_t iusHLInputFileLoad
 	}
 
 	IusInputFile *pFileInst = iusHLInputFileAlloc(pFilename);
-	
+
     // check calloc
 	if (pFileInst == IUIF_INVALID)
 	{

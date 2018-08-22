@@ -7,8 +7,9 @@
 #include <ius.h>
 #include <iusError.h>
 #include <iusUtil.h>
-#include <iusHL3DTransducerElementList.h>
-
+#include <iusHL3DTransducerElementListImp.h>
+#include <iusHL3DTransducerElementImp.h>
+#include <include/iusHDF5.h>
 
 // ADT
 struct Ius3DTransducerElementList
@@ -24,6 +25,7 @@ iu3dtel_t iusHL3DTransducerElementListCreate
     int num3DTransducerElements
 )
 {
+    int i;
     iu3dtel_t list = calloc(1, sizeof(Ius3DTransducerElementList));
     if(list!=NULL)
     {
@@ -33,6 +35,13 @@ iu3dtel_t iusHL3DTransducerElementListCreate
         {
             free(list);
             list = NULL;
+        }
+        else
+        {
+            for (i=0;i < list->count ;i++)
+            {
+                iusHL3DTransducerElementListSet(list,IU3DTE_INVALID,i);
+            }
         }
     }
     return list;
@@ -96,8 +105,113 @@ int iusHL3DTransducerElementListSet
     int index
 )
 {
+    if( list == NULL || member == NULL ) return IUS_ERR_VALUE;
     if( index < 0 ) return IUS_ERR_VALUE;
-    if( list == NULL   || index >= list->count ) return IUS_ERR_VALUE;
+    if( index >= list->count ) return IUS_ERR_VALUE;
     list->p3DTransducerElements[index] = member;
     return IUS_E_OK;
+}
+
+IUS_BOOL iusHL3DTransducerElementListFull
+(
+    iu3dtel_t list
+)
+{
+    IUS_BOOL isFull = IUS_TRUE;
+    int i;
+    for (i=0;i < list->count;i++)
+    {
+        if(list->p3DTransducerElements[i] == IU3DTE_INVALID)
+        {
+            isFull = IUS_FALSE;
+            break;
+        }
+    }
+    return isFull;
+}
+
+
+
+
+#define ELEMENTLISTFMT "%s/Element[%d]"
+#define LISTSIZEFMT "%s/Size"
+
+iu3dtel_t iusHL3DTransducerElementListLoad
+(
+    hid_t handle,
+    const char *parentPath
+)
+{
+    char path[IUS_MAX_HDF5_PATH];
+    int i,size;
+
+    if(parentPath == NULL || handle == H5I_INVALID_HID)
+        return IU3DTEL_INVALID;
+
+    sprintf(path, LISTSIZEFMT, parentPath);
+    int status = iusHdf5ReadInt(handle, path, &(size));
+    if(status <0)
+        return IU3DTEL_INVALID;
+
+    iu3dtel_t elementList = iusHL3DTransducerElementListCreate(size);
+    iu3dte_t loadedElement;
+    for (i=0;i < size;i++)
+    {
+        sprintf(path, ELEMENTLISTFMT, parentPath, i);
+        loadedElement = iusHL3DTransducerElementLoad(handle,path);
+        if(loadedElement == IU3DTE_INVALID)
+        {
+            status = IUS_ERR_VALUE;
+            break;
+        }
+        status = iusHL3DTransducerElementListSet(elementList,loadedElement,i);
+        if( status == IUS_ERR_VALUE )
+            break;
+    }
+
+    if( status == IUS_ERR_VALUE )
+    {
+        iusHL3DTransducerElementListDelete(elementList);
+        elementList = IU3DTEL_INVALID;
+    }
+    return elementList;
+}
+
+
+int iusHL3DTransducerElementListSave
+(
+    iu3dtel_t list,
+    const char *parentPath,
+    hid_t handle
+)
+{
+    int status=0;
+    int i;
+    char path[IUS_MAX_HDF5_PATH];
+
+    if(list == NULL)
+        return IUS_ERR_VALUE;
+    if(parentPath == NULL || handle == H5I_INVALID_HID)
+        return IUS_ERR_VALUE;
+    if(iusHL3DTransducerElementListFull(list) == IUS_FALSE)
+        return IUS_ERR_VALUE;
+
+    hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+    iu3dte_t sourceElement;
+    sprintf(path, LISTSIZEFMT, parentPath);
+    status |= iusHdf5WriteInt(handle, path, &(list->count), 1);
+
+    // iterate over source list elements and save'em
+    for (i=0;i < list->count ;i++)
+    {
+        sourceElement = iusHL3DTransducerElementListGet(list,i);
+        if(sourceElement == IU3DTE_INVALID) continue;
+
+        sprintf(path, ELEMENTLISTFMT, parentPath, i);
+        status = iusHL3DTransducerElementSave(sourceElement,path,group_id);
+        if(status != IUS_E_OK) break;
+    }
+
+    status |= H5Gclose(group_id );
+    return status;
 }

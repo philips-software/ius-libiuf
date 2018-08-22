@@ -11,12 +11,12 @@ typedef struct IusTransducer IusTransducer;
 typedef IusTransducer *iut_t;
 #define  IUT_INVALID (iut_t) NULL
 
-iut_t iusHLTransducerCreate
-(
-    char *name,
-    IusTransducerShape shape,
-    float centerFrequency
-);
+//iut_t iusHLTransducerCreate
+//(
+//    char *name,
+//    IusTransducerShape shape,
+//    float centerFrequency
+//);
 
 int iusHLTransducerDelete
 (
@@ -52,25 +52,18 @@ IusTransducerShape iusHLTransducerGetShape
     iut_t transducer
 );
 
-iute_t iusHLTransducerGetElement
-(
-    iut_t transducer,
-    int elementIndex
-);
+//iute_t iusHLTransducerGetElement
+//(
+//    iut_t transducer,
+//    int elementIndex
+//);
 
 // Setters
-int iusHLTransducerSetElement
-(
-    iut_t transducer,
-    int elementIndex,
-    iute_t transducerElement
-);
-
-herr_t iusHLTransducerWrite
-(
-	iut_t transducer,
-	char *groupPathName,
-	hid_t group_id
-);
+//int iusHLTransducerSetElement
+//(
+//    iut_t transducer,
+//    int elementIndex,
+//    iute_t transducerElement
+//);
 
 #endif //IUSLIBRARY_IUSHLTRANSDUCER_H

@@ -10,8 +10,14 @@ add_executable(unitTests
         src/unitTests.c
         src/testIus2DNonParametricSource.c
         src/testIus2DParametricSource.c
+        src/testIus2DTransducer.c
+        src/testIus2DTransducerElement.c
+        src/testIus2DTransducerElementList.c
         src/testIus3DNonParametricSource.c
         src/testIus3DParametricSource.c
+        src/testIus3DTransducer.c
+        src/testIus3DTransducerElement.c
+        src/testIus3DTransducerElementList.c
         src/testIusExperiment.c
         src/testIusFrame.c
         src/testIusFrameList.c
@@ -33,19 +39,6 @@ add_executable(unitTests
         src/testIusTransmitApodizationDict.c
         src/testIusTGC.c
         src/util.c
-#        src/testNode.c
-#        src/testTransducer.c
-#        src/util.c
-#        src/testMisc.c
-#        src/testReceiveSettings.c
-#        include/testReceiveSettings.h
-#        src/testTransmitPulse.c
-#        src/testTransmitPattern.c
-#        include/testDataGenerators.h
-#        src/testTransmitPatternList.c
-#        src/testIusApodizationList.c
-#        src/testIusInputInstance.c
-#        src/testIusDrivingScheme.c
         )
 
 target_link_libraries(unitTests

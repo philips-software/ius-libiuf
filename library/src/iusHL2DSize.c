@@ -9,7 +9,8 @@
 #include <iusError.h>
 #include <iusTypes.h>
 #include <iusUtil.h>
-#include <iusHL2DSize.h>
+#include <iusHL2DSizeImp.h>
+#include <include/iusHDF5.h>
 
 //struct Ius2DSize
 //{
@@ -61,3 +62,47 @@ int iusHL2DSizeCompare
     if( IUS_EQUAL_FLOAT(reference->sz, actual->sz ) == IUS_FALSE ) return IUS_FALSE;
     return IUS_TRUE;
 }
+
+
+#define SIZEXFMT "%s/sx"
+#define SIZEYFMT "%s/xy"
+#define SIZEZFMT "%s/sz"
+
+iu2ds_t iusHL2DSizeLoad
+(
+    hid_t handle,
+    char *parentPath
+)
+{
+    int status=0;
+    char path[IUS_MAX_HDF5_PATH];
+    float sx,sz;
+
+    sprintf(path, SIZEXFMT, parentPath);
+    status |= iusHdf5ReadFloat(handle, path, &(sx));
+    sprintf(path, SIZEZFMT, parentPath);
+    status |= iusHdf5ReadFloat(handle, path, &(sz));
+    if (status < 0)
+        return IU2DS_INVALID;
+    return iusHL2DSizeCreate(sx,sz);
+}
+
+int iusHL2DSizeSave
+(
+    iu2ds_t size,
+    char *parentPath,
+    hid_t handle
+)
+{
+    int status=0;
+    char path[IUS_MAX_HDF5_PATH];
+    const int verbose = 1;
+    hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+    sprintf(path, SIZEXFMT, parentPath);
+    status |= iusHdf5WriteFloat(group_id, path, &(size->sx), 1, verbose);
+    sprintf(path, SIZEZFMT, parentPath);
+    status |= iusHdf5WriteFloat(group_id, path, &(size->sz), 1, verbose);
+    status |= H5Gclose(group_id );
+    return status;
+}
+
