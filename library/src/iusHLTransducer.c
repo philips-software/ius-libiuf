@@ -21,11 +21,6 @@
 #include <iusHL2DTransducerElementList.h>
 #include <iusHL3DTransducerElementList.h>
 
-// Todo:
-//
-// nlv09165 -ADt should not be public?
-// Refactor to BaseClass routines like PulseDict?
-//
 // ADT
 iut_t iusHLTransducerCreate
 (
@@ -233,18 +228,15 @@ herr_t iusHLBaseTransducerSave
 {
 	herr_t status = 0;
     char path[IUS_MAX_HDF5_PATH];
-
     hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-
     sprintf(path, SHAPEFMT, parentPath);
-    status |= iusHLBaseTransducerSaveShape(handle, path, transducer->shape, 1);
+    status |= iusHLBaseTransducerSaveShape(group_id, path, transducer->shape, 1);
     sprintf(path, NAMEFMT, parentPath);
-	status |= iusHdf5WriteString(handle, path, transducer->pTransducerName, 1);
+	status |= iusHdf5WriteString(group_id, path, transducer->pTransducerName, 1);
     sprintf(path, CENTERFREQUENCYFMT, parentPath);
-	status |= iusHdf5WriteFloat(handle, path, &(transducer->centerFrequency), 1, 1);
+	status |= iusHdf5WriteFloat(group_id, path, &(transducer->centerFrequency), 1, 1);
     status |= H5Gclose(group_id );
-
-	return status;
+    return status;
 }
 
 
@@ -257,13 +249,12 @@ herr_t iusHLTransducerSave
 )
 {
 	/* write the /Transducer data */
-	herr_t  status;
-//	if (transducer->type == IUS_3D_SHAPE)
-//		status |= iusHL3DTransducerSave((Ius3DTransducer *) transducer, parentPath, handle);
-//
-//	if (transducer->type == IUS_2D_SHAPE)
-//		status |= iusHL2DTransducerSave((Ius2DTransducer *) transducer, parentPath, handle);
+	herr_t  status=0;
+    if (transducer->type == IUS_3D_SHAPE)
+		status |= iusHL3DTransducerSave((Ius3DTransducer *) transducer, parentPath, handle);
 
+	if (transducer->type == IUS_2D_SHAPE)
+		status |= iusHL2DTransducerSave((Ius2DTransducer *) transducer, parentPath, handle);
 	return status;
 }
 
@@ -322,9 +313,9 @@ iut_t iusHLTransducerLoad
     if ( transducer == IUT_INVALID )
         return transducer;
 
-//    if( transducer->shape == IUS_2D_SHAPE )
-//        transducer = (iut_t) iusHL2DTransducerLoad(handle, parentPath);
-//    if( transducer->shape == IUS_3D_SHAPE )
-//        transducer = (iut_t) iusHL3DTransducerLoad(handle, parentPath);
+    if( transducer->type == IUS_2D_SHAPE )
+        return (iut_t) iusHL2DTransducerLoad(handle, parentPath);
+    if( transducer->type == IUS_3D_SHAPE )
+        return (iut_t) iusHL3DTransducerLoad(handle, parentPath);
     return transducer;
 }

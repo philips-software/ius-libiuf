@@ -10,6 +10,7 @@
 #include <iusHLFrameList.h>
 #include "iusHLSourceDict.h"
 #include "iusHLReceiveSettingsDict.h"
+#include "iusHLTransducer.h"
 
 // ADT
 typedef struct IusInputFile IusInputFile;
@@ -51,11 +52,25 @@ int iusHLInputFileCompare
 );
 
 // Getters
-iupd_t iusHLInputFileGetPulseDict
+iufl_t iusHLInputFileGetFrameList
 (
-    iuif_t fileHandle
+	iuif_t fileHandle
 );
 
+iupal_t iusHLInputFileGetPatternList
+(
+	iuif_t fileHandle
+);
+
+iupd_t iusHLInputFileGetPulseDict
+(
+	iuif_t fileHandle
+);
+
+iusd_t iusHLInputFileGetSourceDict
+(
+	iuif_t fileHandle
+);
 
 iurcmd_t iusHLInputFileGetReceiveChannelMapDict
 (
@@ -77,27 +92,22 @@ iue_t iusHLInputFileGetExperiment
 	iuif_t fileHandle
 );
 
-iufl_t iusHLInputFileGetFrameList
+iut_t iusHLInputFileGetTransducer
 (
 	iuif_t fileHandle
 );
-
-iupal_t iusHLInputFileGetPatternList
-(
-    iuif_t fileHandle
-);
-
-iusd_t iusHLInputFileGetSourceDict
-(
-    iuif_t fileHandle
-);
-
 
 // Setters
 int iusHLInputFileSetFrameList
 (
 	iuif_t inputFile,
 	iufl_t frameList
+);
+
+int iusHLInputFileSetPatternList
+(
+	iuif_t inputFile,
+	iupal_t patternList
 );
 
 int iusHLInputFileSetPulseDict
@@ -130,16 +140,15 @@ int iusHLInputFileSetReceiveSettingsDict
     iursd_t transmitApreceiveSettingsDict
 );
 
-int iusHLInputFileSetPatternList
-(
-    iuif_t inputFile,
-    iupal_t patternList
-);
-
 int iusHLInputFileSetExperiment
 (
 	iuif_t inputFile,
 	iue_t  experiment
 );
 
+int iusHLInputFileSetTransducer
+(
+	iuif_t inputFile,
+	iut_t  transducer
+);
 #endif //IUSLIBRARY_IUSHLINPUTFILE_H

@@ -28,7 +28,7 @@ TEST(Ius2DTransducer, testIus2DTransducerCreate)
 	char *transducerName = "S5-1";
 	float centerFrequency = 2500000.0f;
 	const int numTransducerElements = 128;
-    IusTransducerShape shape = IUS_SPHERE;
+    IusTransducerShape shape = IUS_CIRCLE;
     iu2dt_t transducer;
     transducer = iusHL2DTransducerCreate(transducerName, shape, centerFrequency, numTransducerElements);
     TEST_ASSERT_NOT_EQUAL(IU2DT_INVALID,transducer);
@@ -41,9 +41,11 @@ TEST(Ius2DTransducer, testIus2DTransducerCreate)
     TEST_ASSERT_EQUAL(IU2DT_INVALID,transducer);
     transducer = iusHL2DTransducerCreate(transducerName, IUS_INVALID_TRANSDUCER_SHAPE, centerFrequency, numTransducerElements);
     TEST_ASSERT_EQUAL(IU2DT_INVALID,transducer);
-    transducer = iusHL2DTransducerCreate(transducerName, IUS_LINE, centerFrequency, numTransducerElements);
+    transducer = iusHL2DTransducerCreate(transducerName, IUS_CYLINDER, centerFrequency, numTransducerElements);
     TEST_ASSERT_EQUAL(IU2DT_INVALID,transducer);
-    transducer = iusHL2DTransducerCreate(transducerName, IUS_CIRCLE, centerFrequency, numTransducerElements);
+    transducer = iusHL2DTransducerCreate(transducerName, IUS_PLANE, centerFrequency, numTransducerElements);
+    TEST_ASSERT_EQUAL(IU2DT_INVALID,transducer);
+    transducer = iusHL2DTransducerCreate(transducerName, IUS_SPHERE, centerFrequency, numTransducerElements);
     TEST_ASSERT_EQUAL(IU2DT_INVALID,transducer);
     transducer = iusHL2DTransducerCreate(transducerName, shape, NAN, numTransducerElements);
     TEST_ASSERT_EQUAL(IU2DT_INVALID,transducer);
@@ -57,7 +59,7 @@ TEST(Ius2DTransducer, testIus2DTransducerDelete)
     char *transducerName = "S5-1";
     float centerFrequency = 2500000.0f;
     const int numTransducerElements = 128;
-    IusTransducerShape shape = IUS_CYLINDER;
+    IusTransducerShape shape = IUS_CIRCLE;
     iu2dt_t transducer;
     transducer = iusHL2DTransducerCreate(transducerName, shape, centerFrequency, numTransducerElements);
     TEST_ASSERT_NOT_EQUAL(IU2DT_INVALID,transducer);
@@ -86,8 +88,8 @@ TEST(Ius2DTransducer,  testIusHL2DTransducerCompare)
     iu2dte_t element = iusHL2DTransducerElementCreate(elemPos, elemAngle, elemSize);
     TEST_ASSERT_NOT_EQUAL(IU2DTE_INVALID,element);
 
-    IusTransducerShape shape = IUS_PLANE;
-    IusTransducerShape diffShape = IUS_CYLINDER;
+    IusTransducerShape shape = IUS_LINE;
+    IusTransducerShape diffShape = IUS_CIRCLE;
 
     iu2dt_t transducer;
     iu2dt_t identicalTransducer;
@@ -149,7 +151,7 @@ TEST(Ius2DTransducer, testIus2DTransducerSetGet)
 
 
     iu2dt_t transducer;
-    IusTransducerShape shape = IUS_PLANE;
+    IusTransducerShape shape = IUS_LINE;
 
     transducer = iusHL2DTransducerCreate(transducerName, shape, centerFrequency, numTransducerElements);
     TEST_ASSERT_NOT_EQUAL(IU2DT_INVALID,transducer);
@@ -187,7 +189,7 @@ TEST(Ius2DTransducer, testIus2DTransducerSerialization)
 	// create and fill
 	const float transducerPitch = 0.000005f;
 
-	iu2dt_t transducer = iusHL2DTransducerCreate(transducerName, IUS_PLANE, 2500000.0f, numTransducerElements);
+	iu2dt_t transducer = iusHL2DTransducerCreate(transducerName, IUS_LINE, 2500000.0f, numTransducerElements);
     TEST_ASSERT(transducer != IU2DT_INVALID);
 	for (i = 0; i < numTransducerElements; i++)
 	{

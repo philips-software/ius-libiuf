@@ -40,7 +40,7 @@ iu2dt_t iusHL2DTransducerCreate
 {
     if ( name == NULL ) return IU2DT_INVALID;
     if ( shape == IUS_INVALID_TRANSDUCER_SHAPE ) return IU2DT_INVALID;
-    if ( shape == IUS_LINE || shape == IUS_CIRCLE) return IU2DT_INVALID;
+    if ( shape != IUS_LINE && shape != IUS_CIRCLE) return IU2DT_INVALID;
 
     // NAN check
     if ( centerFrequency != centerFrequency ) return IU2DT_INVALID;
@@ -265,13 +265,16 @@ iu2dt_t iusHL2DTransducerLoad
     char path[IUS_MAX_HDF5_PATH];
     sprintf(path, ELEMENTSFMT, parentPath);
     iut_t baseTransducer = iusHLBaseTransducerLoad(handle,parentPath);
+    if (baseTransducer == IUT_INVALID) return IU2DT_INVALID;
     iu2dtel_t elements = iusHL2DTransducerElementListLoad(handle,path);
-    int numElements = iusHL2DTransducerElementListGetSize(elements);
+	if (elements == IU2DTEL_INVALID) return IU2DT_INVALID;
+	int numElements = iusHL2DTransducerElementListGetSize(elements);
     iu2dt_t transducer = iusHL2DTransducerCreate( baseTransducer->pTransducerName,
                                                   baseTransducer->shape,
                                                   baseTransducer->centerFrequency,
                                                   numElements);
-    transducer->elements = elements;
+	if (transducer == IU2DT_INVALID) return IU2DT_INVALID;
+	transducer->elements = elements;
     return transducer;
 }
 

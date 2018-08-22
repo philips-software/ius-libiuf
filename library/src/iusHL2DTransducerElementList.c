@@ -27,6 +27,7 @@ iu2dtel_t iusHL2DTransducerElementListCreate
     int num2DTransducerElements
 )
 {
+    int i;
     iu2dtel_t list = calloc(1, sizeof(Ius2DTransducerElementList));
     if(list!=NULL)
     {
@@ -36,6 +37,13 @@ iu2dtel_t iusHL2DTransducerElementListCreate
         {
             free(list);
             list = NULL;
+        }
+        else
+        {
+            for(i = 0 ; i < list->count ; i++ )
+            {
+                iusHL2DTransducerElementListSet(list,IU2DTE_INVALID,i);
+            }
         }
     }
     return list;
@@ -78,6 +86,7 @@ int iusHL2DTransducerElementListGetSize
     iu2dtel_t list
 )
 {
+    if( list == NULL ) return -1;
     return list->count;
 }
 
@@ -87,8 +96,9 @@ iu2dte_t iusHL2DTransducerElementListGet
     int index
 )
 {
+    if( list == NULL ) return NULL;
+    if( index >= list->count ) return NULL;
     if( index < 0 ) return NULL;
-    if( list == NULL || index >= list->count ) return NULL;
     return list->p2DTransducerElements[index];
 }
 
@@ -173,9 +183,9 @@ const char *parentPath
 
 int iusHL2DTransducerElementListSave
 (
-iu2dtel_t list,
-const char *parentPath,
-hid_t handle
+    iu2dtel_t list,
+    const char *parentPath,
+    hid_t handle
 )
 {
     int status=0;

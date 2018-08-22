@@ -84,6 +84,7 @@ int iusHL3DTransducerElementListGetSize
     iu3dtel_t list
 )
 {
+    if( list == NULL ) return -1;
     return list->count;
 }
 

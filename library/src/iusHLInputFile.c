@@ -24,6 +24,7 @@
 #include <include/iusHLFrameListImp.h>
 #include <include/iusHLSourceDictImp.h>
 #include <include/iusHLReceiveSettingsDictImp.h>
+#include <include/iusHLTransducerImp.h>
 
 static char *const FRAME_LIST_PATH = "/Frames";
 static char *const PATTERN_LIST_PATH="/Patterns";
@@ -239,15 +240,14 @@ iuif_t iusHLInputFileLoad
         return IUIF_INVALID;
     }
 
-    // Todo: Implement iusHLTransducerLoad/Save!!
-//    group_id = H5Gopen(pFileInst->handle, "/Transducer", H5P_DEFAULT);
-//    pFileInst->experiment = iusHLTransducerLoad(group_id);
-//    if (pFileInst->experiment == IUE_INVALID)
-//    {
-//        fprintf(stderr, "Warning from iusHLInputFileLoad: could not load transducer: %s\n", pFilename);
-//        return IUIF_INVALID;
-//    }
-//    H5Gclose(group_id);
+    // Load instance data
+    // Todo: create group @here instead of in Load, see experiment
+    pFileInst->transducer = iusHLTransducerLoad(pFileInst->handle, TRANSDUCER_PATH);
+    if (pFileInst->transducer == IUT_INVALID)
+    {
+        fprintf(stderr, "Warning from iusHLInputFileLoad: could not load transducer: %s\n", pFilename);
+        return IUIF_INVALID;
+    }
 
     int status = iusHdf5ReadInt( pFileInst->handle, IUSVERSION_PATH, &(pFileInst->IusVersion));
     if( status != IUS_E_OK )
@@ -291,12 +291,7 @@ int iusHLInputFileSave
 	hid_t group_id = H5Gcreate(fileHandle->handle, EXPERIMENT_PATH, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 	status |= iusHLExperimentSave(fileHandle->experiment, group_id);
     status |= H5Gclose(group_id);
-
-    // Todo: implement
-//    group_id = H5Gcreate(fileHandle->handle, TRANSDUCER_PATH, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-//    status |= iusHLTransducerSave(fileHandle->transducer, group_id);
-//    status |= H5Gclose(group_id);
-
+    status |= iusHLTransducerSave(fileHandle->transducer, TRANSDUCER_PATH, fileHandle->handle);
     status |= iusHdf5WriteInt( fileHandle->handle, IUSVERSION_PATH, &(fileHandle->IusVersion), 1);
     status |= iusHdf5WriteInt( fileHandle->handle, NUMFRAMES_PATH, &(fileHandle->numFrames), 1);
 
@@ -368,6 +363,18 @@ iufl_t iusHLInputFileGetFrameList
     return IUFL_INVALID;
 }
 
+iupal_t iusHLInputFileGetPatternList
+(
+    iuif_t iusInputFile
+)
+{
+    if ( iusInputFile != NULL )
+    {
+        return iusInputFile->patternList;
+    }
+    return NULL;
+}
+
 
 iupd_t iusHLInputFileGetPulseDict
 (
@@ -381,73 +388,6 @@ iupd_t iusHLInputFileGetPulseDict
     return NULL;
 }
 
-
-iupal_t iusHLInputFileGetPatternList
-(
-    iuif_t iusInputFile
-)
-{
-  if ( iusInputFile != NULL )
-  {
-    return iusInputFile->patternList;
-  }
-  return NULL;
-}
-
-iue_t iusHLInputFileGetExperiment
-(
-	iuif_t iusInputFile
-)
-{
-	if ( iusInputFile != NULL )
-	{
-		return iusInputFile->experiment;
-	}
-	return NULL;
-}
-
-
-// Setters
-int iusHLInputFileSetPulseDict
-(
-    iuif_t inputFile,
-    iupd_t pulseDict
-)
-{
-    int status = IUS_ERR_VALUE;
-
-    if ( inputFile != NULL )
-    {
-        inputFile->pulseDict = pulseDict;
-        status = IUS_E_OK;
-    }
-    return status;
-}
-
-iurcmd_t iusHLInputFileGetReceiveChannelMapDict
-(
-	iuif_t iusInputFile
-)
-{
-	if (iusInputFile != NULL)
-	{
-		return iusInputFile->receiveChannelMapDict;
-	}
-	return NULL;
-}
-
-iutad_t iusHLInputFileGetTransmitApodizationDict
-(
-	iuif_t fileHandle
-)
-{
-	if (fileHandle != NULL)
-	{
-		return fileHandle->transmitApodizationDict;
-	}
-	return NULL;
-}
-
 iusd_t iusHLInputFileGetSourceDict
 (
     iuif_t fileHandle
@@ -456,6 +396,31 @@ iusd_t iusHLInputFileGetSourceDict
     if (fileHandle != NULL)
     {
         return fileHandle->pulseSourceDict;
+    }
+    return NULL;
+}
+
+
+iurcmd_t iusHLInputFileGetReceiveChannelMapDict
+(
+    iuif_t iusInputFile
+)
+{
+    if (iusInputFile != NULL)
+    {
+        return iusInputFile->receiveChannelMapDict;
+    }
+    return NULL;
+}
+
+iutad_t iusHLInputFileGetTransmitApodizationDict
+(
+    iuif_t fileHandle
+)
+{
+    if (fileHandle != NULL)
+    {
+        return fileHandle->transmitApodizationDict;
     }
     return NULL;
 }
@@ -472,7 +437,99 @@ iursd_t iusHLInputFileGetReceiveSettingsDict
     return NULL;
 }
 
+iue_t iusHLInputFileGetExperiment
+(
+	iuif_t iusInputFile
+)
+{
+	if ( iusInputFile != NULL )
+	{
+		return iusInputFile->experiment;
+	}
+	return NULL;
+}
+
+iut_t iusHLInputFileGetTransducer
+(
+    iuif_t iusInputFile
+)
+{
+    if ( iusInputFile != NULL )
+    {
+        return iusInputFile->transducer;
+    }
+    return NULL;
+}
+
+
+
 // Setters
+int iusHLInputFileSetFrameList
+(
+    iuif_t inputFile,
+    iufl_t frameList
+)
+{
+    int status = IUS_ERR_VALUE;
+
+    if (inputFile != NULL)
+    {
+        inputFile->frameList = frameList;
+        status = IUS_E_OK;
+    }
+    return status;
+}
+
+int iusHLInputFileSetPatternList
+(
+    iuif_t inputFile,
+    iupal_t paternList
+)
+{
+    int status = IUS_ERR_VALUE;
+
+    if(inputFile != NULL)
+    {
+        inputFile->patternList = paternList;
+        status = IUS_E_OK;
+    }
+    return status;
+}
+
+int iusHLInputFileSetPulseDict
+(
+    iuif_t inputFile,
+    iupd_t pulseDict
+)
+{
+    int status = IUS_ERR_VALUE;
+
+    if ( inputFile != NULL )
+    {
+        inputFile->pulseDict = pulseDict;
+        status = IUS_E_OK;
+    }
+    return status;
+}
+
+
+
+int iusHLInputFileSetSourceDict
+(
+    iuif_t inputFile,
+    iusd_t sourceDict
+)
+{
+    int status = IUS_ERR_VALUE;
+
+    if (inputFile != NULL)
+    {
+        inputFile->pulseSourceDict = sourceDict;
+        status = IUS_E_OK;
+    }
+    return status;
+}
+
 int iusHLInputFileSetReceiveChannelMapDict
 (
 	iuif_t inputFile,
@@ -497,7 +554,7 @@ int iusHLInputFileSetTransmitApodizationDict
 {
 	int status = IUS_ERR_VALUE;
 
-	if(inputFile != NULL)
+	if(inputFile != NULL && transmitApodizationDict != NULL)
 	{
 		inputFile->transmitApodizationDict = transmitApodizationDict;
 		status = IUS_E_OK;
@@ -513,7 +570,7 @@ int iusHLInputFileSetReceiveSettingsDict
 {
     int status = IUS_ERR_VALUE;
 
-    if(inputFile != NULL)
+    if(inputFile != NULL && transmitApreceiveSettingsDict != NULL)
     {
         inputFile->receiveSettingsDict = transmitApreceiveSettingsDict;
         status = IUS_E_OK;
@@ -521,21 +578,7 @@ int iusHLInputFileSetReceiveSettingsDict
     return status;
 }
 
-int iusHLInputFileSetPatternList
-(
-    iuif_t inputFile,
-    iupal_t paternList
-)
-{
-    int status = IUS_ERR_VALUE;
 
-    if(inputFile != NULL)
-    {
-      inputFile->patternList = paternList;
-      status = IUS_E_OK;
-    }
-    return status;
-}
 
 int iusHLInputFileSetExperiment
 (
@@ -545,7 +588,7 @@ int iusHLInputFileSetExperiment
 {
 	int status = IUS_ERR_VALUE;
 
-	if (inputFile != NULL)
+	if (inputFile != NULL && experiment != NULL)
 	{
 		inputFile->experiment = experiment;
 		status = IUS_E_OK;
@@ -553,33 +596,18 @@ int iusHLInputFileSetExperiment
 	return status;
 }
 
-int iusHLInputFileSetFrameList
+
+int iusHLInputFileSetTransducer
 (
     iuif_t inputFile,
-    iufl_t frameList
+    iut_t transducer
 )
 {
     int status = IUS_ERR_VALUE;
 
-    if (inputFile != NULL)
+    if (inputFile != NULL && transducer != NULL)
     {
-        inputFile->frameList = frameList;
-        status = IUS_E_OK;
-    }
-    return status;
-}
-
-int iusHLInputFileSetSourceDict
-(
-    iuif_t inputFile,
-    iusd_t sourceDict
-)
-{
-    int status = IUS_ERR_VALUE;
-
-    if (inputFile != NULL)
-    {
-        inputFile->pulseSourceDict = sourceDict;
+        inputFile->transducer = transducer;
         status = IUS_E_OK;
     }
     return status;

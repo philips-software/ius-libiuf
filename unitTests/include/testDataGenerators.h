@@ -12,10 +12,11 @@
 #include <include/iusHLReceiveSettingsDict.h>
 #include <include/iusHLFrameList.h>
 #include <include/iusHLSourceDict.h>
+#include <include/iusHLTransducer.h>
 
-iupd_t dgGeneratePulseDict
+iufl_t dgGenerateFrameList
 (
-  	void
+	void
 );
 
 iupal_t dgGeneratePatternList
@@ -23,17 +24,12 @@ iupal_t dgGeneratePatternList
   	void
 );
 
+iupd_t dgGeneratePulseDict
+(
+	void
+);
+
 iusd_t dgGenerateSourceDict
-(
-	void
-);
-
-iue_t dgGenerateExperiment
-(
-	void
-);
-
-iufl_t dgGenerateFrameList
 (
 	void
 );
@@ -52,5 +48,16 @@ iursd_t dgGenerateReceiveSettingsDict
 (
 	void
 );
+
+iue_t dgGenerateExperiment
+(
+	void
+);
+
+iut_t dgGenerateTransducer
+(
+	void
+);
+
 
 #endif //IUSLIBRARY_TESTDATAGENERATORS_H

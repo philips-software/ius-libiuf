@@ -15,6 +15,7 @@
 #include <include/iusHLSourceDict.h>
 #include <include/iusHL3DParametricSource.h>
 #include <include/iusHL3DNonParametricSource.h>
+#include <include/iusHL3DTransducer.h>
 
 static const char *pBmodePatternLabel = "bmode";
 static const char *pDopplerPatternLabel = "doppler";
@@ -220,6 +221,34 @@ iue_t dgGenerateExperiment()
 	TEST_ASSERT(experiment != IUE_INVALID);
 
 	return experiment;
+}
+
+
+iut_t dgGenerateTransducer
+(
+    void
+)
+{
+    int status = 0;
+    char *transducerName = "S5-1";
+    const int numTransducerElements = 128;
+    int i = 0;
+
+    // create and fill
+    const float transducerPitch = 0.000005f;
+
+    iu3dt_t transducer = iusHL3DTransducerCreate(transducerName, IUS_PLANE, 2500000.0f, numTransducerElements);
+    TEST_ASSERT(transducer != IU3DT_INVALID);
+    for (i = 0; i < numTransducerElements; i++)
+    {
+        iu3dp_t elemPos = iusHL3DPositionCreate((10 - numTransducerElements / 2)*transducerPitch, 0.0f, 0.0f);
+        iu3ds_t elemSize = iusHL3DSizeCreate(0.0001f,0.0001f,0.0001f);
+        iu3da_t elemAngle = iusHL3DAngleCreate(0.0f,0.3f);
+        iu3dte_t element = iusHL3DTransducerElementCreate(elemPos, elemAngle, elemSize);
+        iusHL3DTransducerSetElement(transducer, i, element);
+    }
+
+    return  (iut_t)transducer;
 }
 
 iutad_t dgGenerateTransmitApodizationDict
