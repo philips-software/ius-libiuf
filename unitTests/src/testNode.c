@@ -6,8 +6,9 @@
 #include <unity_internals.h>
 #include <unity_fixture.h>
 
-#include <iusHLNode.h>
-#include <iusHLInputInstance.h>
+#include <iusNode.h>
+#include <include/iusInputFile.h>
+#include <include/ius.h>
 
 TEST_GROUP(InputfileNode);
 
@@ -28,20 +29,44 @@ TEST_TEAR_DOWN(InputfileNode)
 TEST(InputfileNode, testNode)
 {
     int numParents = 0;
-    char pNodeType[] = "IUSINPUTFILETYPE_V3";
+    char pNodeType[] = IUS_INPUT_TYPE;
 
-    IusNode *hSimpleNode = iusHLCreateNode(pNodeType, numParents);
+    IusNode *hSimpleNode = iusCreateNode(pNodeType, numParents);
     TEST_ASSERT(hSimpleNode != IUN_INVALID);
     // Check type
-    char *pActualNodeType = iusHLGetNodeType(hSimpleNode);
+    char *pActualNodeType = iusGetNodeType(hSimpleNode);
     TEST_ASSERT_EQUAL_STRING(pNodeType, pActualNodeType);
     // Check numParents
-    TEST_ASSERT(iusHLNodeGetNumParents(hSimpleNode) == 0);
+    TEST_ASSERT(iusNodeGetNumParents(hSimpleNode) == 0);
     // Check unique
-    TEST_ASSERT(iusHLGetNodeId(hSimpleNode) != IUN_INVALID);
+    TEST_ASSERT(iusGetNodeId(hSimpleNode) != IUN_INVALID);
 }
 
+//Voorbeeld code gebruik met node structuur:
+//
+//iuif_t inputFile = iusInputFileOpen(“test”);
+//iuapd_t algoParams ;
+//iuf_t cwcFile = iusFileCreate(“cw1”, “c:\autoexec.bat”, file, algoParams );
+//
+//
+//
+//iuf_t iusFile = iusFileOpen( “c:\autoexec.bat” );
+//type = iusFileGetType( iusFile );
+//// cwc file
+//iucf_t cwcFile = (iucf_t)iusFile;
+//// voor algoparams, zie workbench
+//// zie /Users/nlv09165/proj/PPF/ius/Algorithms/CWC4DWD
+//iuapd_t algoParams = iusFileGetAlgoparams( iusFile ); // can be NULL
+//
+//iupl_t parents = iusFileGetParents(iusFile);
+//for( i = 0 ; i < iusParentsSize(parents); i++)
+//{
+//iuf_t parent = iusParentsGet(i);
+//type = iusFileGetType(parent); 
+//}
 
+// test scenario
+// create inpu file
 
 TEST_GROUP_RUNNER(InputfileNode)
 {

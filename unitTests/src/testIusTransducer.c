@@ -10,10 +10,10 @@
 #include <ius.h>
 #include <iusError.h>
 #include <iusTypes.h>
-#include <iusHLTransducerFactory.h>
-#include <include/iusHLTransducerImp.h>
-#include <include/iusHL2DTransducerImp.h>
-#include <include/iusHL3DTransducerImp.h>
+#include <iusTransducerFactory.h>
+#include <include/iusTransducerImp.h>
+#include <include/ius2DTransducerImp.h>
+#include <include/ius3DTransducerImp.h>
 
 TEST_GROUP(IusTransducer);
 
@@ -35,16 +35,16 @@ TEST(IusTransducer, testIusTransducerDelete)
     iut_t _3dTransducer;
     iut_t _2dTransducer;
 
-    _3dTransducer = (iut_t) iusHL3DTransducerCreate(pTransducerName, IUS_PLANE, centerFrequency, numElements);
-    int status = iusHLTransducerDelete(_3dTransducer);
+    _3dTransducer = (iut_t) ius3DTransducerCreate(pTransducerName, IUS_PLANE, centerFrequency, numElements);
+    int status = iusTransducerDelete(_3dTransducer);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
-    _2dTransducer = (iut_t) iusHL2DTransducerCreate(pTransducerName, IUS_LINE, centerFrequency, numElements);
-    status = iusHLTransducerDelete(_2dTransducer);
+    _2dTransducer = (iut_t) ius2DTransducerCreate(pTransducerName, IUS_LINE, centerFrequency, numElements);
+    status = iusTransducerDelete(_2dTransducer);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
     // invalid params
-    status = iusHLTransducerDelete(NULL);
+    status = iusTransducerDelete(NULL);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
 }
 
@@ -58,26 +58,26 @@ TEST(IusTransducer, testIusTransducerCompare)
     iut_t _2dTransducer
     ;
 
-    _3dTransducer = (iut_t) iusHL3DTransducerCreate(pTransducerName, IUS_PLANE, centerFrequency, numElements);
+    _3dTransducer = (iut_t) ius3DTransducerCreate(pTransducerName, IUS_PLANE, centerFrequency, numElements);
     TEST_ASSERT_NOT_EQUAL(IUT_INVALID,_3dTransducer);
 
-    _3dTransducerDuplicate = (iut_t) iusHL3DTransducerCreate(pTransducerName, IUS_PLANE, centerFrequency, numElements);
+    _3dTransducerDuplicate = (iut_t) ius3DTransducerCreate(pTransducerName, IUS_PLANE, centerFrequency, numElements);
     TEST_ASSERT_NOT_EQUAL(IUT_INVALID,_3dTransducerDuplicate);
 
-    _2dTransducer = (iut_t) iusHL2DTransducerCreate(pTransducerName, IUS_LINE, centerFrequency, numElements);
+    _2dTransducer = (iut_t) ius2DTransducerCreate(pTransducerName, IUS_LINE, centerFrequency, numElements);
     TEST_ASSERT_NOT_EQUAL(IUT_INVALID,_2dTransducer);
 
-    IUS_BOOL isEqual = iusHLTransducerCompare(_3dTransducer, _3dTransducer);
+    IUS_BOOL isEqual = iusTransducerCompare(_3dTransducer, _3dTransducer);
     TEST_ASSERT(isEqual == IUS_TRUE);
 
-    isEqual = iusHLTransducerCompare(_3dTransducer, _3dTransducerDuplicate);
+    isEqual = iusTransducerCompare(_3dTransducer, _3dTransducerDuplicate);
     TEST_ASSERT(isEqual == IUS_TRUE);
 
-    isEqual = iusHLTransducerCompare(_3dTransducer, _2dTransducer);
+    isEqual = iusTransducerCompare(_3dTransducer, _2dTransducer);
     TEST_ASSERT(isEqual == IUS_FALSE);
 
     // invalid params
-    int status = iusHLTransducerDelete(NULL);
+    int status = iusTransducerDelete(NULL);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
 }
 
@@ -96,21 +96,21 @@ TEST(IusTransducer, testIusTransducerSetGet)
     iut_t _3dTransducer;
     iut_t _2dTransducer;
 
-    _3dTransducer = (iut_t) iusHL3DTransducerCreate(p3DTransducerName, IUS_PLANE, _3DCenterFrequency, _3DNumElements);
+    _3dTransducer = (iut_t) ius3DTransducerCreate(p3DTransducerName, IUS_PLANE, _3DCenterFrequency, _3DNumElements);
     TEST_ASSERT_NOT_EQUAL(IUT_INVALID, _3dTransducer);
     TEST_ASSERT(_3dTransducer != IUT_INVALID);
-    TEST_ASSERT_EQUAL_FLOAT(_3DCenterFrequency, iusHLTransducerGetCenterFrequency(_3dTransducer));
-    TEST_ASSERT_EQUAL(_3DNumElements, iusHLTransducerGetNumElements(_3dTransducer));
-    TEST_ASSERT_EQUAL_STRING(p3DTransducerName, iusHLTransducerGetName(_3dTransducer));
-    TEST_ASSERT_EQUAL(IUS_PLANE, iusHLTransducerGetShape(_3dTransducer));
+    TEST_ASSERT_EQUAL_FLOAT(_3DCenterFrequency, iusTransducerGetCenterFrequency(_3dTransducer));
+    TEST_ASSERT_EQUAL(_3DNumElements, iusTransducerGetNumElements(_3dTransducer));
+    TEST_ASSERT_EQUAL_STRING(p3DTransducerName, iusTransducerGetName(_3dTransducer));
+    TEST_ASSERT_EQUAL(IUS_PLANE, iusTransducerGetShape(_3dTransducer));
 
-    _2dTransducer = (iut_t) iusHL2DTransducerCreate(p2DTransducerName, IUS_LINE, _2DCenterFrequency, _2DNumElements);
+    _2dTransducer = (iut_t) ius2DTransducerCreate(p2DTransducerName, IUS_LINE, _2DCenterFrequency, _2DNumElements);
     TEST_ASSERT_NOT_EQUAL(IUT_INVALID, _2dTransducer);
     TEST_ASSERT(_2dTransducer != IUT_INVALID);
-    TEST_ASSERT_EQUAL_FLOAT(_2DCenterFrequency, iusHLTransducerGetCenterFrequency(_2dTransducer));
-    TEST_ASSERT_EQUAL(_2DNumElements, iusHLTransducerGetNumElements(_2dTransducer));
-    TEST_ASSERT_EQUAL_STRING(p2DTransducerName, iusHLTransducerGetName(_2dTransducer));
-    TEST_ASSERT_EQUAL(IUS_LINE, iusHLTransducerGetShape(_2dTransducer));
+    TEST_ASSERT_EQUAL_FLOAT(_2DCenterFrequency, iusTransducerGetCenterFrequency(_2dTransducer));
+    TEST_ASSERT_EQUAL(_2DNumElements, iusTransducerGetNumElements(_2dTransducer));
+    TEST_ASSERT_EQUAL_STRING(p2DTransducerName, iusTransducerGetName(_2dTransducer));
+    TEST_ASSERT_EQUAL(IUS_LINE, iusTransducerGetShape(_2dTransducer));
 
 }
 
@@ -128,32 +128,32 @@ TEST(IusTransducer, testIusTransducerSerialization)
 	// create and fill
 	const float transducerPitch = 0.000005f;
 
-	iut_t transducer =  (iut_t) iusHL2DTransducerCreate(transducerName, IUS_LINE, centerfrequency, numTransducerElements);
+	iut_t transducer =  (iut_t) ius2DTransducerCreate(transducerName, IUS_LINE, centerfrequency, numTransducerElements);
 	for (i = 0; i < numTransducerElements; i++)
 	{
-		iu2dp_t elemPos = iusHL2DPositionCreate((i - numTransducerElements / 2)*transducerPitch, 0.0f);	
-		iu2ds_t elemSize = iusHL2DSizeCreate(0.0001f,0.0001f);
-		iu2dte_t element = iusHL2DTransducerElementCreate(elemPos, 0.0f, elemSize);
-		iusHL2DTransducerSetElement( (iu2dt_t) transducer, i, element);
+		iu2dp_t elemPos = ius2DPositionCreate((i - numTransducerElements / 2)*transducerPitch, 0.0f);
+		iu2ds_t elemSize = ius2DSizeCreate(0.0001f,0.0001f);
+		iu2dte_t element = ius2DTransducerElementCreate(elemPos, 0.0f, elemSize);
+		ius2DTransducerSetElement( (iu2dt_t) transducer, i, element);
 	}
 	TEST_ASSERT(transducer != IUT_INVALID);
 
 	// save
 	hid_t handle = H5Fcreate(filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
 	TEST_ASSERT(handle > 0);
-	status = iusHLTransducerSave(transducer, path, handle);
+	status = iusTransducerSave(transducer, path, handle);
 	H5Fclose(handle);
 	TEST_ASSERT_EQUAL(IUS_E_OK, status);
 
     // read back
     handle = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT );
-    iut_t savedObj = iusHLTransducerLoad(handle, path);
+    iut_t savedObj = iusTransducerLoad(handle, path);
     TEST_ASSERT_NOT_EQUAL(NULL, savedObj);
     H5Fclose(handle);
 
-    TEST_ASSERT_EQUAL(IUS_TRUE, iusHLTransducerCompare(transducer,savedObj));
-    status = iusHLTransducerDelete(transducer);
-    status |= iusHLTransducerDelete(savedObj);
+    TEST_ASSERT_EQUAL(IUS_TRUE, iusTransducerCompare(transducer,savedObj));
+    status = iusTransducerDelete(transducer);
+    status |= iusTransducerDelete(savedObj);
 	TEST_ASSERT(status == IUS_E_OK);
 }
 

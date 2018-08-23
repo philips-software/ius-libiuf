@@ -8,7 +8,7 @@
 #include <ius.h>
 #include <iusError.h>
 #include <iusTypes.h>
-#include <iusHLDrivingScheme.h>
+#include <iusDrivingScheme.h>
 
 #include <testDataGenerators.h>
 
@@ -42,7 +42,7 @@ int createCompareAndDeleteScheme
                                           numTransmitSources,numChannels,numApodizations,numTGCs,
                                           numElements);
     TEST_ASSERT(drivingScheme != IUDS_INVALID);
-    status = iusHLDeleteDrivingScheme(drivingScheme);
+    status = iusDeleteDrivingScheme(drivingScheme);
     TEST_ASSERT(status == (IUS_E_OK));
     return status;
 }
@@ -68,13 +68,13 @@ int createTestAndDeleteScheme
                                           numTransmitSources,numChannels,numApodizations,numTGCs,
                                           numElements);
     status |= (drivingScheme == IUDS_INVALID);
-    status |= ((shape) != iusHLDrivingSchemeGetShape(drivingScheme));
-    status |= ((type) != iusHLDrivingSchemeGetType(drivingScheme));
-    status |= ((numTransmitPulses) != iusHLDrivingSchemeGetNumTransmitPulses(drivingScheme));
-    status |= ((numChannels) != iusHLDrivingSchemeGetNumChannels(drivingScheme));
-    status |= ((numTransmitSources) != iusHLDrivingSchemeGetNumTransmitSources(drivingScheme));
-    status |= ((numElements) != iusHLDrivingSchemeGetNumElements(drivingScheme));
-    status |= iusHLDeleteDrivingScheme(drivingScheme);
+    status |= ((shape) != iusDrivingSchemeGetShape(drivingScheme));
+    status |= ((type) != iusDrivingSchemeGetType(drivingScheme));
+    status |= ((numTransmitPulses) != iusDrivingSchemeGetNumTransmitPulses(drivingScheme));
+    status |= ((numChannels) != iusDrivingSchemeGetNumChannels(drivingScheme));
+    status |= ((numTransmitSources) != iusDrivingSchemeGetNumTransmitSources(drivingScheme));
+    status |= ((numElements) != iusDrivingSchemeGetNumElements(drivingScheme));
+    status |= iusDeleteDrivingScheme(drivingScheme);
     return status;
 }
 
@@ -189,11 +189,11 @@ TEST(IusDrivingScheme, testIusDeleteDrivingScheme)
                                        numTGCs,
                                        numElements);
     TEST_ASSERT(obj != IUDS_INVALID);
-    int status = iusHLDeleteDrivingScheme(obj);
+    int status = iusDeleteDrivingScheme(obj);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
     // invalid params
-    status = iusHLDeleteDrivingScheme(NULL);
+    status = iusDeleteDrivingScheme(NULL);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
 }
 
@@ -229,9 +229,9 @@ TEST(IusDrivingScheme, testIusCompareDrivingScheme)
                                              numElements);
     TEST_ASSERT(obj != IUDS_INVALID);
     TEST_ASSERT(notherObj != IUDS_INVALID);
-    equal = iusHLCompareDrivingScheme(obj,obj);
+    equal = iusCompareDrivingScheme(obj,obj);
     TEST_ASSERT_EQUAL(IUS_TRUE,equal);
-    equal = iusHLCompareDrivingScheme(obj,notherObj);
+    equal = iusCompareDrivingScheme(obj,notherObj);
     TEST_ASSERT_EQUAL(IUS_TRUE,equal);
 
     // Changing a single parameter should change the compoare outcome
@@ -244,7 +244,7 @@ TEST(IusDrivingScheme, testIusCompareDrivingScheme)
                                        numApodizations,
                                        numTGCs,
                                        numElements);
-    equal = iusHLCompareDrivingScheme(obj,ynotherObj);
+    equal = iusCompareDrivingScheme(obj,ynotherObj);
     TEST_ASSERT_EQUAL(IUS_FALSE,equal);
     ynotherObj = dgCreateDrivingScheme(IUS_DIVERGING_WAVES_PARAMETRIZED,
                                        IUS_2D_SHAPE,IUS_PARAMETRIC_3D_SOURCE_LOCATION,
@@ -254,7 +254,7 @@ TEST(IusDrivingScheme, testIusCompareDrivingScheme)
                                        numApodizations,
                                        numTGCs,
                                        numElements);
-    equal = iusHLCompareDrivingScheme(obj,ynotherObj);
+    equal = iusCompareDrivingScheme(obj,ynotherObj);
     TEST_ASSERT_EQUAL(IUS_FALSE,equal);
     ynotherObj = dgCreateDrivingScheme(IUS_DIVERGING_WAVES_PARAMETRIZED,
                                        IUS_3D_SHAPE,IUS_PARAMETRIC_3D_SOURCE_LOCATION,
@@ -264,7 +264,7 @@ TEST(IusDrivingScheme, testIusCompareDrivingScheme)
                                        numApodizations,
                                        numTGCs,
                                        numElements);
-    equal = iusHLCompareDrivingScheme(obj,ynotherObj);
+    equal = iusCompareDrivingScheme(obj,ynotherObj);
     TEST_ASSERT_EQUAL(IUS_FALSE,equal);
     ynotherObj = dgCreateDrivingScheme(IUS_DIVERGING_WAVES_PARAMETRIZED,
                                        IUS_3D_SHAPE,IUS_PARAMETRIC_3D_SOURCE_LOCATION,
@@ -274,7 +274,7 @@ TEST(IusDrivingScheme, testIusCompareDrivingScheme)
                                        numApodizations,
                                        numTGCs,
                                        numElements);
-    equal = iusHLCompareDrivingScheme(obj,ynotherObj);
+    equal = iusCompareDrivingScheme(obj,ynotherObj);
     TEST_ASSERT_EQUAL(IUS_FALSE,equal);
     ynotherObj = dgCreateDrivingScheme(IUS_DIVERGING_WAVES_PARAMETRIZED,
                                        IUS_3D_SHAPE,IUS_PARAMETRIC_3D_SOURCE_LOCATION,
@@ -284,7 +284,7 @@ TEST(IusDrivingScheme, testIusCompareDrivingScheme)
                                        numApodizations,
                                        numTGCs,
                                        numElements);
-    equal = iusHLCompareDrivingScheme(obj,ynotherObj);
+    equal = iusCompareDrivingScheme(obj,ynotherObj);
     TEST_ASSERT_EQUAL(IUS_FALSE,equal);
     ynotherObj = dgCreateDrivingScheme(IUS_DIVERGING_WAVES_PARAMETRIZED,
                                        IUS_3D_SHAPE,IUS_PARAMETRIC_3D_SOURCE_LOCATION,
@@ -294,7 +294,7 @@ TEST(IusDrivingScheme, testIusCompareDrivingScheme)
                                        0,
                                        numTGCs,
                                        numElements);
-    equal = iusHLCompareDrivingScheme(obj,ynotherObj);
+    equal = iusCompareDrivingScheme(obj,ynotherObj);
     TEST_ASSERT_EQUAL(IUS_FALSE,equal);
     ynotherObj = dgCreateDrivingScheme(IUS_DIVERGING_WAVES_PARAMETRIZED,
                                        IUS_3D_SHAPE,IUS_PARAMETRIC_3D_SOURCE_LOCATION,
@@ -305,7 +305,7 @@ TEST(IusDrivingScheme, testIusCompareDrivingScheme)
                                        0,
                                        numElements
                                        );
-    equal = iusHLCompareDrivingScheme(obj,ynotherObj);
+    equal = iusCompareDrivingScheme(obj,ynotherObj);
     TEST_ASSERT_EQUAL(IUS_FALSE,equal);
     ynotherObj = dgCreateDrivingScheme(IUS_DIVERGING_WAVES_PARAMETRIZED,
                                        IUS_3D_SHAPE,IUS_PARAMETRIC_3D_SOURCE_LOCATION,
@@ -315,18 +315,18 @@ TEST(IusDrivingScheme, testIusCompareDrivingScheme)
                                        numApodizations,
                                        numTGCs,
                                        0);
-    equal = iusHLCompareDrivingScheme(obj,ynotherObj);
+    equal = iusCompareDrivingScheme(obj,ynotherObj);
     TEST_ASSERT_EQUAL(IUS_FALSE,equal);
 
 
     // invalid
-    equal = iusHLCompareDrivingScheme(obj,NULL);
+    equal = iusCompareDrivingScheme(obj,NULL);
     TEST_ASSERT_EQUAL(IUS_FALSE,equal);
-    equal = iusHLCompareDrivingScheme(NULL,obj);
+    equal = iusCompareDrivingScheme(NULL,obj);
     TEST_ASSERT_EQUAL(IUS_FALSE,equal);
 
-    iusHLDeleteDrivingScheme(obj);
-    iusHLDeleteDrivingScheme(notherObj);
+    iusDeleteDrivingScheme(obj);
+    iusDeleteDrivingScheme(notherObj);
 }
 
 TEST(IusDrivingScheme, testIusCreateDrivingScheme)

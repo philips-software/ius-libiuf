@@ -7,7 +7,7 @@
 
 #include <hdf5.h>
 #include <ius.h>
-#include <iusHLReceiveChannelMapDictImp.h>
+#include <iusReceiveChannelMapDictImp.h>
 
 TEST_GROUP(IusReceiveChannelMapDict);
 
@@ -22,13 +22,13 @@ TEST_TEAR_DOWN(IusReceiveChannelMapDict)
 
 TEST(IusReceiveChannelMapDict, testIusReceiveChannelMapDictCreate)
 {
-	iurcmd_t obj = iusHLReceiveChannelMapDictCreate();
-	iurcmd_t notherObj = iusHLReceiveChannelMapDictCreate();
+	iurcmd_t obj = iusReceiveChannelMapDictCreate();
+	iurcmd_t notherObj = iusReceiveChannelMapDictCreate();
 
 	TEST_ASSERT(obj != IURCMD_INVALID);
 	TEST_ASSERT(notherObj != IURCMD_INVALID);
-	iusHLReceiveChannelMapDictDelete(obj);
-	iusHLReceiveChannelMapDictDelete(notherObj);
+	iusReceiveChannelMapDictDelete(obj);
+	iusReceiveChannelMapDictDelete(notherObj);
 }
 
 
@@ -39,35 +39,35 @@ TEST(IusReceiveChannelMapDict, testIusReceiveChannelMapDictCompare)
 	int oneToOneMap[10] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 	int inverseMap[10] = { 9, 8, 7, 6, 5, 4, 3, 2, 1, 0 };
 	int     status;
-	iurcm_t receiveChannelMap = iusHLReceiveChannelMapCreate(numChannels);
-	iurcm_t inverseReceiveChannelMap = iusHLReceiveChannelMapCreate(numChannels);
+	iurcm_t receiveChannelMap = iusReceiveChannelMapCreate(numChannels);
+	iurcm_t inverseReceiveChannelMap = iusReceiveChannelMapCreate(numChannels);
 
-	iurcmd_t dict = iusHLReceiveChannelMapDictCreate();
-	status = iusHLReceiveChannelMapSetMap(receiveChannelMap, oneToOneMap);	
-	status |= iusHLReceiveChannelMapDictSet(dict, "one-to-one", receiveChannelMap);
+	iurcmd_t dict = iusReceiveChannelMapDictCreate();
+	status = iusReceiveChannelMapSetMap(receiveChannelMap, oneToOneMap);
+	status |= iusReceiveChannelMapDictSet(dict, "one-to-one", receiveChannelMap);
 	TEST_ASSERT(status == IUS_E_OK);
 
-	iurcmd_t notherDict = iusHLReceiveChannelMapDictCreate();
-	status = iusHLReceiveChannelMapSetMap(inverseReceiveChannelMap, inverseMap);
-	status |= iusHLReceiveChannelMapDictSet(dict, "inverse", receiveChannelMap);
+	iurcmd_t notherDict = iusReceiveChannelMapDictCreate();
+	status = iusReceiveChannelMapSetMap(inverseReceiveChannelMap, inverseMap);
+	status |= iusReceiveChannelMapDictSet(dict, "inverse", receiveChannelMap);
 
 	TEST_ASSERT(dict != IURCMD_INVALID);
 	TEST_ASSERT(notherDict != IURCMD_INVALID);
 
 	// Same empty lists...
-	equal = iusHLReceiveChannelMapDictCompare(dict, dict);
+	equal = iusReceiveChannelMapDictCompare(dict, dict);
 	TEST_ASSERT_EQUAL(IUS_TRUE, equal);
-	equal = iusHLReceiveChannelMapDictCompare(dict, notherDict);
+	equal = iusReceiveChannelMapDictCompare(dict, notherDict);
 	TEST_ASSERT_EQUAL(IUS_FALSE, equal);
 
 	// invalid params
-	equal = iusHLReceiveChannelMapDictCompare(dict, NULL);
+	equal = iusReceiveChannelMapDictCompare(dict, NULL);
 	TEST_ASSERT_EQUAL(IUS_FALSE, equal);
-	equal = iusHLReceiveChannelMapDictCompare(NULL, dict);
+	equal = iusReceiveChannelMapDictCompare(NULL, dict);
 	TEST_ASSERT_EQUAL(IUS_FALSE, equal);
 
-	iusHLReceiveChannelMapDictDelete(dict);
-	iusHLReceiveChannelMapDictDelete(notherDict);
+	iusReceiveChannelMapDictDelete(dict);
+	iusReceiveChannelMapDictDelete(notherDict);
 }
 
 TEST(IusReceiveChannelMapDict, testIusReceiveChannelMapDictSerialization)
@@ -80,27 +80,27 @@ TEST(IusReceiveChannelMapDict, testIusReceiveChannelMapDictSerialization)
 	int channelMap[8] = { 0, 1, 2, 3, 4, 5, 6, 7 };
 
 	// create and save
-	iurcm_t obj = iusHLReceiveChannelMapCreate(numChannels);
-	int status = iusHLReceiveChannelMapSetMap(obj, channelMap);
+	iurcm_t obj = iusReceiveChannelMapCreate(numChannels);
+	int status = iusReceiveChannelMapSetMap(obj, channelMap);
 
-	iurcmd_t receiveChannelMapDict = iusHLReceiveChannelMapDictCreate();
-	status |= iusHLReceiveChannelMapDictSet(receiveChannelMapDict, label, obj);
+	iurcmd_t receiveChannelMapDict = iusReceiveChannelMapDictCreate();
+	status |= iusReceiveChannelMapDictSet(receiveChannelMapDict, label, obj);
 
 	hid_t handle = H5Fcreate(filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
 	TEST_ASSERT(handle > 0);
-	status = iusHLReceiveChannelMapDictSave(receiveChannelMapDict, ReceiveChannelMapDictPath, handle);
+	status = iusReceiveChannelMapDictSave(receiveChannelMapDict, ReceiveChannelMapDictPath, handle);
 	H5Fclose(handle);
 	TEST_ASSERT_EQUAL(IUS_E_OK, status);
 
 	// read back
 	handle = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT);
-	iurcmd_t savedDict = iusHLReceiveChannelMapDictLoad(handle, ReceiveChannelMapDictPath);
+	iurcmd_t savedDict = iusReceiveChannelMapDictLoad(handle, ReceiveChannelMapDictPath);
 	TEST_ASSERT_NOT_EQUAL(NULL, savedDict);
 	H5Fclose(handle);
 
-	TEST_ASSERT_EQUAL(IUS_TRUE, iusHLReceiveChannelMapDictCompare(receiveChannelMapDict, savedDict));
-	iusHLReceiveChannelMapDictDelete(receiveChannelMapDict);
-	iusHLReceiveChannelMapDictDelete(savedDict);
+	TEST_ASSERT_EQUAL(IUS_TRUE, iusReceiveChannelMapDictCompare(receiveChannelMapDict, savedDict));
+	iusReceiveChannelMapDictDelete(receiveChannelMapDict);
+	iusReceiveChannelMapDictDelete(savedDict);
 }
 
 
@@ -119,38 +119,38 @@ TEST(IusReceiveChannelMapDict, testIusReceiveChannelMapSerialization)
 	char *dictPath = "/PulseDict";
 
 	// create
-	iupd_t dict = iusHLPulseDictCreate();
+	iupd_t dict = iusPulseDictCreate();
 	TEST_ASSERT(dict != IUPD_INVALID);
 
 	// fill
 	char *parametricLabel = "parametricPulseLabel";
 	char *nonParametricLabel = "nonParametricPulseLabel";
-	iupp_t parametricPulse = iusHLParametricPulseCreate(parametricLabel, pulseFrequency, pulseAmplitude, pulseCount);
-	iunpp_t nonParametricPulse = iusHLNonParametricPulseCreate(nonParametricLabel, numPulseValues);
-	iusHLNonParametricPulseSetValue(nonParametricPulse, 0, 10.0f, 10.0f);
-	iusHLNonParametricPulseSetValue(nonParametricPulse, 1, 20.0f, 10.0f);
-	status = iusHLPulseDictSet(dict, nonParametricLabel, (iup_t)nonParametricPulse);
+	iupp_t parametricPulse = iusParametricPulseCreate(parametricLabel, pulseFrequency, pulseAmplitude, pulseCount);
+	iunpp_t nonParametricPulse = iusNonParametricPulseCreate(nonParametricLabel, numPulseValues);
+	iusNonParametricPulseSetValue(nonParametricPulse, 0, 10.0f, 10.0f);
+	iusNonParametricPulseSetValue(nonParametricPulse, 1, 20.0f, 10.0f);
+	status = iusPulseDictSet(dict, nonParametricLabel, (iup_t)nonParametricPulse);
 	TEST_ASSERT(status == IUS_E_OK);
-	status = iusHLPulseDictSet(dict, parametricLabel, (iup_t)parametricPulse);
+	status = iusPulseDictSet(dict, parametricLabel, (iup_t)parametricPulse);
 	TEST_ASSERT(status == IUS_E_OK);
 
 	// save
 	hid_t handle = H5Fcreate(filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
 	TEST_ASSERT(handle > 0);
-	status = iusHLPulseDictSave(dict, dictPath, handle);
+	status = iusPulseDictSave(dict, dictPath, handle);
 	H5Fclose(handle);
 	TEST_ASSERT_EQUAL(IUS_E_OK, status);
 
 	// read back
 	handle = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT);
-	iupd_t savedObj = iusHLPulseDictLoad(handle, dictPath);
+	iupd_t savedObj = iusPulseDictLoad(handle, dictPath);
 	TEST_ASSERT(savedObj != NULL);
 	H5Fclose(handle);
 
-	TEST_ASSERT_EQUAL(IUS_TRUE, iusHLPulseDictCompare(dict, savedObj));
+	TEST_ASSERT_EQUAL(IUS_TRUE, iusPulseDictCompare(dict, savedObj));
 
-	iusHLPulseDictDelete(dict);
-	iusHLPulseDictDelete(savedObj);
+	iusPulseDictDelete(dict);
+	iusPulseDictDelete(savedObj);
 }
 #endif
 

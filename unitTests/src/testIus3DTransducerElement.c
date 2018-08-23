@@ -10,7 +10,7 @@
 #include <include/ius.h>
 #include <include/iusError.h>
 #include <include/iusTypes.h>
-#include "include/iusHL3DTransducerElementImp.h"
+#include "include/ius3DTransducerElementImp.h"
 
 TEST_GROUP(Ius3DTransducerElement);
 
@@ -27,21 +27,21 @@ TEST(Ius3DTransducerElement, testIus3DTransducerElementCreate)
 {
     const float transducerPitch = 0.000005f;
     const int numTransducerElements = 128;
-    iu3dp_t elemPos = iusHL3DPositionCreate((10 - numTransducerElements / 2)*transducerPitch, 0.0f, 0.0f);
-    iu3ds_t elemSize = iusHL3DSizeCreate(0.0001f,0.0001f,0.0001f);
-    iu3da_t elemAngle = iusHL3DAngleCreate(0.0f,0.3f);
-    iu3dte_t element = iusHL3DTransducerElementCreate(elemPos, elemAngle, elemSize);
+    iu3dp_t elemPos = ius3DPositionCreate((10 - numTransducerElements / 2)*transducerPitch, 0.0f, 0.0f);
+    iu3ds_t elemSize = ius3DSizeCreate(0.0001f,0.0001f,0.0001f);
+    iu3da_t elemAngle = ius3DAngleCreate(0.0f,0.3f);
+    iu3dte_t element = ius3DTransducerElementCreate(elemPos, elemAngle, elemSize);
     TEST_ASSERT_NOT_EQUAL(IU3DTE_INVALID,element);
 
     //invalid params
-    iu3dte_t nothereElement = iusHL3DTransducerElementCreate(elemPos, elemAngle, NULL);
+    iu3dte_t nothereElement = ius3DTransducerElementCreate(elemPos, elemAngle, NULL);
     TEST_ASSERT_EQUAL(IU3DTE_INVALID,nothereElement);
-    nothereElement = iusHL3DTransducerElementCreate(elemPos, NULL, elemSize);
+    nothereElement = ius3DTransducerElementCreate(elemPos, NULL, elemSize);
     TEST_ASSERT_EQUAL(IU3DTE_INVALID,nothereElement);
-    nothereElement = iusHL3DTransducerElementCreate(NULL, elemAngle, elemSize);
+    nothereElement = ius3DTransducerElementCreate(NULL, elemAngle, elemSize);
     TEST_ASSERT_EQUAL(IU3DTE_INVALID,nothereElement);
 
-    int status = iusHL3DTransducerElementDelete(element);
+    int status = ius3DTransducerElementDelete(element);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 }
 
@@ -50,21 +50,21 @@ TEST(Ius3DTransducerElement, testIus3DTransducerElementDelete)
 {
     const float transducerPitch = 0.000005f;
     const int numTransducerElements = 128;
-    iu3dp_t elemPos = iusHL3DPositionCreate((10 - numTransducerElements / 2)*transducerPitch, 0.0f, 0.0f);
-    iu3ds_t elemSize = iusHL3DSizeCreate(0.0001f,0.0001f,0.0001f);
-    iu3da_t elemAngle = iusHL3DAngleCreate(0.0f,0.3f);
-    iu3dte_t element = iusHL3DTransducerElementCreate(elemPos, elemAngle, elemSize);
+    iu3dp_t elemPos = ius3DPositionCreate((10 - numTransducerElements / 2)*transducerPitch, 0.0f, 0.0f);
+    iu3ds_t elemSize = ius3DSizeCreate(0.0001f,0.0001f,0.0001f);
+    iu3da_t elemAngle = ius3DAngleCreate(0.0f,0.3f);
+    iu3dte_t element = ius3DTransducerElementCreate(elemPos, elemAngle, elemSize);
     TEST_ASSERT_NOT_EQUAL(IU3DTE_INVALID,element);
 
-    int status = iusHL3DTransducerElementDelete(element);
+    int status = ius3DTransducerElementDelete(element);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
     // invalid params
-    status = iusHL3DTransducerElementDelete(NULL);
+    status = ius3DTransducerElementDelete(NULL);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE,status);
-    iusHL3DPositionDelete(elemPos);
-    iusHL3DAngleDelete(elemAngle);
-    iusHL3DSizeDelete(elemSize);
+    ius3DPositionDelete(elemPos);
+    ius3DAngleDelete(elemAngle);
+    ius3DSizeDelete(elemSize);
 }
 
 TEST(Ius3DTransducerElement, testIus3DTransducerElementCompare)
@@ -72,57 +72,57 @@ TEST(Ius3DTransducerElement, testIus3DTransducerElementCompare)
     IUS_BOOL equal;
     const float transducerPitch = 0.000005f;
     const int numTransducerElements = 128;
-    iu3dp_t elemPos = iusHL3DPositionCreate((10 - numTransducerElements / 2)*transducerPitch, 0.0f, 0.0f);
-    iu3dp_t diffElemPos = iusHL3DPositionCreate((19 - numTransducerElements / 2)*transducerPitch, 0.1f, 0.0f);
+    iu3dp_t elemPos = ius3DPositionCreate((10 - numTransducerElements / 2)*transducerPitch, 0.0f, 0.0f);
+    iu3dp_t diffElemPos = ius3DPositionCreate((19 - numTransducerElements / 2)*transducerPitch, 0.1f, 0.0f);
 
-    iu3ds_t elemSize = iusHL3DSizeCreate(0.0001f,0.0001f,0.0001f);
-    iu3ds_t diffElemSize = iusHL3DSizeCreate(0.0002f,0.0001f,0.0001f);
+    iu3ds_t elemSize = ius3DSizeCreate(0.0001f,0.0001f,0.0001f);
+    iu3ds_t diffElemSize = ius3DSizeCreate(0.0002f,0.0001f,0.0001f);
 
-    iu3da_t elemAngle = iusHL3DAngleCreate(0.0f,0.3f);
-    iu3da_t diffElemAngle = iusHL3DAngleCreate(0.1f,0.3f);
+    iu3da_t elemAngle = ius3DAngleCreate(0.0f,0.3f);
+    iu3da_t diffElemAngle = ius3DAngleCreate(0.1f,0.3f);
 
-    iu3dte_t element = iusHL3DTransducerElementCreate(elemPos, elemAngle, elemSize);
+    iu3dte_t element = ius3DTransducerElementCreate(elemPos, elemAngle, elemSize);
     TEST_ASSERT_NOT_EQUAL(IU3DTE_INVALID,element);
 
-    iu3dte_t duplicateElement = iusHL3DTransducerElementCreate(elemPos, elemAngle, elemSize);
+    iu3dte_t duplicateElement = ius3DTransducerElementCreate(elemPos, elemAngle, elemSize);
     TEST_ASSERT_NOT_EQUAL(IU3DTE_INVALID,element);
 
-    equal = iusHL3DTransducerElementCompare(element,element);
+    equal = ius3DTransducerElementCompare(element,element);
     TEST_ASSERT_EQUAL(IUS_TRUE,equal);
 
-    equal = iusHL3DTransducerElementCompare(element,duplicateElement);
+    equal = ius3DTransducerElementCompare(element,duplicateElement);
     TEST_ASSERT_EQUAL(IUS_TRUE,equal);
 
-    iu3dte_t diffElement = iusHL3DTransducerElementCreate(elemPos, elemAngle, diffElemSize);
-    equal = iusHL3DTransducerElementCompare(element,diffElement);
+    iu3dte_t diffElement = ius3DTransducerElementCreate(elemPos, elemAngle, diffElemSize);
+    equal = ius3DTransducerElementCompare(element,diffElement);
     TEST_ASSERT_EQUAL(IUS_FALSE,equal);
-    iusHL3DTransducerElementDelete(diffElement);
+    ius3DTransducerElementDelete(diffElement);
 
-    diffElement = iusHL3DTransducerElementCreate(elemPos, diffElemAngle, elemSize);
-    equal = iusHL3DTransducerElementCompare(element,diffElement);
+    diffElement = ius3DTransducerElementCreate(elemPos, diffElemAngle, elemSize);
+    equal = ius3DTransducerElementCompare(element,diffElement);
     TEST_ASSERT_EQUAL(IUS_FALSE,equal);
-    iusHL3DTransducerElementDelete(diffElement);
+    ius3DTransducerElementDelete(diffElement);
 
-    diffElement = iusHL3DTransducerElementCreate(diffElemPos, elemAngle, elemSize);
-    equal = iusHL3DTransducerElementCompare(element,diffElement);
+    diffElement = ius3DTransducerElementCreate(diffElemPos, elemAngle, elemSize);
+    equal = ius3DTransducerElementCompare(element,diffElement);
     TEST_ASSERT_EQUAL(IUS_FALSE,equal);
-    iusHL3DTransducerElementDelete(diffElement);
+    ius3DTransducerElementDelete(diffElement);
 
     // invalid params
-    equal = iusHL3DTransducerElementCompare(element,NULL);
+    equal = ius3DTransducerElementCompare(element,NULL);
     TEST_ASSERT_EQUAL(IUS_FALSE,equal);
-    equal = iusHL3DTransducerElementCompare(NULL,element);
+    equal = ius3DTransducerElementCompare(NULL,element);
     TEST_ASSERT_EQUAL(IUS_FALSE,equal);
 
 
-    iusHL3DTransducerElementDelete(element);
-    iusHL3DTransducerElementDelete(duplicateElement);
-    iusHL3DPositionDelete(elemPos);
-    iusHL3DAngleDelete(elemAngle);
-    iusHL3DSizeDelete(elemSize);
-    iusHL3DPositionDelete(diffElemPos);
-    iusHL3DAngleDelete(diffElemAngle);
-    iusHL3DSizeDelete(diffElemSize);
+    ius3DTransducerElementDelete(element);
+    ius3DTransducerElementDelete(duplicateElement);
+    ius3DPositionDelete(elemPos);
+    ius3DAngleDelete(elemAngle);
+    ius3DSizeDelete(elemSize);
+    ius3DPositionDelete(diffElemPos);
+    ius3DAngleDelete(diffElemAngle);
+    ius3DSizeDelete(diffElemSize);
 }
 
 
@@ -131,29 +131,29 @@ TEST(Ius3DTransducerElement, testIus3DTransducerElementSetGet)
     IUS_BOOL equal;
     const float transducerPitch = 0.000005f;
     const int numTransducerElements = 128;
-    iu3dp_t elemPos = iusHL3DPositionCreate((10 - numTransducerElements / 2)*transducerPitch, 0.0f, 0.0f);
-    iu3ds_t elemSize = iusHL3DSizeCreate(0.0001f,0.0001f,0.0001f);
-    iu3da_t elemAngle = iusHL3DAngleCreate(0.0f,0.3f);
+    iu3dp_t elemPos = ius3DPositionCreate((10 - numTransducerElements / 2)*transducerPitch, 0.0f, 0.0f);
+    iu3ds_t elemSize = ius3DSizeCreate(0.0001f,0.0001f,0.0001f);
+    iu3da_t elemAngle = ius3DAngleCreate(0.0f,0.3f);
 
-    iu3dte_t element = iusHL3DTransducerElementCreate(elemPos, elemAngle, elemSize);
+    iu3dte_t element = ius3DTransducerElementCreate(elemPos, elemAngle, elemSize);
     TEST_ASSERT_NOT_EQUAL(IU3DTE_INVALID,element);
 
-    iu3da_t angle = iusHL3DTransducerElementGetAngle(element);
-    equal = iusHL3DAngleCompare(elemAngle,angle);
+    iu3da_t angle = ius3DTransducerElementGetAngle(element);
+    equal = ius3DAngleCompare(elemAngle,angle);
     TEST_ASSERT_EQUAL(IUS_TRUE,equal);
 
-    iu3dp_t position = iusHL3DTransducerElementGetPosition(element);
-    equal = iusHL3DPositionCompare(elemPos,position);
+    iu3dp_t position = ius3DTransducerElementGetPosition(element);
+    equal = ius3DPositionCompare(elemPos,position);
     TEST_ASSERT_EQUAL(IUS_TRUE,equal);
 
-    iu3ds_t size = iusHL3DTransducerElementGetSize(element);
-    equal = iusHL3DSizeCompare(elemSize,size);
+    iu3ds_t size = ius3DTransducerElementGetSize(element);
+    equal = ius3DSizeCompare(elemSize,size);
     TEST_ASSERT_EQUAL(IUS_TRUE,equal);
 
-    iusHL3DPositionDelete(elemPos);
-    iusHL3DAngleDelete(elemAngle);
-    iusHL3DSizeDelete(elemSize);
-    iusHL3DTransducerElementDelete(element);
+    ius3DPositionDelete(elemPos);
+    ius3DAngleDelete(elemAngle);
+    ius3DSizeDelete(elemSize);
+    ius3DTransducerElementDelete(element);
 
 }
 
@@ -164,29 +164,29 @@ TEST(Ius3DTransducerElement, testIus3DTransducerElementSerialization)
     char *path = "/TransducerElement";
     const float transducerPitch = 0.000005f;
     const int numTransducerElements = 128;
-    iu3dp_t elemPos = iusHL3DPositionCreate((10 - numTransducerElements / 2)*transducerPitch, 0.0f, 0.0f);
-    iu3ds_t elemSize = iusHL3DSizeCreate(0.0001f,0.0001f,0.0001f);
-    iu3da_t elemAngle = iusHL3DAngleCreate(0.0f,0.3f);
+    iu3dp_t elemPos = ius3DPositionCreate((10 - numTransducerElements / 2)*transducerPitch, 0.0f, 0.0f);
+    iu3ds_t elemSize = ius3DSizeCreate(0.0001f,0.0001f,0.0001f);
+    iu3da_t elemAngle = ius3DAngleCreate(0.0f,0.3f);
 
-    iu3dte_t element = iusHL3DTransducerElementCreate(elemPos, elemAngle, elemSize);
+    iu3dte_t element = ius3DTransducerElementCreate(elemPos, elemAngle, elemSize);
     TEST_ASSERT_NOT_EQUAL(IU3DTE_INVALID,element);
 
     // save
     hid_t handle = H5Fcreate(filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
     TEST_ASSERT(handle > 0);
-    status = iusHL3DTransducerElementSave(element, path, handle);
+    status = ius3DTransducerElementSave(element, path, handle);
     H5Fclose(handle);
     TEST_ASSERT_EQUAL(IUS_E_OK, status);
 
     // read back
     handle = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT );
-    iu3dte_t savedObj = iusHL3DTransducerElementLoad(handle, path);
+    iu3dte_t savedObj = ius3DTransducerElementLoad(handle, path);
     TEST_ASSERT_NOT_EQUAL(NULL, savedObj);
     H5Fclose(handle);
 
-    TEST_ASSERT_EQUAL(IUS_TRUE, iusHL3DTransducerElementCompare(element,savedObj));
-    status = iusHL3DTransducerElementDelete(element);
-    status |= iusHL3DTransducerElementDelete(savedObj);
+    TEST_ASSERT_EQUAL(IUS_TRUE, ius3DTransducerElementCompare(element,savedObj));
+    status = ius3DTransducerElementDelete(element);
+    status |= ius3DTransducerElementDelete(savedObj);
     TEST_ASSERT(status == IUS_E_OK);
 }
 

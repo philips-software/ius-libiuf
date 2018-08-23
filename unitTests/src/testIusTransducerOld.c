@@ -10,8 +10,8 @@
 #include <ius.h>
 #include <iusError.h>
 #include <iusTypes.h>
-#include <iusHLTransducerFactory.h>
-#include <include/iusHLTransducerImp.h>
+#include <iusTransducerFactory.h>
+#include <include/iusTransducerImp.h>
 
 TEST_GROUP(IusTransducer);
 
@@ -32,12 +32,12 @@ TEST(IusTransducer, testIusCreateTransducer)
     IusTransducerShape shape = IUS_PLANE;
     iut_t transducer;
 
-    transducer = iusHLTransducerFactoryCreate(pTransducerName, IUS_PLANE, centerFrequency, numElements);
+    transducer = iusTransducerFactoryCreate(pTransducerName, IUS_PLANE, centerFrequency, numElements);
     TEST_ASSERT(transducer != IUT_INVALID);
-    TEST_ASSERT_EQUAL_FLOAT(centerFrequency, iusHLTransducerGetCenterFrequency(transducer));
-    TEST_ASSERT_EQUAL(numElements, iusHLTransducerGetNumElements(transducer));
-    TEST_ASSERT_EQUAL_STRING(pTransducerName, iusHLTransducerGetName(transducer));
-    TEST_ASSERT_EQUAL(shape, iusHLTransducerGetShape(transducer));
+    TEST_ASSERT_EQUAL_FLOAT(centerFrequency, iusTransducerGetCenterFrequency(transducer));
+    TEST_ASSERT_EQUAL(numElements, iusTransducerGetNumElements(transducer));
+    TEST_ASSERT_EQUAL_STRING(pTransducerName, iusTransducerGetName(transducer));
+    TEST_ASSERT_EQUAL(shape, iusTransducerGetShape(transducer));
 }
 
 TEST(IusTransducer, testIusDeleteTransducer)
@@ -47,13 +47,13 @@ TEST(IusTransducer, testIusDeleteTransducer)
     int numElements = 1;          /**< number of transducer Elements in the probe */
     iut_t obj;
 
-    obj = iusHLTransducerFactoryCreate(pTransducerName, IUS_PLANE, centerFrequency, numElements);
+    obj = iusTransducerFactoryCreate(pTransducerName, IUS_PLANE, centerFrequency, numElements);
     TEST_ASSERT(obj != IUT_INVALID);
-    int status = iusHLTransducerDelete(obj);
+    int status = iusTransducerDelete(obj);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
     // invalid params
-    status = iusHLTransducerDelete(NULL);
+    status = iusTransducerDelete(NULL);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
 }
 
@@ -80,26 +80,26 @@ TEST(IusTransducer,  testIusHLCompare2DTransducer)
 
     iu2dte_t _2dElement = iusUtilCreate2DElement(x, z, sx, sz, phi);
 
-    transducer = iusHLTransducerFactoryCreate(pTransducerName, shape, centerFrequency, numElements);
-    transducerDuplicate = iusHLTransducerFactoryCreate(pTransducerName, shape, centerFrequency, numElements);
-    isEqual = iusHLTransducerCompare(transducer, transducerDuplicate);
+    transducer = iusTransducerFactoryCreate(pTransducerName, shape, centerFrequency, numElements);
+    transducerDuplicate = iusTransducerFactoryCreate(pTransducerName, shape, centerFrequency, numElements);
+    isEqual = iusTransducerCompare(transducer, transducerDuplicate);
     TEST_ASSERT(isEqual == IUS_TRUE);
 
 
     //
     // TESTS Related to different transducers
     //
-#define CREATE_2DTRANSDUCER_AND_TEST_EQUALITY(reference,actual,nm,shp,freq,num,bool)   actual = iusHLTransducerFactoryCreate( \
+#define CREATE_2DTRANSDUCER_AND_TEST_EQUALITY(reference,actual,nm,shp,freq,num,bool)   actual = iusTransducerFactoryCreate( \
                                                                                         nm, \
                                                                                         shp, \
                                                                                         freq, \
                                                                                         num); \
-                                                                                    isEqual = iusHLTransducerCompare( \
+                                                                                    isEqual = iusTransducerCompare( \
                                                                                         reference, \
                                                                                         actual \
                                                                                         ); \
                                                                                     TEST_ASSERT(isEqual == (bool)); \
-                                                                                    iusHLTransducerDelete(actual)
+                                                                                    iusTransducerDelete(actual)
 
     CREATE_2DTRANSDUCER_AND_TEST_EQUALITY(transducer, differentTransducer, pTransducerName, IUS_LINE,
                                           centerFrequency + 1,
@@ -115,24 +115,24 @@ TEST(IusTransducer,  testIusHLCompare2DTransducer)
                                           numElements, IUS_FALSE);
 
 
-    status = iusHLTransducerSetElement(transducer, 0, (iute_t) _2dElement);
+    status = iusTransducerSetElement(transducer, 0, (iute_t) _2dElement);
     TEST_ASSERT(status == IUS_E_OK);
-    status = iusHLTransducerSetElement(transducerDuplicate, 0, (iute_t) _2dElement);
+    status = iusTransducerSetElement(transducerDuplicate, 0, (iute_t) _2dElement);
     TEST_ASSERT(status == IUS_E_OK);
-    isEqual = iusHLTransducerCompare(transducer, transducerDuplicate);
+    isEqual = iusTransducerCompare(transducer, transducerDuplicate);
     TEST_ASSERT(isEqual == IUS_TRUE);
 
-    differentTransducer = iusHLTransducerFactoryCreate(pTransducerName, IUS_LINE, centerFrequency, numElements);
-    status = iusHLTransducerSetElement(differentTransducer, 0, (iute_t) _2dElement);
+    differentTransducer = iusTransducerFactoryCreate(pTransducerName, IUS_LINE, centerFrequency, numElements);
+    status = iusTransducerSetElement(differentTransducer, 0, (iute_t) _2dElement);
     TEST_ASSERT(status == IUS_E_OK);
-    isEqual = iusHLTransducerCompare(transducer, differentTransducer);
+    isEqual = iusTransducerCompare(transducer, differentTransducer);
     TEST_ASSERT(isEqual == IUS_TRUE);
 
 #define CREATE_AND_SET_2DELEMENT_TEST_EQUALITY(reference,actual,_elem,_x,_z,_sx,_sz,_phi,bool) \
     _elem = iusUtilCreate2DElement(_x,_z,_sx,_sz,_phi); \
-    status = iusHLTransducerSetElement(actual, 0, (iute_t) (_elem)); \
+    status = iusTransducerSetElement(actual, 0, (iute_t) (_elem)); \
     TEST_ASSERT(status == IUS_E_OK); \
-    isEqual = iusHLTransducerCompare(reference, actual); \
+    isEqual = iusTransducerCompare(reference, actual); \
     TEST_ASSERT(isEqual == (bool))
 
     CREATE_AND_SET_2DELEMENT_TEST_EQUALITY(transducer, differentTransducer, _2dElement, x + 1, z, sx, sz, phi,
@@ -146,7 +146,7 @@ TEST(IusTransducer,  testIusHLCompare2DTransducer)
     CREATE_AND_SET_2DELEMENT_TEST_EQUALITY(transducer, differentTransducer, _2dElement, x, z, sx, sz, phi + 1,
                                            IUS_FALSE);
 
-    iusHLTransducerDelete(differentTransducer);
+    iusTransducerDelete(differentTransducer);
 }
 
 
@@ -172,31 +172,31 @@ TEST(IusTransducer,  testIusHLCompare3DTransducer)
 
     iu3dte_t _3dElement = iusUtilCreate3DElement(x, y, z, sx, sy, sz, theta, phi);
 
-    transducer = iusHLTransducerFactoryCreate(pTransducerName, IUS_PLANE, centerFrequency, numElements);
-    transducerDuplicate = iusHLTransducerFactoryCreate(pTransducerName, IUS_PLANE, centerFrequency, numElements);
-    isEqual = iusHLTransducerCompare(transducer, transducerDuplicate);
+    transducer = iusTransducerFactoryCreate(pTransducerName, IUS_PLANE, centerFrequency, numElements);
+    transducerDuplicate = iusTransducerFactoryCreate(pTransducerName, IUS_PLANE, centerFrequency, numElements);
+    isEqual = iusTransducerCompare(transducer, transducerDuplicate);
     TEST_ASSERT(isEqual == IUS_TRUE);
 
 
     //
     // TESTS Related to different transducers
     //
-    differentTransducer = iusHLTransducerFactoryCreate(pTransducerName, IUS_PLANE, centerFrequency, numElements+1);
-    isEqual = iusHLTransducerCompare( transducer, differentTransducer );
+    differentTransducer = iusTransducerFactoryCreate(pTransducerName, IUS_PLANE, centerFrequency, numElements+1);
+    isEqual = iusTransducerCompare( transducer, differentTransducer );
     TEST_ASSERT(isEqual == IUS_FALSE);
-    iusHLTransducerDelete(differentTransducer);
+    iusTransducerDelete(differentTransducer);
 
-#define CREATE_TRANSDUCER_AND_TEST_EQUALITY(reference,actual,nm,shp,freq,num,bool)   actual = iusHLTransducerFactoryCreate( \
+#define CREATE_TRANSDUCER_AND_TEST_EQUALITY(reference,actual,nm,shp,freq,num,bool)   actual = iusTransducerFactoryCreate( \
                                                                                         nm, \
                                                                                         shp, \
                                                                                         freq, \
                                                                                         num); \
-                                                                                    isEqual = iusHLTransducerCompare( \
+                                                                                    isEqual = iusTransducerCompare( \
                                                                                         reference, \
                                                                                         actual \
                                                                                         ); \
                                                                                     TEST_ASSERT(isEqual == bool); \
-                                                                                    iusHLTransducerDelete(actual)
+                                                                                    iusTransducerDelete(actual)
 
     CREATE_TRANSDUCER_AND_TEST_EQUALITY(transducer, differentTransducer, pTransducerName, IUS_PLANE,
                                         centerFrequency + 1,
@@ -212,24 +212,24 @@ TEST(IusTransducer,  testIusHLCompare3DTransducer)
                                         numElements, IUS_FALSE);
 
 
-    status = iusHLTransducerSetElement(transducer, 0, (iute_t) _3dElement);
+    status = iusTransducerSetElement(transducer, 0, (iute_t) _3dElement);
     TEST_ASSERT(status == IUS_E_OK);
-    status = iusHLTransducerSetElement(transducerDuplicate, 0, (iute_t) _3dElement);
+    status = iusTransducerSetElement(transducerDuplicate, 0, (iute_t) _3dElement);
     TEST_ASSERT(status == IUS_E_OK);
-    isEqual = iusHLTransducerCompare(transducer, transducerDuplicate);
+    isEqual = iusTransducerCompare(transducer, transducerDuplicate);
     TEST_ASSERT(isEqual == IUS_TRUE);
 
-    differentTransducer = iusHLTransducerFactoryCreate(pTransducerName, IUS_PLANE, centerFrequency, numElements);
-    status = iusHLTransducerSetElement(differentTransducer, 0, (iute_t) _3dElement);
+    differentTransducer = iusTransducerFactoryCreate(pTransducerName, IUS_PLANE, centerFrequency, numElements);
+    status = iusTransducerSetElement(differentTransducer, 0, (iute_t) _3dElement);
     TEST_ASSERT(status == IUS_E_OK);
-    isEqual = iusHLTransducerCompare(transducer, differentTransducer);
+    isEqual = iusTransducerCompare(transducer, differentTransducer);
     TEST_ASSERT(isEqual == IUS_TRUE);
 
 #define CREATE_AND_SET_ELEMENT_TEST_EQUALITY(reference,actual,_elem,_x,_y,_z,_sx,_sy,_sz,_theta,_phi,bool) \
     _elem = iusUtilCreate3DElement(_x,_y,_z,_sx,_sy,_sz,_theta,_phi); \
-    status = iusHLTransducerSetElement(actual, 0, (iute_t) (_elem)); \
+    status = iusTransducerSetElement(actual, 0, (iute_t) (_elem)); \
     TEST_ASSERT(status == IUS_E_OK); \
-    isEqual = iusHLTransducerCompare(reference, actual); \
+    isEqual = iusTransducerCompare(reference, actual); \
     TEST_ASSERT(isEqual == bool)
 
 
@@ -258,7 +258,7 @@ TEST(IusTransducer,  testIusHLCompare3DTransducer)
                                          phi + 1,
                                          IUS_FALSE);
 
-    iusHLTransducerDelete(differentTransducer);
+    iusTransducerDelete(differentTransducer);
 }
 
 TEST(IusTransducer, testIusSetGetTransducer)
@@ -282,19 +282,19 @@ TEST(IusTransducer, testIusSetGetTransducer)
     sy = 0.0f;
     sz = 6.0f / 1000.0f;
 
-    transducer = iusHLTransducerFactoryCreate(pTransducerName, IUS_PLANE, centerFrequency, numElements);
+    transducer = iusTransducerFactoryCreate(pTransducerName, IUS_PLANE, centerFrequency, numElements);
     TEST_ASSERT(transducer != IUT_INVALID);
-    TEST_ASSERT_EQUAL_FLOAT(centerFrequency, iusHLTransducerGetCenterFrequency(transducer));
-    TEST_ASSERT_EQUAL(numElements, iusHLTransducerGetNumElements(transducer));
-    TEST_ASSERT_EQUAL_STRING(pTransducerName, iusHLTransducerGetName(transducer));
-    TEST_ASSERT_EQUAL(shape, iusHLTransducerGetShape(transducer));
+    TEST_ASSERT_EQUAL_FLOAT(centerFrequency, iusTransducerGetCenterFrequency(transducer));
+    TEST_ASSERT_EQUAL(numElements, iusTransducerGetNumElements(transducer));
+    TEST_ASSERT_EQUAL_STRING(pTransducerName, iusTransducerGetName(transducer));
+    TEST_ASSERT_EQUAL(shape, iusTransducerGetShape(transducer));
 
     iu3dte_t _3dElement = iusUtilCreate3DElement( x, y, z, sx, sy, sz, theta, phi);
-    status = iusHLTransducerSetElement( transducer, 0, (iute_t) _3dElement );
+    status = iusTransducerSetElement( transducer, 0, (iute_t) _3dElement );
     TEST_ASSERT(status == IUS_E_OK);
 
-    iu3dte_t _nother3dElement = (iu3dte_t) iusHLTransducerGetElement(transducer,0);
-    isEqual = iusHLTransducerElementCompare((iute_t) _3dElement, (iute_t) _nother3dElement);
+    iu3dte_t _nother3dElement = (iu3dte_t) iusTransducerGetElement(transducer,0);
+    isEqual = iusTransducerElementCompare((iute_t) _3dElement, (iute_t) _nother3dElement);
     TEST_ASSERT_EQUAL(IUS_TRUE,isEqual);
 }
 
@@ -311,20 +311,20 @@ TEST(IusTransducer, testIusTransducerSerialization)
     // create and fill
     const float transducerPitch = 0.000005f;
 
-    iut_t transducer = iusHLTransducerFactoryCreate(transducerName, IUS_LINE, 2500000.0f, numTransducerElements);
+    iut_t transducer = iusTransducerFactoryCreate(transducerName, IUS_LINE, 2500000.0f, numTransducerElements);
     for (i = 0; i < numTransducerElements; i++)
     {
-        iu2dp_t elemPos = iusHL2DPositionCreate((i - numTransducerElements / 2)*transducerPitch, 0.0f);
-        iu2ds_t elemSize = iusHL2DSizeCreate(0.0001f,0.0001f);
-        iu2dte_t element = iusHL2DTransducerElementCreate(elemPos, 0.0f, elemSize);
-        iusHLTransducerSetElement(transducer, i, (iute_t)element);
+        iu2dp_t elemPos = ius2DPositionCreate((i - numTransducerElements / 2)*transducerPitch, 0.0f);
+        iu2ds_t elemSize = ius2DSizeCreate(0.0001f,0.0001f);
+        iu2dte_t element = ius2DTransducerElementCreate(elemPos, 0.0f, elemSize);
+        iusTransducerSetElement(transducer, i, (iute_t)element);
     }
     TEST_ASSERT(transducer != IUT_INVALID);
 
     // save
     hid_t handle = H5Fcreate(filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
     TEST_ASSERT(handle > 0);
-    status = iusHLTransducerSave(transducer, path, handle);
+    status = iusTransducerSave(transducer, path, handle);
     H5Fclose(handle);
     TEST_ASSERT_EQUAL(IUS_E_OK, status);
 

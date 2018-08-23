@@ -4,8 +4,8 @@
 
 #ifndef IUSUNITTESTS_UTIL_H
 #define IUSUNITTESTS_UTIL_H
-#include <iusHL2DTransducerElement.h>
-#include <iusHL3DTransducerElement.h>
+#include <ius2DTransducerElement.h>
+#include <ius3DTransducerElement.h>
 
 iu3dte_t iusUtilCreate3DElement
     (

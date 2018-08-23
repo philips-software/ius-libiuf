@@ -22,6 +22,7 @@ add_executable(unitTests
         src/testIusFrame.c
         src/testIusFrameList.c
         src/testIusInputFile.c
+#        src/testNode.c
         src/testIusNonParametricPulse.c
         src/testIusParametricPulse.c
         src/testIusPattern.c

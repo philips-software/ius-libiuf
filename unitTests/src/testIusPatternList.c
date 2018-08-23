@@ -5,8 +5,8 @@
 #include <unity.h>
 #include <unity_internals.h>
 #include <unity_fixture.h>
-#include <include/iusHLPattern.h>
-#include <include/iusHLPatternListImp.h>
+#include <include/iusPattern.h>
+#include <include/iusPatternListImp.h>
 #include <include/ius.h>
 
 static const char *pBmodePatternLabel = "bmode";
@@ -31,13 +31,13 @@ TEST(IusPatternList, testIusCreatePatternList)
 {
     // Put your test code here
     int numPatterns = 100;
-    iupal_t patternList = iusHLPatternListCreate(numPatterns);
+    iupal_t patternList = iusPatternListCreate(numPatterns);
     TEST_ASSERT_NOT_EQUAL(IUPAL_INVALID, patternList);
-    TEST_ASSERT_EQUAL(numPatterns, iusHLPatternListGetSize(patternList));
+    TEST_ASSERT_EQUAL(numPatterns, iusPatternListGetSize(patternList));
 
-    patternList = iusHLPatternListCreate(-1);
+    patternList = iusPatternListCreate(-1);
     TEST_ASSERT_EQUAL(IUPAL_INVALID, patternList);
-    iusHLPatternListDelete(patternList);
+    iusPatternListDelete(patternList);
 }
 
 TEST(IusPatternList, testIusComparePatternList)
@@ -48,14 +48,14 @@ TEST(IusPatternList, testIusComparePatternList)
     IUS_BOOL equal;
 
     // Empty lists should be equal
-    iupal_t patternList = iusHLPatternListCreate(numPatterns);
+    iupal_t patternList = iusPatternListCreate(numPatterns);
     TEST_ASSERT_NOT_EQUAL(IUPAL_INVALID, patternList);
-    iupal_t notherPatternList = iusHLPatternListCreate(numPatterns);
+    iupal_t notherPatternList = iusPatternListCreate(numPatterns);
     TEST_ASSERT_NOT_EQUAL(IUPAL_INVALID, notherPatternList);
-    equal = iusHLPatternListCompare(patternList, notherPatternList);
+    equal = iusPatternListCompare(patternList, notherPatternList);
     TEST_ASSERT_EQUAL(IUS_TRUE, equal);
 
-    iupa_t bmodePattern = iusHLPatternCreate(pBmodePatternLabel,
+    iupa_t bmodePattern = iusPatternCreate(pBmodePatternLabel,
                                              0.01f,
                                              pPulseLabel,
                                              pSourceLabel,
@@ -63,7 +63,7 @@ TEST(IusPatternList, testIusComparePatternList)
                                              pApodizationLabel,
                                              pReceivesettingsLabel);
 
-    iupa_t dopplerPattern = iusHLPatternCreate(pDopplerPatternLabel,
+    iupa_t dopplerPattern = iusPatternCreate(pDopplerPatternLabel,
                                                0.01f,
                                                pPulseLabel,
                                                pSourceLabel,
@@ -72,33 +72,33 @@ TEST(IusPatternList, testIusComparePatternList)
                                                pReceivesettingsLabel);
 
     // Change one list..add bmode
-    status = iusHLPatternListSet(patternList, bmodePattern, 0);
+    status = iusPatternListSet(patternList, bmodePattern, 0);
     TEST_ASSERT_EQUAL(IUS_E_OK, status);
-    equal = iusHLPatternListCompare(patternList, notherPatternList);
+    equal = iusPatternListCompare(patternList, notherPatternList);
     TEST_ASSERT_EQUAL(IUS_FALSE, equal);
 
     // Change other
-    status = iusHLPatternListSet(notherPatternList, bmodePattern, 0);
+    status = iusPatternListSet(notherPatternList, bmodePattern, 0);
     TEST_ASSERT_EQUAL(IUS_E_OK, status);
-    equal = iusHLPatternListCompare(patternList, notherPatternList);
+    equal = iusPatternListCompare(patternList, notherPatternList);
     TEST_ASSERT_EQUAL(IUS_TRUE, equal);
 
 
     // Change one list..add doppler
-    status = iusHLPatternListSet(patternList, dopplerPattern, 1);
+    status = iusPatternListSet(patternList, dopplerPattern, 1);
     TEST_ASSERT_EQUAL(IUS_E_OK, status);
-    equal = iusHLPatternListCompare(patternList, notherPatternList);
+    equal = iusPatternListCompare(patternList, notherPatternList);
     TEST_ASSERT_EQUAL(IUS_FALSE, equal);
 
     // Change other
-    status = iusHLPatternListSet(notherPatternList, dopplerPattern, 1);
+    status = iusPatternListSet(notherPatternList, dopplerPattern, 1);
     TEST_ASSERT_EQUAL(IUS_E_OK, status);
-    equal = iusHLPatternListCompare(patternList, notherPatternList);
+    equal = iusPatternListCompare(patternList, notherPatternList);
     TEST_ASSERT_EQUAL(IUS_TRUE, equal);
 
-    iusHLPatternListDelete(patternList);
-    iusHLPatternDelete(bmodePattern);
-    iusHLPatternDelete(dopplerPattern);
+    iusPatternListDelete(patternList);
+    iusPatternDelete(bmodePattern);
+    iusPatternDelete(dopplerPattern);
 }
 
 TEST(IusPatternList, testIusSerialization)
@@ -110,10 +110,10 @@ TEST(IusPatternList, testIusSerialization)
     char *pPatternListPath = "/PatternList";
 
     // fill list
-    iupal_t patternList = iusHLPatternListCreate(numPatterns);
+    iupal_t patternList = iusPatternListCreate(numPatterns);
     TEST_ASSERT_NOT_EQUAL(IUPAL_INVALID, patternList);
 
-    iupa_t bmodePattern = iusHLPatternCreate(pBmodePatternLabel,
+    iupa_t bmodePattern = iusPatternCreate(pBmodePatternLabel,
                                              0.01f,
                                              pPulseLabel,
                                              pSourceLabel,
@@ -121,40 +121,40 @@ TEST(IusPatternList, testIusSerialization)
                                              pApodizationLabel,
                                              pReceivesettingsLabel);
 
-    iupa_t dopplerPattern = iusHLPatternCreate(pDopplerPatternLabel,
+    iupa_t dopplerPattern = iusPatternCreate(pDopplerPatternLabel,
                                                0.02f,
                                                pPulseLabel,
                                                pSourceLabel,
                                                pChannelMapLabel,
                                                pApodizationLabel,
                                                pReceivesettingsLabel);
-    status = iusHLPatternListSet(patternList, bmodePattern, 0);
+    status = iusPatternListSet(patternList, bmodePattern, 0);
     TEST_ASSERT_EQUAL(IUS_E_OK, status);
-    status = iusHLPatternListSet(patternList, dopplerPattern, 1);
+    status = iusPatternListSet(patternList, dopplerPattern, 1);
     TEST_ASSERT_EQUAL(IUS_E_OK, status);
 
     // save
     hid_t handle = H5Fcreate(pFilename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
     TEST_ASSERT(handle > 0);
-    status = iusHLPatternListSave(patternList, pPatternListPath, handle);
+    status = iusPatternListSave(patternList, pPatternListPath, handle);
     TEST_ASSERT_EQUAL(IUS_E_OK, status);
     status = H5Fclose(handle);
     TEST_ASSERT_EQUAL(IUS_E_OK, status);
 
     // read back
     handle = H5Fopen(pFilename, H5F_ACC_RDONLY, H5P_DEFAULT);
-    iupal_t savedPatternList = iusHLPatternListLoad(handle, pPatternListPath);
+    iupal_t savedPatternList = iusPatternListLoad(handle, pPatternListPath);
     TEST_ASSERT_NOT_EQUAL(IUPAL_INVALID, savedPatternList);
     status |= H5Fclose(handle);
     TEST_ASSERT_EQUAL(IUS_E_OK, status);
 
     // compare
-    equal = iusHLPatternListCompare(patternList, savedPatternList);
+    equal = iusPatternListCompare(patternList, savedPatternList);
     TEST_ASSERT_EQUAL(IUS_TRUE, equal);
 
-    iusHLPatternListDelete(patternList);
-    iusHLPatternDelete(bmodePattern);
-    iusHLPatternDelete(dopplerPattern);
+    iusPatternListDelete(patternList);
+    iusPatternDelete(bmodePattern);
+    iusPatternDelete(dopplerPattern);
 
 }
 

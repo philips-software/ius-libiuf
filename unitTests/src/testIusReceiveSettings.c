@@ -10,8 +10,8 @@
 #include <include/ius.h>
 #include <include/iusError.h>
 #include <include/iusTypes.h>
-#include <include/iusHLTGC.h>
-#include "include/iusHLReceiveSettingsImp.h"
+#include <include/iusTGC.h>
+#include "include/iusReceiveSettingsImp.h"
 
 TEST_GROUP(IusReceiveSettings);
 
@@ -31,23 +31,23 @@ TEST(IusReceiveSettings, testIusReceiveSettingsCreate)
     int numDelays=10;
     int numSamplesPerLine=10;
     int numTGCentries = 1;
-    iurs_t obj = iusHLReceiveSettingsCreate(pLabel, sampleFrequency, numDelays, numSamplesPerLine, numTGCentries);
-    iurs_t notherObj = iusHLReceiveSettingsCreate(pLabel, sampleFrequency, numDelays, numSamplesPerLine, numTGCentries);
+    iurs_t obj = iusReceiveSettingsCreate(pLabel, sampleFrequency, numDelays, numSamplesPerLine, numTGCentries);
+    iurs_t notherObj = iusReceiveSettingsCreate(pLabel, sampleFrequency, numDelays, numSamplesPerLine, numTGCentries);
     TEST_ASSERT(obj != IURS_INVALID);
     TEST_ASSERT(notherObj != IURS_INVALID);
-    iusHLReceiveSettingsDelete(obj);
-    iusHLReceiveSettingsDelete(notherObj);
+    iusReceiveSettingsDelete(obj);
+    iusReceiveSettingsDelete(notherObj);
 
     // invalid params
-    obj = iusHLReceiveSettingsCreate(NULL, sampleFrequency, numDelays, numSamplesPerLine, numTGCentries);
+    obj = iusReceiveSettingsCreate(NULL, sampleFrequency, numDelays, numSamplesPerLine, numTGCentries);
     TEST_ASSERT(obj == IURS_INVALID);
-    obj = iusHLReceiveSettingsCreate(pLabel, -1.0, numDelays, numSamplesPerLine, numTGCentries);
+    obj = iusReceiveSettingsCreate(pLabel, -1.0, numDelays, numSamplesPerLine, numTGCentries);
     TEST_ASSERT(obj == IURS_INVALID);
-    obj = iusHLReceiveSettingsCreate(pLabel, sampleFrequency, 0, numSamplesPerLine, numTGCentries);
+    obj = iusReceiveSettingsCreate(pLabel, sampleFrequency, 0, numSamplesPerLine, numTGCentries);
     TEST_ASSERT(obj == IURS_INVALID);
-    obj = iusHLReceiveSettingsCreate(pLabel, sampleFrequency, numDelays, -1, numTGCentries);
+    obj = iusReceiveSettingsCreate(pLabel, sampleFrequency, numDelays, -1, numTGCentries);
     TEST_ASSERT(obj == IURS_INVALID);
-    obj = iusHLReceiveSettingsCreate(pLabel, sampleFrequency, numDelays, numSamplesPerLine, -1);
+    obj = iusReceiveSettingsCreate(pLabel, sampleFrequency, numDelays, numSamplesPerLine, -1);
     TEST_ASSERT(obj == IURS_INVALID);
 }
 
@@ -58,13 +58,13 @@ TEST(IusReceiveSettings, testIusReceiveSettingsDelete)
     int numDelays=10;
     int numSamplesPerLine=10;
     int numTGCentries = 1;
-    iurs_t obj = iusHLReceiveSettingsCreate(pLabel, sampleFrequency, numDelays, numSamplesPerLine, numTGCentries);
+    iurs_t obj = iusReceiveSettingsCreate(pLabel, sampleFrequency, numDelays, numSamplesPerLine, numTGCentries);
     TEST_ASSERT(obj != IURS_INVALID);
-    int status = iusHLReceiveSettingsDelete(obj);
+    int status = iusReceiveSettingsDelete(obj);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
     // invalid params
-    status = iusHLReceiveSettingsDelete(NULL);
+    status = iusReceiveSettingsDelete(NULL);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
 }
 
@@ -80,45 +80,45 @@ TEST(IusReceiveSettings, testIusReceiveSettingsCompare)
     int numTGCentries = 1;
     int status;
 
-    iurs_t obj = iusHLReceiveSettingsCreate(pLabel, sampleFrequency, numDelays, numSamplesPerLine, numTGCentries);
-    iurs_t notherObj = iusHLReceiveSettingsCreate(pLabel, sampleFrequency, numDelays, numSamplesPerLine, numTGCentries);
-    iurs_t differentObj = iusHLReceiveSettingsCreate(pLabel, sampleFrequency, numDelays, numSamplesPerLine, numTGCentries+1);
+    iurs_t obj = iusReceiveSettingsCreate(pLabel, sampleFrequency, numDelays, numSamplesPerLine, numTGCentries);
+    iurs_t notherObj = iusReceiveSettingsCreate(pLabel, sampleFrequency, numDelays, numSamplesPerLine, numTGCentries);
+    iurs_t differentObj = iusReceiveSettingsCreate(pLabel, sampleFrequency, numDelays, numSamplesPerLine, numTGCentries+1);
     TEST_ASSERT(obj != IURS_INVALID);
     TEST_ASSERT(notherObj != IURS_INVALID);
-    equal = iusHLReceiveSettingsCompare(obj,obj);
+    equal = iusReceiveSettingsCompare(obj,obj);
     TEST_ASSERT_EQUAL(IUS_TRUE,equal);
-    equal = iusHLReceiveSettingsCompare(obj,notherObj);
+    equal = iusReceiveSettingsCompare(obj,notherObj);
     TEST_ASSERT_EQUAL(IUS_TRUE,equal);
 
     // Get a handle to the TGC ADT stored in the Receive settings
     // and alter it.
-    iutgc_t tgc = iusHLReceiveSettingsGetTGC(obj);
+    iutgc_t tgc = iusReceiveSettingsGetTGC(obj);
     TEST_ASSERT(tgc != IUTGC_INVALID);
-    status = iusHLTGCSet(tgc,0,1.0f,.0f);
+    status = iusTGCSet(tgc,0,1.0f,.0f);
     TEST_ASSERT(status == IUS_E_OK);
     // So now obj has been changed...and should not B equal
-    equal = iusHLReceiveSettingsCompare(obj,notherObj);
+    equal = iusReceiveSettingsCompare(obj,notherObj);
     TEST_ASSERT_EQUAL(IUS_FALSE,equal);
 
-    tgc = iusHLReceiveSettingsGetTGC(notherObj);
+    tgc = iusReceiveSettingsGetTGC(notherObj);
     TEST_ASSERT(tgc != IUTGC_INVALID);
-    status = iusHLTGCSet(tgc,0,1.0f,.0f);
+    status = iusTGCSet(tgc,0,1.0f,.0f);
     TEST_ASSERT(status == IUS_E_OK);
     // So now both notherobj and obj have been changed... equal
-    equal = iusHLReceiveSettingsCompare(obj,notherObj);
+    equal = iusReceiveSettingsCompare(obj,notherObj);
     TEST_ASSERT_EQUAL(IUS_TRUE,equal);
 
-    equal = iusHLReceiveSettingsCompare(obj,differentObj);
+    equal = iusReceiveSettingsCompare(obj,differentObj);
     TEST_ASSERT_EQUAL(IUS_FALSE,equal);
 
     // invalid params
-    equal = iusHLReceiveSettingsCompare(obj,NULL);
+    equal = iusReceiveSettingsCompare(obj,NULL);
     TEST_ASSERT_EQUAL(IUS_FALSE,equal);
-    equal = iusHLReceiveSettingsCompare(NULL,obj);
+    equal = iusReceiveSettingsCompare(NULL,obj);
     TEST_ASSERT_EQUAL(IUS_FALSE,equal);
     
-    iusHLReceiveSettingsDelete(obj);
-    iusHLReceiveSettingsDelete(notherObj);
+    iusReceiveSettingsDelete(obj);
+    iusReceiveSettingsDelete(notherObj);
 }
 
 
@@ -134,25 +134,25 @@ TEST(IusReceiveSettings, testIusReceiveSettingsSetGet)
     int status;
 
     // Constructor injected parameters
-    iurs_t obj = iusHLReceiveSettingsCreate(pLabel, sampleFrequency, numDelays, numSamplesPerLine, numTGCentries);
-    char *pObjLabel = iusHLReceiveSettingsGetLabel(obj);
+    iurs_t obj = iusReceiveSettingsCreate(pLabel, sampleFrequency, numDelays, numSamplesPerLine, numTGCentries);
+    char *pObjLabel = iusReceiveSettingsGetLabel(obj);
     TEST_ASSERT_EQUAL_STRING(pLabel,pObjLabel);
-    TEST_ASSERT_EQUAL_FLOAT(sampleFrequency,iusHLReceiveSettingsGetSampleFrequency(obj));
-    TEST_ASSERT_EQUAL(numDelays,iusHLReceiveSettingsGetNumDelays(obj));
-    TEST_ASSERT_EQUAL(numSamplesPerLine,iusHLReceiveSettingsGetNumSamplesPerLine(obj));
-    TEST_ASSERT_EQUAL(numTGCentries,iusHLReceiveSettingsGetNumTGCentries(obj));
+    TEST_ASSERT_EQUAL_FLOAT(sampleFrequency,iusReceiveSettingsGetSampleFrequency(obj));
+    TEST_ASSERT_EQUAL(numDelays,iusReceiveSettingsGetNumDelays(obj));
+    TEST_ASSERT_EQUAL(numSamplesPerLine,iusReceiveSettingsGetNumSamplesPerLine(obj));
+    TEST_ASSERT_EQUAL(numTGCentries,iusReceiveSettingsGetNumTGCentries(obj));
 
     // TGC
-    iutgc_t tgc = iusHLReceiveSettingsGetTGC(obj);
+    iutgc_t tgc = iusReceiveSettingsGetTGC(obj);
     TEST_ASSERT( tgc != IUTGC_INVALID );
 
     // Delays
     for(i=0;i<numDelays;i++)
     {
         float delay = i*2.0f;
-        status = iusHLReceiveSettingsSetStartDelay(obj, i, delay);
+        status = iusReceiveSettingsSetStartDelay(obj, i, delay);
         TEST_ASSERT(status == IUS_E_OK);
-        TEST_ASSERT_EQUAL_FLOAT(delay, iusHLReceiveSettingsGetStartDelay(obj, i));
+        TEST_ASSERT_EQUAL_FLOAT(delay, iusReceiveSettingsGetStartDelay(obj, i));
     }
 
 }
@@ -170,7 +170,7 @@ TEST(IusReceiveSettings, testIusSerialization)
     int status;
 
     // Create
-    iurs_t obj = iusHLReceiveSettingsCreate(pLabel, sampleFrequency, numDelays, numSamplesPerLine, numTGCentries);
+    iurs_t obj = iusReceiveSettingsCreate(pLabel, sampleFrequency, numDelays, numSamplesPerLine, numTGCentries);
 
     // fill
 
@@ -178,35 +178,35 @@ TEST(IusReceiveSettings, testIusSerialization)
     for(i=0;i<numDelays;i++)
     {
         float delay = i*3.14f;
-        status = iusHLReceiveSettingsSetStartDelay(obj, i, delay);
+        status = iusReceiveSettingsSetStartDelay(obj, i, delay);
         TEST_ASSERT(status == IUS_E_OK);
-        TEST_ASSERT_EQUAL_FLOAT(delay, iusHLReceiveSettingsGetStartDelay(obj, i));
+        TEST_ASSERT_EQUAL_FLOAT(delay, iusReceiveSettingsGetStartDelay(obj, i));
     }
 
 
-    iutgc_t tgc = iusHLReceiveSettingsGetTGC(obj);
+    iutgc_t tgc = iusReceiveSettingsGetTGC(obj);
     for (i=0;i<numTGCentries;i++)
     {
-        status = iusHLTGCSet(tgc,i,i*1.314f,i*2.314f);
+        status = iusTGCSet(tgc,i,i*1.314f,i*2.314f);
         TEST_ASSERT_EQUAL(IUS_E_OK,status);
     }
 
     // save
     hid_t handle = H5Fcreate( filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT );
     TEST_ASSERT(handle > 0);
-    status = iusHLReceiveSettingsSave(obj, receiveSettingsPath, handle);
+    status = iusReceiveSettingsSave(obj, receiveSettingsPath, handle);
     H5Fclose(handle);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
     // read back
     handle = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT );
-    iurs_t savedObj = iusHLReceiveSettingsLoad(handle, receiveSettingsPath, pLabel);
+    iurs_t savedObj = iusReceiveSettingsLoad(handle, receiveSettingsPath, pLabel);
     TEST_ASSERT(savedObj != NULL);
     H5Fclose(handle);
 
-    TEST_ASSERT_EQUAL(IUS_TRUE, iusHLReceiveSettingsCompare(obj, savedObj));
-    iusHLReceiveSettingsDelete(obj);
-    iusHLReceiveSettingsDelete(savedObj);
+    TEST_ASSERT_EQUAL(IUS_TRUE, iusReceiveSettingsCompare(obj, savedObj));
+    iusReceiveSettingsDelete(obj);
+    iusReceiveSettingsDelete(savedObj);
 }
 
 TEST_GROUP_RUNNER(IusReceiveSettings)
