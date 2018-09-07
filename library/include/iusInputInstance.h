@@ -9,7 +9,6 @@
 #include <iusNode.h>
 #include <iusExperiment.h>
 #include <iusTransducer.h>
-#include <iusDrivingScheme.h>
 
 #define IUS_DEFAULT_NUM_FRAMES  1
 

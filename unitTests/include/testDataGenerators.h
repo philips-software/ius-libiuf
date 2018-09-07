@@ -13,6 +13,12 @@
 #include <include/iusFrameList.h>
 #include <include/iusSourceDict.h>
 #include <include/iusTransducer.h>
+#include <include/iusInputFile.h>
+
+iuif_t dgGenerateInputFile
+(
+	char *ptestFileName
+);
 
 iufl_t dgGenerateFrameList
 (

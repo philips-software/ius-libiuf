@@ -179,7 +179,7 @@ static int ius3DNonParametricSourceLoadLocations
         ius3DNonParametricSourceSetPosition(source, pos, p);
     }
     return status;
-};
+}
 
 int ius3DNonParametricSourceSave
 (

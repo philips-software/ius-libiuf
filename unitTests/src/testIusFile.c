@@ -6,17 +6,18 @@
 #include <unity_internals.h>
 #include <unity_fixture.h>
 
-#include <iusNode.h>
 #include <include/iusInputFile.h>
 #include <include/ius.h>
+#include <testDataGenerators.h>
+#include <include/iusFile.h>
 
-TEST_GROUP(IusNode);
+TEST_GROUP(IusFile);
 
-TEST_SETUP(IusNode)
+TEST_SETUP(IusFile)
 {
 }
 
-TEST_TEAR_DOWN(IusNode)
+TEST_TEAR_DOWN(IusFile)
 {
 }
 
@@ -26,12 +27,12 @@ TEST_TEAR_DOWN(IusNode)
 //// Type, uniquely specifying file contents
 //// 0-n Parent nodes.
 ////
-//TEST(IusNode, testIusNode)
+//TEST(IusFile, testIusFile)
 //{
 //    int numParents = 0;
 //    char pNodeType[] = IUS_INPUT_TYPE;
 //
-//    IusNode *hSimpleNode = iusNodeCreate(pNodeType, numParents);
+//    IusFile *hSimpleNode = iusNodeCreate(pNodeType, numParents);
 //    TEST_ASSERT(hSimpleNode != IUN_INVALID);
 //    // Check type
 //    char *pActualNodeType = iusNodeGetType(hSimpleNode);
@@ -81,35 +82,35 @@ TEST_TEAR_DOWN(IusNode)
 // - getNumber of parents
 // - getAlgoParams (dict)
 //
-TEST(IusNode, testIusInputFileHistoryScenario)
+TEST(IusFile, testIusInputFileHistoryScenario)
 {
 // As a developer I want to be able get the data history of an ius file.
 // The data history  is organised as a DataHistory Tree.
     int numParents = 0;
     char pNodeType[] = IUS_INPUT_TYPE;
-    char *fileName = "aap";
+    char *pFilename = "aap";
 
     // Create Input file.
-    iuif_t iusInputFile = dgGenerateInputFile(fileName);
+    iuif_t iusInputFile = dgGenerateInputFile(pFilename);
     iusInputFileSave(iusInputFile);
     iusInputFileClose(iusInputFile);
 
     // Open file
-    iuf_t iusFile = iusFileOpen(fileName);
+    iufi_t iusFile = iusFileOpen(pFilename);
     // get file history
-    iuhtn_t rootNode = iusFileGetHistoryTree(iusFile);
+    iuhn_t rootNode = iusFileGetHistoryTree(iusFile);
     // Input file history should be empty
-    int numParents = iusHistoryNodeGetNumParents(rootNode);
+    numParents = iusHistoryNodeGetNumParents(rootNode);
     TEST_ASSERT_EQUAL(0,numParents);
     // root node type should be equal to file type
-    TEST_ASSERT_EQUAL(iusFileGetType(iusFile),iusHistoryTreeNodeGetType(rootNode));
+    TEST_ASSERT_EQUAL_STRING(iusFileGetType(iusFile),iusHistoryNodeGetType(rootNode));
 
     // algo params should be empty
-    int numAlgoParams = iusHistoryTreeGetNumParams(rootNode);
+    int numAlgoParams = iusHistoryNodeGetNumParams(rootNode);
     TEST_ASSERT_EQUAL(0, numAlgoParams);
 }
 
-//TEST(IusNode, testIusSaveParametersScenario)
+//TEST(IusFile, testIusSaveParametersScenario)
 //{
 //// goal: test node history with processing paraneters by
 //// creating input file
@@ -153,7 +154,7 @@ TEST(IusNode, testIusInputFileHistoryScenario)
 //    // check transducer center frequency
 //}
 //
-//TEST(IusNode, testIusHistoryTreeTraversalScenario)
+//TEST(IusFile, testIusHistoryTreeTraversalScenario)
 //{
 ////    if1 -> cwc -> bmode -+
 ////                         |
@@ -206,7 +207,7 @@ TEST(IusNode, testIusInputFileHistoryScenario)
 //
 
 //
-//TEST(IusNode, testIusNodeScenarios2)
+//TEST(IusFile, testIusFileScenarios2)
 //{
 //    int numParents = 0;
 //    char pNodeType[] = IUS_INPUT_TYPE;
@@ -266,7 +267,7 @@ TEST(IusNode, testIusInputFileHistoryScenario)
 // in that case get transducer should resolve into something when input type
 // is in the parent tree.
 
-TEST_GROUP_RUNNER(IusNode)
+TEST_GROUP_RUNNER(IusFile)
 {
-    RUN_TEST_CASE(IusNode, testIusNode);
+//    RUN_TEST_CASE(IusFile, testIusInputFileHistoryScenario);
 }

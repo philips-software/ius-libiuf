@@ -341,53 +341,14 @@ TEST(IusInputFile, iusInputFileSetGetTransducer)
 
 TEST(IusInputFile, testIusInputFileSerialization)
 {
-    const char *ptestFileName = "testIusInputFileSerialization.hdf5";
+    char *ptestFileName = "testIusInputFileSerialization.hdf5";
 
     // create
-    iuif_t inputFile = iusInputFileCreate(ptestFileName);
+    iuif_t inputFile = dgGenerateInputFile(ptestFileName);
     TEST_ASSERT(inputFile != IUIF_INVALID);
 
-    // fill
-    iufl_t frameList = dgGenerateFrameList();
-    int status = iusInputFileSetFrameList(inputFile,frameList);
-    TEST_ASSERT(status == IUS_E_OK);
-
-    iupal_t patternList = dgGeneratePatternList();
-    status = iusInputFileSetPatternList(inputFile,patternList);
-    TEST_ASSERT(status == IUS_E_OK);
-
-    iupd_t pulseDict = dgGeneratePulseDict();
-    status = iusInputFileSetPulseDict(inputFile, pulseDict);
-    TEST_ASSERT(status == IUS_E_OK);
-
-    iusd_t sourceDict = dgGenerateSourceDict();
-    status = iusInputFileSetSourceDict(inputFile, sourceDict);
-    TEST_ASSERT(status == IUS_E_OK);
-
-    iurcmd_t receiveChannelMapDict = dgGenerateReceiveChannelMapDict();
-	status = iusInputFileSetReceiveChannelMapDict(inputFile, receiveChannelMapDict);
-	TEST_ASSERT(status == IUS_E_OK);
-
-	iutad_t transmitApodizationDict = dgGenerateTransmitApodizationDict();
-	status = iusInputFileSetTransmitApodizationDict(inputFile, transmitApodizationDict);
-	TEST_ASSERT(status == IUS_E_OK);
-
-    iursd_t receiveSettingsDict = dgGenerateReceiveSettingsDict();
-    status = iusInputFileSetReceiveSettingsDict(inputFile, receiveSettingsDict);
-    TEST_ASSERT_EQUAL(IUS_E_OK, status);
-
-    // save
-	iue_t experiment = dgGenerateExperiment();
-	status = iusInputFileSetExperiment(inputFile, experiment);
-	TEST_ASSERT(status == IUS_E_OK);
-
-
-    iut_t transducer = dgGenerateTransducer();
-    status = iusInputFileSetTransducer(inputFile, transducer);
-    TEST_ASSERT(status == IUS_E_OK);
-
 	// save
-    status = iusInputFileSave(inputFile);
+    int status = iusInputFileSave(inputFile);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
     status = iusInputFileClose(inputFile);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
@@ -400,11 +361,6 @@ TEST(IusInputFile, testIusInputFileSerialization)
 	status = iusInputFileClose(savedObj);
 	TEST_ASSERT(status == IUS_E_OK);
 
-    iusPulseDictDelete(pulseDict);
-	iusReceiveChannelMapDictDelete(receiveChannelMapDict);
-	iusTransmitApodizationDictDelete(transmitApodizationDict);
-
-	iusExperimentDelete(experiment);
     iusInputFileDelete(inputFile);
     iusInputFileDelete(savedObj);
 }

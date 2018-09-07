@@ -4,6 +4,8 @@
 #ifndef IUSLIBRARY_IUSHLEXPERIMENT_H
 #define IUSLIBRARY_IUSHLEXPERIMENT_H
 
+#include <iusTypes.h>
+
 // ADT
 struct IusExperiment;
 typedef  struct IusExperiment IusExperiment;

@@ -275,7 +275,7 @@ int iusInputFileSave
     if( fileHandle == NULL ) return IUS_ERR_VALUE;
 
     herr_t status=0;
-    hsize_t dims[1] = {1};
+//    hsize_t dims[1] = {1};
 
     // Todo: Handle creation in iusInputFileSave iso iusPulseDictSave, iusPatternListSave, iusReceiveChannelMapDictSave,iusTransmitApodizationDictSave
     // new signature: iusPulseDictSave(fileHandle->pulseDict,fileHandle->handle);

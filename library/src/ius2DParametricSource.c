@@ -251,7 +251,7 @@ static int ius2DParametricSourceLoadLocations
         ius2DParametricSourceSetPosition(source, pos, p);
     }
     return status;
-};
+}
 
 int ius2DParametricSourceSave
 (

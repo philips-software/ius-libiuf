@@ -118,7 +118,7 @@ int ius2DTransducerSetElement
     return ius2DTransducerElementListSet(transducer->elements,element,elementIndex);
 }
 
-int ius2DTransducerWriteElementPositions(Ius2DTransducer *pTransducer, hid_t subgroup_id, int verbose)
+int ius2DTransducerWriteElementPositions(Ius2DTransducer *pTransducer, hid_t subgroup_id)
 {
 	herr_t        status = 0;
 	hid_t position_tid; // File datatype identifier for IusPosition
@@ -161,7 +161,7 @@ int ius2DTransducerWriteElementPositions(Ius2DTransducer *pTransducer, hid_t sub
 	return status;
 }
 
-int ius2DTransducerWriteElementSizes(Ius2DTransducer *pTransducer, hid_t subgroup_id, int verbose)
+int ius2DTransducerWriteElementSizes(Ius2DTransducer *pTransducer, hid_t subgroup_id)
 {
 	herr_t        status = 0;
 	hid_t size_tid; // File datatype identifier for IusPosition
@@ -201,7 +201,7 @@ int ius2DTransducerWriteElementSizes(Ius2DTransducer *pTransducer, hid_t subgrou
 	return status;
 }
 
-int ius2DTransducerWriteElementAngles(Ius2DTransducer *pTransducer, hid_t subgroup_id, int verbose)
+int ius2DTransducerWriteElementAngles(Ius2DTransducer *pTransducer, hid_t subgroup_id)
 {
 	herr_t        status = 0;
 	hid_t dataset, space;

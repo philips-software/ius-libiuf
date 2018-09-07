@@ -3,37 +3,22 @@
 // Created by nlv09165 on 31/08/2018.
 //
 #include <stdlib.h>
-#define IUSLIBRARY_IMPLEMENTATION
 
 #include <ius.h>
 #include <iusError.h>
 #include <iusTypes.h>
 #include <iusUtil.h>
 
-#include "include/iusFile.h"
+#include <iusFile.h>
 
 struct IusFile
 {
     int intParam;
     float floatParam;
+    iuhn_t historyTree;
 } ;
 
 // ADT
-
-iufi_t iusFileCreate
-(
-    int intParam,
-    float floatParam
-)
-{
-    if( intParam < 0 ) return IUFI_INVALID;
-    if( floatParam <= 0.0f ) return IUFI_INVALID;
-    iufi_t created = calloc(1,sizeof(IusFile));
-    created->intParam = intParam;
-    created->floatParam = floatParam;
-    return created;
-}
-
 int iusFileDelete
 (
     iufi_t iusFile
@@ -59,58 +44,34 @@ int iusFileCompare
 {
     if( reference == actual ) return IUS_TRUE;
     if( reference == NULL || actual == NULL ) return IUS_FALSE;
-    if( reference->intParam != actual->intParam ) return IUS_FALSE;
-    if( IUS_EQUAL_FLOAT(reference->floatParam, actual->floatParam ) == IUS_FALSE ) return IUS_FALSE;
     return IUS_TRUE;
 }
 
+iufi_t iusFileOpen
+(
+    char *pFilename
+)
+{
+    if( pFilename == NULL ) return IUFI_INVALID;
+    return IUFI_INVALID;
+}
+
+
 // Getters
-int iusFileGetIntParam
+iuhn_t iusFileGetHistoryTree
 (
     iufi_t iusFile
 )
 {
-    return iusFile->intParam;
+    if (iusFile == NULL) return IUHN_INVALID;
+    return iusFile->historyTree;
 }
 
-float iusFileGetFloatParam
+const char *iusFileGetType
 (
     iufi_t iusFile
 )
 {
-    return iusFile->floatParam;
-}
-
-// Setters
-int iusFileSetFloatParam
-(
-    iufi_t iusFile,
-    float floatParam
-)
-{
-    int status = IUS_ERR_VALUE;
-
-    if(iusFile != NULL)
-    {
-        iusFile->floatParam = floatParam;
-        status = IUS_E_OK;
-    }
-    return status;
-}
-
-
-int iusFileSetIntParam
-(
-    iufi_t iusFile,
-    int intParam
-)
-{
-    int status = IUS_ERR_VALUE;
-
-    if(iusFile != NULL)
-    {
-        iusFile->intParam = intParam;
-        status = IUS_E_OK;
-    }
-    return status;
+    if (iusFile == NULL) return NULL;
+    return iusHistoryNodeGetType(iusFile->historyTree);
 }

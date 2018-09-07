@@ -21,10 +21,6 @@ FIND_PACKAGE(HDF5 1.8 COMPONENTS C HL REQUIRED)
 #else(UUID_FOUND)
 #endif(UUID_FOUND)
 
-if(NOT MSVC)
-	set(UUID_LIBRARIES -luuid)
-endif()
-
 include_directories("${PROJECT_BINARY_DIR}")
 include_directories(${HDF5_INCLUDE_DIR})
 include_directories(${HASHMAP_INCLUDE_DIR})
@@ -51,9 +47,14 @@ add_library(ius STATIC
 		include/ius3DTransducerElementImp.h
 		include/ius3DTransducerElementList.h
         include/ius3DTransducerElementListImp.h
+		include/iusFile.h
 		include/iusFrame.h
 		include/iusFrameList.h
+		include/iusFrameListImp.h
+		include/iusHistoryNode.h
+		include/iusHistoryNodeList.h
 		include/iusInputFile.h
+		include/iusNode.h
 		include/iusNonParametricPulse.h
 		include/iusNonParametricPulseImp.h
 		include/iusParametricPulse.h
@@ -105,9 +106,12 @@ add_library(ius STATIC
 		src/ius3DTransducerElement.c
 		src/ius3DTransducerElementList.c
 		src/iusExperiment.c
+		src/iusFile.c
 		src/iusFrame.c
 		src/iusFrameList.c
 		src/iusInputFile.c
+		src/iusHistoryNode.c
+		src/iusHistoryNodeList.c
 		src/iusNonParametricPulse.c
 		src/iusParametricPulse.c
 		src/iusPattern.c
@@ -137,17 +141,23 @@ target_include_directories(ius PUBLIC
         include
         )
 
+if(MSVC)
+	target_compile_options(ius PRIVATE /W4 /WX)
+else()
+	set(UUID_LIBRARIES -luuid)
+	target_compile_options(ius PRIVATE -Wall -Wextra -pedantic -Werror)
+	if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
+		target_compile_options(ius PRIVATE -Wall -Wextra -pedantic -Werror)
+	endif()
+endif()
 
 target_link_libraries(
-        ius
+		ius
 		hashmap
-        ${HDF5_LIBRARIES}
-        ${HDF5_HL_LIBRARIES}
-        ${UUID_LIBRARIES}
+		${HDF5_LIBRARIES}
+		${HDF5_HL_LIBRARIES}
+		${UUID_LIBRARIES}
 )
-
-
-
 
 # the option is here so that we can plug it into other
 #find_package(HDF5)

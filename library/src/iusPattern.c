@@ -154,7 +154,6 @@ iupa_t iusPatternLoad
 )
 {
   int status = 0;
-  IusPulseType type;
   const char *pLabel;
   float timeInFrame;
   const char *pPulseLabel;

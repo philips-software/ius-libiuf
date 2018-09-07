@@ -30,7 +30,7 @@ iut_t iusTransducerCreate
 )
 {
     if( name == NULL ) return IUT_INVALID;
-    if( shape == IUS_INVALID_SHAPE ) return IUT_INVALID;
+    if( shape == IUS_INVALID_TRANSDUCER_SHAPE ) return IUT_INVALID;
     if( centerFrequency == NAN ) return IUT_INVALID;
     iut_t created = calloc(1,sizeof(IusTransducer));
 
@@ -110,7 +110,7 @@ float iusTransducerGetCenterFrequency
 {
       if( transducer == NULL ) return NAN;
       return transducer->centerFrequency;
-};
+}
 
 int iusTransducerGetNumElements
 (
@@ -178,18 +178,18 @@ int iusTransducerSetElement
     return status;
 }
 
-
-hid_t iusWriteTransducerType
-(
-	hid_t handle,
-	char *path,
-	IusShape transducerType
-)
-{
-
-	return handle;
-}
-
+//
+//hid_t iusWriteTransducerType
+//(
+//	hid_t handle,
+//	char *path,
+//	IusShape transducerType
+//)
+//{
+//
+//	return handle;
+//}
+//
 
 
 #define TRANSDUCER_FMT "%s/"
@@ -197,8 +197,7 @@ hid_t iusWriteTransducerType
 
 static herr_t iusBaseTransducerSaveShape(hid_t group_id,
                                            const char *pVariableString,
-                                           IusTransducerShape shape,
-                                           int verbose)
+                                           IusTransducerShape shape)
 {
 	herr_t status = 0;
 	hsize_t dims[1] = { 1 };
@@ -230,7 +229,7 @@ herr_t iusBaseTransducerSave
     char path[IUS_MAX_HDF5_PATH];
     hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
     sprintf(path, SHAPEFMT, parentPath);
-    status |= iusBaseTransducerSaveShape(group_id, path, transducer->shape, 1);
+    status |= iusBaseTransducerSaveShape(group_id, path, transducer->shape);
     sprintf(path, NAMEFMT, parentPath);
 	status |= iusHdf5WriteString(group_id, path, transducer->pTransducerName, 1);
     sprintf(path, CENTERFREQUENCYFMT, parentPath);

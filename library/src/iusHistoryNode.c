@@ -12,6 +12,7 @@
 #include <iusHDF5.h>
 #include <iusError.h>
 #include <hdf5_hl.h>
+#include <iusHistoryNodeList.h>
 #include <iusHistoryNode.h>
 
 #define MAX_TYPE_LENGTH 40
@@ -19,64 +20,124 @@
 #define MAX_PARENTS     10
 
 // ADT
-struct IusNode
+struct IusHistoryNode
 {
     char                pId[MAX_ID_LENGTH];
-    char                pType[MAX_TYPE_LENGTH];
+    char                *pType;
+    int                 numberOfParameters;
     int                 numberOfParents;
-    struct IusNode *    pParents[MAX_PARENTS];
+    iuhnl_t             parents;
 } ;
 
 iuhn_t iusHistoryNodeCreate
 (
-char *pNodeType,
-int parents
+    char *pNodeType,
+    int parents
 )
 {
-    IusNode *pIusNode = calloc(1, sizeof( IusNode ));
+    if ( pNodeType == NULL ) return IUHN_INVALID;
+    if ( parents < 0 ) return IUHN_INVALID;
+    IusHistoryNode *pIusNode = calloc(1, sizeof( IusHistoryNode ));
     // Uuid should be generated for it.
     setIusUuidCreate( pIusNode->pId );
-    strncpy( pIusNode->pType, pNodeType, MAX_TYPE_LENGTH );
+    pIusNode->pType = strdup(pNodeType);
+    pIusNode->numberOfParents = parents;
+    pIusNode->parents = iusHistoryNodeListCreate(parents);
     return pIusNode;
 }
 
 int iusHistoryNodeDelete
 (
-iuhn_t node
+    iuhn_t node
 )
 {
-    if( node == NULL ) return IUS_ERR_VALUE;
-    free((IusNode *) node);
+    if ( node == NULL ) return IUS_ERR_VALUE;
+    free(node);
     return IUS_E_OK;
 }
 
-IUS_BOOL iuHLNodeCompare(IusNode *pReferenceNode, IusNode *pActualNode)
+IUS_BOOL iusHistoryNodeCompareWithId
+(
+    iuhn_t reference,
+    iuhn_t actual
+)
 {
-    if( pReferenceNode->numberOfParents != pActualNode->numberOfParents ){
+    if ( reference == actual ) return IUS_TRUE;
+    if ( reference == NULL || actual == NULL ) return IUS_FALSE;
+    if( strcmp( reference->pId, actual->pId ) != 0 )
+    {
         return IUS_FALSE;
     }
-    if( strcmp( pReferenceNode->pType, pActualNode->pType ) != 0 ){
+    return iusHistoryNodeCompare(reference,actual);
+}
+
+IUS_BOOL iusHistoryNodeCompare
+(
+    iuhn_t reference,
+    iuhn_t actual
+)
+{
+    if ( reference == actual ) return IUS_TRUE;
+    if ( reference == NULL || actual == NULL ) return IUS_FALSE;
+    if ( reference->numberOfParents != actual->numberOfParents )
+    {
         return IUS_FALSE;
     }
-    if( strcmp( pReferenceNode->pId, pActualNode->pId ) != 0 ){
+
+    if ( strcmp( reference->pType, actual->pType ) != 0 )
+    {
         return IUS_FALSE;
     }
+
+    if( iusHistoryNodeListCompare(reference->parents,actual->parents) == IUS_FALSE )
+    {
+        return IUS_FALSE;
+    }
+
     return IUS_TRUE;
 }
 
 
 int iusHistoryNodeGetNumParents( iuhn_t node ) {
+    if ( node == NULL ) return -1;
     return node->numberOfParents;
 }
 
+int iusHistoryNodeGetNumParams( iuhn_t node ) {
+    if ( node == NULL ) return -1;
+    return node->numberOfParameters;
+}
+
 char *iusHistoryNodeGetId(iuhn_t node) {
+    if ( node == NULL ) return NULL;
     return node->pId;
 }
 
 char *iusHistoryNodeGetType(iuhn_t node) {
+    if ( node == NULL ) return NULL;
     return node->pType;
 }
 
+iuhnl_t iusHistoryNodeGetParents
+(
+    iuhn_t node
+)
+{
+    if ( node == NULL ) return IUHNL_INVALID;
+    return node->parents;
+}
+
+int iusHistoryNodeSetParents
+(
+    iuhn_t node,
+    iuhnl_t parents
+)
+{
+    if ( node == NULL ) return IUS_ERR_VALUE;
+    if ( parents == NULL ) return IUS_ERR_VALUE;
+    node->parents = parents;
+    return IUS_E_OK;
+}
 
 //
 ////--------------------------------------------------------------------------------

@@ -305,7 +305,7 @@ static int ius3DParametricSourceLoadLocations
         ius3DParametricSourceSetPosition(source, pos, p);
     }
     return status;
-};
+}
 
 int ius3DParametricSourceSave
 (

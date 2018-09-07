@@ -1,59 +1,42 @@
-
 // Created by nlv09165 on 31/08/2018.
+#include "iusHistoryNode.h"
+
 #ifndef IUSLIBRARY_IUSFILE_H
 #define IUSLIBRARY_IUSFILE_H
 
-//#ifndef IUSLIBRARY_IMPLEMENTATION
-//typedef struct IusFile IusFile;
-//#endif // IUSLIBRARY_IMPLEMENTATION
 
 // ADT
 typedef struct IusFile IusFile;
-typedef IusFile *iuf_t;
-#define  IUF_INVALID (iuf_t) NULL
+typedef IusFile *iufi_t;
+#define  IUFI_INVALID (iufi_t) NULL
 
-iuf_t iusFileCreate
+iufi_t iusFileOpen
 (
-    int intParam,
-    float floatParam
+    char *pFilename
 );
 
 int iusFileDelete
 (
-    iuf_t iusFile
+    iufi_t iusFile
 );
 
 
 // operations
 int iusFileCompare
 (
-    iuf_t reference,
-    iuf_t actual
+    iufi_t reference,
+    iufi_t actual
 );
 
 // Getters
-int iusFileGetIntParam
+iuhn_t iusFileGetHistoryTree
 (
-    iuf_t iusFile
+    iufi_t iusFile
 );
 
-float iusFileGetFloatParam
+const char *iusFileGetType
 (
-    iuf_t iusFile
+    iufi_t iusFile
 );
-
-// Setters
-int iusFileSetIntParam
-(
-    iuf_t iusFile,
-    int intParam
-);
-
-int iusFileSetFloatParam
-(
-    iuf_t iusFile,
-    float floatParam
-);
-
 
 #endif //IUSLIBRARY_IUSFILE_H

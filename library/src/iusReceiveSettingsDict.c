@@ -216,7 +216,7 @@ iursd_t iusReceiveSettingsDictLoad
     status = H5Gget_num_objs(grpid, &nobj);
 
     iursd_t dict = iusReceiveSettingsDictCreate();
-    for (i = 0; i < nobj; i++)
+    for (i = 0; i < (int) nobj; i++)
     {
         H5Gget_objname_by_idx(grpid, (hsize_t) i,
                                     memb_name, (size_t) MAX_NAME);

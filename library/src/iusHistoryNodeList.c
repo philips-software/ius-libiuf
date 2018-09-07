@@ -1,15 +1,13 @@
-
-
-
 //
 // Created by nlv09165 on 07/09/2018.
 //
 #include <stdlib.h>
 #include <math.h>
-#include <include/iusHistoryNodeList.h>
+
 #include <include/ius.h>
 #include <include/iusError.h>
 #include <include/iusUtil.h>
+#include <include/iusHistoryNodeList.h>
 
 
 // ADT

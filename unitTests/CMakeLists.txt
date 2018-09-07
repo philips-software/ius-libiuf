@@ -19,10 +19,11 @@ add_executable(unitTests
         src/testIus3DTransducerElement.c
         src/testIus3DTransducerElementList.c
         src/testIusExperiment.c
+        src/testIusFile.c
         src/testIusFrame.c
         src/testIusFrameList.c
         src/testIusInputFile.c
-#        src/testNode.c
+        src/testIusHistoryNode.c
         src/testIusNonParametricPulse.c
         src/testIusParametricPulse.c
         src/testIusPattern.c

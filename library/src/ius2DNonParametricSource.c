@@ -179,7 +179,7 @@ static int ius2DNonParametricSourceLoadLocations
         ius2DNonParametricSourceSetPosition(source, pos, p);
     }
     return status;
-};
+}
 
 int ius2DNonParametricSourceSave
 (

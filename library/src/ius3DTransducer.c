@@ -118,7 +118,7 @@ int ius3DTransducerSetElement
   return ius3DTransducerElementListSet(transducer->elements,element,elementIndex);
 }
 
-int ius3DTransducerWriteElementPositions(Ius3DTransducer *pTransducer, hid_t subgroup_id, int verbose)
+int ius3DTransducerWriteElementPositions(Ius3DTransducer *pTransducer, hid_t subgroup_id)
 {
 	herr_t        status = 0;
 	hid_t position_tid; // File datatype identifier for IusPosition
@@ -163,7 +163,7 @@ int ius3DTransducerWriteElementPositions(Ius3DTransducer *pTransducer, hid_t sub
 	return status;
 }
 
-int ius3DTransducerWriteElementSizes(Ius3DTransducer *pTransducer, hid_t subgroup_id, int verbose)
+int ius3DTransducerWriteElementSizes(Ius3DTransducer *pTransducer, hid_t subgroup_id)
 {
 	herr_t        status = 0;
 	hid_t size_tid; // File datatype identifier for IusPosition
@@ -204,7 +204,7 @@ int ius3DTransducerWriteElementSizes(Ius3DTransducer *pTransducer, hid_t subgrou
 	return status;
 }
 
-int ius3DTransducerWriteElementAngles(Ius3DTransducer *pTransducer, hid_t subgroup_id, int verbose)
+int ius3DTransducerWriteElementAngles(Ius3DTransducer *pTransducer, hid_t subgroup_id)
 {
 	herr_t        status = 0;
 	hid_t dataset, space;
