@@ -29,6 +29,7 @@ static void RunAllTests(void)
     RUN_TEST_GROUP(IusInputFile);
     RUN_TEST_GROUP(IusFile);
     RUN_TEST_GROUP(IusHistoryNode);
+    RUN_TEST_GROUP(IusParameterDict);
     RUN_TEST_GROUP(IusNonParametricPulse);
     RUN_TEST_GROUP(IusParametricPulse);
     RUN_TEST_GROUP(IusParametricPulse);

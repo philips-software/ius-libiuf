@@ -25,6 +25,7 @@ add_executable(unitTests
         src/testIusInputFile.c
         src/testIusHistoryNode.c
         src/testIusNonParametricPulse.c
+        src/testIusParameterDict.c
         src/testIusParametricPulse.c
         src/testIusPattern.c
         src/testIusPatternList.c

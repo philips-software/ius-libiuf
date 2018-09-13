@@ -18,6 +18,8 @@
 struct HashableTransmitApodization
 {
 	iuta_t transmitApodization;
+	// TODO: Factor out char[256] into char *
+	// Since size of key is known during set
 	char key[256];
 };
 

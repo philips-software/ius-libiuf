@@ -14,6 +14,12 @@
 #include <include/iusSourceDict.h>
 #include <include/iusTransducer.h>
 #include <include/iusInputFile.h>
+#include <include/iusParameterDict.h>
+
+iupad_t dgGenerateParameterDict
+(
+	int numElements
+);
 
 iuif_t dgGenerateInputFile
 (

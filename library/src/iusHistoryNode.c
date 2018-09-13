@@ -27,6 +27,7 @@ struct IusHistoryNode
     int                 numberOfParameters;
     int                 numberOfParents;
     iuhnl_t             parents;
+    iupad_t             parameters;
 } ;
 
 iuhn_t iusHistoryNodeCreate
@@ -98,14 +99,31 @@ IUS_BOOL iusHistoryNodeCompare
 }
 
 
-int iusHistoryNodeGetNumParents( iuhn_t node ) {
+int iusHistoryNodeGetNumParents
+(
+    iuhn_t node
+)
+{
     if ( node == NULL ) return -1;
     return node->numberOfParents;
 }
 
-int iusHistoryNodeGetNumParams( iuhn_t node ) {
+int iusHistoryNodeGetNumParams
+(
+    iuhn_t node
+)
+{
     if ( node == NULL ) return -1;
     return node->numberOfParameters;
+}
+
+iupad_t iusHistoryNodeGetParameters
+(
+iuhn_t node
+)
+{
+    if ( node == NULL ) return IUPAD_INVALID;
+    return node->parameters;
 }
 
 char *iusHistoryNodeGetId(iuhn_t node) {
@@ -136,6 +154,18 @@ int iusHistoryNodeSetParents
     if ( node == NULL ) return IUS_ERR_VALUE;
     if ( parents == NULL ) return IUS_ERR_VALUE;
     node->parents = parents;
+    return IUS_E_OK;
+}
+
+int iusHistoryNodeSetParameters
+(
+iuhn_t node,
+iupad_t parameterDict
+)
+{
+    if ( node == NULL ) return IUS_ERR_VALUE;
+    if ( parameterDict == NULL ) return IUS_ERR_VALUE;
+    node->parameters = parameterDict;
     return IUS_E_OK;
 }
 

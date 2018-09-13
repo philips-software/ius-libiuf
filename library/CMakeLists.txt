@@ -57,6 +57,7 @@ add_library(ius STATIC
 		include/iusNode.h
 		include/iusNonParametricPulse.h
 		include/iusNonParametricPulseImp.h
+		include/iusParameterDict.h
 		include/iusParametricPulse.h
 		include/iusParametricPulseImp.h
 		include/iusPattern.h
@@ -113,6 +114,7 @@ add_library(ius STATIC
 		src/iusHistoryNode.c
 		src/iusHistoryNodeList.c
 		src/iusNonParametricPulse.c
+		src/iusParameterDict.c
 		src/iusParametricPulse.c
 		src/iusPattern.c
 		src/iusPatternList.c

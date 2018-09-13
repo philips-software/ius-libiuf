@@ -25,6 +25,27 @@ static const char *pChannelMapLabel = "channelMapLabel";
 static const char *pApodizationLabel = "apodizationLabel";
 static const char *pReceivesettingsLabel = "receivesettingsLabel";
 
+iupad_t dgGenerateParameterDict
+(
+    int numElements
+)
+{
+    int elementID,status;
+    iupad_t dict = iusParameterDictCreate();
+    TEST_ASSERT(dict != IUPAD_INVALID);
+
+    char generatedKey[1024];
+    char generatedValue[1024];
+    for (elementID=0;elementID<1000;elementID++)
+    {
+        sprintf(generatedKey,"key_%d", elementID);
+        sprintf(generatedValue,"value_%d", elementID);
+        status = iusParameterDictSet(dict, generatedKey, generatedValue);
+        TEST_ASSERT_EQUAL(IUS_E_OK,status);
+    }
+
+    return dict;
+}
 
 iuif_t dgGenerateInputFile
 (

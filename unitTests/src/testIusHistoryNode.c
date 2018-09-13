@@ -11,6 +11,8 @@
 #include <include/iusError.h>
 #include <include/iusTypes.h>
 #include <include/iusHistoryNodeList.h>
+#include <include/iusParameterDict.h>
+#include <testDataGenerators.h>
 
 TEST_GROUP(IusHistoryNode);
 
@@ -97,9 +99,34 @@ TEST(IusHistoryNode, testIusHistoryNodeCompare)
 }
 
 
-TEST(IusHistoryNode, testIusHistoryTreeNodeSetGet)
+//struct IusHistoryNode
+//{
+//    char                pId[MAX_ID_LENGTH];
+//    char                *pType;
+//    int                 numberOfParameters;
+//    int                 numberOfParents;
+//    iuhnl_t             parents;
+//} ;
+TEST(IusHistoryNode, testIusHistoryNodeSetGet)
 {
+    char *type =  IUS_INPUT_TYPE;
+    int numParents = 0;
+    iuhn_t node;
 
+    for (numParents=0 ; numParents < 100 ; numParents++)
+    {
+        node = iusHistoryNodeCreate(type,numParents);
+        TEST_ASSERT_NOT_EQUAL(IUHN_INVALID,node);
+        TEST_ASSERT_EQUAL_STRING(IUS_INPUT_TYPE, iusHistoryNodeGetType(node));
+        TEST_ASSERT_EQUAL(numParents, iusHistoryNodeGetNumParents(node));
+        iuhnl_t parents = iusHistoryNodeGetParents(node);
+        TEST_ASSERT_EQUAL(numParents, iusHistoryNodeListGetSize(parents));
+    }
+
+    iupad_t parameterDict = dgGenerateParameterDict(10);
+    iusHistoryNodeSetParameters(node, parameterDict);
+    iupad_t otherPd = iusHistoryNodeGetParameters(node);
+    IUS_BOOL equal = iusParameterDictCompare(parameterDict,otherPd);
 }
 
 
@@ -109,6 +136,6 @@ TEST_GROUP_RUNNER(IusHistoryNode)
     RUN_TEST_CASE(IusHistoryNode, testIusHistoryNodeCreate);
     RUN_TEST_CASE(IusHistoryNode, testIusHistoryNodeDelete);
     RUN_TEST_CASE(IusHistoryNode, testIusHistoryNodeCompare);
-//    RUN_TEST_CASE(IusHistoryNode, testIusHistoryNodeSetGet);
+    RUN_TEST_CASE(IusHistoryNode, testIusHistoryNodeSetGet);
 //    RUN_TEST_CASE(IusHistoryNode, testIusHistoryNodeSerialize);
 }

@@ -2,6 +2,7 @@
 #ifndef IUSLIBRARY_IUSHISTORYNODE_H
 #define IUSLIBRARY_IUSHISTORYNODE_H
 
+#include <include/iusParameterDict.h>
 
 // ADT
 typedef struct IusHistoryNodeList IusHistoryNodeList;
@@ -57,10 +58,22 @@ iuhnl_t iusHistoryNodeGetParents
     iuhn_t iusHistoryNode
 );
 
+iupad_t iusHistoryNodeGetParameters
+(
+    iuhn_t node
+);
+
+// Setters
 int iusHistoryNodeSetParents
 (
     iuhn_t iusHistoryNode,
     iuhnl_t parents
 );
 
+
+int iusHistoryNodeSetParameters
+(
+    iuhn_t node,
+    iupad_t parameterDict
+);
 #endif //IUSLIBRARY_IUSHISTORYNODE_H
