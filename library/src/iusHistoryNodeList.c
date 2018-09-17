@@ -7,8 +7,9 @@
 #include <include/ius.h>
 #include <include/iusError.h>
 #include <include/iusUtil.h>
-#include <include/iusHistoryNodeList.h>
-
+#include <include/iusHistoryNodeListImp.h>
+#include <include/iusHistoryNodeImp.h>
+#include <include/iusHDF5.h>
 
 // ADT
 struct IusHistoryNodeList
@@ -101,3 +102,63 @@ int iusHistoryNodeListSet
     list->pHistoryNodes[index] = member;
     return IUS_E_OK;
 }
+
+iuhnl_t iusHistoryNodeListLoad
+(
+    hid_t handle,
+    int numHistoryNodes
+)
+{
+    int i;
+    int status=0;
+    iuhn_t node;
+    iuhnl_t nodeList = iusHistoryNodeListCreate(numHistoryNodes);
+    char parentPath[IUS_MAX_HDF5_PATH];
+    if ( handle == H5I_INVALID_HID ) return IUHNL_INVALID;
+
+    for (i=0;i<numHistoryNodes;i++)
+    {
+        sprintf(parentPath, "parent%d", i);
+        hid_t group_id = H5Gopen(handle, parentPath, H5P_DEFAULT);
+        if (group_id != H5I_INVALID_HID)
+        {
+            node = iusHistoryNodeLoad(group_id);
+            status |= iusHistoryNodeListSet(nodeList, node, i);
+            status |= H5Gclose(group_id );
+        }
+        else
+        {
+            status = IUS_ERR_VALUE;
+        }
+    }
+
+    if (status!=0)
+    {
+        iusHistoryNodeListDelete(nodeList);
+        nodeList = IUHNL_INVALID;
+    }
+    return nodeList;
+}
+
+int iusHistoryNodeListSave
+(
+    iuhnl_t node,
+    hid_t handle
+)
+{
+    int i;
+    int status=0;
+    char parentPath[IUS_MAX_HDF5_PATH];
+
+    if( node == NULL ) return IUS_ERR_VALUE;
+    if ( handle == H5I_INVALID_HID ) return IUS_ERR_VALUE;
+    for (i=0;i<node->count;i++)
+    {
+        sprintf(parentPath, "parent%d", i);
+        hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+        status |= iusHistoryNodeSave(node->pHistoryNodes[i], group_id);
+        status |= H5Gclose(group_id );
+    }
+    return status;
+}
+

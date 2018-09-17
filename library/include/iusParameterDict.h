@@ -25,6 +25,10 @@ int iusParameterDictCompare
     iupad_t actual
 );
 
+int iusParameterDictGetSize
+(
+    iupad_t dict
+);
 
 char * iusParameterDictGet
 (

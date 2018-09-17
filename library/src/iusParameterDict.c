@@ -123,6 +123,9 @@ char * iusParameterDictGet
 )
 {
     HashableParameter * search;
+    if( dict == NULL ) return NULL;
+    if( key == NULL ) return NULL;
+
     search = HashableParameter_hashmap_get(&dict->map, key);
     if( dict == NULL )
         return NULL;
@@ -163,6 +166,9 @@ int iusParameterDictSave
     struct hashmap_iter *iter;
     herr_t returnValue=0;
 
+    if( dict == NULL ) return IUS_ERR_VALUE;
+    if( handle == H5I_INVALID_HID ) return IUS_ERR_VALUE;
+
     // iterate over source list elements using the hash double linked list
     for (iter = hashmap_iter(&dict->map); iter; iter = hashmap_iter_next(&dict->map, iter)) {
         iterElement = HashableParameter_hashmap_iter_get_data(iter);
@@ -183,6 +189,7 @@ iupad_t iusParameterDictLoad
     int status = H5Gget_num_objs(handle, &nobj);
     char memberName[MAX_NAME];
     const char *memberValue;
+    if( handle == H5I_INVALID_HID ) return IUPAD_INVALID;
 
     iupad_t dict = iusParameterDictCreate();
     for (i = 0; i < (int) nobj && status == IUS_E_OK; i++)
@@ -193,85 +200,3 @@ iupad_t iusParameterDictLoad
     }
     return dict;
 }
-
-//
-//// serialization
-//#define NUMPULSEVALUESFMT  "%s/numParameterValues"
-//#define PULSEAMPLITUDESFMT "%s/rawParameterAmplitudes"
-//#define PULSETIMESFMT      "%s/rawParameterTimes"
-//
-//
-//#define LABELPATH          "%s/%s"
-//int iusParameterDictSave
-//(
-//    iupad_t dict,
-//    char *parentPath,
-//    hid_t handle
-//)
-//{
-//    int status=0;
-//    char path[IUS_MAX_HDF5_PATH];
-//    struct hashmap_iter *iter;
-//
-//    if(dict == NULL)
-//        return IUS_ERR_VALUE;
-//    if(parentPath == NULL || handle == H5I_INVALID_HID)
-//        return IUS_ERR_VALUE;
-//
-//
-//
-//    hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-//    HashableParameter *sourceElement;
-//    char *label;
-//    // iterate over source list elements and save'em
-//    for (iter = hashmap_iter(&dict->map); iter; iter = hashmap_iter_next(&dict->map, iter))
-//    {
-//        sourceElement = HashableParameter_hashmap_iter_get_data(iter);
-//        label = iusParameterGetLabel(sourceElement->value);
-//        sprintf(path, LABELPATH, parentPath, label);
-//        iusParameterSave(sourceElement->value,path,handle);
-//    }
-//
-//    status |= H5Gclose(group_id );
-//    return status;
-//}
-//
-//
-//#define MAX_NAME 1024
-//
-//iupad_t iusParameterDictLoad
-//(
-//hid_t handle,
-//const char *parentPath
-//)
-//{
-//    int i;
-//    int status = 0;
-//    char path[IUS_MAX_HDF5_PATH];
-//    char memb_name[MAX_NAME];
-//
-//
-//    hid_t grpid = H5Gopen(handle, parentPath, H5P_DEFAULT);
-//    if(parentPath == NULL || handle == H5I_INVALID_HID || grpid == H5I_INVALID_HID)
-//        return NULL;
-//
-//    hsize_t nobj;
-//    status = H5Gget_num_objs(grpid, &nobj);
-//
-//    iupad_t dict = iusParameterDictCreate();
-//    for (i = 0; i < (int) nobj; i++)
-//    {
-//        H5Gget_objname_by_idx(grpid, (hsize_t) i,
-//                              memb_name, (size_t) MAX_NAME);
-//        sprintf(path,"%s/%s", parentPath,memb_name);
-//        char * receiveSettings = iusParameterLoad(handle,path,memb_name);
-//        status = iusParameterDictSet(dict, memb_name, receiveSettings);
-//    }
-//
-//    H5Gclose(handle);
-//    if( status != IUS_E_OK )
-//    {
-//        return NULL;
-//    }
-//    return dict;
-//}

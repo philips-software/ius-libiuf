@@ -111,6 +111,50 @@ TEST(IusParameterDict, testIusSerialization)
 
     iusParameterDictDelete(dict);
     iusParameterDictDelete(savedObj);
+
+}
+
+
+TEST(IusParameterDict, testIusSerializationErrorFlow)
+{
+    IUS_BOOL equal;
+
+    // create and fill
+    iupad_t dict = dgGenerateParameterDict(100);
+    char *filename = "testIusParameterDictSerializationErrorflow.hdf5";
+    char *dictPath =  "/ParameterDict";
+
+    // save
+    hid_t handle = H5Fcreate( filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT );
+    TEST_ASSERT(handle > 0);
+    hid_t group_id = H5Gcreate(handle, dictPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+    TEST_ASSERT(group_id > 0);
+
+    int status = iusParameterDictSave(NULL, group_id);
+    TEST_ASSERT_EQUAL(IUS_ERR_VALUE,status);
+    status = iusParameterDictSave(dict, H5I_INVALID_HID);
+    TEST_ASSERT_EQUAL(IUS_ERR_VALUE,status);
+    status = iusParameterDictSave(dict, group_id);
+    TEST_ASSERT_EQUAL(IUS_E_OK,status);
+    H5Gclose(group_id);
+    H5Fclose(handle);
+
+    // read back
+    handle = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT );
+    TEST_ASSERT(handle > 0);
+    group_id = H5Gopen(handle, dictPath, H5P_DEFAULT);
+    TEST_ASSERT(group_id > 0);
+
+    iupad_t savedObj = iusParameterDictLoad(H5I_INVALID_HID);
+    TEST_ASSERT(savedObj == IUPAD_INVALID);
+    savedObj = iusParameterDictLoad(group_id);
+    TEST_ASSERT(savedObj != IUPAD_INVALID);
+    H5Gclose(group_id);
+    H5Fclose(handle);
+
+    iusParameterDictDelete(dict);
+    iusParameterDictDelete(savedObj);
+
 }
 
 
@@ -119,4 +163,5 @@ TEST_GROUP_RUNNER(IusParameterDict)
     RUN_TEST_CASE(IusParameterDict, testIusCreateParameterDict);
     RUN_TEST_CASE(IusParameterDict, testIusCompareParameterDict);
     RUN_TEST_CASE(IusParameterDict, testIusSerialization);
+    RUN_TEST_CASE(IusParameterDict, testIusSerializationErrorFlow);
 }

@@ -13,6 +13,7 @@
 #include <include/iusHistoryNodeList.h>
 #include <include/iusParameterDict.h>
 #include <testDataGenerators.h>
+#include <include/iusHistoryNodeImp.h>
 
 TEST_GROUP(IusHistoryNode);
 
@@ -84,8 +85,6 @@ TEST(IusHistoryNode, testIusHistoryNodeCompare)
     equal = iusHistoryNodeCompare(node,notherNode);
     TEST_ASSERT_EQUAL(IUS_FALSE,equal);
 
-    // change paraneters
-
     // same change to notherNode, repeat comparison
     parentList = iusHistoryNodeGetParents(notherNode);
     status = iusHistoryNodeListSet(parentList,parentNode,0);
@@ -95,18 +94,23 @@ TEST(IusHistoryNode, testIusHistoryNodeCompare)
     equal = iusHistoryNodeCompare(node,notherNode);
     TEST_ASSERT_EQUAL(IUS_TRUE,equal);
 
+    // change paraneters
+    iupad_t params = dgGenerateParameterDict(20);
+    status = iusHistoryNodeSetParameters(node, params);
+    TEST_ASSERT_EQUAL(IUS_E_OK, status);
+    equal = iusHistoryNodeCompare(node,notherNode);
+    TEST_ASSERT_EQUAL(IUS_FALSE,equal);
+
+    status = iusHistoryNodeSetParameters(notherNode, params);
+    TEST_ASSERT_EQUAL(IUS_E_OK, status);
+    equal = iusHistoryNodeCompare(node,notherNode);
+    TEST_ASSERT_EQUAL(IUS_TRUE,equal);
+
     iusHistoryNodeDelete(node);
+    iusHistoryNodeDelete(notherNode);
 }
 
 
-//struct IusHistoryNode
-//{
-//    char                pId[MAX_ID_LENGTH];
-//    char                *pType;
-//    int                 numberOfParameters;
-//    int                 numberOfParents;
-//    iuhnl_t             parents;
-//} ;
 TEST(IusHistoryNode, testIusHistoryNodeSetGet)
 {
     char *type =  IUS_INPUT_TYPE;
@@ -130,6 +134,37 @@ TEST(IusHistoryNode, testIusHistoryNodeSetGet)
 }
 
 
+TEST(IusHistoryNode, testIusHistoryNodeSerialize)
+{
+    IUS_BOOL equal;
+
+    // create and fill
+    iuhn_t historyNode = dgGenerateHistoryNode();
+    char *filename = "testIusHistoryNodeSerialization.hdf5";
+    char *histPath =  "/";
+
+    // save
+    hid_t handle = H5Fcreate( filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT );
+    TEST_ASSERT(handle > 0);
+
+    int status = iusHistoryNodeSave(historyNode, handle);
+    H5Fclose(handle);
+    TEST_ASSERT_EQUAL(IUS_E_OK,status);
+
+    // read back
+    handle = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT );
+    TEST_ASSERT(handle > 0);
+
+    iuhn_t savedObj = iusHistoryNodeLoad(handle);
+    TEST_ASSERT(savedObj != NULL);
+    H5Fclose(handle);
+
+    TEST_ASSERT_EQUAL(IUS_TRUE, iusHistoryNodeCompareWithId(historyNode,savedObj));
+
+    iusHistoryNodeDelete(historyNode);
+    iusHistoryNodeDelete(savedObj);
+}
+
 
 TEST_GROUP_RUNNER(IusHistoryNode)
 {
@@ -137,5 +172,5 @@ TEST_GROUP_RUNNER(IusHistoryNode)
     RUN_TEST_CASE(IusHistoryNode, testIusHistoryNodeDelete);
     RUN_TEST_CASE(IusHistoryNode, testIusHistoryNodeCompare);
     RUN_TEST_CASE(IusHistoryNode, testIusHistoryNodeSetGet);
-//    RUN_TEST_CASE(IusHistoryNode, testIusHistoryNodeSerialize);
+    RUN_TEST_CASE(IusHistoryNode, testIusHistoryNodeSerialize);
 }

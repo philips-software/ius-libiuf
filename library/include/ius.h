@@ -5,6 +5,7 @@
 #define IUS_H
 
 #include <iusTypes.h>
+#include <iusError.h>
 
 #define  IUS_E_OK  0
 #define  IUH_INVALID NULL

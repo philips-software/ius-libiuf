@@ -25,6 +25,25 @@ static const char *pChannelMapLabel = "channelMapLabel";
 static const char *pApodizationLabel = "apodizationLabel";
 static const char *pReceivesettingsLabel = "receivesettingsLabel";
 
+
+
+iuhn_t dgGenerateHistoryNode
+(
+
+)
+{
+    char *type =  IUS_INPUT_TYPE;
+    int numParents = 0;
+    iuhn_t node;
+
+    node = iusHistoryNodeCreate(type,numParents);
+    TEST_ASSERT_NOT_EQUAL(IUHN_INVALID,node);
+
+    iupad_t parameterDict = dgGenerateParameterDict(10);
+    iusHistoryNodeSetParameters(node, parameterDict);
+    return node;
+}
+
 iupad_t dgGenerateParameterDict
 (
     int numElements

@@ -15,6 +15,12 @@
 #include <include/iusTransducer.h>
 #include <include/iusInputFile.h>
 #include <include/iusParameterDict.h>
+#include <include/iusHistoryNode.h>
+
+iuhn_t dgGenerateHistoryNode
+(
+
+);
 
 iupad_t dgGenerateParameterDict
 (
