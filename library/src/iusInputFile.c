@@ -25,6 +25,8 @@
 #include <include/iusSourceDictImp.h>
 #include <include/iusReceiveSettingsDictImp.h>
 #include <include/iusTransducerImp.h>
+#include <include/iusHistoryNode.h>
+#include <include/iusHistoryNodeImp.h>
 
 static char *const FRAME_LIST_PATH = "/Frames";
 static char *const PATTERN_LIST_PATH="/Patterns";
@@ -41,6 +43,7 @@ static char *const IUSVERSION_PATH="/IusVersion";
 
 struct IusInputFile
 {
+    iuhn_t history;
     const char *pFilename;
     iufl_t frameList;
 	iupal_t patternList;
@@ -115,6 +118,7 @@ iuif_t iusInputFileCreate
 		return IUIF_INVALID;
 	}
 
+    pFileInst->history = iusHistoryNodeCreate(IUS_INPUT_TYPE,0);
 	pFileInst->handle = H5Fcreate(pFilename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
 	if (pFileInst->handle == H5I_INVALID_HID)
 	{
@@ -169,9 +173,9 @@ iuif_t iusInputFileLoad
         return IUIF_INVALID;
     }
 
-
     // Load instance data
     // Todo: create group @here instead of in Load, see experiment
+    pFileInst->history = iusHistoryNodeLoad(pFileInst->handle);
     pFileInst->frameList = iusFrameListLoad(pFileInst->handle, FRAME_LIST_PATH);
     if (pFileInst->frameList == IUFL_INVALID)
     {
@@ -280,6 +284,7 @@ int iusInputFileSave
     // Todo: Handle creation in iusInputFileSave iso iusPulseDictSave, iusPatternListSave, iusReceiveChannelMapDictSave,iusTransmitApodizationDictSave
     // new signature: iusPulseDictSave(fileHandle->pulseDict,fileHandle->handle);
 
+    status |= iusHistoryNodeSave(fileHandle->history, fileHandle->handle);
     status |= iusFrameListSave(fileHandle->frameList, FRAME_LIST_PATH, fileHandle->handle);
     status |= iusPatternListSave(fileHandle->patternList, PATTERN_LIST_PATH, fileHandle->handle);
     status |= iusPulseDictSave(fileHandle->pulseDict, PULSE_DICT_PATH, fileHandle->handle);
@@ -335,6 +340,8 @@ int iusInputFileCompare
 {
     if ( reference == actual ) return IUS_TRUE;
     if ( reference == NULL || actual == NULL ) return IUS_FALSE;
+    if ( iusHistoryNodeCompareWithId(reference->history, actual->history)  == IUS_FALSE ) return IUS_FALSE;
+
     if ( reference->IusVersion != actual->IusVersion ) return IUS_FALSE;
     if ( reference->numFrames != actual->numFrames ) return IUS_FALSE;
     if ( strcmp(reference->pFilename, actual->pFilename) != 0 ) return IUS_FALSE;

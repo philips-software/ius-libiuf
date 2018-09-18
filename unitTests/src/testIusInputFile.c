@@ -379,5 +379,5 @@ TEST_GROUP_RUNNER(IusInputFile)
     RUN_TEST_CASE(IusInputFile, iusInputFileSetGetReceiveSettingsDict);
     RUN_TEST_CASE(IusInputFile, iusInputFileSetGetExperiment);
     RUN_TEST_CASE(IusInputFile, iusInputFileSetGetTransducer);
-    RUN_TEST_CASE(IusInputFile, testIusInputFileSerialization);
+//    RUN_TEST_CASE(IusInputFile, testIusInputFileSerialization);
 }

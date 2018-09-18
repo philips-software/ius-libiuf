@@ -28,6 +28,7 @@ struct IusHistoryNode
     char                *pType;
     int                 numberOfParents;
     iuhnl_t             parents;
+    int                 numberOfParameters;
     iupad_t             parameters;
 } ;
 
@@ -44,6 +45,7 @@ static iuhn_t iusHistoryNodeCreateWithId
     pIusNode->pId = strdup(ID);
     pIusNode->pType = strdup(pNodeType);
     pIusNode->numberOfParents = parents;
+    pIusNode->numberOfParameters = 0;
     pIusNode->parents = iusHistoryNodeListCreate(parents);
     pIusNode->parameters = IUPAD_INVALID;
     return pIusNode;
@@ -97,6 +99,11 @@ IUS_BOOL iusHistoryNodeCompare
     if ( reference == actual ) return IUS_TRUE;
     if ( reference == NULL || actual == NULL ) return IUS_FALSE;
     if ( reference->numberOfParents != actual->numberOfParents )
+    {
+        return IUS_FALSE;
+    }
+
+    if ( reference->numberOfParameters != actual->numberOfParameters )
     {
         return IUS_FALSE;
     }
@@ -182,6 +189,7 @@ int iusHistoryNodeSetParameters
     if ( node == NULL ) return IUS_ERR_VALUE;
     if ( parameterDict == NULL ) return IUS_ERR_VALUE;
     node->parameters = parameterDict;
+    node->numberOfParameters = iusParameterDictGetSize(node->parameters);
     return IUS_E_OK;
 }
 
@@ -189,6 +197,7 @@ int iusHistoryNodeSetParameters
 #define NODE_ID "ID"
 #define NODE_TYPE "type"
 #define NODE_NUMBER_OF_PARENTS "numberOfParents"
+#define NODE_NUMBER_OF_PARAMETERS "numberOfParameters"
 #define NODE_PROCESSING_PARAMETERS "processingParameters"
 
 int iusHistoryNodeSave
@@ -203,9 +212,10 @@ int iusHistoryNodeSave
     status |= iusHdf5WriteString(handle, NODE_ID, node->pId, 1);
     status |= iusHdf5WriteString(handle, NODE_TYPE, node->pType, 1);
     status |= iusHdf5WriteInt(handle, NODE_NUMBER_OF_PARENTS, &node->numberOfParents, 1);
+    status |= iusHdf5WriteInt(handle, NODE_NUMBER_OF_PARAMETERS, &node->numberOfParameters, 1);
 
     // Processing parameters are optional
-    if (node->parameters != IUPAD_INVALID)
+    if (node->numberOfParameters != 0)
     {
         hid_t group_id = H5Gcreate(handle, NODE_PROCESSING_PARAMETERS, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
         status |= iusParameterDictSave(node->parameters, group_id);
@@ -224,10 +234,12 @@ iuhn_t iusHistoryNodeLoad
     const char *ID;
     const char *type;
     int numberOfParents=0;
+    int numberOfParameters=0;
     if ( handle == H5I_INVALID_HID ) return IUHN_INVALID;
     status |= iusHdf5ReadString(handle, NODE_ID, &ID);
     status |= iusHdf5ReadString(handle, NODE_TYPE, &type);
     status |= iusHdf5ReadInt(handle, NODE_NUMBER_OF_PARENTS, &numberOfParents);
+    status |= iusHdf5ReadInt(handle, NODE_PROCESSING_PARAMETERS, &numberOfParameters);
     if (status!=0)
         return IUHN_INVALID;
 
@@ -241,9 +253,9 @@ iuhn_t iusHistoryNodeLoad
     }
 
     // Processing parameters are optional
-    hid_t group_id = H5Gopen(handle, NODE_PROCESSING_PARAMETERS, H5P_DEFAULT);
-    if (group_id >= 0)
+    if (numberOfParameters > 0)
     {
+        hid_t group_id = H5Gopen(handle, NODE_PROCESSING_PARAMETERS, H5P_DEFAULT);
         iupad_t loadedParams = iusParameterDictLoad(group_id);
         status |= H5Gclose(group_id );
         status |= iusHistoryNodeSetParameters(loadedObj, loadedParams);
