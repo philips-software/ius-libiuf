@@ -12,10 +12,9 @@ else
 fi
 BuildFolder=C_v3/build/$(uname)
 ValgrindMemReportFile=valgrind-report.xml
-ValgrindUTReportFile=xunit-report.xml
 echo === Dynamic Code Analysis by Valgrind 
 cd $BuildFolder
 $CMAKE -DCMAKE_BUILD_TYPE=Debug ../..
 make -j 4
-valgrind --trace-children=yes --xml=yes --xml-file=$ValgrindMemReportFile unitTests/unitTests --gtest_output=xml:$ValgrindUTReportFile
+valgrind --trace-children=yes --xml=yes --xml-file=$ValgrindMemReportFile unitTests/unitTests
 

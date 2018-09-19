@@ -2,6 +2,11 @@ cmake_minimum_required(VERSION 3.00)
 project(iusLibrary C)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/external/cmake_modules")
+if(CMAKE_COMPILER_IS_GNUCC)
+    include(CodeCoverage)
+    APPEND_COVERAGE_COMPILER_FLAGS()
+    set(COVERAGE_GCOVR_EXCLUDES 'external/CMakeFiles/hashmap.dir/hashmap/src' 'external/CMakeFiles/Unity.dir/Unity/src' 'external/CMakeFiles/Unity.dir/Unity/extras/fixture/src')
+endif()
 
 if(MSVC)
     # disable the security warnings for sprintf() in bee2.c
