@@ -12,11 +12,11 @@ else
 fi
 
 BuildFolder=C_v3/build/$(uname)
-echo === Building ius in $BuildFolder
+CppCheckReportFile=cppcheck-report.xml
+
+echo === Static code analysis for ius in $BuildFolder
 mkdir -p $BuildFolder
 cd $BuildFolder
 $CMAKE -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ../..
 
-#cppcheck --error-exitcode=1 --enable=all --project=compile_commands.json  --xml 2> err.xml
-cppcheck --enable=all --project=compile_commands.json  --xml 2> err.xml
-cppcheck-htmlreport --file=err.xml --report-dir=test1 --source-dir=.
+cppcheck --enable=style --project=compile_commands.json  --xml-version=2 --xml 2> $CppCheckReportFile
