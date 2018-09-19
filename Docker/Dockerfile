@@ -14,7 +14,12 @@ RUN yum install gdb-gdbserver -y
 RUN yum install cmake3 -y
 RUN yum install hdf5-devel -y
 RUN yum install cppcheck cppcheck-htmlreport -y
+RUN yum install wget -y
 RUN yum clean all
+RUN wget https://sonarsource.bintray.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-3.2.0.1227-linux.zip
+RUN unzip sonar-scanner-cli-3.2.0.1227-linux.zip -d /usr/local
+RUN rm sonar-scanner-cli-3.2.0.1227-linux.zip
 WORKDIR /app
+ENV PATH="${PATH}:/usr/local/sonar-scanner-3.2.0.1227-linux/bin"
 
 CMD /bin/bash
