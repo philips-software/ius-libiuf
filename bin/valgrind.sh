@@ -14,5 +14,7 @@ BuildFolder=C_v3/build/$(uname)
 ValgrindReportFile=valgrind-report.xml
 echo === Dynamic Code Analysis by Valgrind 
 cd $BuildFolder
+$CMAKE -DCMAKE_BUILD_TYPE=Debug ../..
+make -j 4
 valgrind --trace-children=yes --xml=yes --xml-file=$ValgrindReportFile unitTests/unitTests
 
