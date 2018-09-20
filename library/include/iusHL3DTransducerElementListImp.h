@@ -10,14 +10,12 @@
 int iusHL3DTransducerElementListSave
 (
     iu3dtel_t list,
-    const char *parentPath,
     hid_t handle
 );
 
 iu3dtel_t iusHL3DTransducerElementListLoad
 (
-    hid_t handle,
-    const char *parentPath
+    hid_t handle
 );
 
 

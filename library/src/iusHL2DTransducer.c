@@ -120,7 +120,7 @@ int iusHL2DTransducerSetElement
 
 int ius2DTransducerWriteElementPositions(Ius2DTransducer *pTransducer, hid_t subgroup_id, int verbose)
 {
-	herr_t        status = 0;
+	herr_t status = 0;
 	hid_t position_tid; // File datatype identifier for IusPosition
 	hid_t dataset, space;
 	hsize_t dims[1] = { 1 };
@@ -206,11 +206,11 @@ int ius2DTransducerWriteElementAngles(Ius2DTransducer *pTransducer, hid_t subgro
 	herr_t        status = 0;
 	hid_t dataset, space;
 	float * pAngleArray;
-	int numElements = iusHL2DTransducerElementListGetSize(pTransducer->elements);
-	hsize_t dims[1] = { numElements };
+	const int numElements = iusHL2DTransducerElementListGetSize(pTransducer->elements);
+	hsize_t dims[1] = { numElements }; // TODO: fix warning C4204: nonstandard extension used: non-constant aggregate initialize 
 	int i; //iterator
 
-		   // Angles
+    // Angles
 	space = H5Screate_simple(1, dims, NULL);
 	// step a:  create H5 dataset
 	dataset = H5Dcreate(subgroup_id, "theta", H5T_NATIVE_FLOAT, space, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
@@ -234,39 +234,40 @@ int ius2DTransducerWriteElementAngles(Ius2DTransducer *pTransducer, hid_t subgro
 }
 
 
-#define ELEMENTSFMT "%s/Elements"
+#define ELEMENTSFMT "Elements"
 
 herr_t iusHL2DTransducerSave
 (
     iu2dt_t transducer,
-    char *parentPath,
     hid_t handle
 )
 {
     herr_t status=0;
-    char path[IUS_MAX_HDF5_PATH];
-    status = iusHLBaseTransducerSave((iut_t)transducer,parentPath,handle);
+    //char path[IUS_MAX_HDF5_PATH];
+	hid_t transducer_id = H5Gcreate(handle, "Transducer", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+    status = iusHLBaseTransducerSave((iut_t)transducer, transducer_id);
     if (status != 0)
         return status;
 
-
-    sprintf(path, ELEMENTSFMT, parentPath);
-    status = iusHL2DTransducerElementListSave(transducer->elements, path,handle);
+    //sprintf(path, ELEMENTSFMT);	
+    status = iusHL2DTransducerElementListSave(transducer->elements, transducer_id);
+	H5Gclose(transducer_id);
     return status;
 }
 
 
 iu2dt_t iusHL2DTransducerLoad
 (
-    hid_t handle,
-    char *parentPath
+    hid_t handle
 )
 {
-    char path[IUS_MAX_HDF5_PATH];
-    sprintf(path, ELEMENTSFMT, parentPath);
-    iut_t baseTransducer = iusHLBaseTransducerLoad(handle,parentPath);
+    //char path[IUS_MAX_HDF5_PATH];
+    //sprintf(path, ELEMENTSFMT);
+	hid_t transducer_id = H5Gopen(handle, "Transducer", H5P_DEFAULT); // todo put this string at central  location 
+	iut_t baseTransducer = iusHLBaseTransducerLoad(transducer_id);
+
     if (baseTransducer == IUT_INVALID) return IU2DT_INVALID;
-    iu2dtel_t elements = iusHL2DTransducerElementListLoad(handle,path);
+    iu2dtel_t elements = iusHL2DTransducerElementListLoad(transducer_id); 
 	if (elements == IU2DTEL_INVALID) return IU2DT_INVALID;
 	int numElements = iusHL2DTransducerElementListGetSize(elements);
     iu2dt_t transducer = iusHL2DTransducerCreate( baseTransducer->pTransducerName,
@@ -275,6 +276,7 @@ iu2dt_t iusHL2DTransducerLoad
                                                   numElements);
 	if (transducer == IU2DT_INVALID) return IU2DT_INVALID;
 	transducer->elements = elements;
+	H5Gclose(transducer_id);
     return transducer;
 }
 

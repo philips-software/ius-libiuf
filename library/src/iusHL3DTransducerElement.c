@@ -82,24 +82,23 @@ int iusHL3DTransducerElementCompare
 int iusHL3DTransducerElementSave
 (
     iu3dte_t element,
-    const char *parentPath,
     hid_t handle
 )
 {
-    char path[IUS_MAX_HDF5_PATH];
+    //char path[IUS_MAX_HDF5_PATH];
     if( element == IU3DTE_INVALID ) return IUS_ERR_VALUE;
 
-    hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+    //hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 
-    sprintf(path, ELEMENTSIZEPATH, parentPath);
-    int status = iusHL3DSizeSave(element->size,path,group_id);
+    //sprintf(path, ELEMENTSIZEPATH, parentPath);
+    int status = iusHL3DSizeSave(element->size, handle); //todo cenralize this string
 
-    sprintf(path, ELEMENTPOSITIONPATH, parentPath);
-    status |= iusHL3DPositionSave(element->position,path,group_id);
+    //sprintf(path, ELEMENTPOSITIONPATH, parentPath);
+    status |= iusHL3DPositionSave(element->position, handle);//todo cenralize this string
 
-    sprintf(path, ELEMENTANGLEPATH, parentPath);
-    status |= iusHL3DAngleSave(element->angle,path,group_id);
-    status |= H5Gclose(group_id );
+    //sprintf(path, ELEMENTANGLEPATH, parentPath);
+    status |= iusHL3DAngleSave(element->angle, handle); //todo cenralize this string
+    //status |= H5Gclose(group_id );
 
     return status;
 }
@@ -108,22 +107,21 @@ int iusHL3DTransducerElementSave
 
 iu3dte_t iusHL3DTransducerElementLoad
 (
-    hid_t handle,
-    const char *parentPath
+    hid_t handle
 )
 {
-    char path[IUS_MAX_HDF5_PATH];
+    //char path[IUS_MAX_HDF5_PATH];
     iu3dte_t element = IU3DTE_INVALID;
-    sprintf(path, ELEMENTPOSITIONPATH, parentPath);
-    iu3dp_t elemPos = iusHL3DPositionLoad(handle,path);
+    //sprintf(path, ELEMENTPOSITIONPATH, parentPath);
+    iu3dp_t elemPos = iusHL3DPositionLoad(handle); //todo centralize these
     if (elemPos == IU3DP_INVALID) return element;
 
-    sprintf(path, ELEMENTSIZEPATH, parentPath);
-    iu3ds_t elemSize = iusHL3DSizeLoad(handle,path);
+    //sprintf(path, ELEMENTSIZEPATH, parentPath);
+    iu3ds_t elemSize = iusHL3DSizeLoad(handle);
     if (elemSize == IU3DS_INVALID) return element;
 
-    sprintf(path, ELEMENTANGLEPATH, parentPath);
-    iu3da_t elemAngle = iusHL3DAngleLoad(handle,path);
+    //sprintf(path, ELEMENTANGLEPATH, parentPath);
+    iu3da_t elemAngle = iusHL3DAngleLoad(handle);
     if (elemAngle == IU3DA_INVALID) return element;
 
     element = iusHL3DTransducerElementCreate(elemPos, elemAngle, elemSize);

@@ -136,23 +136,27 @@ IUS_BOOL iusHL2DTransducerElementListFull
 
 
 
-#define ELEMENTLISTFMT "%s/Element[%d]"
-#define LISTSIZEFMT "%s/Size"
+#define ELEMENTLISTFMT "Element[%d]"
+#define LISTSIZEFMT "Size"
 
 iu2dtel_t iusHL2DTransducerElementListLoad
 (
-hid_t handle,
-const char *parentPath
+	hid_t handle
+//const char *parentPath  //todo remove need for parent path by fwding correct handle
 )
 {
     char path[IUS_MAX_HDF5_PATH];
     int i,size;
 
-    if(parentPath == NULL || handle == H5I_INVALID_HID)
+    if(handle == H5I_INVALID_HID)
         return IU2DTEL_INVALID;
+	
+	hid_t elements_id = H5Gopen(handle, "Elements", H5P_DEFAULT); //todo centralize this
+	if (elements_id == H5I_INVALID_HID)
+		return IU2DTEL_INVALID;
 
-    sprintf(path, LISTSIZEFMT, parentPath);
-    int status = iusHdf5ReadInt(handle, path, &(size));
+    sprintf(path, LISTSIZEFMT);
+    int status = iusHdf5ReadInt(elements_id, path, &(size));
     if(status <0)
         return IU2DTEL_INVALID;
 
@@ -160,18 +164,21 @@ const char *parentPath
     iu2dte_t loadedElement;
     for (i=0;i < size;i++)
     {
-        sprintf(path, ELEMENTLISTFMT, parentPath, i);
-        loadedElement = iusHL2DTransducerElementLoad(handle,path);
+        sprintf(path, ELEMENTLISTFMT, i);
+		hid_t element_single_id = H5Gopen(elements_id, path, H5P_DEFAULT);
+        loadedElement = iusHL2DTransducerElementLoad(element_single_id);
         if(loadedElement == IU2DTE_INVALID)
         {
             status = IUS_ERR_VALUE;
             break;
         }
+		H5Gclose(element_single_id);
         status = iusHL2DTransducerElementListSet(elementList,loadedElement,i);
         if( status == IUS_ERR_VALUE )
             break;
     }
 
+	H5Gclose(elements_id);
     if( status == IUS_ERR_VALUE )
     {
         iusHL2DTransducerElementListDelete(elementList);
@@ -184,7 +191,6 @@ const char *parentPath
 int iusHL2DTransducerElementListSave
 (
     iu2dtel_t list,
-    const char *parentPath,
     hid_t handle
 )
 {
@@ -194,27 +200,28 @@ int iusHL2DTransducerElementListSave
 
     if(list == NULL)
         return IUS_ERR_VALUE;
-    if(parentPath == NULL || handle == H5I_INVALID_HID)
+    if(handle == H5I_INVALID_HID)
         return IUS_ERR_VALUE;
     if(iusHL2DTransducerElementListFull(list) == IUS_FALSE)
         return IUS_ERR_VALUE;
 
-    hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
     iu2dte_t sourceElement;
-    sprintf(path, LISTSIZEFMT, parentPath);
-    status |= iusHdf5WriteInt(handle, path, &(list->count), 1);
+    sprintf(path, LISTSIZEFMT);
+	hid_t elements_id = H5Gcreate(handle, "Elements", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+    status |= iusHdf5WriteInt(elements_id, path, &(list->count), 1);
 
     // iterate over source list elements and save'em
-    for (i=0;i < list->count ;i++)
+    for (i=0; i<list->count; i++)
     {
         sourceElement = iusHL2DTransducerElementListGet(list,i);
         if(sourceElement == IU2DTE_INVALID) continue;
 
-        sprintf(path, ELEMENTLISTFMT, parentPath, i);
-        status = iusHL2DTransducerElementSave(sourceElement,path,group_id);
+        sprintf(path, ELEMENTLISTFMT, i);
+		hid_t element_single_id = H5Gcreate(elements_id, path, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+        status = iusHL2DTransducerElementSave(sourceElement, element_single_id);
+		H5Gclose(element_single_id);
         if(status != IUS_E_OK) break;
     }
-
-    status |= H5Gclose(group_id );
+	H5Gclose(elements_id);
     return status;
 }

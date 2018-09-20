@@ -21,7 +21,8 @@ int iusGetVersionMajor(void) {
 IUS_BOOL fileExists(const char *fname)
 {
     FILE *file;
-    if ((file = fopen(fname, "r")))
+	file = fopen(fname, "r");
+    if (file)
     {
         fclose(file);
         return IUS_TRUE;

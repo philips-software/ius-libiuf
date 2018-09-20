@@ -10,14 +10,12 @@
 int iusHL3DTransducerElementSave
 (
     iu3dte_t element,
-    const char *parentPath,
     hid_t handle
 );
 
 iu3dte_t iusHL3DTransducerElementLoad
 (
-    hid_t handle,
-    const char *parentPath
+    hid_t handle
 );
 
 

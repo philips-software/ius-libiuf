@@ -178,27 +178,22 @@ int iusHLTransducerSetElement
     return status;
 }
 
-
+/*
 hid_t iusWriteTransducerType
 (
 	hid_t handle,
-	char *path,
 	IusShape transducerType
 )
 {
-
+	// TODO: implement this write function
 	return handle;
-}
+} */
 
-
-
-#define TRANSDUCER_FMT "%s/"
-#define TRANSDUCER_ELEMENTS_FMT "%s/Elements/"
+#define TRANSDUCER_ELEMENTS_FMT "Elements"
 
 static herr_t iusHLBaseTransducerSaveShape(hid_t group_id,
                                            const char *pVariableString,
-                                           IusTransducerShape shape,
-                                           int verbose)
+                                           IusTransducerShape shape)
 {
 	herr_t status = 0;
 	hsize_t dims[1] = { 1 };
@@ -215,46 +210,49 @@ static herr_t iusHLBaseTransducerSaveShape(hid_t group_id,
 	return status;
 }
 
-#define SHAPEFMT "%s/shape"
-#define NAMEFMT "%s/transducerName"
-#define CENTERFREQUENCYFMT "%s/centerFrequency"
+#define SHAPEFMT "shape"
+#define NAMEFMT "transducerName"
+#define CENTERFREQUENCYFMT "centerFrequency"
+
+#define IUS_INPUT_STRUCTURE_TRANSDUCER "Transducer"
 
 herr_t iusHLBaseTransducerSave
 (
     iut_t transducer,
-    char *parentPath,
     hid_t handle
 )
 {
-	herr_t status = 0;
-    char path[IUS_MAX_HDF5_PATH];
-    hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-    sprintf(path, SHAPEFMT, parentPath);
-    status |= iusHLBaseTransducerSaveShape(group_id, path, transducer->shape, 1);
-    sprintf(path, NAMEFMT, parentPath);
-	status |= iusHdf5WriteString(group_id, path, transducer->pTransducerName, 1);
-    sprintf(path, CENTERFREQUENCYFMT, parentPath);
-	status |= iusHdf5WriteFloat(group_id, path, &(transducer->centerFrequency), 1, 1);
-    status |= H5Gclose(group_id );
-    return status;
-}
+	herr_t status = IUS_E_OK;
+    //char path[IUS_MAX_HDF5_PATH];
+ 
+	//TODO create a Transducer group if it doesn't exist yet
+	//status = H5Gget_objinfo(handle, IUS_INPUT_STRUCTURE_TRANSDUCER, 0, NULL);
 
+    // sprintf(path, SHAPEFMT, parentPath);
+    status |= iusHLBaseTransducerSaveShape(handle, SHAPEFMT, transducer->shape);
+    // sprintf(path, NAMEFMT, parentPath);
+	status |= iusHdf5WriteString(handle, NAMEFMT, transducer->pTransducerName, 1);
+    // sprintf(path, CENTERFREQUENCYFMT, parentPath);
+	status |= iusHdf5WriteFloat(handle, CENTERFREQUENCYFMT, &(transducer->centerFrequency), 1, 1);
+    //status |= H5Gclose(group_id );
+    
+	return status;
+}
 
 
 herr_t iusHLTransducerSave
 (
     iut_t transducer,
-    char *parentPath,
     hid_t handle
 )
 {
 	/* write the /Transducer data */
 	herr_t  status=0;
     if (transducer->type == IUS_3D_SHAPE)
-		status |= iusHL3DTransducerSave((Ius3DTransducer *) transducer, parentPath, handle);
+		status |= iusHL3DTransducerSave((Ius3DTransducer *) transducer, handle);
 
 	if (transducer->type == IUS_2D_SHAPE)
-		status |= iusHL2DTransducerSave((Ius2DTransducer *) transducer, parentPath, handle);
+		status |= iusHL2DTransducerSave((Ius2DTransducer *) transducer, handle);
 	return status;
 }
 
@@ -281,23 +279,18 @@ static int iusHLTransducerLoadShape
 
 iut_t iusHLBaseTransducerLoad
 (
-    hid_t handle,
-    char *parentPath
+    hid_t handle
 )
 {
     int status = 0;
-    char path[IUS_MAX_HDF5_PATH];
 
     const char *name;
     IusTransducerShape shape;
     float centerFrequency;
 
-    sprintf(path, NAMEFMT, parentPath);
-    status |= iusHdf5ReadString( handle, path, &name);
-    sprintf(path, CENTERFREQUENCYFMT, parentPath);
-    status |= iusHdf5ReadFloat( handle, path, &(centerFrequency));
-    sprintf(path, SHAPEFMT, parentPath);
-    status |= iusHLTransducerLoadShape( handle, path, &(shape));
+    status |= iusHdf5ReadString(handle, NAMEFMT, &name);
+    status |= iusHdf5ReadFloat(handle, CENTERFREQUENCYFMT, &(centerFrequency));
+    status |= iusHLTransducerLoadShape( handle, SHAPEFMT, &(shape));
     if( status < 0 )
         return IUT_INVALID;
     return iusHLTransducerCreate(name,shape,centerFrequency);
@@ -305,17 +298,22 @@ iut_t iusHLBaseTransducerLoad
 
 iut_t iusHLTransducerLoad
 (
-    hid_t handle,
-    char *parentPath
+    hid_t handle
 )
 {
-    iut_t transducer = iusHLBaseTransducerLoad(handle, parentPath);
-    if ( transducer == IUT_INVALID )
-        return transducer;
+	int status = 0;
+	IusTransducerShape shape;
+    //iut_t transducer = iusHLBaseTransducerLoad(handle);
+	hid_t group_id = H5Gcreate(handle, IUS_INPUT_STRUCTURE_TRANSDUCER, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+	status |= iusHLTransducerLoadShape(handle, SHAPEFMT, &(shape));
+	if (status < 0)
+		return IUT_INVALID;
 
-    if( transducer->type == IUS_2D_SHAPE )
-        return (iut_t) iusHL2DTransducerLoad(handle, parentPath);
-    if( transducer->type == IUS_3D_SHAPE )
-        return (iut_t) iusHL3DTransducerLoad(handle, parentPath);
-    return transducer;
+    if( shape == IUS_LINE || shape == IUS_CIRCLE )
+        return (iut_t) iusHL2DTransducerLoad(handle);
+    if( shape == IUS_PLANE || shape == IUS_CYLINDER || shape == IUS_SPHERE)
+        return (iut_t) iusHL3DTransducerLoad(handle);
+
+	H5Gclose(group_id);
+    return IUT_INVALID;
 }

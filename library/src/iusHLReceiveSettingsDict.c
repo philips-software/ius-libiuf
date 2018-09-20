@@ -158,26 +158,23 @@ int iusHLReceiveSettingsDictSet
 #define PULSETIMESFMT      "%s/rawReceiveSettingsTimes"
 
 
-#define LABELPATH          "%s/%s"
+//#define LABELPATH          "%s"
 int iusHLReceiveSettingsDictSave
 (
     iursd_t dict,
-    char *parentPath,
     hid_t handle
 )
 {
     int status=0;
-    char path[IUS_MAX_HDF5_PATH];
+    //char path[IUS_MAX_HDF5_PATH];
     struct hashmap_iter *iter;
 
     if(dict == NULL)
         return IUS_ERR_VALUE;
-    if(parentPath == NULL || handle == H5I_INVALID_HID)
+    if(handle == H5I_INVALID_HID)
         return IUS_ERR_VALUE;
 
-
-
-    hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+    //hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
     HashableReceiveSettings *sourceElement;
     char *label;
     // iterate over source list elements and save'em
@@ -185,11 +182,11 @@ int iusHLReceiveSettingsDictSave
     {
         sourceElement = HashableReceiveSettings_hashmap_iter_get_data(iter);
         label = iusHLReceiveSettingsGetLabel(sourceElement->receiveSettings);
-        sprintf(path, LABELPATH, parentPath, label);
-        iusHLReceiveSettingsSave(sourceElement->receiveSettings,path,handle);
+        //sprintf(path, LABELPATH, parentPath, label);
+        iusHLReceiveSettingsSave(sourceElement->receiveSettings, label, handle);
     }
 
-    status |= H5Gclose(group_id );
+    //status |= H5Gclose(group_id );
     return status;
 }
 
@@ -198,8 +195,7 @@ int iusHLReceiveSettingsDictSave
 
 iursd_t iusHLReceiveSettingsDictLoad
 (
-    hid_t handle,
-    const char *parentPath
+    hid_t handle
 )
 {
     int i;
@@ -207,26 +203,25 @@ iursd_t iusHLReceiveSettingsDictLoad
     char path[IUS_MAX_HDF5_PATH];
     char memb_name[MAX_NAME];
 
-
-    hid_t grpid = H5Gopen(handle, parentPath, H5P_DEFAULT);
-    if(parentPath == NULL || handle == H5I_INVALID_HID || grpid == H5I_INVALID_HID)
+    // hid_t grpid = H5Gopen(handle, parentPath, H5P_DEFAULT);
+	hid_t grpid
+    if( handle == H5I_INVALID_HID)
         return NULL;
 
     hsize_t nobj;
-    status = H5Gget_num_objs(grpid, &nobj);
+    status = H5Gget_num_objs(handle, &nobj);
 
     iursd_t dict = iusHLReceiveSettingsDictCreate();
     for (i = 0; i < nobj; i++)
     {
-        H5Gget_objname_by_idx(grpid, (hsize_t) i,
-                                    memb_name, (size_t) MAX_NAME);
-        sprintf(path,"%s/%s", parentPath,memb_name);
+        H5Gget_objname_by_idx(handle, (hsize_t) i, memb_name, (size_t) MAX_NAME);
+        sprintf(path,"/%s", memb_name);
         iurs_t receiveSettings = iusHLReceiveSettingsLoad(handle,path,memb_name);
         status = iusHLReceiveSettingsDictSet(dict, memb_name, receiveSettings);
     }
-
-    H5Gclose(handle);
-    if( status != IUS_E_OK )
+    //H5Gclose(handle);
+    
+	if( status != IUS_E_OK )
     {
         return NULL;
     }

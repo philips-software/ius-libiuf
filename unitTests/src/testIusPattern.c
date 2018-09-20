@@ -246,9 +246,7 @@ TEST(IusPattern, testIusPatternSetGet)
 TEST(IusPattern, testIusSerialization)
 {
     char *filename = "testIusPatternSerialization.hdf5";
-    char *patternPath =  "/Pattern";
-
-
+    //char *patternPath =  "/Pattern";
 
     // create and save
     float timeInFrame = 0.01f;
@@ -272,13 +270,13 @@ TEST(IusPattern, testIusSerialization)
 
     hid_t handle = H5Fcreate( filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT );
     TEST_ASSERT(handle > 0);
-    int status = iusHLPatternSave( obj, patternPath, handle);
+    int status = iusHLPatternSave( obj, handle);
     H5Fclose(handle);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
     // read back
     handle = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT );
-    iupa_t savedObj = iusHLPatternLoad(handle, patternPath);
+    iupa_t savedObj = iusHLPatternLoad(handle);
     TEST_ASSERT_NOT_EQUAL(NULL, savedObj);
     H5Fclose(handle);
 

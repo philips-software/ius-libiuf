@@ -8,14 +8,12 @@
 int iusHLReceiveSettingsDictSave
 (
     iursd_t dict,
-    char *parentPath,
     hid_t handle
 );
 
 iursd_t iusHLReceiveSettingsDictLoad
 (
-    hid_t handle,
-    const char *parentPath
+    hid_t handle
 );
 
 #endif //IUSLIBRARY_IUSHLRECEIVESETTINGSDICTIMP_H

@@ -116,17 +116,19 @@ TEST(IusPulse, testIusPulseGet)
 
 TEST(IusPulse, testIusSerialization)
 {
+
+  // TODO how to cope with changes/addition in the data type? 
+
   char *filename = "testIusPulseSerialization.hdf5";
-  char *pulsePath =  "/Pulse";
 
   float   pulseFrequency=8000000.0f;   /**< frequency that the pulse represents in Hz */
   float   pulseAmplitude=800.0f;       /**< (max) amplitude of the pulse in Volts */
   int     pulseCount=10;               /**< number of cycles that the pulse represents */
   int     numPulseValues=2;               /**< number of cycles that the pulse represents */
 
-
   // create and save
-  iupp_t obj = iusHLParametricPulseCreate("Parametric Pulse Created_in_IusPulse_testIusSerialization", pulseFrequency, pulseAmplitude, pulseCount);
+  const char *pulseLabel = "Parametric Pulse Created_in_IusPulse_testIusSerialization";
+  iupp_t obj = iusHLParametricPulseCreate(pulseLabel, pulseFrequency, pulseAmplitude, pulseCount);
   iunpp_t notherObj = iusHLNonParametricPulseCreate("Non Parametric Pulse Created_in_IusPulse_testIusSerialization", numPulseValues);
 
   // fill
@@ -138,18 +140,18 @@ TEST(IusPulse, testIusSerialization)
 
   hid_t handle = H5Fcreate( filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT );
   TEST_ASSERT(handle > 0);
-  status = iusHLPulseSave( (iup_t) obj, pulsePath, handle);
+  status = iusHLPulseSave( (iup_t) obj, handle);
   H5Fclose(handle);
   TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
   // read back
   handle = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT );
-  iup_t savedObj = iusHLPulseLoad(handle, pulsePath);
+  iup_t savedObj = iusHLPulseLoad(handle, pulseLabel); //a the highest level you have to specifiy what pulse to load, not just the handle
   TEST_ASSERT_NOT_EQUAL(NULL, savedObj);
   H5Fclose(handle);
 
   TEST_ASSERT_EQUAL(IUS_TRUE, iusHLPulseCompare((iup_t)obj,savedObj));
-  TEST_ASSERT_EQUAL(IUS_FALSE, iusHLPulseCompare((iup_t)notherObj,savedObj));
+  TEST_ASSERT_EQUAL(IUS_FALSE, iusHLPulseCompare((iup_t)notherObj, savedObj));
   iusHLPulseDelete((iup_t)obj);
   iusHLPulseDelete(savedObj);
 }

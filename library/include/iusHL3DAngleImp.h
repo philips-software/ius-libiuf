@@ -7,14 +7,12 @@
 
 iu3da_t iusHL3DAngleLoad
 (
-    hid_t handle,
-    char *parentPath
+    hid_t handle
 );
 
 int iusHL3DAngleSave
 (
     iu3da_t angle,
-    char *parentPath,
     hid_t handle
 );
 

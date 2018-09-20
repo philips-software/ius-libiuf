@@ -116,7 +116,7 @@ TEST(Ius3DParametricSource, testIus3DParametricSourceCompare)
 
 TEST(Ius3DParametricSource, testIus3DParametricSourceSetGet)
 {
-    IUS_BOOL equal;
+    //IUS_BOOL equal;
     float angularDelta = 0.13f;
     float FNumber = -0.955f;
     float startAngle = 3.14f;
@@ -136,7 +136,7 @@ TEST(Ius3DParametricSource, testIus3DParametricSourceSetGet)
     // Set/Get location test
     for(p=0; p<numLocations; p++)
     {
-        iu3dp_t pos = iusHL3DPositionCreate(p*1.0,p*2.0,p*3.0);
+        iu3dp_t pos = iusHL3DPositionCreate(p*1.0f,p*2.0f,p*3.0f);
         iusHL3DParametricSourceSetPosition(obj,pos,p);
         iu3dp_t get = iusHL3DParametricSourceGetPosition(obj,p);
         TEST_ASSERT_EQUAL(IUS_TRUE, iusHL3DPositionCompare(pos,get));
@@ -159,9 +159,9 @@ TEST(Ius3DParametricSource, testIus3DParametricSourceSetGet)
 TEST(Ius3DParametricSource, testIus3DParametricSourceSerialization)
 {
     char *filename = "testIus3DParametricSourceSerialization.hdf5";
-    char *sourcePath =  "/3DParametricSource";
+    //char *sourcePath =  "/3DParametricSource";
 
-    IUS_BOOL equal;
+    //IUS_BOOL equal;
     float angularDelta = 0.13f;
     float FNumber = -0.955f;
     float startAngle = 3.14f;
@@ -184,20 +184,20 @@ TEST(Ius3DParametricSource, testIus3DParametricSourceSerialization)
 
     for (p = 0; p < numLocations; p++)
     {
-        iu3dp_t pos = iusHL3DPositionCreate(p * 1.0, p * 2.0, p * 3.0);
+        iu3dp_t pos = iusHL3DPositionCreate(p * 1.0f, p * 2.0f, p * 3.0f);
         iusHL3DParametricSourceSetPosition(obj, pos, p);
     }
 
     // save
     hid_t handle = H5Fcreate( filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT );
     TEST_ASSERT(handle > 0);
-    status = iusHL3DParametricSourceSave(obj, sourcePath, handle);
+    status = iusHL3DParametricSourceSave(obj, handle);
     H5Fclose(handle);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
     // read back
     handle = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT );
-    iu3dps_t savedObj = iusHL3DParametricSourceLoad(handle, sourcePath, pLabel);
+    iu3dps_t savedObj = iusHL3DParametricSourceLoad(handle, pLabel);
     H5Fclose(handle);
 
     TEST_ASSERT_EQUAL(IUS_TRUE, iusHL3DParametricSourceCompare(obj,savedObj));

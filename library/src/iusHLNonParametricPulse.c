@@ -140,63 +140,80 @@ int iusHLNonParametricPulseSetValue
 }
 
 
-#define NUMPULSEVALUESFMT  "%s/numPulseValues"
-#define PULSEAMPLITUDESFMT "%s/rawPulseAmplitudes"
-#define PULSETIMESFMT      "%s/rawPulseTimes"
+#define IUS_NONPARAMPULSE_NUMPULSEVALUES  "numPulseValues"
+#define IUS_NONPARAMPULSE_PULSEAMPLITUDES "rawPulseAmplitudes"
+#define IUS_NONPARAMPULSE_PULSETIMES      "rawPulseTimes"
 
 int iusHLNonParametricPulseSave
 (
     iunpp_t pulse,
-    char *parentPath,
     hid_t handle
 )
 {
     int status=0;
-    char path[IUS_MAX_HDF5_PATH];
+    //char path[IUS_MAX_HDF5_PATH];
     if(pulse == NULL || iusHLPulseGetType( (iup_t)pulse ) != IUS_NON_PARAMETRIC_PULSETYPE)
         return IUS_ERR_VALUE;
-    if(parentPath == NULL || handle == H5I_INVALID_HID)
-        return IUS_ERR_VALUE;
+    if(handle == H5I_INVALID_HID)
+		return IUS_ERR_VALUE;
 
-    status = iusHLBasePulseSave((iup_t)pulse,parentPath,handle);
-    sprintf(path, NUMPULSEVALUESFMT, parentPath);
-    status |= iusHdf5WriteInt(handle, path, &(pulse->numPulseValues), 1);
+	//TODO chekc if /Pulses exist
+	hid_t pulses_id;
+	status = H5Gget_objinfo(handle, "Pulses", 0, NULL); // todo centralize the path
+	if (status != 0) // the group does not exist yet
+	{
+		pulses_id = H5Gcreate(handle, "Pulses", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+	}
+	else
+	{
+		pulses_id = H5Gopen(handle, "Pulses", H5P_DEFAULT);
+	}
+	hid_t label_id = H5Gcreate(pulses_id, pulse->base.label, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+    status = iusHLBasePulseSave((iup_t)pulse, label_id);
+    //sprintf(path, IUS_NONPARAMPULSE_NUMPULSEVALUESFMT, parentPath);
+    status |= iusHdf5WriteInt(label_id, IUS_NONPARAMPULSE_NUMPULSEVALUES, &(pulse->numPulseValues), 1);
 
     hsize_t dims[1] = { 1 };
     dims[0] = pulse->numPulseValues;
-    sprintf(path, PULSEAMPLITUDESFMT, parentPath);
-    status |= H5LTmake_dataset_float( handle, path, 1, dims, pulse->pRawPulseAmplitudes );
-    sprintf(path, PULSETIMESFMT, parentPath);
-    status |= H5LTmake_dataset_float( handle, path, 1, dims, pulse->pRawPulseTimes );
+    //sprintf(path, IUS_NONPARAMPULSE_PULSEAMPLITUDES, parentPath);
+    status |= H5LTmake_dataset_float(label_id, IUS_NONPARAMPULSE_PULSEAMPLITUDES, 1, dims, pulse->pRawPulseAmplitudes );
+    //sprintf(path, PULSETIMESFMT, parentPath);
+    status |= H5LTmake_dataset_float(label_id, IUS_NONPARAMPULSE_PULSETIMES, 1, dims, pulse->pRawPulseTimes );
+	H5Gclose(label_id);
+	H5Gclose(pulses_id);
     return status;
 }
 
 iunpp_t iusHLNonParametricPulseLoad
 (
-    hid_t handle,
-    char *parentPath,
-    char *label
+    hid_t handle
 )
 {
     int status = 0;
-    char path[IUS_MAX_HDF5_PATH];
+    //char path[IUS_MAX_HDF5_PATH];
     int  numPulseValues;
+	char *label;
     iunpp_t  pulse;
 
-    if(parentPath == NULL || handle == H5I_INVALID_HID)
+    if (handle == H5I_INVALID_HID)
         return NULL;
 
-    sprintf(path, NUMPULSEVALUESFMT, parentPath);
-    status |= iusHdf5ReadInt(handle, path, &(numPulseValues));
+	//sprintf(path, "Pulses/%s", label);
+	//hid_t pulse_id = H5Gopen(handle, path, H5P_DEFAULT);
+    //sprintf(path, NUMPULSEVALUESFMT, parentPath);
+    status |= iusHdf5ReadInt(handle, IUS_NONPARAMPULSE_NUMPULSEVALUES, &(numPulseValues));
+	status |= iusHdf5ReadString(handle, IUS_NONPARAMPULSE_NUMPULSEVALUES, &(label));
     if( status < 0 )
         return NULL;
 
-    pulse = iusHLNonParametricPulseCreate(label,numPulseValues);
-    sprintf(path, PULSEAMPLITUDESFMT, parentPath);
-    status |= H5LTread_dataset_float( handle, path,   pulse->pRawPulseAmplitudes );
-    sprintf(path, PULSETIMESFMT, parentPath);
-    status |= H5LTread_dataset_float( handle, path,   pulse->pRawPulseTimes );
-    if( status < 0 )
+    pulse = iusHLNonParametricPulseCreate(label, numPulseValues);
+    //sprintf(path, PULSEAMPLITUDESFMT, parentPath);
+    status |= H5LTread_dataset_float(handle, IUS_NONPARAMPULSE_PULSEAMPLITUDES, pulse->pRawPulseAmplitudes );
+    //sprintf(path, PULSETIMESFMT, parentPath);
+    status |= H5LTread_dataset_float(handle, IUS_NONPARAMPULSE_PULSETIMES,      pulse->pRawPulseTimes );
+
+	//H5Gclose(pulse_id);
+	if( status < 0 )
       return NULL;
     return pulse;
 }

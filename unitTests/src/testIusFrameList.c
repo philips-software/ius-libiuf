@@ -87,7 +87,7 @@ TEST(IusFrameList, testIusSerialization)
   int status;
   IUS_BOOL equal;
   char *pFilename = "testIusFrameListSerialization.hdf5";
-  char *pFrameListPath = "/FrameList";
+  //char *pFrameListPath = "/FrameList";
 
   // fill list
   iufl_t frameList = iusHLFrameListCreate(numFrames);
@@ -106,14 +106,14 @@ TEST(IusFrameList, testIusSerialization)
   // save
   hid_t handle = H5Fcreate(pFilename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
   TEST_ASSERT(handle > 0);
-  status = iusHLFrameListSave(frameList, pFrameListPath, handle);
+  status = iusHLFrameListSave(frameList, handle);
   TEST_ASSERT_EQUAL(IUS_E_OK, status);
   status = H5Fclose(handle);
   TEST_ASSERT_EQUAL(IUS_E_OK, status);
 
   // read back
   handle = H5Fopen(pFilename, H5F_ACC_RDONLY, H5P_DEFAULT);
-  iufl_t savedFrameList = iusHLFrameListLoad(handle, pFrameListPath);
+  iufl_t savedFrameList = iusHLFrameListLoad(handle);
   TEST_ASSERT_NOT_EQUAL(IUFL_INVALID, savedFrameList);
   status |= H5Fclose(handle);
   TEST_ASSERT_EQUAL(IUS_E_OK, status);

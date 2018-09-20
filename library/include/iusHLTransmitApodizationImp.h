@@ -14,7 +14,7 @@ struct IusTransmitApodization
 
 int iusHLTransmitApodizationSave
 (
-	iuta_t receiveChannelMap,
+	iuta_t  transmitApodization,
 	hid_t   handle
 );
 

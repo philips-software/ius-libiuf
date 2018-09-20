@@ -44,18 +44,6 @@ int iusHLTransmitApodizationDictSet
 	iuta_t member
 );
 
-herr_t iusHLTransmitApodizationDictSave
-(
-	iutad_t dict,
-	char *parentPath,
-	hid_t handle
-);
-
-iutad_t iusHLTransmitApodizationDictLoad
-(
-	hid_t handle,
-	char *parentPath
-);
 
 #endif //IUSLIBRARY_IUSHLTRANSMITAPODIZATIONDICT_H
 

@@ -64,24 +64,19 @@ int iusHL2DSizeCompare
 }
 
 
-#define SIZEXFMT "%s/sx"
-#define SIZEYFMT "%s/xy"
-#define SIZEZFMT "%s/sz"
-
 iu2ds_t iusHL2DSizeLoad
 (
-    hid_t handle,
-    char *parentPath
+    hid_t handle
 )
 {
     int status=0;
     char path[IUS_MAX_HDF5_PATH];
     float sx,sz;
 
-    sprintf(path, SIZEXFMT, parentPath);
-    status |= iusHdf5ReadFloat(handle, path, &(sx));
-    sprintf(path, SIZEZFMT, parentPath);
-    status |= iusHdf5ReadFloat(handle, path, &(sz));
+    //sprintf(path, "%s/sx", parentPath);  //todo open Size group and read the sx and sy from that group handle
+    status |= iusHdf5ReadFloat(handle, "Size/sx", &(sx));
+    //sprintf(path, "%s/sz", parentPath);
+    status |= iusHdf5ReadFloat(handle, "Size/sz", &(sz));
     if (status < 0)
         return IU2DS_INVALID;
     return iusHL2DSizeCreate(sx,sz);
@@ -90,18 +85,17 @@ iu2ds_t iusHL2DSizeLoad
 int iusHL2DSizeSave
 (
     iu2ds_t size,
-    char *parentPath,
     hid_t handle
 )
 {
     int status=0;
-    char path[IUS_MAX_HDF5_PATH];
+    //char path[IUS_MAX_HDF5_PATH];
     const int verbose = 1;
-    hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-    sprintf(path, SIZEXFMT, parentPath);
-    status |= iusHdf5WriteFloat(group_id, path, &(size->sx), 1, verbose);
-    sprintf(path, SIZEZFMT, parentPath);
-    status |= iusHdf5WriteFloat(group_id, path, &(size->sz), 1, verbose);
+    hid_t group_id = H5Gcreate(handle, "Size", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+    //sprintf(path, SIZEXFMT);
+    status |= iusHdf5WriteFloat(group_id, "sx", &(size->sx), 1, verbose);   //todo: move hardcoded strings to central place
+    //sprintf(path, SIZEZFMT);
+    status |= iusHdf5WriteFloat(group_id, "sz", &(size->sz), 1, verbose);
     status |= H5Gclose(group_id );
     return status;
 }

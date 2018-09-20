@@ -11,14 +11,12 @@
 int iusHL3DParametricSourceSave
 (
     iu3dps_t source,
-    char *parentPath,
     hid_t handle
 );
 
 iu3dps_t iusHL3DParametricSourceLoad
 (
     hid_t handle,
-    char *parentPath,
     char *label
 );
 

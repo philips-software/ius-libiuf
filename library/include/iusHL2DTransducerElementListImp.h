@@ -9,14 +9,12 @@
 int iusHL2DTransducerElementListSave
 (
     iu2dtel_t list,
-    const char *parentPath,
     hid_t handle
 );
 
 iu2dtel_t iusHL2DTransducerElementListLoad
 (
-    hid_t handle,
-    const char *parentPath
+    hid_t handle
 );
 
 

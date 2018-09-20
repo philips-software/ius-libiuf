@@ -2,6 +2,7 @@
 // Created by nlv09165 on 25/04/2018.
 //
 #include <stdlib.h>
+#include <string.h>
 #include <memory.h>
 #include <math.h>
 
@@ -47,8 +48,13 @@ iurs_t iusHLReceiveSettingsCreate
     if( numSamplesPerLine < 0 ) return IURS_INVALID;
     if( numTGCentries <= 0 ) return IURS_INVALID;
 
-    iurs_t created = calloc(1,sizeof(IusReceiveSettings));
-    created->pLabel = strdup(pLabel);
+	iurs_t created = calloc(1,sizeof(IusReceiveSettings));
+	created->pLabel = NULL;
+	created->pLabel = strdup(pLabel);
+	if (created->pLabel == NULL)
+	{
+		return NULL;
+	}
     created->sampleFrequency = sampleFrequency;
     created->startDelay = (float *) calloc(numDelays, sizeof(float));
     created->numSamplesPerLine = numSamplesPerLine;

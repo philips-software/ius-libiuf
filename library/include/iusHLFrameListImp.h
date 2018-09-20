@@ -11,14 +11,12 @@
 int iusHLFrameListSave
 (
   iufl_t list,
-  const char *parentPath,
   hid_t handle
 );
 
 iufl_t iusHLFrameListLoad
 (
-  hid_t handle,
-  const char *parentPath
+  hid_t handle
 );
 
 #endif //IUSLIBRARY_IUSHLFRAMELISTIMP_H

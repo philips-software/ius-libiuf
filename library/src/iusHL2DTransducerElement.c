@@ -75,31 +75,29 @@ int iusHL2DTransducerElementCompare
 }
 
 
-#define ELEMENTSIZEPATH "%s/Size"
-#define ELEMENTPOSITIONPATH  "%s/Position"
-#define ELEMENTANGLEPATH  "%s/Angle"
+#define ELEMENTSIZEPATH "Size"
+#define ELEMENTPOSITIONPATH  "Position"
+#define ELEMENTANGLEPATH  "Angle"
 
 int iusHL2DTransducerElementSave
 (
     iu2dte_t element,
-    const char *parentPath,
     hid_t handle
 )
 {
     char path[IUS_MAX_HDF5_PATH];
     if( element == IU2DTE_INVALID ) return IUS_ERR_VALUE;
 
-    hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+    //hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+    //sprintf(path, ELEMENTSIZEPATH);
+    int status = iusHL2DSizeSave(element->size, handle);
 
-    sprintf(path, ELEMENTSIZEPATH, parentPath);
-    int status = iusHL2DSizeSave(element->size,path,group_id);
+    //sprintf(path, ELEMENTPOSITIONPATH);
+    status |= iusHL2DPositionSave(element->position, handle);
 
-    sprintf(path, ELEMENTPOSITIONPATH, parentPath);
-    status |= iusHL2DPositionSave(element->position,path,group_id);
-
-    sprintf(path, ELEMENTANGLEPATH, parentPath);
-    status |= iusHdf5WriteFloat(group_id,path,&(element->theta),1,1);
-    status |= H5Gclose(group_id );
+    sprintf(path, ELEMENTANGLEPATH);
+    status |= iusHdf5WriteFloat(handle, path,&(element->theta),1,1);
+    //status |= H5Gclose(group_id );
 
     return status;
 }
@@ -108,25 +106,26 @@ int iusHL2DTransducerElementSave
 
 iu2dte_t iusHL2DTransducerElementLoad
 (
-    hid_t handle,
-    const char *parentPath
+    hid_t handle
 )
 {
-    char path[IUS_MAX_HDF5_PATH];
+    //char path[IUS_MAX_HDF5_PATH];
     float theta;
     int status;
-
-    sprintf(path, ELEMENTPOSITIONPATH, parentPath);
-    iu2dp_t elemPos = iusHL2DPositionLoad(handle,path);
+	
+	//hid_t element_id = H5Gopen(handle, elementLabel, H5P_DEFAULT);
+    //sprintf(path, ELEMENTPOSITIONPATH); // todo clean up and centralize this fixed string
+    iu2dp_t elemPos = iusHL2DPositionLoad(handle);
     if (elemPos == IU2DP_INVALID) return IU2DTE_INVALID;
 
-    sprintf(path, ELEMENTSIZEPATH, parentPath);
-    iu2ds_t elemSize = iusHL2DSizeLoad(handle,path);
+    //sprintf(path, ELEMENTSIZEPATH); // todo clean up and centralize this fixed string
+    iu2ds_t elemSize = iusHL2DSizeLoad(handle);
     if (elemSize == IU2DS_INVALID) return IU2DTE_INVALID;
 
-    sprintf(path, ELEMENTANGLEPATH, parentPath);
-    status = iusHdf5ReadFloat(handle,path,&theta);
+    //sprintf(path, ELEMENTANGLEPATH); // todo clean up and centralize this fixed string
+    status = iusHdf5ReadFloat(handle,"theta",&theta);
     if (status < 0) return IU2DTE_INVALID;
+	//H5Gclose(element_id);
 
     return iusHL2DTransducerElementCreate(elemPos, theta, elemSize);
 }

@@ -101,7 +101,7 @@ TEST(Ius2DNonParametricSource, testIus2DNonParametricSourceCompare)
 
 TEST(Ius2DNonParametricSource, testIus2DNonParametricSourceSetGet)
 {
-    IUS_BOOL equal;
+    //IUS_BOOL equal;
     char *pLabel = "label for 2d parametric source";
     int p,numLocations = 5;
 
@@ -110,7 +110,7 @@ TEST(Ius2DNonParametricSource, testIus2DNonParametricSourceSetGet)
     // Set/Get location test
     for(p=0; p<numLocations; p++)
     {
-        iu2dp_t pos = iusHL2DPositionCreate(p*1.0,p*3.0);
+        iu2dp_t pos = iusHL2DPositionCreate(p*1.0f,p*3.0f);
         iusHL2DNonParametricSourceSetPosition(obj,pos,p);
         iu2dp_t get = iusHL2DNonParametricSourceGetPosition(obj,p);
         TEST_ASSERT_EQUAL(IUS_TRUE, iusHL2DPositionCompare(pos,get));
@@ -128,9 +128,9 @@ TEST(Ius2DNonParametricSource, testIus2DNonParametricSourceSetGet)
 TEST(Ius2DNonParametricSource, testIus2DNonParametricSourceSerialization)
 {
     char *filename = "testIus2DNonParametricSourceSerialization.hdf5";
-    char *sourcePath =  "/2DNonParametricSource";
+    //char *sourcePath =  "/2DNonParametricSource";
 
-    IUS_BOOL equal;
+    //IUS_BOOL equal;
     float angularDelta = 0.13f;
     float FNumber = -0.955f;
     float startAngle = 3.14f;
@@ -145,7 +145,7 @@ TEST(Ius2DNonParametricSource, testIus2DNonParametricSourceSerialization)
     // fill
     for (p = 0; p < numLocations; p++)
     {
-        iu2dp_t pos = iusHL2DPositionCreate(p * 1.0, p * 3.0);
+        iu2dp_t pos = iusHL2DPositionCreate(p * 1.0f, p * 3.0f);
         iusHL2DNonParametricSourceSetPosition(obj, pos, p);
         iu2dp_t get = iusHL2DNonParametricSourceGetPosition(obj, p);
         TEST_ASSERT_EQUAL(IUS_TRUE, iusHL2DPositionCompare(pos, get));
@@ -154,13 +154,13 @@ TEST(Ius2DNonParametricSource, testIus2DNonParametricSourceSerialization)
     // save
     hid_t handle = H5Fcreate( filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT );
     TEST_ASSERT(handle > 0);
-    status = iusHL2DNonParametricSourceSave(obj, sourcePath, handle);
+    status = iusHL2DNonParametricSourceSave(obj, handle);
     H5Fclose(handle);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
     // read back
     handle = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT );
-    iu2dnps_t savedObj = iusHL2DNonParametricSourceLoad(handle, sourcePath, pLabel);
+    iu2dnps_t savedObj = iusHL2DNonParametricSourceLoad(handle, pLabel);
     H5Fclose(handle);
 
     TEST_ASSERT_EQUAL(IUS_TRUE, iusHL2DNonParametricSourceCompare(obj,savedObj));

@@ -90,9 +90,9 @@ TEST(Ius2DTransducerElementList, testIus2DTransducerElementListCompare)
 
 TEST(Ius2DTransducerElementList, testIus2DTransducerElementListSetGet)
 {
-    int i, num2DTransducerElements = 2;
+    int num2DTransducerElements = 2;
     int status;
-    IUS_BOOL equal;
+    //IUS_BOOL equal;
 
     const int numTransducerElements = 128;
     const float transducerPitch = 0.000005f;
@@ -119,7 +119,7 @@ TEST(Ius2DTransducerElementList, testIus2DTransducerElementListSerialization)
     int status;
     IUS_BOOL equal;
     char *pFilename = "testIus2DTransducerElementListSerialization.hdf5";
-    char *p2DTransducerElementListPath = "/2DTransducerElementList";
+    //char *p2DTransducerElementListPath = "/2DTransducerElementList";
     const float transducerPitch = 0.000005f;
 
     // Non-happy flow
@@ -129,7 +129,7 @@ TEST(Ius2DTransducerElementList, testIus2DTransducerElementListSerialization)
     TEST_ASSERT_NOT_EQUAL(IU2DTEL_INVALID, _2dTransducerElementList);
     hid_t handle = H5Fcreate(pFilename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
     TEST_ASSERT(handle > 0);
-    status = iusHL2DTransducerElementListSave(_2dTransducerElementList, p2DTransducerElementListPath, handle);
+    status = iusHL2DTransducerElementListSave(_2dTransducerElementList, handle); // todo change this test by creating a transducer first?
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
     status = H5Fclose(handle);
     TEST_ASSERT_EQUAL(IUS_E_OK, status);
@@ -149,14 +149,14 @@ TEST(Ius2DTransducerElementList, testIus2DTransducerElementListSerialization)
     // save
     handle = H5Fcreate(pFilename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
     TEST_ASSERT(handle > 0);
-    status = iusHL2DTransducerElementListSave(_2dTransducerElementList, p2DTransducerElementListPath, handle);
+    status = iusHL2DTransducerElementListSave(_2dTransducerElementList, handle);
     TEST_ASSERT_EQUAL(IUS_E_OK, status);
     status = H5Fclose(handle);
     TEST_ASSERT_EQUAL(IUS_E_OK, status);
 
     // read back
     handle = H5Fopen(pFilename, H5F_ACC_RDONLY, H5P_DEFAULT);
-    iu2dtel_t saved2DTransducerElementList = iusHL2DTransducerElementListLoad(handle, p2DTransducerElementListPath);
+    iu2dtel_t saved2DTransducerElementList = iusHL2DTransducerElementListLoad(handle);
     TEST_ASSERT_NOT_EQUAL(IU2DTEL_INVALID, saved2DTransducerElementList);
     status |= H5Fclose(handle);
     TEST_ASSERT_EQUAL(IUS_E_OK, status);

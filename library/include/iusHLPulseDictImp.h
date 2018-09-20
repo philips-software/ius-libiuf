@@ -12,14 +12,12 @@
 int iusHLPulseDictSave
 (
     iupd_t dict,
-    const char *path,
     hid_t handle
 );
 
 iupd_t iusHLPulseDictLoad
 (
-    hid_t handle,
-    const char *path
+    hid_t handle
 );
 
 

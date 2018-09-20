@@ -13,6 +13,7 @@
 //------------------------------------------------------------------------------
 
 static int verbose = IUS_FALSE;
+// TODO: change API to remove verbose
 
 herr_t iusHdf5ReadFloat
 (
@@ -370,11 +371,11 @@ herr_t iusHdf5WriteString
     returnValue = H5LTmake_dataset_string( handle, pVariableString, pString );
     if ( verbose )
     {
-        printf( "writing long(s) to hdf5\n" );
+        printf( "writing string to hdf5\n" );
     }
     if ( returnValue != 0 )
     {
-        fprintf( stderr, "Error: iusHdf5WriteLong error: %d\n", returnValue );
+        fprintf( stderr, "Error: iusHdf5WriteString error: %d\n", returnValue );
     }
     return returnValue;
 }

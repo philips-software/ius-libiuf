@@ -11,14 +11,12 @@
 int iusHLPatternSave
 (
     iupa_t pulse,
-    char *parentPath,
     hid_t handle
 );
 
 iupa_t iusHLPatternLoad
 (
-    hid_t handle,
-    char *parentPath
+    hid_t handle
 );
 
 

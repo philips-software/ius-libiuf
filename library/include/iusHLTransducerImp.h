@@ -25,27 +25,23 @@ int iusHLBaseTransducerCompare
 herr_t iusHLTransducerSave
 (
 	iut_t transducer,
-	char *parentPath,
 	hid_t handle
 );
 
 iut_t iusHLTransducerLoad
 (
-    hid_t handle,
-    char *parentPath
+    hid_t handle
 );
 
 herr_t iusHLBaseTransducerSave
 (
     iut_t transducer,
-    char *parentPath,
     hid_t handle
 );
 
 iut_t iusHLBaseTransducerLoad
 (
-    hid_t handle,
-    char *parentPath
+    hid_t handle
 );
 
 

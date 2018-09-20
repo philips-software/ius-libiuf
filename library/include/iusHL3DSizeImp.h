@@ -7,14 +7,12 @@
 
 iu3ds_t iusHL3DSizeLoad
 (
-    hid_t handle,
-    char *parentPath
+    hid_t handle
 );
 
 int iusHL3DSizeSave
 (
     iu3ds_t size,
-    char *parentPath,
     hid_t handle
 );
 

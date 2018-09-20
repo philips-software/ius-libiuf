@@ -56,42 +56,40 @@ int iusHL3DAngleCompare
     return IUS_TRUE;
 }
 
-#define ANGLETHETAFMT "%s/theta"
-#define ANGLEPHIFMT "%s/phi"
+//#define ANGLETHETAFMT "%s/theta"
+//#define ANGLEPHIFMT "%s/phi"
 
 int iusHL3DAngleSave
 (
     iu3da_t angle,
-    char *parentPath,
     hid_t handle
 )
 {
     int status=0;
-    char path[IUS_MAX_HDF5_PATH];
+    //char path[IUS_MAX_HDF5_PATH];
     const int verbose = 1;
-    hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-    sprintf(path, ANGLETHETAFMT, parentPath);
-    status |= iusHdf5WriteFloat(group_id, path, &(angle->theta), 1, verbose);
-    sprintf(path, ANGLEPHIFMT, parentPath);
-    status |= iusHdf5WriteFloat(group_id, path, &(angle->phi), 1, verbose);
+    hid_t group_id = H5Gcreate(handle, "Angle", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+    //sprintf(path, ANGLETHETAFMT, parentPath);
+    status |= iusHdf5WriteFloat(group_id, "theta", &(angle->theta), 1, verbose);
+    //sprintf(path, ANGLEPHIFMT, parentPath);
+    status |= iusHdf5WriteFloat(group_id, "phi", &(angle->phi), 1, verbose);
     status |= H5Gclose(group_id );
     return status;
 }
 
 iu3da_t iusHL3DAngleLoad
 (
-    hid_t handle,
-    char *parentPath
+    hid_t handle
 )
 {
     int status=0;
-    char path[IUS_MAX_HDF5_PATH];
+    //char path[IUS_MAX_HDF5_PATH];
     float theta,phi;
 
-    sprintf(path, ANGLETHETAFMT, parentPath);
-    status = iusHdf5ReadFloat(handle,path,&theta);
-    sprintf(path, ANGLEPHIFMT, parentPath);
-    status |= iusHdf5ReadFloat(handle,path,&phi);
+    //sprintf(path, ANGLETHETAFMT, parentPath);
+    status = iusHdf5ReadFloat(handle,"Angle/theta",&theta);
+    //sprintf(path, ANGLEPHIFMT, parentPath);
+    status |= iusHdf5ReadFloat(handle,"Angle/phi", &phi);
     if (status<0)
         return IU3DA_INVALID;
     return iusHL3DAngleCreate(theta,phi);

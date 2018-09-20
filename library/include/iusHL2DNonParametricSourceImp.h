@@ -12,14 +12,12 @@
 int iusHL2DNonParametricSourceSave
 (
     iu2dnps_t source,
-    char *parentPath,
     hid_t handle
 );
 
 iu2dnps_t iusHL2DNonParametricSourceLoad
 (
     hid_t handle,
-    char *parentPath,
     char *label
 );
 

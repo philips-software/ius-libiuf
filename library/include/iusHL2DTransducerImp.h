@@ -7,14 +7,12 @@
 herr_t iusHL2DTransducerSave
 (
     iu2dt_t transducer,
-    char *parentPath,
     hid_t handle
 );
 
 iu2dt_t iusHL2DTransducerLoad
 (
-    hid_t handle,
-    char *parentPath
+    hid_t handle
 );
 
 #endif //IUSLIBRARY_IUSHL2DTRANSDUCERIMP_H

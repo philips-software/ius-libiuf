@@ -2,6 +2,7 @@
 // Created by nlv09165 on 25/07/2018.
 //
 #include <stdlib.h>
+#include <string.h>
 #include <memory.h>
 #include <math.h>
 
@@ -129,36 +130,37 @@ int iusHL3DNonParametricSourceSetPosition
 static int iusHL3DNonParametricSourceSaveLocations
 (
     iu3dnps_t pSource,
-    char *parentPath,
     hid_t handle
 )
 {
+	hid_t location_id;
     char path[IUS_MAX_HDF5_PATH];
-    hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+    //hid_t group_id = H5Gcreate(handle, "Locations", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
     iu3dp_t sourceElement;
 
-    int i, status, size = pSource->locationCount;
-    sprintf(path, LOCATIONSSIZEFMT, parentPath);
-    status = iusHdf5WriteInt(handle, path, &(size), 1);
+    int i, size = pSource->locationCount;
+    //sprintf(path, LOCATIONSSIZEFMT, parentPath);
+    int status = iusHdf5WriteInt(handle, "Size", &(size), 1);
 
     // iterate over source list elements and save'em
     for (i=0;i < size;i++)
     {
         sourceElement = &pSource->pLocations[i];
         if(sourceElement == IU3DP_INVALID) continue;
-        sprintf(path, LOCATIONFMT, parentPath, i);
-        status = iusHL3DPositionSave(sourceElement,path,group_id);
+        sprintf(path, "Location[%d]", i);
+		location_id = H5Gcreate(handle, path, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+        status = iusHL3DPositionSave(sourceElement, location_id);
+		H5Gclose(location_id);
         if(status != IUS_E_OK) break;
     }
 
-    status |= H5Gclose(group_id );
+    //status |= H5Gclose(group_id );
     return status;
 }
 
 static int iusHL3DNonParametricSourceLoadLocations
 (
     iu3dnps_t source,
-    char *parentPath,
     hid_t handle
 )
 {
@@ -166,16 +168,17 @@ static int iusHL3DNonParametricSourceLoadLocations
     char path[IUS_MAX_HDF5_PATH];
     iu3dp_t pos;
 
-
     for (p = 0; p < source->locationCount; p++)
     {
-        sprintf(path, LOCATIONFMT, parentPath, p);
-        pos = iusHL3DPositionLoad(handle,path);
+        sprintf(path, "Location[%d]", p);
+		hid_t location_id = H5Gcreate(handle, path, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+		pos = iusHL3DPositionLoad(location_id);
         if (pos == IU3DP_INVALID)
         {
             status = IUS_ERR_VALUE;
             break;
         }
+		H5Gclose(location_id);
         iusHL3DNonParametricSourceSetPosition(source, pos, p);
     }
     return status;
@@ -184,18 +187,16 @@ static int iusHL3DNonParametricSourceLoadLocations
 int iusHL3DNonParametricSourceSave
 (
     iu3dnps_t source,
-    char *parentPath,
     hid_t handle
 )
 {
-    char path[IUS_MAX_HDF5_PATH];
-
+    //char path[IUS_MAX_HDF5_PATH];
     // Base
-    int status = iusHLBaseSourceSave((ius_t)source,parentPath,handle);
+    int status = iusHLBaseSourceSave((ius_t)source, handle);
 
     // Save locations
-    sprintf(path, LOCATIONSFMT, parentPath);
-    status |= iusHL3DNonParametricSourceSaveLocations(source,path,handle);
+    //sprintf(path, LOCATIONSFMT, parentPath);
+    status |= iusHL3DNonParametricSourceSaveLocations(source, handle);
     return status;
 }
 
@@ -203,28 +204,24 @@ int iusHL3DNonParametricSourceSave
 iu3dnps_t iusHL3DNonParametricSourceLoad
 (
     hid_t handle,
-    char *parentPath,
     char *label
 )
 {
-    char path[IUS_MAX_HDF5_PATH];
-    char lpath[IUS_MAX_HDF5_PATH];
+    //char path[IUS_MAX_HDF5_PATH];
+    //char lpath[IUS_MAX_HDF5_PATH];
 
     int locationCount;
     iu3dnps_t  source;
 
-
-
-    sprintf(lpath, LOCATIONSFMT, parentPath);
-    sprintf(path, LOCATIONSSIZEFMT, lpath);
-    int status = iusHdf5ReadInt(handle, path, &(locationCount));
+    //sprintf(lpath, LOCATIONSFMT, parentPath);
+    //sprintf(path, LOCATIONSSIZEFMT, lpath);
+    int status = iusHdf5ReadInt(handle, "Size", &(locationCount));
     if (status < 0)
         return NULL;
 
     source = iusHL3DNonParametricSourceCreate(label,locationCount);
-
-    sprintf(path, LOCATIONSFMT, parentPath);
-    status = iusHL3DNonParametricSourceLoadLocations(source,path,handle);
+    //sprintf(path, LOCATIONSFMT, parentPath);
+    status = iusHL3DNonParametricSourceLoadLocations(source, handle);
     if (status <-0)
         return NULL;
     return source;

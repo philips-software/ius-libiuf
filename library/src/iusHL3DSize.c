@@ -59,26 +59,26 @@ int iusHL3DSizeCompare
     return IUS_TRUE;
 }
 
-#define SIZEXFMT "%s/sx"
-#define SIZEYFMT "%s/xy"
-#define SIZEZFMT "%s/sz"
+//#define SIZEXFMT "%s/sx"
+//#define SIZEYFMT "%s/xy"
+//#define SIZEZFMT "%s/sz"
 
 iu3ds_t iusHL3DSizeLoad
 (
-    hid_t handle,
-    char *parentPath
+    hid_t handle
 )
 {
     int status=0;
-    char path[IUS_MAX_HDF5_PATH];
+    //char path[IUS_MAX_HDF5_PATH];
     float sx,sy,sz;
 
-    sprintf(path, SIZEXFMT, parentPath);
-    status |= iusHdf5ReadFloat(handle, path, &(sx));
-    sprintf(path, SIZEYFMT, parentPath);
-    status |= iusHdf5ReadFloat(handle, path, &(sy));
-    sprintf(path, SIZEZFMT, parentPath);
-    status |= iusHdf5ReadFloat(handle, path, &(sz));
+	hid_t group_id = H5Gopen(handle, "Size", H5P_DEFAULT);
+    //sprintf(path, SIZEXFMT, parentPath);
+    status |= iusHdf5ReadFloat(group_id, "sx", &(sx));
+    //sprintf(path, SIZEYFMT, parentPath);
+    status |= iusHdf5ReadFloat(group_id, "sy", &(sy));
+    //sprintf(path, SIZEZFMT, parentPath);
+    status |= iusHdf5ReadFloat(group_id, "sz", &(sz));
     if (status < 0)
         return IU3DS_INVALID;
     return iusHL3DSizeCreate(sx,sy,sz);
@@ -87,20 +87,19 @@ iu3ds_t iusHL3DSizeLoad
 int iusHL3DSizeSave
 (
     iu3ds_t size,
-    char *parentPath,
     hid_t handle
 )
 {
     int status=0;
-    char path[IUS_MAX_HDF5_PATH];
+    //char path[IUS_MAX_HDF5_PATH];
     const int verbose = 1;
-    hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-    sprintf(path, SIZEXFMT, parentPath);
-    status |= iusHdf5WriteFloat(group_id, path, &(size->sx), 1, verbose);
-    sprintf(path, SIZEYFMT, parentPath);
-    status |= iusHdf5WriteFloat(group_id, path, &(size->sy), 1, verbose);
-    sprintf(path, SIZEZFMT, parentPath);
-    status |= iusHdf5WriteFloat(group_id, path, &(size->sz), 1, verbose);
+    hid_t group_id = H5Gcreate(handle, "Size", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+    //sprintf(path, SIZEXFMT, parentPath);
+    status |= iusHdf5WriteFloat(group_id, "sx", &(size->sx), 1, verbose);
+    //sprintf(path, SIZEYFMT, parentPath);
+    status |= iusHdf5WriteFloat(group_id, "sy", &(size->sy), 1, verbose);
+    //sprintf(path, SIZEZFMT, parentPath);
+    status |= iusHdf5WriteFloat(group_id, "sz", &(size->sz), 1, verbose);
     status |= H5Gclose(group_id );
     return status;
 }
