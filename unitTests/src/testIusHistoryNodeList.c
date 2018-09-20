@@ -133,5 +133,5 @@ TEST_GROUP_RUNNER(IusHistoryNodeList)
 {
   RUN_TEST_CASE(IusHistoryNodeList, testIusCreateHistoryNodeList);
   RUN_TEST_CASE(IusHistoryNodeList, testIusCompareHistoryNodeList);
-//  RUN_TEST_CASE(IusHistoryNodeList, testIusSerialization);
+  RUN_TEST_CASE(IusHistoryNodeList, testIusSerialization);
 }

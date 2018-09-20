@@ -172,5 +172,5 @@ TEST_GROUP_RUNNER(IusHistoryNode)
     RUN_TEST_CASE(IusHistoryNode, testIusHistoryNodeDelete);
     RUN_TEST_CASE(IusHistoryNode, testIusHistoryNodeCompare);
     RUN_TEST_CASE(IusHistoryNode, testIusHistoryNodeSetGet);
-//    RUN_TEST_CASE(IusHistoryNode, testIusHistoryNodeSerialize);
+    RUN_TEST_CASE(IusHistoryNode, testIusHistoryNodeSerialize);
 }
