@@ -199,7 +199,7 @@ int iusBaseSourceSave
     sprintf(path, SOURCETYPEFMT, parentPath);
     status |= iusWriteSourceType(group_id, path, source->type);
     sprintf(path, LABELFMT, parentPath);
-    status |= iusHdf5WriteString(group_id, path, source->label, 1);
+    status |= iusHdf5WriteString(group_id, path, source->label);
     status |= H5Gclose(group_id );
     return status;
 }

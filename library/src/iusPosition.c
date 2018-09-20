@@ -132,14 +132,14 @@ int ius3DPositionSave
 {
     int status=0;
     char path[IUS_MAX_HDF5_PATH];
-    const int verbose = 1;
+
     hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
     sprintf(path, SIZEXFMT, parentPath);
-    status |= iusHdf5WriteFloat(group_id, path, &(position->x), 1, verbose);
+    status |= iusHdf5WriteFloat(group_id, path, &(position->x), 1);
     sprintf(path, SIZEYFMT, parentPath);
-    status |= iusHdf5WriteFloat(group_id, path, &(position->y), 1, verbose);
+    status |= iusHdf5WriteFloat(group_id, path, &(position->y), 1);
     sprintf(path, SIZEZFMT, parentPath);
-    status |= iusHdf5WriteFloat(group_id, path, &(position->z), 1, verbose);
+    status |= iusHdf5WriteFloat(group_id, path, &(position->z), 1);
     status |= H5Gclose(group_id );
     return status;
 }
@@ -153,12 +153,12 @@ int ius2DPositionSave
 {
     int status=0;
     char path[IUS_MAX_HDF5_PATH];
-    const int verbose = 1;
+
     hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
     sprintf(path, SIZEXFMT, parentPath);
-    status |= iusHdf5WriteFloat(group_id, path, &(position->x), 1, verbose);
+    status |= iusHdf5WriteFloat(group_id, path, &(position->x), 1);
     sprintf(path, SIZEZFMT, parentPath);
-    status |= iusHdf5WriteFloat(group_id, path, &(position->z), 1, verbose);
+    status |= iusHdf5WriteFloat(group_id, path, &(position->z), 1);
     status |= H5Gclose(group_id );
     return status;
 }

@@ -264,8 +264,7 @@ herr_t iusHdf5WriteFloat
     hid_t               handle,
     const char * const  pVariableString,
     const float * const pValues,
-    int                 numValues,
-	int					verbose
+    int                 numValues
 )
 {
     herr_t   returnValue;
@@ -277,10 +276,7 @@ herr_t iusHdf5WriteFloat
 
     returnValue =
         H5LTmake_dataset_float( handle, pVariableString, 1, dims, pValues );
-    if (verbose)
-    {
-        printf("writing float(s) to hdf5\n");
-    }
+
     if (returnValue !=0 )
     {
         fprintf(stderr, "Error: iusHdf5WriteFloat error: %d\n", returnValue);
@@ -309,10 +305,6 @@ herr_t iusHdf5WriteInt
 
     returnValue =
         H5LTmake_dataset_int( handle, pVariableString, 1, dims, pValues );
-    if ( verbose )
-    {
-        printf("writing int(s) to hdf5\n");
-    }
     if ( returnValue != 0 )
     {
         fprintf( stderr, "Error: iusHdf5WriteInt error: %d\n", returnValue );
@@ -341,10 +333,6 @@ herr_t iusHdf5WriteLong
 
     returnValue = 
         H5LTmake_dataset_long( handle, pVariableString, 1, dims, pValues );
-    if ( verbose )
-    {
-        printf( "writing long(s) to hdf5\n ");
-    }
     if ( returnValue != 0 )
     {
         fprintf(stderr, "Error: iusHdf5WriteLong error: %d\n", returnValue );
@@ -360,18 +348,13 @@ herr_t iusHdf5WriteString
 (
 	hid_t              handle,
 	const char * const pVariableString,
-	const char * const pString,
-	const int          verbose
+	const char * const pString
 )
 {
     herr_t returnValue;
     IUS_ASSERT_MEMORY( pVariableString && pString );
     
     returnValue = H5LTmake_dataset_string( handle, pVariableString, pString );
-    if ( verbose )
-    {
-        printf( "writing long(s) to hdf5\n" );
-    }
     if ( returnValue != 0 )
     {
         fprintf( stderr, "Error: iusHdf5WriteLong error: %d\n", returnValue );

@@ -189,15 +189,15 @@ int iusReceiveSettingsSave
 
     hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
     sprintf(path, LABELFMT, parentPath);
-    status |= iusHdf5WriteString(group_id, path, iusReceiveSettings->pLabel, 1);
+    status |= iusHdf5WriteString(group_id, path, iusReceiveSettings->pLabel);
     sprintf(path, SAMPLEFREQUENCYFMT, parentPath);
-    status |= iusHdf5WriteFloat( group_id, path, &(iusReceiveSettings->sampleFrequency), 1, 1);
+    status |= iusHdf5WriteFloat( group_id, path, &(iusReceiveSettings->sampleFrequency), 1);
     sprintf(path, NUMDELAYSFMT, parentPath);
     status |= iusHdf5WriteInt( group_id, path, &(iusReceiveSettings->numDelays), 1);
     sprintf(path, NUMSAMPLESPERLINE, parentPath);
     status |= iusHdf5WriteInt( group_id, path, &(iusReceiveSettings->numSamplesPerLine), 1);
     sprintf(path, STARTDELAYFMT, parentPath);
-    status |= iusHdf5WriteFloat( group_id, path, iusReceiveSettings->startDelay, iusReceiveSettings->numDelays, 1);
+    status |= iusHdf5WriteFloat( group_id, path, iusReceiveSettings->startDelay, iusReceiveSettings->numDelays);
     sprintf(path, TGCFMT, parentPath);
     status |= iusTGCSave( iusReceiveSettings->TGC, path, group_id );
     status |= H5Gclose(group_id );

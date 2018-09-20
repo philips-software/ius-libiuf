@@ -316,22 +316,21 @@ int ius3DParametricSourceSave
 {
     int status=0;
     char path[IUS_MAX_HDF5_PATH];
-    const int verbose = 1;
 
     // Base
     status = iusBaseSourceSave((ius_t)source,parentPath,handle);
 
     // Parametric stuff
     sprintf(path, FNUMBERFMT, parentPath);
-    status |= iusHdf5WriteFloat( handle, path, &(source->fNumber), 1, verbose);
+    status |= iusHdf5WriteFloat( handle, path, &(source->fNumber), 1);
     sprintf(path, ANGULARDELTAFMT, parentPath);
-    status |= iusHdf5WriteFloat( handle, path, &(source->angularDelta), 1, verbose);
+    status |= iusHdf5WriteFloat( handle, path, &(source->angularDelta), 1);
     sprintf(path, STARTANGLEFMT, parentPath);
-    status |= iusHdf5WriteFloat( handle, path, &(source->startAngle), 1, verbose);
+    status |= iusHdf5WriteFloat( handle, path, &(source->startAngle), 1);
     sprintf(path, DELTAPHIFMT, parentPath);
-    status |= iusHdf5WriteFloat( handle, path, &(source->deltaPhi), 1, verbose);
+    status |= iusHdf5WriteFloat( handle, path, &(source->deltaPhi), 1);
     sprintf(path, STARTPHIFMT, parentPath);
-    status |= iusHdf5WriteFloat( handle, path, &(source->startPhi), 1, verbose);
+    status |= iusHdf5WriteFloat( handle, path, &(source->startPhi), 1);
     sprintf(path, LOCATIONSFMT, parentPath);
 
     // Save locations

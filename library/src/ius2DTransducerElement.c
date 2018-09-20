@@ -98,7 +98,7 @@ int ius2DTransducerElementSave
     status |= ius2DPositionSave(element->position,path,group_id);
 
     sprintf(path, ELEMENTANGLEPATH, parentPath);
-    status |= iusHdf5WriteFloat(group_id,path,&(element->theta),1,1);
+    status |= iusHdf5WriteFloat(group_id,path,&(element->theta),1);
     status |= H5Gclose(group_id );
 
     return status;

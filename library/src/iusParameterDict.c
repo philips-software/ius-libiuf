@@ -172,7 +172,7 @@ int iusParameterDictSave
     // iterate over source list elements using the hash double linked list
     for (iter = hashmap_iter(&dict->map); iter; iter = hashmap_iter_next(&dict->map, iter)) {
         iterElement = HashableParameter_hashmap_iter_get_data(iter);
-        returnValue |= iusHdf5WriteString(handle,iterElement->key,iterElement->value,0);
+        returnValue |= iusHdf5WriteString(handle,iterElement->key,iterElement->value);
     }
     return returnValue;
 }

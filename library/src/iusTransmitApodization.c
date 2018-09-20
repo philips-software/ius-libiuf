@@ -120,7 +120,7 @@ int iusTransmitApodizationSave
 	herr_t  status;
 
 	status = iusHdf5WriteInt(group_id, "numElements", &(transmitApodization->numElements), 1);
-	status |= iusHdf5WriteFloat(group_id, "apodization", transmitApodization->apodization, transmitApodization->numElements, 1);
+	status |= iusHdf5WriteFloat(group_id, "apodization", transmitApodization->apodization, transmitApodization->numElements);
 
 	return status;
 }

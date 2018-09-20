@@ -84,7 +84,6 @@ add_library(ius STATIC
 		include/iusTGCImp.h
 		include/iusTransducer.h
 		include/iusTransducerElement.h
-		include/iusTransducerElement.h
 		include/iusTransducerElementImp.h
 		include/iusTransducerImp.h
         include/ius2DTransducerImp.h

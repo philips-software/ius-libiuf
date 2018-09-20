@@ -169,7 +169,7 @@ int iusBasePulseSave
     sprintf(path, PULSETYPEFMT, parentPath);
     status |= iusWritePulseType(group_id, path, pulse->type);
     sprintf(path, LABELFMT, parentPath);
-    status |= iusHdf5WriteString(group_id, path, pulse->label, 1);
+    status |= iusHdf5WriteString(group_id, path, pulse->label);
     status |= H5Gclose(group_id );
     return status;
 }

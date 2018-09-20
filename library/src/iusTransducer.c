@@ -231,9 +231,9 @@ herr_t iusBaseTransducerSave
     sprintf(path, SHAPEFMT, parentPath);
     status |= iusBaseTransducerSaveShape(group_id, path, transducer->shape);
     sprintf(path, NAMEFMT, parentPath);
-	status |= iusHdf5WriteString(group_id, path, transducer->pTransducerName, 1);
+	status |= iusHdf5WriteString(group_id, path, transducer->pTransducerName);
     sprintf(path, CENTERFREQUENCYFMT, parentPath);
-	status |= iusHdf5WriteFloat(group_id, path, &(transducer->centerFrequency), 1, 1);
+	status |= iusHdf5WriteFloat(group_id, path, &(transducer->centerFrequency), 1);
     status |= H5Gclose(group_id );
     return status;
 }

@@ -209,8 +209,8 @@ int iusHistoryNodeSave
     herr_t status = 0;
     if ( node == NULL ) return IUS_ERR_VALUE;
     if ( handle == H5I_INVALID_HID ) return IUS_ERR_VALUE;
-    status |= iusHdf5WriteString(handle, NODE_ID, node->pId, 1);
-    status |= iusHdf5WriteString(handle, NODE_TYPE, node->pType, 1);
+    status |= iusHdf5WriteString(handle, NODE_ID, node->pId);
+    status |= iusHdf5WriteString(handle, NODE_TYPE, node->pType);
     status |= iusHdf5WriteInt(handle, NODE_NUMBER_OF_PARENTS, &node->numberOfParents, 1);
     status |= iusHdf5WriteInt(handle, NODE_NUMBER_OF_PARAMETERS, &node->numberOfParameters, 1);
 

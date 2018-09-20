@@ -170,8 +170,7 @@ herr_t iusHdf5WriteFloat
     hid_t        handle,
     const char * pVariableString,
     float *      pValues,
-    int          numValues,
-	int			 verbose
+    int          numValues
 );
 //return H5LTmake_dataset_float( handle,  "centerFrequency",  1, dims,
 //    &(pInst->centerFrequency));
@@ -213,8 +212,7 @@ herr_t iusHdf5WriteLong
     hid_t        handle,
     const char * pVariableString,
     long *       pValues,
-    int          numValues,
-    int          verbose
+    int          numValues
 );
 
 /**
@@ -233,8 +231,7 @@ herr_t iusHdf5WriteString
 (
     hid_t        handle,
     const char * pVariableString,
-    const char *       pString,
-	int			 verbose
+    const char *       pString
 );
 
 /** 
@@ -259,8 +256,7 @@ herr_t iusHdf5WriteGrid
 (
     hid_t        handle,
     const char * pVariableString,
-    IusGrid *    pGrid,
-    int          verbose
+    IusGrid *    pGrid
 );
 
 herr_t iusHdf5DisableMessages();

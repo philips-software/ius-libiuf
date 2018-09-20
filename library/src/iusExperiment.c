@@ -137,11 +137,10 @@ int iusExperimentSave
 )
 {
     int status=0;
-	const int verbose = 1;
 
-    status |= iusHdf5WriteFloat(group_id, "speedOfSound", &experiment->speedOfSound, 1, verbose);
+    status |= iusHdf5WriteFloat(group_id, "speedOfSound", &experiment->speedOfSound, 1);
     status |= iusHdf5WriteInt(group_id, "date", &experiment->date, 1);
-    status |= iusHdf5WriteString(group_id, "description", experiment->pDescription, verbose);
+    status |= iusHdf5WriteString(group_id, "description", experiment->pDescription);
 
     return status;
 }

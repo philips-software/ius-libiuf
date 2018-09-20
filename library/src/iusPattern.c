@@ -129,19 +129,19 @@ int iusPatternSave
 
   hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
   sprintf(path, PATTERNLABELFMT, parentPath);
-  status |= iusHdf5WriteString(group_id, path, pattern->pLabel, 1);
+  status |= iusHdf5WriteString(group_id, path, pattern->pLabel);
   sprintf(path, PULSELABELFMT, parentPath);
-  status |= iusHdf5WriteString(group_id, path, pattern->pPulseLabel, 1);
+  status |= iusHdf5WriteString(group_id, path, pattern->pPulseLabel);
   sprintf(path, SOURCELABELFMT, parentPath);
-  status |= iusHdf5WriteString(group_id, path, pattern->pSourceLabel, 1);
+  status |= iusHdf5WriteString(group_id, path, pattern->pSourceLabel);
   sprintf(path, CHANNELMAPLABELFMT, parentPath);
-  status |= iusHdf5WriteString(group_id, path, pattern->pChannelMapLabel, 1);
+  status |= iusHdf5WriteString(group_id, path, pattern->pChannelMapLabel);
   sprintf(path, APODIZATIONLABELFMT, parentPath);
-  status |= iusHdf5WriteString(group_id, path, pattern->pApodizationLabel, 1);
+  status |= iusHdf5WriteString(group_id, path, pattern->pApodizationLabel);
   sprintf(path, RECEIVESETTNGSLABELFMT, parentPath);
-  status |= iusHdf5WriteString(group_id, path, pattern->pReceiveSettingsLabel, 1);
+  status |= iusHdf5WriteString(group_id, path, pattern->pReceiveSettingsLabel);
   sprintf(path, TIMEINFRAMEFMT, parentPath);
-  status |= iusHdf5WriteFloat(handle, path, &(pattern->timeInFrame), 1, 1);
+  status |= iusHdf5WriteFloat(handle, path, &(pattern->timeInFrame), 1);
   status |= H5Gclose(group_id );
   return status;
 }

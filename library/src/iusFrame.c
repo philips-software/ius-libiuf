@@ -115,7 +115,7 @@ int iusFrameSave
     sprintf(path, DATAINDEXFMT, parentPath);
     status |= iusHdf5WriteInt(group_id, path, &(frame->dataIndex), 1);
     sprintf(path, TIMEFMT, parentPath);
-    status |= iusHdf5WriteFloat(group_id, path, &(frame->time), 1, 1);
+    status |= iusHdf5WriteFloat(group_id, path, &(frame->time), 1);
     status |= H5Gclose(group_id );
     return status;
 }
