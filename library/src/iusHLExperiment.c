@@ -133,16 +133,28 @@ int LF_copyExperimentData
 int iusHLExperimentSave
 (
     iue_t experiment,
-    hid_t group_id
+    hid_t handle
 )
 {
     int status=0;
 	const int verbose = 1;
+	
+	hid_t experiment_id;
+	status = H5Gget_objinfo(handle, "Experiment", 0, NULL); // todo centralize the path "Sources"
+	if (status != 0) // the group does not exist yet
+	{
+		experiment_id = H5Gcreate(handle, "Experiment", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+	}
+	else
+	{
+		experiment_id = H5Gopen(handle, "Experiment", H5P_DEFAULT);
+	}
 
-    status |= iusHdf5WriteFloat(group_id, "speedOfSound", &experiment->speedOfSound, 1, verbose);
-    status |= iusHdf5WriteInt(group_id, "date", &experiment->date, 1);
-    status |= iusHdf5WriteString(group_id, "description", experiment->pDescription, verbose);
+    status |= iusHdf5WriteFloat(experiment_id, "speedOfSound", &experiment->speedOfSound, 1, verbose);
+    status |= iusHdf5WriteInt(experiment_id, "date", &experiment->date, 1);
+    status |= iusHdf5WriteString(experiment_id, "description", experiment->pDescription, verbose);
 
+	H5Gclose(experiment_id);
     return status;
 }
 
@@ -157,10 +169,12 @@ iue_t iusHLExperimentLoad
     const char *pDescription;
     iue_t experiment;
 
-    status |= iusHdf5ReadFloat( handle , "speedOfSound", &(speedOfSound));
-    status |= iusHdf5ReadInt( handle,    "date", &(date));
-    status |= iusHdf5ReadString( handle, "description", &(pDescription));
-
+	hid_t experiment_id = H5Gopen(handle, "Experiment", H5P_DEFAULT); // todo move "Experiment" to central place
+    status |= iusHdf5ReadFloat(experiment_id, "speedOfSound", &(speedOfSound));
+    status |= iusHdf5ReadInt(experiment_id,    "date", &(date));
+    status |= iusHdf5ReadString(experiment_id, "description", &(pDescription));
+	
+	H5Gclose(experiment_id);
     if( status < 0 )
         return NULL;
     experiment = iusHLExperimentCreate(speedOfSound,date,pDescription);

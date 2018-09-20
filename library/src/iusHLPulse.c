@@ -19,8 +19,8 @@
 
 
 
-#define PULSETYPEFMT "%s/pulseType"
-#define LABELFMT "%s/pulseLabel"
+#define PULSETYPE_STR "pulseType"
+#define PULSELABEL_STR "pulseLabel"
 #define TOSTR(x)    #x
 
 
@@ -158,19 +158,18 @@ static int iusReadPulseType
 int iusHLBasePulseSave
 (
     iup_t pulse,
-    char *parentPath,
     hid_t handle
 )
 {
     int status=IUS_E_OK;
-    char path[IUS_MAX_HDF5_PATH];
+    //char path[IUS_MAX_HDF5_PATH];
 
-    hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-    sprintf(path, PULSETYPEFMT, parentPath);
-    status |= iusWritePulseType(group_id, path, pulse->type);
-    sprintf(path, LABELFMT, parentPath);
-    status |= iusHdf5WriteString(group_id, path, pulse->label, 1);
-    status |= H5Gclose(group_id );
+    //hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+    //sprintf(path, PULSETYPEFMT, parentPath);
+    status |= iusWritePulseType(handle, PULSETYPE_STR, pulse->type);
+    //sprintf(path, LABELFMT, parentPath);
+    status |= iusHdf5WriteString(handle, PULSELABEL_STR, pulse->label, 1);
+    //status |= H5Gclose(group_id );
     return status;
 }
 
@@ -178,55 +177,74 @@ int iusHLBasePulseSave
 int iusHLPulseSave
 (
     iup_t pulse,
-    char *parentPath,
     hid_t handle
 )
 {
     int status=IUS_ERR_VALUE;
+    // create a pulse group in "Pulses" and create Pulses if not existing
+	hid_t pulses_id;
+	status = H5Gget_objinfo(handle, "Pulses", 0, NULL); // todo centralize the path "Sources"
+	if (status != 0) // the group does not exist yet
+	{
+		pulses_id = H5Gcreate(handle, "Pulse", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+	}
+	else
+	{
+		pulses_id = H5Gopen(handle, "Pulses", H5P_DEFAULT);
+	}
 
+	hid_t pulse_id = H5Gcreate(pulses_id, pulse->label, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
     // Make dataset for Experiment
     if( pulse->type == IUS_PARAMETRIC_PULSETYPE )
-        status = iusHLParametricPulseSave((iupp_t)pulse, parentPath, handle);
+        status = iusHLParametricPulseSave((iupp_t)pulse, pulse_id);
 
     if( pulse->type == IUS_NON_PARAMETRIC_PULSETYPE )
-        status = iusHLNonParametricPulseSave((iunpp_t)pulse, parentPath, handle);
+        status = iusHLNonParametricPulseSave((iunpp_t)pulse, pulse_id);
+
+	H5Gclose(pulse_id);
+	H5Gclose(pulses_id);
 
     return status;
 }
 
 iup_t iusHLBasePulseLoad
 (
-    hid_t handle,
-    char *parentPath
+	hid_t handle
 )
 {
-    int status = 0;
-    IusPulseType type;
-    const char *label;
-    char path[IUS_MAX_HDF5_PATH];
+	int status = IUS_E_OK;
+	IusPulseType type;
+	const char *label;
 
-    sprintf(path, PULSETYPEFMT, parentPath);
-    status |= iusReadPulseType( handle, path, &(type));
-    sprintf(path, LABELFMT, parentPath);
-    status |= iusHdf5ReadString( handle, path, &(label));
-    if( status < 0 )
-        return NULL;
+	status |= iusReadPulseType(handle, PULSETYPE_STR, &(type));
+	status |= iusHdf5ReadString(handle, PULSELABEL_STR, &(label));
+	if (status < 0)
+		return NULL;
 
-    return iusHLPulseCreate(type, label);
+	return iusHLPulseCreate(type, label);
 }
 
 iup_t iusHLPulseLoad
 (
-    hid_t handle,
-    char *parentPath
+	hid_t handle,
+	char *label
 )
 {
-    iup_t pulse=NULL;
+	iup_t pulse = NULL;
+	char path[IUS_MAX_HDF5_PATH];
 
-    pulse = iusHLBasePulseLoad(handle,parentPath);
-    if( pulse->type == IUS_PARAMETRIC_PULSETYPE )
-          pulse = (iup_t) iusHLParametricPulseLoad(handle, parentPath, pulse->label);
-    if( pulse->type == IUS_NON_PARAMETRIC_PULSETYPE )
-          pulse = (iup_t) iusHLNonParametricPulseLoad(handle, parentPath, pulse->label);
-    return pulse;
+	sprintf(path, "%s/%s", "Pulses/%s", label);
+	hid_t pulse_id = H5Gopen(handle, path, H5P_DEFAULT);
+
+	pulse = iusHLBasePulseLoad(pulse_id);
+	if (pulse == NULL) return IUP_INVALID;
+
+	switch (pulse->type)
+	{
+	case IUS_PARAMETRIC_PULSETYPE:
+		pulse = (iup_t)iusHLParametricPulseLoad(pulse_id); // TODO: decide if it is okay that the base pulse object is discarded during load? Is it causing a memory leak?
+	case IUS_NON_PARAMETRIC_PULSETYPE:
+		pulse = (iup_t)iusHLNonParametricPulseLoad(pulse_id); // TODO: decide if it is okay that the base pulse object is discarded during load? Is it causing a memory leak?
+	}
+	return pulse;
 }

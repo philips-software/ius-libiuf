@@ -25,6 +25,7 @@
 #include <include/iusHLSourceDictImp.h>
 #include <include/iusHLReceiveSettingsDictImp.h>
 #include <include/iusHLTransducerImp.h>
+#include <include/iusHLTransmitApodizationDictImp.h>
 
 static char *const FRAME_LIST_PATH = "/Frames";
 static char *const PATTERN_LIST_PATH="/Patterns";
@@ -153,7 +154,6 @@ iuif_t iusHLInputFileLoad
 	}
 
 	IusInputFile *pFileInst = iusHLInputFileAlloc(pFilename);
-
     // check calloc
 	if (pFileInst == IUIF_INVALID)
 	{
@@ -161,7 +161,7 @@ iuif_t iusHLInputFileLoad
 		return IUIF_INVALID;
 	}
 
-    // open  Hdf5 file using default properties.
+    // open  Hdf5 file using read-only default properties.
     pFileInst->handle = H5Fopen( pFilename, H5F_ACC_RDONLY, H5P_DEFAULT );
     if (pFileInst->handle <=0)
     {
@@ -169,27 +169,22 @@ iuif_t iusHLInputFileLoad
         return IUIF_INVALID;
     }
 
-
-    // Load instance data
-    // Todo: create group @here instead of in Load, see experiment
-    pFileInst->frameList = iusHLFrameListLoad(pFileInst->handle, FRAME_LIST_PATH);
+    pFileInst->frameList = iusHLFrameListLoad(pFileInst->handle);
     if (pFileInst->frameList == IUFL_INVALID)
     {
         fprintf( stderr, "Warning from iusHLInputFileLoad: could not load framelist: %s\n", pFilename );
         return IUIF_INVALID;
     }
 
-    // Todo: create group @here instead of in Load, see experiment
-    pFileInst->patternList = iusHLPatternListLoad(pFileInst->handle, PATTERN_LIST_PATH);
+	/* TODO convert patternList to patternDict !!!!!! */
+    pFileInst->patternList = iusHLPatternListLoad(pFileInst->handle);
     if (pFileInst->patternList == IUPAL_INVALID)
     {
         fprintf( stderr, "Warning from iusHLInputFileLoad: could not load patterns: %s\n", pFilename );
         return IUIF_INVALID;
     }
 
-    // Load instance data
-    // Todo: create group @here instead of in Load, see experiment
-    pFileInst->pulseDict = iusHLPulseDictLoad(pFileInst->handle, PULSE_DICT_PATH);
+    pFileInst->pulseDict = iusHLPulseDictLoad(pFileInst->handle);
     if (pFileInst->pulseDict == IUPD_INVALID)
     {
         fprintf( stderr, "Warning from iusHLInputFileLoad: could not load pulses: %s\n", pFilename );
@@ -197,8 +192,7 @@ iuif_t iusHLInputFileLoad
     }
 
     // Load instance data
-    // Todo: create group @here instead of in Load, see experiment
-    pFileInst->pulseSourceDict = iusHLSourceDictLoad(pFileInst->handle, PULSE_SOURCE_DICT_PATH);
+    pFileInst->pulseSourceDict = iusHLSourceDictLoad(pFileInst->handle);
     if (pFileInst->pulseSourceDict == IUSD_INVALID)
     {
         fprintf( stderr, "Warning from iusHLInputFileLoad: could not load pulse sources: %s\n", pFilename );
@@ -207,7 +201,7 @@ iuif_t iusHLInputFileLoad
 
     // Load instance data
     // Todo: create group @here instead of in Load, see experiment
-    pFileInst->receiveChannelMapDict = iusHLReceiveChannelMapDictLoad(pFileInst->handle, RECEIVE_CHANNEL_MAP_PATH);
+    pFileInst->receiveChannelMapDict = iusHLReceiveChannelMapDictLoad(pFileInst->handle);
 	if (pFileInst->receiveChannelMapDict == IURCMD_INVALID)
 	{
 		fprintf(stderr, "Warning from iusHLInputFileLoad: could not load receiveChannelMap: %s\n", pFilename);
@@ -216,7 +210,7 @@ iuif_t iusHLInputFileLoad
 
     // Load instance data
     // Todo: create group @here instead of in Load, see experiment
-    pFileInst->transmitApodizationDict = iusHLTransmitApodizationDictLoad(pFileInst->handle, TRANSMIT_APODIZATION_DICT_PATH);
+    pFileInst->transmitApodizationDict = iusHLTransmitApodizationDictLoad(pFileInst->handle);
     if (pFileInst->transmitApodizationDict == IUTAD_INVALID)
     {
         fprintf(stderr, "Warning from iusHLInputFileLoad: could not load transmitApodizationDict: %s\n", pFilename);
@@ -225,15 +219,14 @@ iuif_t iusHLInputFileLoad
 
     // Load instance data
     // Todo: create group @here instead of in Load, see experiment
-    pFileInst->receiveSettingsDict = iusHLReceiveSettingsDictLoad(pFileInst->handle, RECEIVE_SETTINGS_DICT_PATH);
+    pFileInst->receiveSettingsDict = iusHLReceiveSettingsDictLoad(pFileInst->handle);
     if (pFileInst->receiveSettingsDict == IURSD_INVALID)
     {
         fprintf(stderr, "Warning from iusHLInputFileLoad: could not load receiveSettingsDict: %s\n", pFilename);
         return IUIF_INVALID;
     }
 
-    hid_t group_id = H5Gopen(pFileInst->handle, EXPERIMENT_PATH, H5P_DEFAULT);
-    pFileInst->experiment = iusHLExperimentLoad(group_id);
+    pFileInst->experiment = iusHLExperimentLoad(pFileInst->handle);
     if (pFileInst->experiment == IUE_INVALID)
     {
         fprintf(stderr, "Warning from iusHLInputFileLoad: could not load experiment: %s\n", pFilename);
@@ -241,8 +234,7 @@ iuif_t iusHLInputFileLoad
     }
 
     // Load instance data
-    // Todo: create group @here instead of in Load, see experiment
-    pFileInst->transducer = iusHLTransducerLoad(pFileInst->handle, TRANSDUCER_PATH);
+    pFileInst->transducer = iusHLTransducerLoad(pFileInst->handle);
     if (pFileInst->transducer == IUT_INVALID)
     {
         fprintf(stderr, "Warning from iusHLInputFileLoad: could not load transducer: %s\n", pFilename);
@@ -263,7 +255,6 @@ iuif_t iusHLInputFileLoad
         return IUIF_INVALID;
     }
 
-    H5Gclose(group_id);
     return pFileInst;
 }
 
@@ -275,23 +266,17 @@ int iusHLInputFileSave
     if( fileHandle == NULL ) return IUS_ERR_VALUE;
 
     herr_t status=0;
-    hsize_t dims[1] = {1};
 
-    // Todo: Handle creation in iusHLInputFileSave iso iusHLPulseDictSave, iusHLPatternListSave, iusHLReceiveChannelMapDictSave,iusHLTransmitApodizationDictSave
-    // new signature: iusHLPulseDictSave(fileHandle->pulseDict,fileHandle->handle);
+    status |= iusHLFrameListSave(fileHandle->frameList, fileHandle->handle);
+    status |= iusHLPatternListSave(fileHandle->patternList, fileHandle->handle);
+    status |= iusHLPulseDictSave(fileHandle->pulseDict, fileHandle->handle);
+    status |= iusHLSourceDictSave(fileHandle->pulseSourceDict, fileHandle->handle);
+	status |= iusHLReceiveChannelMapDictSave(fileHandle->receiveChannelMapDict, fileHandle->handle);
+	status |= iusHLTransmitApodizationDictSave(fileHandle->transmitApodizationDict, fileHandle->handle);
+    status |= iusHLReceiveSettingsDictSave(fileHandle->receiveSettingsDict, fileHandle->handle);
+	status |= iusHLExperimentSave(fileHandle->experiment, fileHandle->handle);
+    status |= iusHLTransducerSave(fileHandle->transducer, fileHandle->handle);
 
-    status |= iusHLFrameListSave(fileHandle->frameList, FRAME_LIST_PATH, fileHandle->handle);
-    status |= iusHLPatternListSave(fileHandle->patternList, PATTERN_LIST_PATH, fileHandle->handle);
-    status |= iusHLPulseDictSave(fileHandle->pulseDict, PULSE_DICT_PATH, fileHandle->handle);
-    status |= iusHLSourceDictSave(fileHandle->pulseSourceDict, PULSE_SOURCE_DICT_PATH, fileHandle->handle);
-	status |= iusHLReceiveChannelMapDictSave(fileHandle->receiveChannelMapDict, RECEIVE_CHANNEL_MAP_PATH, fileHandle->handle);
-	status |= iusHLTransmitApodizationDictSave(fileHandle->transmitApodizationDict, TRANSMIT_APODIZATION_DICT_PATH, fileHandle->handle);
-    status |= iusHLReceiveSettingsDictSave(fileHandle->receiveSettingsDict, RECEIVE_SETTINGS_DICT_PATH, fileHandle->handle);
-
-	hid_t group_id = H5Gcreate(fileHandle->handle, EXPERIMENT_PATH, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-	status |= iusHLExperimentSave(fileHandle->experiment, group_id);
-    status |= H5Gclose(group_id);
-    status |= iusHLTransducerSave(fileHandle->transducer, TRANSDUCER_PATH, fileHandle->handle);
     status |= iusHdf5WriteInt( fileHandle->handle, IUSVERSION_PATH, &(fileHandle->IusVersion), 1);
     status |= iusHdf5WriteInt( fileHandle->handle, NUMFRAMES_PATH, &(fileHandle->numFrames), 1);
 

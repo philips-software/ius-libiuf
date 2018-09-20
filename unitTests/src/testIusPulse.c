@@ -127,7 +127,7 @@ TEST(IusPulse, testIusSerialization)
   int     numPulseValues=2;               /**< number of cycles that the pulse represents */
 
   // create and save
-  const char *pulseLabel = "Parametric Pulse Created_in_IusPulse_testIusSerialization";
+  char *pulseLabel = "Parametric Pulse Created_in_IusPulse_testIusSerialization";
   iupp_t obj = iusHLParametricPulseCreate(pulseLabel, pulseFrequency, pulseAmplitude, pulseCount);
   iunpp_t notherObj = iusHLNonParametricPulseCreate("Non Parametric Pulse Created_in_IusPulse_testIusSerialization", numPulseValues);
 

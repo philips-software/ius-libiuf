@@ -114,29 +114,29 @@ iufl_t iusHLFrameListLoad
 )
 {
     char path[IUS_MAX_HDF5_PATH];
-    int numPatterns,i;
+    int numFrames,i;
     
-    int status = iusHdf5ReadInt(handle, FRAMELISTSIZE, &(numPatterns));
+    int status = iusHdf5ReadInt(handle, FRAMELISTSIZE, &(numFrames));
     if(status!=0) return IUFL_INVALID;
 	hid_t frameList_id = H5Gopen(handle, "/Frames", H5P_DEFAULT);
-    iufl_t frameList = iusHLFrameListCreate(numPatterns);
+    iufl_t frameList = iusHLFrameListCreate(numFrames);
     iuf_t sourceElement;
 
     // Load frames
-    for (i=0;i < numPatterns;i++)
+    for (i=0;i < numFrames; i++)
     {
         sprintf(path, FRAMELISTFMT, i);
-		//
+	
 		hid_t frame_id = H5Gopen(frameList_id, path, H5P_DEFAULT);
         sourceElement = iusHLFrameLoad(frame_id);
         if(sourceElement == IUF_INVALID)
         {
             break;
         }
+		H5Gclose(frame_id);
         iusHLFrameListSet(frameList,sourceElement,i);
     }
 	H5Gclose(frameList_id);
-
     return frameList;
 }
 

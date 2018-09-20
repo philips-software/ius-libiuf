@@ -164,33 +164,29 @@ int iusHLPulseDictSet
 int iusHLPulseDictSave
 (
     iupd_t dict,
-    char *parentPath,
     hid_t handle
 )
 {
     int status=0;
-    char path[IUS_MAX_HDF5_PATH];
+    //char path[IUS_MAX_HDF5_PATH];
     struct hashmap_iter *iter;
 
     if(dict == NULL)
         return IUS_ERR_VALUE;
-    if(parentPath == NULL || handle == H5I_INVALID_HID)
+    if(handle == H5I_INVALID_HID)
         return IUS_ERR_VALUE;
 
-
-
-    hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-    HashablePulse *sourceElement;
+	//hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+    HashablePulse *pulseDictItem;
 
     // iterate over source list elements and save'em
     for (iter = hashmap_iter(&dict->map); iter; iter = hashmap_iter_next(&dict->map, iter))
     {
-        sourceElement = HashablePulse_hashmap_iter_get_data(iter);
-        sprintf(path, LABELPATH, parentPath, sourceElement->pulse->label);
-        iusHLPulseSave(sourceElement->pulse,path,handle);
+		pulseDictItem = HashablePulse_hashmap_iter_get_data(iter);
+        //sprintf(path, LABELPATH, parentPath, sourceElement->pulse->label);
+        iusHLPulseSave(pulseDictItem->pulse, handle);
     }
-
-    status |= H5Gclose(group_id );
+    //status |= H5Gclose(group_id );
     return status;
 }
 
@@ -199,18 +195,16 @@ int iusHLPulseDictSave
 
 iupd_t iusHLPulseDictLoad
 (
-    hid_t handle,
-    const char *parentPath
+	hid_t handle
 )
 {
-    int i;
-    int status = 0;
-    char path[IUS_MAX_HDF5_PATH];
-    char memb_name[MAX_NAME];
+	int i;
+	int status = 0;
+	//char path[IUS_MAX_HDF5_PATH];
+	char memb_name[MAX_NAME];
 
-
-    hid_t grpid = H5Gopen(handle, parentPath, H5P_DEFAULT);
-    if(parentPath == NULL || handle == H5I_INVALID_HID || grpid == H5I_INVALID_HID)
+	hid_t grpid = H5Gopen(handle, "Pulses", H5P_DEFAULT);
+	if (handle == H5I_INVALID_HID || grpid == H5I_INVALID_HID)
         return NULL;
 
     hsize_t nobj;
@@ -219,14 +213,12 @@ iupd_t iusHLPulseDictLoad
     iupd_t dict = iusHLPulseDictCreate();
     for (i = 0; i < nobj; i++)
     {
-        H5Gget_objname_by_idx(grpid, (hsize_t) i,
-                                    memb_name, (size_t) MAX_NAME);
-        sprintf(path,"%s/%s", parentPath,memb_name);
-        iup_t pulse = iusHLPulseLoad(handle,path);
+        H5Gget_objname_by_idx(grpid, (hsize_t) i, memb_name, (size_t) MAX_NAME);
+		//sprintf(path, "Pulses/%s", memb_name);
+        iup_t pulse = iusHLPulseLoad(handle, memb_name); //note iusPulseLoad expect handle, not grpid!
         status = iusHLPulseDictSet(dict, memb_name, pulse);
     }
-
-    H5Gclose(handle);
+    H5Gclose(grpid);
     if( status != IUS_E_OK )
     {
         return NULL;

@@ -111,29 +111,32 @@ int iusHLPatternListSet
 
 iupal_t iusHLPatternListLoad
 (
-    hid_t handle,
-    const char *parentPath
+    hid_t handle
 )
 {
     char path[IUS_MAX_HDF5_PATH];
     int numPatterns,i;
-    sprintf(path, FRAMELISTSIZEFMT, parentPath);
-    int status = iusHdf5ReadInt(handle, path, &(numPatterns));
+
+	hid_t frameListId = H5Gopen(handle, "FrameList", H5P_DEFAULT);
+    
+	//sprintf(path, FRAMELISTSIZEFMT, parentPath);
+    int status = iusHdf5ReadInt(frameListId, "Size", &(numPatterns));
     if(status!=0) return IUPAL_INVALID;
 
     iupal_t patternList = iusHLPatternListCreate(numPatterns);
-    iupa_t sourceElement;
+    iupa_t pattern;
 
     // Load patterns
     for (i=0;i < numPatterns;i++)
     {
-        sprintf(path, FRAMELISTFMT, parentPath, i);
-        sourceElement = iusHLPatternLoad(handle,path);
-        if(sourceElement==IUPA_INVALID)
+        sprintf(path, "Pattern[%d]", i);
+		hid_t patternId = H5Gopen(frameListId, path, H5P_DEFAULT);
+        pattern = iusHLPatternLoad(patternId);
+        if(pattern==IUPA_INVALID)
         {
             break;
         }
-        iusHLPatternListSet(patternList,sourceElement,i);
+        iusHLPatternListSet(patternList,pattern,i);
     }
 
     return patternList;
@@ -160,8 +163,7 @@ IUS_BOOL iusHLPatternListFull
 int iusHLPatternListSave
 (
     iupal_t list,
-    const char *parentPath,
-    hid_t handle
+	hid_t handle
 )
 {
     int status=0;
@@ -170,29 +172,41 @@ int iusHLPatternListSave
 
     if(list == NULL)
         return IUS_ERR_VALUE;
-    if(parentPath == NULL || handle == H5I_INVALID_HID)
+    if(handle == H5I_INVALID_HID)
         return IUS_ERR_VALUE;
     if(iusHLPatternListFull(list) == IUS_FALSE)
         return IUS_ERR_VALUE;
-
-    hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-    iupa_t sourceElement;
+	
+	hid_t patternList_id;
+	status = H5Gget_objinfo(handle, "Patterns", 0, NULL); // todo centralize the path "Sources"
+	if (status != 0) // the group does not exist yet
+	{
+		patternList_id = H5Gcreate(handle, "Patterns", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+	}
+	else
+	{
+		patternList_id = H5Gopen(handle, "Patterns", H5P_DEFAULT);
+	}
+    //hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+    iupa_t pattern;
     size = iusHLPatternListGetSize(list);
-    sprintf(path, FRAMELISTSIZEFMT, parentPath);
-    status |= iusHdf5WriteInt(handle, path, &(size), 1);
+    //sprintf(path, FRAMELISTSIZEFMT, parentPath);
+    status |= iusHdf5WriteInt(patternList_id, "Size", &(size), 1);
 
     // iterate over source list elements and save'em
     for (i=0;i < size;i++)
     {
-        sourceElement = iusHLPatternListGet(list,i);
-        if(sourceElement == IUPA_INVALID) continue;
-
-        sprintf(path, FRAMELISTFMT, parentPath, i);
-        status = iusHLPatternSave(sourceElement,path,group_id);
+		pattern = iusHLPatternListGet(list,i);
+        if(pattern == IUPA_INVALID) continue;
+		sprintf(path, "Pattern[%d]", i);
+		hid_t pattern_id = H5Gcreate(patternList_id, path, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+        //sprintf(path, FRAMELISTFMT, parentPath, i);
+        status = iusHLPatternSave(pattern, pattern_id);
+		H5Gclose(pattern_id);
         if(status != IUS_E_OK) break;
     }
 
-    status |= H5Gclose(group_id );
+    status |= H5Gclose(patternList_id);
     return status;
 }
 

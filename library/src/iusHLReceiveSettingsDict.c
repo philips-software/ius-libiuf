@@ -174,16 +174,15 @@ int iusHLReceiveSettingsDictSave
     if(handle == H5I_INVALID_HID)
         return IUS_ERR_VALUE;
 
-    //hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-    HashableReceiveSettings *sourceElement;
-    char *label;
+    //hid_t group_id = H5Gcreate(handle, "ReceiveSettings", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+    HashableReceiveSettings *receiveSettingsDictItem;
+
     // iterate over source list elements and save'em
     for (iter = hashmap_iter(&dict->map); iter; iter = hashmap_iter_next(&dict->map, iter))
     {
-        sourceElement = HashableReceiveSettings_hashmap_iter_get_data(iter);
-        label = iusHLReceiveSettingsGetLabel(sourceElement->receiveSettings);
-        //sprintf(path, LABELPATH, parentPath, label);
-        iusHLReceiveSettingsSave(sourceElement->receiveSettings, label, handle);
+		receiveSettingsDictItem = HashableReceiveSettings_hashmap_iter_get_data(iter);
+		//sprintf(path, LABELPATH, parentPath, label);
+        iusHLReceiveSettingsSave(receiveSettingsDictItem->receiveSettings, handle);
     }
 
     //status |= H5Gclose(group_id );
@@ -203,25 +202,26 @@ iursd_t iusHLReceiveSettingsDictLoad
     char path[IUS_MAX_HDF5_PATH];
     char memb_name[MAX_NAME];
 
-    // hid_t grpid = H5Gopen(handle, parentPath, H5P_DEFAULT);
-	hid_t grpid
-    if( handle == H5I_INVALID_HID)
+    hid_t grpid = H5Gopen(handle, "ReceiveSettings", H5P_DEFAULT);
+    if (handle == H5I_INVALID_HID)
         return NULL;
 
     hsize_t nobj;
-    status = H5Gget_num_objs(handle, &nobj);
+    status = H5Gget_num_objs(grpid, &nobj);
 
     iursd_t dict = iusHLReceiveSettingsDictCreate();
     for (i = 0; i < nobj; i++)
     {
         H5Gget_objname_by_idx(handle, (hsize_t) i, memb_name, (size_t) MAX_NAME);
         sprintf(path,"/%s", memb_name);
-        iurs_t receiveSettings = iusHLReceiveSettingsLoad(handle,path,memb_name);
+		hid_t settings_id = H5Gopen(grpid, memb_name, H5P_DEFAULT);
+        iurs_t receiveSettings = iusHLReceiveSettingsLoad(settings_id, memb_name);
         status = iusHLReceiveSettingsDictSet(dict, memb_name, receiveSettings);
+		H5Gclose(settings_id);
     }
-    //H5Gclose(handle);
+    H5Gclose(grpid);
     
-	if( status != IUS_E_OK )
+	if (status != IUS_E_OK)
     {
         return NULL;
     }

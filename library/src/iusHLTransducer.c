@@ -246,13 +246,25 @@ herr_t iusHLTransducerSave
     hid_t handle
 )
 {
-	/* write the /Transducer data */
+	/* write the /Transducer data in "Transducer" */
 	herr_t  status=0;
+	hid_t transducer_id;
+
+	status = H5Gget_objinfo(handle, "Transducer", 0, NULL); // todo centralize the path "Transducer"
+	if (status != 0) // the group does not exist yet
+	{
+		transducer_id = H5Gcreate(handle, "Transducer", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+	}
+	else
+	{
+		transducer_id = H5Gopen(handle, "Transducer", H5P_DEFAULT);
+	}
+
     if (transducer->type == IUS_3D_SHAPE)
-		status |= iusHL3DTransducerSave((Ius3DTransducer *) transducer, handle);
+		status |= iusHL3DTransducerSave((Ius3DTransducer *) transducer, transducer_id);
 
 	if (transducer->type == IUS_2D_SHAPE)
-		status |= iusHL2DTransducerSave((Ius2DTransducer *) transducer, handle);
+		status |= iusHL2DTransducerSave((Ius2DTransducer *) transducer, transducer_id);
 	return status;
 }
 
@@ -305,7 +317,7 @@ iut_t iusHLTransducerLoad
 	IusTransducerShape shape;
     //iut_t transducer = iusHLBaseTransducerLoad(handle);
 	hid_t group_id = H5Gcreate(handle, IUS_INPUT_STRUCTURE_TRANSDUCER, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-	status |= iusHLTransducerLoadShape(handle, SHAPEFMT, &(shape));
+	status |= iusHLTransducerLoadShape(group_id, SHAPEFMT, &(shape));
 	if (status < 0)
 		return IUT_INVALID;
 

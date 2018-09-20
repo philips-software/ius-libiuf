@@ -153,10 +153,6 @@ int iusHLSourceDictSet
 
 
 // serialization
-//#define NUMPULSEVALUESFMT  "%s/numSourceValues"
-//#define PULSEAMPLITUDESFMT "%s/rawSourceAmplitudes"
-//#define PULSETIMESFMT      "%s/rawSourceTimes"
-//#define LABELPATH          "%s/%s"
 int iusHLSourceDictSave
 (
     iusd_t dict,
@@ -164,7 +160,6 @@ int iusHLSourceDictSave
 )
 {
     int status=0;
-    //char path[IUS_MAX_HDF5_PATH];
     struct hashmap_iter *iter;
 
     if(dict == NULL)
@@ -172,18 +167,15 @@ int iusHLSourceDictSave
     if(handle == H5I_INVALID_HID)
         return IUS_ERR_VALUE;
 
-    //hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
     HashableSource *sourceElement;
 
     // iterate over source list elements and save'em
     for (iter = hashmap_iter(&dict->map); iter; iter = hashmap_iter_next(&dict->map, iter))
     {
         sourceElement = HashableSource_hashmap_iter_get_data(iter);
-        //sprintf(path, LABELPATH, parentPath, sourceElement->source->label);
         iusHLSourceSave(sourceElement->source, handle);
     }
 
-    //status |= H5Gclose(group_id );
     return status;
 }
 
@@ -197,11 +189,9 @@ iusd_t iusHLSourceDictLoad
 {
     int i;
     int status = 0;
-    //char path[IUS_MAX_HDF5_PATH];
     char memb_name[MAX_NAME];
 
-
-    hid_t grpid = H5Gopen(handle, "Sources", H5P_DEFAULT);
+	hid_t grpid = H5Gopen(handle, "Sources", H5P_DEFAULT);
     if(handle == H5I_INVALID_HID)
         return NULL;
 
@@ -211,9 +201,7 @@ iusd_t iusHLSourceDictLoad
     iusd_t dict = iusHLSourceDictCreate();
     for (i = 0; i < nobj; i++)
     {
-        H5Gget_objname_by_idx(grpid, (hsize_t) i,
-                                    memb_name, (size_t) MAX_NAME);
-        //sprintf(path,"%s", memb_name);
+        H5Gget_objname_by_idx(grpid, (hsize_t) i, memb_name, (size_t) MAX_NAME);
         ius_t source = iusHLSourceLoad(grpid, memb_name);
         status = iusHLSourceDictSet(dict, memb_name, source);
     }

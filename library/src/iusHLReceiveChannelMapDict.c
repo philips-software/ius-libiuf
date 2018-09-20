@@ -108,7 +108,7 @@ size_t iusHLReceiveChannelMapDictGetSize
 	iurcmd_t dict
 )
 {
-	if (dict == NULL) return -1;
+	if (dict == NULL) return (size_t)-1;
 	return hashmap_size(&dict->map);
 }
 
