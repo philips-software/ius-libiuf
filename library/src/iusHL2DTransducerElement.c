@@ -77,7 +77,7 @@ int iusHL2DTransducerElementCompare
 
 #define ELEMENTSIZEPATH "Size"
 #define ELEMENTPOSITIONPATH  "Position"
-#define ELEMENTANGLEPATH  "Angle"
+#define ELEMENTANGLEPATH  "theta"
 
 int iusHL2DTransducerElementSave
 (
@@ -123,7 +123,7 @@ iu2dte_t iusHL2DTransducerElementLoad
     if (elemSize == IU2DS_INVALID) return IU2DTE_INVALID;
 
     //sprintf(path, ELEMENTANGLEPATH); // todo clean up and centralize this fixed string
-    status = iusHdf5ReadFloat(handle,"theta",&theta);
+    status = iusHdf5ReadFloat(handle, ELEMENTANGLEPATH, &theta);
     if (status < 0) return IU2DTE_INVALID;
 	//H5Gclose(element_id);
 

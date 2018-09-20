@@ -12,13 +12,15 @@
 
 static void RunAllTests(void)
 {
-    RUN_TEST_GROUP(Ius2DNonParametricSource);
-    RUN_TEST_GROUP(Ius2DParametricSource);
-    RUN_TEST_GROUP(Ius2DParametricSource);
-    RUN_TEST_GROUP(Ius2DTransducer);
-    RUN_TEST_GROUP(Ius2DTransducerElement);
-    RUN_TEST_GROUP(Ius2DTransducerElementList);
-    RUN_TEST_GROUP(Ius3DNonParametricSource);
+#if 0
+	RUN_TEST_GROUP(Ius2DNonParametricSource);
+	RUN_TEST_GROUP(Ius2DParametricSource);
+	RUN_TEST_GROUP(Ius2DTransducer);
+	RUN_TEST_GROUP(Ius2DTransducerElement);
+	RUN_TEST_GROUP(Ius2DTransducerElementList);
+#endif
+	RUN_TEST_GROUP(Ius3DNonParametricSource);
+#if 0
     RUN_TEST_GROUP(Ius3DParametricSource);
     RUN_TEST_GROUP(Ius3DTransducer);
     RUN_TEST_GROUP(Ius3DTransducerElement);
@@ -45,6 +47,7 @@ static void RunAllTests(void)
     RUN_TEST_GROUP(IusTransducer);
     RUN_TEST_GROUP(IusTransmitApodization);
     RUN_TEST_GROUP(IusTransmitApodizationDict);
+#endif
 }
 
 int main(int argc, const char * argv[])

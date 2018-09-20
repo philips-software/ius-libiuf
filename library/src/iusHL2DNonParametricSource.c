@@ -173,8 +173,8 @@ static int iusHL2DNonParametricSourceLoadLocations
     for (p = 0; p < source->locationCount; p++)
     {
         sprintf(path, "Location[%d]", p);
-		hid_t location_id = H5Gcreate(handle, path, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-        pos = iusHL2DPositionLoad(handle);
+		hid_t location_id = H5Gopen(handle, path, H5P_DEFAULT);
+        pos = iusHL2DPositionLoad(location_id);
         if (pos == IU2DP_INVALID)
         {
             status = IUS_ERR_VALUE;
