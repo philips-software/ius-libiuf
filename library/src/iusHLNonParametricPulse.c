@@ -190,7 +190,7 @@ iunpp_t iusHLNonParametricPulseLoad
 )
 {
     int status = 0;
-    //char path[IUS_MAX_HDF5_PATH];
+    char path[IUS_MAX_HDF5_PATH];
     int  numPulseValues;
 	char *label;
     iunpp_t  pulse;
@@ -199,20 +199,21 @@ iunpp_t iusHLNonParametricPulseLoad
         return NULL;
 
 	//sprintf(path, "Pulses/%s", label);
-	//hid_t pulse_id = H5Gopen(handle, path, H5P_DEFAULT);
+	hid_t pulse_id = H5Gopen(handle, "Pulses", H5P_DEFAULT);
+
     //sprintf(path, NUMPULSEVALUESFMT, parentPath);
-    status |= iusHdf5ReadInt(handle, IUS_NONPARAMPULSE_NUMPULSEVALUES, &(numPulseValues));
-	status |= iusHdf5ReadString(handle, IUS_NONPARAMPULSE_NUMPULSEVALUES, &(label));
+    status |= iusHdf5ReadInt(pulse_id, IUS_NONPARAMPULSE_NUMPULSEVALUES, &(numPulseValues));
+	//status |= iusHdf5ReadString(pulse_id, IUS_NONPARAMPULSE_NUMPULSEVALUES, &(label));
     if( status < 0 )
         return NULL;
 
     pulse = iusHLNonParametricPulseCreate(label, numPulseValues);
     //sprintf(path, PULSEAMPLITUDESFMT, parentPath);
-    status |= H5LTread_dataset_float(handle, IUS_NONPARAMPULSE_PULSEAMPLITUDES, pulse->pRawPulseAmplitudes );
+    status |= H5LTread_dataset_float(pulse_id, IUS_NONPARAMPULSE_PULSEAMPLITUDES, pulse->pRawPulseAmplitudes );
     //sprintf(path, PULSETIMESFMT, parentPath);
-    status |= H5LTread_dataset_float(handle, IUS_NONPARAMPULSE_PULSETIMES,      pulse->pRawPulseTimes );
+    status |= H5LTread_dataset_float(pulse_id, IUS_NONPARAMPULSE_PULSETIMES,      pulse->pRawPulseTimes );
 
-	//H5Gclose(pulse_id);
+	H5Gclose(pulse_id);
 	if( status < 0 )
       return NULL;
     return pulse;
