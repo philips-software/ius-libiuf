@@ -171,7 +171,7 @@ static int iusHL3DNonParametricSourceLoadLocations
     for (p = 0; p < source->locationCount; p++)
     {
         sprintf(path, "Location[%d]", p);
-		hid_t location_id = H5Gcreate(handle, path, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+		hid_t location_id = H5Gopen(handle, path, H5P_DEFAULT);
 		pos = iusHL3DPositionLoad(location_id);
         if (pos == IU3DP_INVALID)
         {
