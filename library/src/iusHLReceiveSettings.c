@@ -239,7 +239,7 @@ iurs_t iusHLReceiveSettingsLoad
     iurs_t iusReceiveSettings;
 	
 	hid_t settings_id = H5Gopen(handle, "ReceiveSettings", H5P_DEFAULT);
-	hid_t label_id = H5Gopen(settings_id, "label", H5P_DEFAULT);
+	hid_t label_id = H5Gopen(settings_id, label, H5P_DEFAULT);
 
     //sprintf(path, SAMPLEFREQUENCYFMT, parentPath);
     status |= iusHdf5ReadFloat(label_id, SAMPLEFREQUENCYFMT, &sampleFrequency);

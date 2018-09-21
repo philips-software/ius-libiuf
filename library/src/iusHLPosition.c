@@ -83,6 +83,8 @@ void iusHL2DPositionDelete
 //#define SIZEYFMT "%s/y"
 //#define SIZEZFMT "%s/z"
 
+
+// TODO: position should serialize to a "position" with x,y,z properties instead of 
 iu3dp_t iusHL3DPositionLoad
 (
     hid_t handle
