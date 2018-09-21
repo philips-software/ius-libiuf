@@ -117,7 +117,7 @@ iupal_t iusHLPatternListLoad
     char path[IUS_MAX_HDF5_PATH];
     int numPatterns,i;
 
-	hid_t frameListId = H5Gopen(handle, "FrameList", H5P_DEFAULT);
+	hid_t frameListId = H5Gopen(handle, "Patterns", H5P_DEFAULT);
     
 	//sprintf(path, FRAMELISTSIZEFMT, parentPath);
     int status = iusHdf5ReadInt(frameListId, "Size", &(numPatterns));
