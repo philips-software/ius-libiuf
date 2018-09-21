@@ -70,7 +70,7 @@ iu2ds_t iusHL2DSizeLoad
 )
 {
     int status=0;
-    char path[IUS_MAX_HDF5_PATH];
+//    char path[IUS_MAX_HDF5_PATH];
     float sx,sz;
 
     //sprintf(path, "%s/sx", parentPath);  //todo open Size group and read the sx and sy from that group handle

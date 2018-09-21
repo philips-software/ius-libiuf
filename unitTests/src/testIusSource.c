@@ -151,13 +151,13 @@ TEST(IusSource, testIusSerialization)
     int p;
     for (p = 0; p < locationCount; p++)
     {
-        iu3dp_t pos = iusHL3DPositionCreate(p * 1.0, p * 2.0, p * 3.0);
+        iu3dp_t pos = iusHL3DPositionCreate(p * 1.0f, p * 2.0f, p * 3.0f);
         iusHL3DParametricSourceSetPosition( (iu3dps_t) obj, pos, p);
     }
 
     hid_t handle = H5Fcreate( filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT );
     TEST_ASSERT(handle > 0);
-    status = iusHLSourceSave( (ius_t) obj, sourcePath, handle);
+    status = iusHLSourceSave( (ius_t) obj, handle);
     H5Fclose(handle);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 

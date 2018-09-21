@@ -94,7 +94,7 @@ TEST(IusTGC, testIusTGCCompare)
 
 TEST(IusTGC, testIusTGCSetGet)
 {
-    IUS_BOOL equal;
+//    IUS_BOOL equal;
     int numTGCValues=2;
     iutgc_t obj = iusHLTGCCreate(numTGCValues);
     TEST_ASSERT(obj != IUTGC_INVALID);
@@ -117,7 +117,7 @@ TEST(IusTGC, testIusTGCSetGet)
 TEST(IusTGC, testIusSerialization)
 {
     char *filename = "testIusTGCSerialization.hdf5";
-    char *pulsePath =  "/TGC";
+    //char *pulsePath =  "/TGC";
     char *label = "Created_in_testIusSerialization";
 
     int numTGCValues = 20;
@@ -136,13 +136,13 @@ TEST(IusTGC, testIusSerialization)
     // save
     hid_t handle = H5Fcreate( filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT );
     TEST_ASSERT(handle > 0);
-    status = iusHLTGCSave(TGC, pulsePath, handle);
+    status = iusHLTGCSave(TGC, handle);
     H5Fclose(handle);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
     // read back
     handle = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT );
-    iutgc_t savedObj = iusHLTGCLoad(handle, pulsePath);
+    iutgc_t savedObj = iusHLTGCLoad(handle);
     TEST_ASSERT(savedObj != NULL);
     H5Fclose(handle);
 

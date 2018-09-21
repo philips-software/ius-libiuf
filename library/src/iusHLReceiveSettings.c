@@ -214,7 +214,9 @@ int iusHLReceiveSettingsSave
     //sprintf(path, STARTDELAYFMT, parentPath);
     status |= iusHdf5WriteFloat(label_id, STARTDELAYFMT, iusReceiveSettings->startDelay, iusReceiveSettings->numDelays, 1);
     //sprintf(path, TGCFMT, parentPath);
-    status |= iusHLTGCSave( iusReceiveSettings->TGC, TGCFMT, label_id );
+	hid_t tgc_id = H5Gcreate(label_id, "TGC", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+    status |= iusHLTGCSave( iusReceiveSettings->TGC, tgc_id);
+	H5Gclose(tgc_id);
     
 	status |= H5Gclose(label_id );
 	status |= H5Gclose(receiveSettingsId);
@@ -250,7 +252,9 @@ iurs_t iusHLReceiveSettingsLoad
     if ( status != 0 ) return IURS_INVALID;
 
     //sprintf(path, TGCFMT, parentPath);
-    tgc = iusHLTGCLoad(label_id, TGCFMT);
+	hid_t tgc_id = H5Gopen(label_id, "TGC", H5P_DEFAULT);
+    tgc = iusHLTGCLoad(tgc_id);
+	H5Gclose(tgc_id);
     if ( tgc == IUTGC_INVALID ) return IURS_INVALID;
     numTGCentries = iusHLTGCGetNumValues(tgc);
     iusReceiveSettings = iusHLReceiveSettingsCreate(label,sampleFrequency,numDelays,numSamplesPerLine,numTGCentries);

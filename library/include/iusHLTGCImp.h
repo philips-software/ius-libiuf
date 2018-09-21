@@ -11,14 +11,12 @@
 int iusHLTGCSave
 (
     iutgc_t iusTGC,
-    char *parentPath,
     hid_t handle
 );
 
 iutgc_t iusHLTGCLoad
 (
-    hid_t handle,
-    char *parentPath
+    hid_t handle
 );
 
 
