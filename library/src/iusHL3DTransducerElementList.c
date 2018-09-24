@@ -145,11 +145,13 @@ iu3dtel_t iusHL3DTransducerElementListLoad
     char path[IUS_MAX_HDF5_PATH];
     int i,size;
 
-    if(handle == H5I_INVALID_HID)
+	hid_t elements_id = H5Gopen(handle, "Elements", H5P_DEFAULT);
+    
+	if(handle == H5I_INVALID_HID || elements_id == H5I_INVALID_HID)
         return IU3DTEL_INVALID;
 
     //sprintf(path, LISTSIZEFMT, parentPath);
-    int status = iusHdf5ReadInt(handle, "Size", &(size));
+    int status = iusHdf5ReadInt(elements_id, "Size", &(size));
     if(status <0)
         return IU3DTEL_INVALID;
 
@@ -158,7 +160,7 @@ iu3dtel_t iusHL3DTransducerElementListLoad
     for (i=0;i < size;i++)
     {
         sprintf(path, ELEMENTLISTFMT, i); 
-		hid_t element_id = H5Gopen(handle, path, H5P_DEFAULT);
+		hid_t element_id = H5Gopen(elements_id, path, H5P_DEFAULT);
         loadedElement = iusHL3DTransducerElementLoad(element_id); //THIS NEEDS TO BE GROUP_ID
         if(loadedElement == IU3DTE_INVALID)
         {
