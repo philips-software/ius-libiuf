@@ -18,10 +18,11 @@ static void RunAllTests(void)
 	RUN_TEST_GROUP(Ius2DTransducer);
 	RUN_TEST_GROUP(Ius2DTransducerElement);
 	RUN_TEST_GROUP(Ius2DTransducerElementList);
-#endif
 	RUN_TEST_GROUP(Ius3DNonParametricSource);
+#endif
+	RUN_TEST_GROUP(Ius3DParametricSource);
 #if 0
-    RUN_TEST_GROUP(Ius3DParametricSource);
+
     RUN_TEST_GROUP(Ius3DTransducer);
     RUN_TEST_GROUP(Ius3DTransducerElement);
     RUN_TEST_GROUP(Ius3DTransducerElementList);
