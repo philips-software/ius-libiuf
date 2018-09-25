@@ -25,18 +25,16 @@ static void RunAllTests(void)
 	RUN_TEST_GROUP(Ius3DTransducerElementList);
 	RUN_TEST_GROUP(IusExperiment);
 	RUN_TEST_GROUP(IusFrame);
-#endif
 	RUN_TEST_GROUP(IusFrameList);
+#endif
+	RUN_TEST_GROUP(IusInputFile);
 #if 0
     
-    
-    RUN_TEST_GROUP(IusInputFile);
     RUN_TEST_GROUP(IusNonParametricPulse);
     RUN_TEST_GROUP(IusParametricPulse);
     RUN_TEST_GROUP(IusParametricPulse);
     RUN_TEST_GROUP(IusPattern);
     RUN_TEST_GROUP(IusPatternList);
-    RUN_TEST_GROUP(IusPulse);
     RUN_TEST_GROUP(IusPulse);
     RUN_TEST_GROUP(IusPulseDict);
     RUN_TEST_GROUP(IusReceiveChannelMap);

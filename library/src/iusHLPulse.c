@@ -238,6 +238,7 @@ iup_t iusHLPulseLoad
 
 	pulse = iusHLBasePulseLoad(pulse_id);
 	if (pulse == NULL) return IUP_INVALID;
+	//todo free pulse here to prevent memory loss?
 
 	switch (pulse->type)
 	{

@@ -178,6 +178,7 @@ int iusHLFrameListSave
     if(iusHLFrameListFull(list) == IUS_FALSE)
         return IUS_ERR_VALUE;
 
+
 	status = H5Gget_objinfo(handle, "Frames", 0, NULL); // todo centralize the path
 	if (status != 0) // the group does not exist yet
 	{
@@ -187,16 +188,18 @@ int iusHLFrameListSave
 	{
 		group_id = H5Gopen(handle, "Frames", H5P_DEFAULT);
 	}
-	if (handle == H5I_INVALID_HID)
+	if (group_id == H5I_INVALID_HID)
 		return IUS_ERR_VALUE;
-	
+
+	status = 0;
 	iuf_t sourceElement;
     size = iusHLFrameListGetSize(list);
     //sprintf(path, FRAMELISTSIZE, handle);
-    status |= iusHdf5WriteInt(group_id, FRAMELISTSIZE, &(size), 1);
+    status = iusHdf5WriteInt(group_id, FRAMELISTSIZE, &(size), 1);
+	if (status != IUS_E_OK) return IUS_ERR_VALUE;
 
     // iterate over source list elements and save'em
-    for (i=0;i < size;i++)
+    for (i=0; i < size ;i++)
     {
         sourceElement = iusHLFrameListGet(list,i);
         if(sourceElement == IUF_INVALID) continue;

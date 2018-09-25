@@ -156,6 +156,7 @@ herr_t iusHLTransmitApodizationDictSave
 )
 {
 	herr_t status = 0;
+	hid_t group_id;
 	//char path[IUS_MAX_HDF5_PATH];
 	struct hashmap_iter *iter;
 
@@ -165,6 +166,18 @@ herr_t iusHLTransmitApodizationDictSave
 		return IUS_ERR_VALUE;
 
 	//hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+	status = H5Gget_objinfo(handle, "TransmitApodizations", 0, NULL); // todo centralize the path
+	if (status != 0) // the group does not exist yet
+	{
+		group_id = H5Gcreate(handle, "TransmitApodizations", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+	}
+	else
+	{
+		group_id = H5Gopen(handle, "TransmitApodizations", H5P_DEFAULT);
+	}
+	if (group_id == H5I_INVALID_HID)
+		return IUS_ERR_VALUE;
+	status = 0;
 	HashableTransmitApodization *transmitApodizationDictItem;
 
 	// iterate over source list elements and save'em
@@ -172,12 +185,12 @@ herr_t iusHLTransmitApodizationDictSave
 	{
 		transmitApodizationDictItem = HashableTransmitApodization_hashmap_iter_get_data(iter);
 		//sprintf(path, "%s/%s", parentPath, sourceElement->key);
-		//subgroup_id = H5Gcreate(handle, path, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-		status = iusHLTransmitApodizationSave(transmitApodizationDictItem->transmitApodization, handle);
-		//status |= H5Gclose(subgroup_id);
+		hid_t subgroup_id = H5Gcreate(group_id, transmitApodizationDictItem->key, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+		status = iusHLTransmitApodizationSave(transmitApodizationDictItem->transmitApodization, subgroup_id);
+		status |= H5Gclose(subgroup_id);
 	}
 
-	//status |= H5Gclose(group_id);
+	status |= H5Gclose(group_id);
 	return status;
 }
 

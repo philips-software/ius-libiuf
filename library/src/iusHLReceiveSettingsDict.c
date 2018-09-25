@@ -168,6 +168,7 @@ int iusHLReceiveSettingsDictSave
     int status=0;
     //char path[IUS_MAX_HDF5_PATH];
     struct hashmap_iter *iter;
+	hid_t group_id;
 
     if(dict == NULL)
         return IUS_ERR_VALUE;
@@ -175,17 +176,31 @@ int iusHLReceiveSettingsDictSave
         return IUS_ERR_VALUE;
 
     //hid_t group_id = H5Gcreate(handle, "ReceiveSettings", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+	status = H5Gget_objinfo(handle, "ReceiveSettings", 0, NULL); // todo centralize the path
+	if (status != 0) // the group does not exist yet
+	{
+		group_id = H5Gcreate(handle, "ReceiveSettings", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+	}
+	else
+	{
+		group_id = H5Gopen(handle, "ReceiveSettings", H5P_DEFAULT);
+	}
+	if (group_id == H5I_INVALID_HID)
+		return IUS_ERR_VALUE;
+	status = 0;
     HashableReceiveSettings *receiveSettingsDictItem;
 
     // iterate over source list elements and save'em
-    for (iter = hashmap_iter(&dict->map); iter; iter = hashmap_iter_next(&dict->map, iter))
+    for (iter = hashmap_iter(&dict->map); iter && status == 0; iter = hashmap_iter_next(&dict->map, iter))
     {
 		receiveSettingsDictItem = HashableReceiveSettings_hashmap_iter_get_data(iter);
+		hid_t subgroup_id = H5Gcreate(group_id, receiveSettingsDictItem->key, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 		//sprintf(path, LABELPATH, parentPath, label);
-        iusHLReceiveSettingsSave(receiveSettingsDictItem->receiveSettings, handle);
+        status = iusHLReceiveSettingsSave(receiveSettingsDictItem->receiveSettings, handle);
+		status |= H5Gclose(subgroup_id);
     }
 
-    //status |= H5Gclose(group_id );
+    status |= H5Gclose(group_id );
     return status;
 }
 
@@ -199,7 +214,7 @@ iursd_t iusHLReceiveSettingsDictLoad
 {
     int i;
     int status = 0;
-    char path[IUS_MAX_HDF5_PATH];
+    //char path[IUS_MAX_HDF5_PATH];
     char memb_name[MAX_NAME];
 
     hid_t grpid = H5Gopen(handle, "ReceiveSettings", H5P_DEFAULT);
@@ -213,7 +228,7 @@ iursd_t iusHLReceiveSettingsDictLoad
     for (i = 0; i < nobj; i++)
     {
         H5Gget_objname_by_idx(handle, (hsize_t) i, memb_name, (size_t) MAX_NAME);
-        sprintf(path,"/%s", memb_name);
+        //sprintf(path,"/%s", memb_name);
 		hid_t settings_id = H5Gopen(grpid, memb_name, H5P_DEFAULT);
         iurs_t receiveSettings = iusHLReceiveSettingsLoad(settings_id, memb_name);
         status = iusHLReceiveSettingsDictSet(dict, memb_name, receiveSettings);

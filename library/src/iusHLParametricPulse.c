@@ -158,12 +158,11 @@ int iusHLParametricPulseSave
 
 iupp_t iusHLParametricPulseLoad
 (
-    hid_t handle,
-    char *label
+    hid_t handle
 )
 {
-    int status = 0;
-    char path[IUS_MAX_HDF5_PATH];
+    int     status = 0;
+    char label[IUS_MAX_HDF5_PATH];
     float   pulseFrequency;       /**< frequency that the pulse represents in Hz */
     float   pulseAmplitude;       /**< (max) amplitude of the pulse in Volts */
     int     pulseCount;           /**< number of cycles that the pulse represents */
@@ -172,16 +171,16 @@ iupp_t iusHLParametricPulseLoad
 	if (handle == H5I_INVALID_HID)
 		return NULL;
 
-	sprintf(path, "Pulses/%s", label);
-	hid_t pulse_id = H5Gopen(handle, path, H5P_DEFAULT);
-
+	//sprintf(path, "Pulses/%s", label);
+	//hid_t pulse_id = H5Gopen(handle, path, H5P_DEFAULT);
+	status |= iusHdf5ReadString(handle, "pulseLabel", (const char **)&(label));
     //sprintf(path, FREQUENCYFMT, parentPath);
-    status |= iusHdf5ReadFloat(pulse_id, IUS_PARAMPULSE_FREQUENCY, &(pulseFrequency));
+    status |= iusHdf5ReadFloat(handle, IUS_PARAMPULSE_FREQUENCY, &(pulseFrequency));
     //sprintf(path, AMPLITUDEFMT, parentPath);
-    status |= iusHdf5ReadFloat(pulse_id, IUS_PARAMPULSE_AMPLITUDES, &(pulseAmplitude));
+    status |= iusHdf5ReadFloat(handle, IUS_PARAMPULSE_AMPLITUDES, &(pulseAmplitude));
     //sprintf(path, COUNTFMT, parentPath);
-    status |= iusHdf5ReadInt(pulse_id, IUS_PARAMPULSE_COUNT, &(pulseCount));
-	H5Gclose(pulse_id);
+    status |= iusHdf5ReadInt(handle, IUS_PARAMPULSE_COUNT, &(pulseCount));
+	//H5Gclose(pulse_id);
     if( status < 0 )
         return NULL;
 
