@@ -23,11 +23,13 @@ static void RunAllTests(void)
 	RUN_TEST_GROUP(Ius3DTransducer);
 	RUN_TEST_GROUP(Ius3DTransducerElement);
 	RUN_TEST_GROUP(Ius3DTransducerElementList);
-#endif
 	RUN_TEST_GROUP(IusExperiment);
+	RUN_TEST_GROUP(IusFrame);
+#endif
+	RUN_TEST_GROUP(IusFrameList);
 #if 0
-    RUN_TEST_GROUP(IusFrame);
-    RUN_TEST_GROUP(IusFrameList);
+    
+    
     RUN_TEST_GROUP(IusInputFile);
     RUN_TEST_GROUP(IusNonParametricPulse);
     RUN_TEST_GROUP(IusParametricPulse);

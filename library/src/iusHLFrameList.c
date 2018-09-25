@@ -115,10 +115,11 @@ iufl_t iusHLFrameListLoad
 {
     char path[IUS_MAX_HDF5_PATH];
     int numFrames,i;
-    
-    int status = iusHdf5ReadInt(handle, FRAMELISTSIZE, &(numFrames));
-    if(status!=0) return IUFL_INVALID;
+
 	hid_t frameList_id = H5Gopen(handle, "/Frames", H5P_DEFAULT);
+    int status = iusHdf5ReadInt(frameList_id, FRAMELISTSIZE, &(numFrames));
+    if(status!=0) return IUFL_INVALID;
+	
     iufl_t frameList = iusHLFrameListCreate(numFrames);
     iuf_t sourceElement;
 
