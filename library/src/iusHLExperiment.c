@@ -149,7 +149,7 @@ int iusHLExperimentSave
 	{
 		experiment_id = H5Gopen(handle, "Experiment", H5P_DEFAULT);
 	}
-
+	if (experiment_id > 0) status = 0;
     status |= iusHdf5WriteFloat(experiment_id, "speedOfSound", &experiment->speedOfSound, 1, verbose);
     status |= iusHdf5WriteInt(experiment_id, "date", &experiment->date, 1);
     status |= iusHdf5WriteString(experiment_id, "description", experiment->pDescription, verbose);
