@@ -13,7 +13,7 @@
 #include "iusTransducer.h"
 
 // ADT
-typedef struct IusInputFile IusInputFile;
+typedef struct IusHistoryNode IusInputFile;
 typedef IusInputFile *iuif_t;
 
 #define IUIF_INVALID (iuif_t) NULL

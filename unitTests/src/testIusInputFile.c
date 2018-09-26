@@ -311,7 +311,7 @@ TEST(IusInputFile, iusInputFileSetGetTransducer)
 {
     IUS_BOOL equal;
     int status;
-    iut_t transducer = dgGenerateTransducer();
+    iut_t transducer = dgGenerateTransducer("S5-1");
     iuif_t obj = iusInputFileCreate(pFilename);
     TEST_ASSERT(obj != IUIF_INVALID);
 
@@ -344,7 +344,7 @@ TEST(IusInputFile, testIusInputFileSerialization)
     char *ptestFileName = "testIusInputFileSerialization.hdf5";
 
     // create
-    iuif_t inputFile = dgGenerateInputFile(ptestFileName);
+    iuif_t inputFile = dgGenerateInputFile(ptestFileName,"S5-1");
     TEST_ASSERT(inputFile != IUIF_INVALID);
 
 	// save
@@ -379,5 +379,5 @@ TEST_GROUP_RUNNER(IusInputFile)
     RUN_TEST_CASE(IusInputFile, iusInputFileSetGetReceiveSettingsDict);
     RUN_TEST_CASE(IusInputFile, iusInputFileSetGetExperiment);
     RUN_TEST_CASE(IusInputFile, iusInputFileSetGetTransducer);
-//    RUN_TEST_CASE(IusInputFile, testIusInputFileSerialization);
+    RUN_TEST_CASE(IusInputFile, testIusInputFileSerialization);
 }

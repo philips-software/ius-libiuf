@@ -4,6 +4,10 @@
 
 
 // ADT
+// TODO: rename iuf_t => iufr_t
+// iuf_t => iufr_t
+// iufi_t => iuf_t
+//
 typedef struct IusFrame IusFrame;
 typedef IusFrame *iuf_t;
 #define  IUF_INVALID (iuf_t) NULL

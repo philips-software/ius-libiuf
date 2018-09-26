@@ -10,7 +10,6 @@
 #include <ius.h>
 #include <iusError.h>
 #include <iusTypes.h>
-#include <iusTransducerFactory.h>
 #include <include/iusTransducerImp.h>
 #include <include/ius2DTransducerImp.h>
 #include <include/ius3DTransducerImp.h>

@@ -29,7 +29,8 @@ iupad_t dgGenerateParameterDict
 
 iuif_t dgGenerateInputFile
 (
-	char *ptestFileName
+	char *ptestFileName,
+	char *transducerName
 );
 
 iufl_t dgGenerateFrameList
@@ -74,7 +75,7 @@ iue_t dgGenerateExperiment
 
 iut_t dgGenerateTransducer
 (
-	void
+	char *transducerName
 );
 
 

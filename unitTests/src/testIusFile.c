@@ -10,6 +10,7 @@
 #include <include/ius.h>
 #include <testDataGenerators.h>
 #include <include/iusFile.h>
+#include <include/iusHistoryNodeList.h>
 
 TEST_GROUP(IusFile);
 
@@ -21,82 +22,24 @@ TEST_TEAR_DOWN(IusFile)
 {
 }
 
-////
-//// ADT Node has
-//// Unique id
-//// Type, uniquely specifying file contents
-//// 0-n Parent nodes.
-////
-//TEST(IusFile, testIusFile)
-//{
-//    int numParents = 0;
-//    char pNodeType[] = IUS_INPUT_TYPE;
-//
-//    IusFile *hSimpleNode = iusNodeCreate(pNodeType, numParents);
-//    TEST_ASSERT(hSimpleNode != IUN_INVALID);
-//    // Check type
-//    char *pActualNodeType = iusNodeGetType(hSimpleNode);
-//    TEST_ASSERT_EQUAL_STRING(pNodeType, pActualNodeType);
-//    // Check numParents
-//    TEST_ASSERT(iusNodeGetNumParents(hSimpleNode) == 0);
-//    // Check unique
-//    TEST_ASSERT(iusNodeGetId(hSimpleNode) != NULL);
-//}
-//
-//
-//dgGenerateInputFile(char fileName)
-//{
-//    return iusInputFileCreate(fileName);
-//}
-//
-//iuf_t iusFileOpen(char fileName)
-//{
-//    return NULL;
-//}
-//
-//typedef struct IusHistoryTree
-//{
-//    char                    pId[MAX_ID_LENGTH];
-//    char                    pType[MAX_TYPE_LENGTH];
-//    int                     numberOfParents;
-//    struct IusHistoryTree * pParents[MAX_PARENTS];
-//} IusHistoryTree;
-//
-//typedef IusHistoryTree *iuhtn_t;
-//#define  IUHTN_INVALID (iuhtn_t) NULL
-//
-//iuhtn_t iusFileGetHistoryTree(iuf_t iusFile)
-//{
-//    return NULL;
-//}
 
-// HistoryTree (needed?) , what is needed is the HistoryTreeRootNode
-//
-// Ops:
-// - getType
-// - getRoot
-//
-// iusFileGetHistoryTreeNode(iuf_t file)
-// - getType
-// - getId
-// - getNumber of parents
-// - getAlgoParams (dict)
-//
 TEST(IusFile, testIusInputFileHistoryScenario)
 {
 // As a developer I want to be able get the data history of an ius file.
 // The data history  is organised as a DataHistory Tree.
     int numParents = 0;
     char pNodeType[] = IUS_INPUT_TYPE;
-    char *pFilename = "aap";
+    char *pFilename = "testIusInputFileHistoryScenario.hdf5";
 
     // Create Input file.
-    iuif_t iusInputFile = dgGenerateInputFile(pFilename);
+    iuif_t iusInputFile = dgGenerateInputFile(pFilename,"S5-1");
     iusInputFileSave(iusInputFile);
     iusInputFileClose(iusInputFile);
 
     // Open file
-    iufi_t iusFile = iusFileOpen(pFilename);
+    iufi_t iusFile = iusFileLoad(pFilename);
+    TEST_ASSERT_NOT_EQUAL(IUFI_INVALID,iusFile);
+
     // get file history
     iuhn_t rootNode = iusFileGetHistoryTree(iusFile);
     // Input file history should be empty
@@ -109,6 +52,71 @@ TEST(IusFile, testIusInputFileHistoryScenario)
     int numAlgoParams = iusHistoryNodeGetNumParams(rootNode);
     TEST_ASSERT_EQUAL(0, numAlgoParams);
 }
+
+TEST(IusFile, testIusCWCFileHistoryScenario)
+{
+// As a developer I want to be able get the data history of an ius file.
+// The data history  is organised as a DataHistory Tree.
+    int numParents = 0;
+    char pNodeType[] = IUS_INPUT_TYPE;
+    char *pFilename = "testIusCWCFileHistoryScenario.hdf5";
+    char *pFilename2 = "testIusCWCFileHistoryScenario2.hdf5";
+
+    // --- Generate and Save Input file type
+    // Create Input file.
+    iuif_t iusInputFile = dgGenerateInputFile(pFilename2,"S5-1-1");
+    iusInputFileSave(iusInputFile);
+    iusInputFileClose(iusInputFile);
+
+    // --- Generate and Save CWC file type, including Input file history
+    // Open file
+    iufi_t iusFile = iusFileLoad(pFilename2);
+    TEST_ASSERT_NOT_EQUAL(IUFI_INVALID,iusFile);
+
+    // get file history
+    iuhn_t rootNode = iusFileGetHistoryTree(iusFile);
+    // Input file history should be empty
+    numParents = iusHistoryNodeGetNumParents(rootNode);
+    TEST_ASSERT_EQUAL(0,numParents);
+
+    // root node type should be equal to file type
+    TEST_ASSERT_EQUAL_STRING(iusFileGetType(iusFile),iusHistoryNodeGetType(rootNode));
+
+    iufi_t nodeToFile = (iufi_t) rootNode;
+    iuif_t nodeToInputFile = (iuif_t) rootNode;
+    iusInputFile = (iuif_t) rootNode;
+
+    iuif_t iusInputFile2 = dgGenerateInputFile(pFilename,"S5-1-0");
+    iuhn_t cwcParents = iusHistoryNodeCreate(pNodeType,1);
+    iuhnl_t parents = iusHistoryNodeGetParents(cwcParents);
+    iusHistoryNodeListSet(parents,rootNode,0);
+    iusHistoryNodeSetParents(cwcParents,parents);
+    iusFileSetHistoryTree((iufi_t) iusInputFile2, cwcParents);
+
+
+    // --- Validate History
+    iusInputFileSave(iusInputFile2);
+    iusInputFileClose(iusInputFile2);
+
+    // Open file
+    iufi_t iusCWCFile = iusFileLoad(pFilename);
+    TEST_ASSERT_NOT_EQUAL(IUFI_INVALID,iusCWCFile);
+
+    // get file history
+    iuhn_t cwcRootNode = iusFileGetHistoryTree(iusCWCFile);
+    // Input file history should be empty
+    numParents = iusHistoryNodeGetNumParents(rootNode);
+
+}
+
+//// How to get the Input file header structure
+//iuf_t file = iusFileLoad(“existing_cwc.hdf5”);
+//iuhn_t history = iusFileGetNodeHistory(file);
+//iuhn_t inputNode = iusHistoryNodeGetParent(history,0); (parent0 is INPUT_FILE_V3);
+//iuif_t inputFile  = (iuif_t) inputNode;
+//iut_t transducer = iusInputfileGetTransducer(inputFile);
+//float centerFrequency = iusTransducerGetCenterFrequency(transducer);
+
 
 //TEST(IusFile, testIusSaveParametersScenario)
 //{
@@ -124,7 +132,7 @@ TEST(IusFile, testIusInputFileHistoryScenario)
 //    iusInputFileSave(iusInputFile);
 //    iusInputFileClose(iusInputFile);
 //
-//    iuf_t iusFile = iusFileOpen(fileName);
+//    iuf_t iusFile = iusFileLoad(fileName);
 //
 //    // get file history
 //    iuhtn_t inputHistoryNode = iusFileGetHistoryTree(iusFile);
@@ -145,7 +153,7 @@ TEST(IusFile, testIusInputFileHistoryScenario)
 //    iusFileClose(iusFile);
 //
 //    // check params
-//    iusFile = iusFileOpen(cwcFilename);
+//    iusFile = iusFileLoad(cwcFilename);
 //    iupd_t iusSavedParameterDict = iusFileGetParameterDict(iusFile);
 //    IUS_BOOL eqial = iusParameterDictCompare(iusParameterDict,iusSavedParameterDict);
 //    TEST_ASSERT_EQUAL(IUS_TRUE,equal);
@@ -244,7 +252,7 @@ TEST(IusFile, testIusInputFileHistoryScenario)
 //
 //
 //
-//iuf_t iusFile = iusFileOpen( “c:\autoexec.bat” );
+//iuf_t iusFile = iusFileLoad( “c:\autoexec.bat” );
 //type = iusFileGetType( iusFile );
 //// cwc file
 //iucf_t cwcFile = (iucf_t)iusFile;
@@ -269,5 +277,7 @@ TEST(IusFile, testIusInputFileHistoryScenario)
 
 TEST_GROUP_RUNNER(IusFile)
 {
-//    RUN_TEST_CASE(IusFile, testIusInputFileHistoryScenario);
+    // testIusCWCFileHistoryScenario
+    RUN_TEST_CASE(IusFile, testIusInputFileHistoryScenario);
+    RUN_TEST_CASE(IusFile, testIusCWCFileHistoryScenario);
 }

@@ -10,7 +10,7 @@ typedef struct IusFile IusFile;
 typedef IusFile *iufi_t;
 #define  IUFI_INVALID (iufi_t) NULL
 
-iufi_t iusFileOpen
+iufi_t iusFileLoad
 (
     char *pFilename
 );
@@ -39,4 +39,10 @@ const char *iusFileGetType
     iufi_t iusFile
 );
 
+// Setters
+int iusFileSetHistoryTree
+(
+    iufi_t iusFile,
+    iuhn_t history
+);
 #endif //IUSLIBRARY_IUSFILE_H

@@ -32,7 +32,7 @@ iuhn_t dgGenerateHistoryNode
 
 )
 {
-    char *type =  IUS_INPUT_TYPE;
+    char *type =  "TYPE3";
     int numParents = 0;
     iuhn_t node;
 
@@ -68,7 +68,8 @@ iupad_t dgGenerateParameterDict
 
 iuif_t dgGenerateInputFile
 (
-    char *ptestFileName
+    char *ptestFileName,
+    char *transducerName
 )
 {
     // create
@@ -110,7 +111,7 @@ iuif_t dgGenerateInputFile
     TEST_ASSERT(status == IUS_E_OK);
 
 
-    iut_t transducer = dgGenerateTransducer();
+    iut_t transducer = dgGenerateTransducer(transducerName);
     status = iusInputFileSetTransducer(inputFile, transducer);
     TEST_ASSERT(status == IUS_E_OK);
 
@@ -317,11 +318,10 @@ iue_t dgGenerateExperiment()
 
 iut_t dgGenerateTransducer
 (
-    void
+    char *transducerName
 )
 {
     int status = 0;
-    char *transducerName = "S5-1";
     const int numTransducerElements = 128;
     int i = 0;
 

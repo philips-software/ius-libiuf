@@ -11,9 +11,31 @@ int iusHistoryNodeSave
     hid_t handle
 );
 
+int iusHistoryNodeSaveAnyType
+(
+    iuhn_t node,
+    hid_t handle
+);
+
 iuhn_t iusHistoryNodeLoad
 (
     hid_t handle
+);
+
+iuhn_t iusHistoryNodeLoadAnyType
+(
+    hid_t handle
+);
+
+int iusHistoryNodeSetInstanceData
+(
+    iuhn_t node,
+    void *instanceData
+);
+
+void *iusHistoryNodeGetInstanceData
+(
+    iuhn_t node
 );
 
 #endif //IUSLIBRARY_IUSHISTORYNODEIMP_H

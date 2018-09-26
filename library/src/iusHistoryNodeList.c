@@ -122,7 +122,7 @@ iuhnl_t iusHistoryNodeListLoad
         hid_t group_id = H5Gopen(handle, parentPath, H5P_DEFAULT);
         if (group_id != H5I_INVALID_HID)
         {
-            node = iusHistoryNodeLoad(group_id);
+            node = iusHistoryNodeLoadAnyType(group_id);
             status |= iusHistoryNodeListSet(nodeList, node, i);
             status |= H5Gclose(group_id );
         }
@@ -156,7 +156,7 @@ int iusHistoryNodeListSave
     {
         sprintf(parentPath, "parent%d", i);
         hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-        status |= iusHistoryNodeSave(node->pHistoryNodes[i], group_id);
+        status |= iusHistoryNodeSaveAnyType(node->pHistoryNodes[i], group_id);
         status |= H5Gclose(group_id );
     }
     return status;

@@ -10,12 +10,17 @@
 #include <iusUtil.h>
 
 #include <iusFile.h>
+#include <hdf5.h>
+#include <include/iusHistoryNodeImp.h>
+#include <memory.h>
+#include <include/iusInputFile.h>
+#include <include/iusInputFileImp.h>
 
 struct IusFile
 {
-    int intParam;
-    float floatParam;
-    iuhn_t historyTree;
+    iuhn_t history;
+    hid_t handle;                         /**< file handle */
+    void *instance_data;
 } ;
 
 // ADT
@@ -47,13 +52,37 @@ int iusFileCompare
     return IUS_TRUE;
 }
 
-iufi_t iusFileOpen
+iufi_t iusFileLoad
 (
     char *pFilename
 )
 {
-    if( pFilename == NULL ) return IUFI_INVALID;
-    return IUFI_INVALID;
+    if (pFilename == NULL)
+    {
+        fprintf(stderr, "iusFileLoad: Input arguments can not be NULL \n");
+        return IUFI_INVALID;
+    }
+
+    iufi_t file = calloc(1,sizeof(IusFile));
+
+    // check calloc
+    if (file == IUFI_INVALID)
+    {
+        fprintf(stderr, "iusFileLoad: calloc of instance failed\n");
+        return IUFI_INVALID;
+    }
+
+    // open  Hdf5 file using default properties.
+    file->handle = H5Fopen( pFilename, H5F_ACC_RDONLY, H5P_DEFAULT );
+    if (file->handle <=0)
+    {
+        fprintf( stderr, "iusFileLoad: could not open file: %s\n", pFilename );
+        return IUFI_INVALID;
+    }
+
+    file->history = iusHistoryNodeLoad(file->handle);
+
+    return file;
 }
 
 
@@ -64,7 +93,7 @@ iuhn_t iusFileGetHistoryTree
 )
 {
     if (iusFile == NULL) return IUHN_INVALID;
-    return iusFile->historyTree;
+    return iusFile->history;
 }
 
 const char *iusFileGetType
@@ -73,5 +102,18 @@ const char *iusFileGetType
 )
 {
     if (iusFile == NULL) return NULL;
-    return iusHistoryNodeGetType(iusFile->historyTree);
+    return iusHistoryNodeGetType(iusFile->history);
+}
+
+// Setters
+int iusFileSetHistoryTree
+(
+    iufi_t iusFile,
+    iuhn_t history
+)
+{
+    if (iusFile == NULL) return IUS_ERR_VALUE;
+    if (history == NULL) return IUS_ERR_VALUE;
+    iusFile->history = history;
+    return IUS_E_OK;
 }
