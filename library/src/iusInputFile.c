@@ -686,3 +686,276 @@ int iusInputFileSetTransducer
     }
     return status;
 }
+
+
+#if 0
+int iusInputFileReadNextPulse
+(
+    iuif_t file,
+    float *const *const pRFout
+)
+{
+    hsize_t i, j;
+    hsize_t offset[4];
+    hsize_t count[4];
+    hid_t   memspace;
+    hid_t   dataspace;
+    hsize_t memdim[2];
+    herr_t  status;
+
+    if (file == NULL || pRFout == NULL)
+    {
+        fprintf(stderr, "iusInputRedNextPulse: input arguments can not be NULL\n");
+        return -1;
+    }
+    iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)file);
+    // TODO: parametrize label "bmode"
+    iurs_t receiveSettings = iusReceiveSettingsDictGet(instance->receiveSettingsDict,"bmode");
+    int numSamplesPerLine = iusReceiveSettingsGetNumSamplesPerLine(receiveSettings);
+    int numElements = iusTransducerGetNumElements(instance->transducer);
+    float *pPage = (float *)calloc(numSamplesPerLine * numElements, sizeof(float)) ;
+    if (pPage == NULL)
+    {
+        fprintf(stderr, "iusInputRedNextPulse: Memory allocation error\n");
+        return -1;
+    }
+
+    offset[0] = 0;
+    offset[1] = 0;
+    offset[2] = instance->currentPulse;
+    offset[3] = instance->currentFrame;
+
+    count[1] = numSamplesPerLine;
+    count[0] = numElements;
+    count[2] = 1;
+    count[3] = 1;
+
+    memdim[0] = numElements;
+    memdim[1] = numSamplesPerLine;
+    memspace = H5Screate_simple(2, memdim, NULL);
+    dataspace = H5Dget_space(instance->rfDataset);
+    status = H5Sselect_hyperslab(dataspace, H5S_SELECT_SET, offset, NULL, count, NULL);
+
+    status |= H5Dread(instance->rfDataset, H5T_NATIVE_FLOAT, memspace, dataspace, H5P_DEFAULT, pPage);
+    /* read an 1D buffer, copy that to 2D array -- might not be needed anymore */
+    for (i=0; i<memdim[0] ; i++) // numElements (# of rows rows)
+    {
+        for (j=0; j<memdim[1]; j++) // numSamples (on each row)
+        {
+            pRFout[i][j] = pPage[j+i*memdim[1]];
+        }
+    }
+    free(pPage);
+
+    instance->currentPulse++;
+    if (instance->currentPulse == instance->pIusInput->pDrivingScheme->numTransmitPulses)
+    {
+        instance->currentPulse = 0;
+        instance->currentFrame++;
+    }
+    status |= H5Sclose(memspace);
+    status |= H5Sclose(dataspace);
+
+    return (int)status;
+
+}
+
+
+int iusInputFileReadNextFrame
+(
+    iuif_t file,
+    float *const *const *const pRFout
+)
+{
+    int i;
+    iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)file);
+    int numTransmitPulses = iusPulseDictGetSize(instance->pulseDict);
+    for (i=0; i<numTransmitPulses; i++)
+    {
+        iusInputFileReadNextPulse(file, pRFout[i]);
+    }
+    return 0;
+}
+
+
+//
+// TODO: Add label support?
+// Frame should be read from specifix datapath right
+int iusInputFileReadFrame
+(
+    iuif_t file,
+    float *const *const *const pRFout,
+    int frameNum
+)
+{
+    iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)file);
+    instance->currentFrame=frameNum;
+    return iusInputFileReadNextFrame(instance, pRFout);
+}
+
+
+int iusInputFileWriteNextPulse
+(
+IusInputFileInstance * pInst,
+const float *pFrame
+)
+{
+    hid_t memspace;
+    hid_t dataspace;
+    hsize_t offset[4];
+    hsize_t count[4];
+    hsize_t memdim[2];
+    herr_t  status;
+
+    memdim[0] = pInst->pIusInput->pTransducer->numElements;
+    memdim[1] = pInst->pIusInput->pDrivingScheme->numSamplesPerLine;
+    memspace = H5Screate_simple(2, memdim, NULL);
+
+    if (pInst->pIusInput->numFrames == 1)
+    {
+        offset[0] = 0;
+        offset[1] = 0;
+        offset[2] = pInst->currentPulse;
+
+        count[0] = pInst->pIusInput->pTransducer->numElements;
+        count[1] = pInst->pIusInput->pDrivingScheme->numSamplesPerLine;
+        count[2] = 1;
+    }
+    else
+    {
+        offset[0] = 0;
+        offset[1] = 0;
+        offset[2] = pInst->currentPulse;
+        offset[3] = pInst->currentFrame;
+
+        count[0] = memdim[0];
+        count[1] = memdim[1];
+        count[2] = 1;
+        count[3] = 1;
+    }
+    dataspace = H5Dget_space(pInst->rfDataset);
+    status = H5Sselect_hyperslab(dataspace, H5S_SELECT_SET, offset, NULL, count, NULL);
+
+    /*
+     *   Write the data to the dataset.
+    */
+    status |= H5Dwrite(pInst->rfDataset, H5T_NATIVE_FLOAT, memspace, dataspace, H5P_DEFAULT, pFrame);
+    /*
+     *   Close and release memspace but not (file)dataspace
+    */
+    status |= H5Sclose(memspace);
+    status |= H5Sclose(dataspace);
+
+    /*------------------------------------------------------------------------*/
+    /* increment file read pointers                                           */
+    /*------------------------------------------------------------------------*/
+    pInst->currentPulse++;
+    if (pInst->currentPulse == pInst->pIusInput->pDrivingScheme->numTransmitPulses)
+    {
+        pInst->currentPulse = 0;
+        pInst->currentFrame++;
+    }
+
+    return status;
+
+}
+
+int iusInputFileReadFrameDepthRange
+(
+IusInputFileInstance * pInst,
+const IusRange *const pDepthRange,
+float *const *const *const pPage,
+int frameNum
+)
+{
+    pInst->currentFrame = frameNum;
+    return iusInputFileReadNextFrameDepthRange(pInst, pDepthRange, pPage);
+
+}
+
+int iusInputFileReadNextFrameDepthRange
+(
+IusInputFileInstance * pInst,
+const IusRange *const pDepthRange,
+float *const *const *const pPage
+)
+{
+    int i;
+    //IusPage wave;
+    for (i = 0; i<pInst->pIusInput->pDrivingScheme->numTransmitPulses; i++)
+    {
+        iusInputFileReadNextPulseDepthRange(pInst, pDepthRange, pPage[i]);
+    }
+    return 0;
+}
+
+int iusInputFileReadNextPulseDepthRange
+(
+IusInputFileInstance * pInst,
+const IusRange *const pDepthRange,
+float *const *const ppPageOut
+)
+{
+    hsize_t i, j;
+    hsize_t offset[4];
+    hsize_t count[4];
+
+    hid_t   memspace;
+    hid_t   dataspace;
+    hsize_t memdim[2];
+    herr_t  status;
+
+    if (pInst == NULL || ppPageOut == NULL)
+    {
+        fprintf(stderr, "iusInputRedNextPulse: input arguments can not be NULL\n");
+        return -1;
+    }
+    float *pPage = (float *)calloc(pInst->pIusInput->pDrivingScheme->numSamplesPerLine *
+    pInst->pIusInput->pTransducer->numElements, sizeof(float));
+    if (pPage == NULL)
+    {
+        fprintf(stderr, "iusInputRedNextPulse: Memory allocation error\n");
+        return -1;
+    }
+
+    offset[0] = 0;
+    offset[1] = pDepthRange->startIndex;
+    offset[2] = pInst->currentPulse;
+    offset[3] = pInst->currentFrame;
+
+    count[0] = pInst->pIusInput->pTransducer->numElements;
+    count[1] = pDepthRange->numSamples;
+    count[2] = 1;
+    count[3] = 1;
+
+    memdim[0] = pInst->pIusInput->pTransducer->numElements;
+    memdim[1] = pDepthRange->numSamples;
+    memspace = H5Screate_simple(2, memdim, NULL);
+    dataspace = H5Dget_space(pInst->rfDataset);
+    status = H5Sselect_hyperslab(dataspace, H5S_SELECT_SET, offset, NULL, count, NULL);
+
+    status |= H5Dread(pInst->rfDataset, H5T_NATIVE_FLOAT, memspace, dataspace, H5P_DEFAULT, pPage);
+
+    /* read an 1D buffer, copy that to 2D array -- might not be needed anymore */
+    for (i = 0; i<memdim[0]; i++) // numElements (# of rows rows)
+    {
+        for (j = 0; j<memdim[1]; j++) // numSamples (on each row)
+        {
+            ppPageOut[i][j+offset[1]] = pPage[j + i*memdim[1]];
+        }
+    }
+    free(pPage);
+
+    pInst->currentPulse++;
+    if (pInst->currentPulse == pInst->pIusInput->pDrivingScheme->numTransmitPulses)
+    {
+        pInst->currentPulse = 0;
+        pInst->currentFrame++;
+    }
+    status |= H5Sclose(memspace);
+    status |= H5Sclose(dataspace);
+
+    return status;
+}
+#endif
+

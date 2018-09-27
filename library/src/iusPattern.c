@@ -154,27 +154,27 @@ iupa_t iusPatternLoad
 )
 {
   int status = 0;
-  const char *pLabel;
+  char pLabel[256];
   float timeInFrame;
-  const char *pPulseLabel;
-  const char *pSourceLabel;
-  const char *pChannelMapLabel;
-  const char *pApodizationLabel;
-  const char *pReceiveSettingsLabel;
+  char pPulseLabel[256];
+  char pSourceLabel[256];
+  char pChannelMapLabel[256];
+  char pApodizationLabel[256];
+  char pReceiveSettingsLabel[256];
   char path[IUS_MAX_HDF5_PATH];
 
   sprintf(path, PATTERNLABELFMT, parentPath);
-  status |= iusHdf5ReadString(handle, path, &(pLabel));
+  status |= iusHdf5ReadString(handle, path, pLabel);
   sprintf(path, PULSELABELFMT, parentPath);
-  status |= iusHdf5ReadString(handle, path, &(pPulseLabel));
+  status |= iusHdf5ReadString(handle, path, pPulseLabel);
   sprintf(path, SOURCELABELFMT, parentPath);
-  status |= iusHdf5ReadString(handle, path, &(pSourceLabel));
+  status |= iusHdf5ReadString(handle, path, pSourceLabel);
   sprintf(path, CHANNELMAPLABELFMT, parentPath);
-  status |= iusHdf5ReadString(handle, path, &(pChannelMapLabel));
+  status |= iusHdf5ReadString(handle, path, pChannelMapLabel);
   sprintf(path, APODIZATIONLABELFMT, parentPath);
-  status |= iusHdf5ReadString(handle, path, &(pApodizationLabel));
+  status |= iusHdf5ReadString(handle, path, pApodizationLabel);
   sprintf(path, RECEIVESETTNGSLABELFMT, parentPath);
-  status |= iusHdf5ReadString(handle, path, &(pReceiveSettingsLabel));
+  status |= iusHdf5ReadString(handle, path, pReceiveSettingsLabel);
   sprintf(path, TIMEINFRAMEFMT, parentPath);
   status |= iusHdf5ReadFloat( handle, path, &(timeInFrame));
 

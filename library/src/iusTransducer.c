@@ -42,8 +42,21 @@ iut_t iusTransducerCreate
     created->pTransducerName = strdup(name);
     created->shape = shape;
     created->centerFrequency = centerFrequency;
+    created->loadedFromFile = IUS_FALSE;
     return created;
 }
+
+int iusBaseTransducerDelete
+(
+    iut_t iusTransducer
+)
+{
+    if (iusTransducer == NULL) return IUS_ERR_VALUE;
+    free(iusTransducer->pTransducerName);
+    free(iusTransducer);
+    return IUS_E_OK;
+}
+
 
 int iusTransducerDelete
 (
@@ -51,12 +64,11 @@ int iusTransducerDelete
 )
 {
     int status = IUS_ERR_VALUE;
-    if(iusTransducer != NULL)
-    {
-        free(iusTransducer->pTransducerName);
-        free(iusTransducer);
-        status = IUS_E_OK;
-    }
+    if (iusTransducer == NULL) return status;
+    if( iusTransducer->type == IUS_2D_SHAPE )
+        return ius2DTransducerDelete((iu2dt_t) iusTransducer);
+    if( iusTransducer->type == IUS_3D_SHAPE )
+        return ius3DTransducerDelete((iu3dt_t) iusTransducer);
     return status;
 }
 
@@ -287,12 +299,12 @@ iut_t iusBaseTransducerLoad
     int status = 0;
     char path[IUS_MAX_HDF5_PATH];
 
-    const char *name;
+    char name[256];
     IusTransducerShape shape;
     float centerFrequency;
 
     sprintf(path, NAMEFMT, parentPath);
-    status |= iusHdf5ReadString( handle, path, &name);
+    status |= iusHdf5ReadString( handle, path, name);
     sprintf(path, CENTERFREQUENCYFMT, parentPath);
     status |= iusHdf5ReadFloat( handle, path, &(centerFrequency));
     sprintf(path, SHAPEFMT, parentPath);
@@ -308,13 +320,16 @@ iut_t iusTransducerLoad
     char *parentPath
 )
 {
-    iut_t transducer = iusBaseTransducerLoad(handle, parentPath);
-    if ( transducer == IUT_INVALID )
+    iut_t baseTransducer = iusBaseTransducerLoad(handle, parentPath);
+    iut_t transducer = IUT_INVALID;
+    if ( baseTransducer == IUT_INVALID )
         return transducer;
 
-    if( transducer->type == IUS_2D_SHAPE )
-        return (iut_t) ius2DTransducerLoad(handle, parentPath);
-    if( transducer->type == IUS_3D_SHAPE )
-        return (iut_t) ius3DTransducerLoad(handle, parentPath);
+    if( baseTransducer->type == IUS_2D_SHAPE )
+        transducer = (iut_t) ius2DTransducerLoad(handle, parentPath);
+    if( baseTransducer->type == IUS_3D_SHAPE )
+        transducer = (iut_t) ius3DTransducerLoad(handle, parentPath);
+    iusBaseTransducerDelete(baseTransducer);
+    transducer->loadedFromFile = IUS_TRUE;
     return transducer;
 }

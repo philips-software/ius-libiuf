@@ -3,12 +3,6 @@
 #ifndef IUSLIBRARY_IUSHLSOURCE_H
 #define IUSLIBRARY_IUSHLSOURCE_H
 
-//#ifndef IUSLIBRARY_IMPLEMENTATION
-//typedef struct IusSource IusSource;
-//#endif // IUSLIBRARY_IMPLEMENTATION
-
-
-
 typedef enum {
   IUS_INVALID_SOURCE_TYPE = 0,
   IUS_2D_NON_PARAMETRIC_SOURCE,
@@ -19,7 +13,6 @@ typedef enum {
 
 
 // ADT
-
 typedef struct IusSource IusSource;
 typedef IusSource *ius_t;
 #define  IUS_INVALID (ius_t) NULL

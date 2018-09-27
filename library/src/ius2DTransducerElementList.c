@@ -49,12 +49,27 @@ iu2dtel_t ius2DTransducerElementListCreate
     return list;
 }
 
+int ius2DTransducerElementListDeepDelete
+(
+    iu2dtel_t list
+)
+{
+    if(list == NULL) return IUS_ERR_VALUE;
+    for (int i = 0 ; i < list->count ; i++ )
+    {
+        ius2DTransducerElementDeepDelete(list->p2DTransducerElements[i]);
+    }
+    ius2DTransducerElementListDelete(list);
+    return IUS_E_OK;
+}
+
 int ius2DTransducerElementListDelete
 (
     iu2dtel_t list
 )
 {
     if(list == NULL) return IUS_ERR_VALUE;
+    free(list->p2DTransducerElements);
     free(list);
     return IUS_E_OK;
 }
@@ -141,8 +156,8 @@ IUS_BOOL ius2DTransducerElementListFull
 
 iu2dtel_t ius2DTransducerElementListLoad
 (
-hid_t handle,
-const char *parentPath
+    hid_t handle,
+    const char *parentPath
 )
 {
     char path[IUS_MAX_HDF5_PATH];
@@ -174,7 +189,7 @@ const char *parentPath
 
     if( status == IUS_ERR_VALUE )
     {
-        ius2DTransducerElementListDelete(elementList);
+        ius2DTransducerElementListDeepDelete(elementList);
         elementList = IU2DTEL_INVALID;
     }
     return elementList;

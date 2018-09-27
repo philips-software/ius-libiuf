@@ -96,12 +96,13 @@ TEST(IusSourceDict, testIusCompareSourceDict)
 
     iusSourceDictDelete(dict);
     iusSourceDictDelete(notherDict);
+    ius3DParametricSourceDelete(parametricSource);
+    ius3DParametricSourceDelete(_nother3dps);
+    ius3DNonParametricSourceDelete(nonParametricSource);
 }
 
 TEST(IusSourceDict, testIusSerialization)
 {
-    IUS_BOOL equal;
-
     char *_3d_non_parametric_label = "label for 3d non parametric source";
     char *_3d_parametric_label = "label for 3d parametric source";
     int locationCount = 5; /**< number of locations */
@@ -152,7 +153,9 @@ TEST(IusSourceDict, testIusSerialization)
 
     iusSourceDictDelete(dict);
     iusSourceDictDelete(savedObj);
-
+    ius3DParametricSourceDelete(parametricSource);
+    ius3DParametricSourceDelete(_nother3dps);
+    ius3DNonParametricSourceDelete(nonParametricSource);
 }
 
 

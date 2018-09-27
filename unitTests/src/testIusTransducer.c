@@ -78,6 +78,10 @@ TEST(IusTransducer, testIusTransducerCompare)
     // invalid params
     int status = iusTransducerDelete(NULL);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
+
+    ius2DTransducerDelete((iu2dt_t)_2dTransducer);
+    ius3DTransducerDelete((iu3dt_t)_3dTransducer);
+    ius3DTransducerDelete((iu3dt_t)_3dTransducerDuplicate);
 }
 
 
@@ -111,6 +115,8 @@ TEST(IusTransducer, testIusTransducerSetGet)
     TEST_ASSERT_EQUAL_STRING(p2DTransducerName, iusTransducerGetName(_2dTransducer));
     TEST_ASSERT_EQUAL(IUS_LINE, iusTransducerGetShape(_2dTransducer));
 
+    ius2DTransducerDelete((iu2dt_t)_2dTransducer);
+    ius3DTransducerDelete((iu3dt_t)_3dTransducer);
 }
 
 TEST(IusTransducer, testIusTransducerSerialization)
@@ -150,7 +156,16 @@ TEST(IusTransducer, testIusTransducerSerialization)
     TEST_ASSERT_NOT_EQUAL(NULL, savedObj);
     H5Fclose(handle);
 
+    // TODO: introduce deep Delete method.
+    // API user may decide.
     TEST_ASSERT_EQUAL(IUS_TRUE, iusTransducerCompare(transducer,savedObj));
+    for (i = 0; i < numTransducerElements; i++)
+    {
+        iu2dte_t element = ius2DTransducerGetElement( (iu2dt_t) transducer, i);
+        ius2DSizeDelete(ius2DTransducerElementGetSize(element));
+        ius2DPositionDelete(ius2DTransducerElementGetPosition(element));
+        ius2DTransducerElementDelete(element);
+    }
     status = iusTransducerDelete(transducer);
     status |= iusTransducerDelete(savedObj);
 	TEST_ASSERT(status == IUS_E_OK);

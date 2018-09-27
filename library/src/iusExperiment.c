@@ -153,16 +153,16 @@ iue_t iusExperimentLoad
     int status = 0;
     float speedOfSound;
     int date;
-    const char *pDescription;
+    char description[256];
     iue_t experiment;
 
     status |= iusHdf5ReadFloat( handle , "speedOfSound", &(speedOfSound));
     status |= iusHdf5ReadInt( handle,    "date", &(date));
-    status |= iusHdf5ReadString( handle, "description", &(pDescription));
+    status |= iusHdf5ReadString( handle, "description", description);
 
     if( status < 0 )
         return NULL;
-    experiment = iusExperimentCreate(speedOfSound,date,pDescription);
+    experiment = iusExperimentCreate(speedOfSound,date,description);
     return experiment;
 }
 

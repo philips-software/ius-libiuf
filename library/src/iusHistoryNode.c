@@ -257,13 +257,13 @@ iuhn_t iusHistoryNodeLoad
 )
 {
     herr_t status = 0;
-    const char *ID;
-    const char *type;
+    char ID[256];
+    char type[256];
     int numberOfParents=0;
     int numberOfParameters=0;
     if ( handle == H5I_INVALID_HID ) return IUHN_INVALID;
-    status |= iusHdf5ReadString(handle, NODE_ID, &ID);
-    status |= iusHdf5ReadString(handle, NODE_TYPE, &type);
+    status |= iusHdf5ReadString(handle, NODE_ID, ID);
+    status |= iusHdf5ReadString(handle, NODE_TYPE, type);
     status |= iusHdf5ReadInt(handle, NODE_NUMBER_OF_PARENTS, &numberOfParents);
     status |= iusHdf5ReadInt(handle, NODE_NUMBER_OF_PARAMETERS, &numberOfParameters);
     if (status!=0)

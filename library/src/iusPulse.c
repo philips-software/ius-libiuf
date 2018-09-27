@@ -202,13 +202,13 @@ iup_t iusBasePulseLoad
 {
     int status = 0;
     IusPulseType type;
-    const char *label;
+    char label[256];
     char path[IUS_MAX_HDF5_PATH];
 
     sprintf(path, PULSETYPEFMT, parentPath);
     status |= iusReadPulseType( handle, path, &(type));
     sprintf(path, LABELFMT, parentPath);
-    status |= iusHdf5ReadString( handle, path, &(label));
+    status |= iusHdf5ReadString( handle, path, label);
     if( status < 0 )
         return NULL;
 

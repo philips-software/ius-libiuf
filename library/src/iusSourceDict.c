@@ -25,6 +25,7 @@ typedef struct HashableSource HashableSource;
 struct IusSourceDict
 {
     struct hashmap map;
+    IUS_BOOL loadedFromFile;
 } ;
 
 /* Declare type-specific blob_hashmap_* functions with this handy macro */
@@ -40,6 +41,7 @@ iusd_t iusSourceDictCreate
     {
       hashmap_init(&list->map, hashmap_hash_string, hashmap_compare_string, 0);
     }
+    list->loadedFromFile = IUS_FALSE;
     return list;
 }
 
@@ -50,6 +52,18 @@ int iusSourceDictDelete
 {
     if(dict == NULL) return IUS_ERR_VALUE;
     /* Free all allocated resources associated with map and reset its state */
+    HashableSource *iterElement;
+    struct hashmap_iter *iter;
+
+    // iterate over source list elements using the hash double linked list
+    for (iter = hashmap_iter(&dict->map); iter; iter = hashmap_iter_next(&dict->map, iter)) {
+        iterElement = HashableSource_hashmap_iter_get_data(iter);
+        if (dict->loadedFromFile == IUS_TRUE)
+        {
+            iusSourceDelete(iterElement->source);
+        }
+        free(iterElement);
+    }
     hashmap_destroy(&dict->map);
     free(dict);
     return IUS_E_OK;
@@ -220,8 +234,8 @@ iusd_t iusSourceDictLoad
         H5Gget_objname_by_idx(grpid, (hsize_t) i,
                                     memb_name, (size_t) MAX_NAME);
         sprintf(path,"%s/%s", parentPath,memb_name);
-        ius_t pulse = iusSourceLoad(handle,path);
-        status = iusSourceDictSet(dict, memb_name, pulse);
+        ius_t source = iusSourceLoad(handle,path);
+        status = iusSourceDictSet(dict, memb_name, source);
     }
 
     H5Gclose(handle);
@@ -229,5 +243,6 @@ iusd_t iusSourceDictLoad
     {
         return NULL;
     }
+    dict->loadedFromFile = IUS_TRUE;
     return dict;
 }

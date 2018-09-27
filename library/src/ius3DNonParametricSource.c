@@ -59,14 +59,15 @@ int numLocations
 
 int ius3DNonParametricSourceDelete
 (
-iu3dnps_t ius3DNonParametricSource
+    iu3dnps_t ius3DNonParametricSource
 )
 {
     int status = IUS_ERR_VALUE;
     if(ius3DNonParametricSource != NULL)
     {
+        free(ius3DNonParametricSource->pLocations);
+        free(ius3DNonParametricSource->base.label);
         free(ius3DNonParametricSource);
-        ius3DNonParametricSource = NULL;
         status = IUS_E_OK;
     }
     return status;
@@ -177,6 +178,7 @@ static int ius3DNonParametricSourceLoadLocations
             break;
         }
         ius3DNonParametricSourceSetPosition(source, pos, p);
+        ius3DPositionDelete(pos);
     }
     return status;
 }

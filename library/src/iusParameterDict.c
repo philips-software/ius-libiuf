@@ -188,15 +188,15 @@ iupad_t iusParameterDictLoad
     int i;
     int status = H5Gget_num_objs(handle, &nobj);
     char memberName[MAX_NAME];
-    const char *memberValue;
+    char memberValue[256];
     if( handle == H5I_INVALID_HID ) return IUPAD_INVALID;
 
     iupad_t dict = iusParameterDictCreate();
     for (i = 0; i < (int) nobj && status == IUS_E_OK; i++)
     {
         H5Gget_objname_by_idx(handle, i, memberName, (size_t)MAX_NAME);
-        iusHdf5ReadString(handle,memberName, &memberValue);
-        status = iusParameterDictSet(dict, memberName, (char *)memberValue);
+        iusHdf5ReadString(handle,memberName, memberValue);
+        status = iusParameterDictSet(dict, memberName, memberValue);
     }
     return dict;
 }

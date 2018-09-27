@@ -56,10 +56,11 @@ iu3dps_t ius3DParametricSourceCreate
     if ( pLabel == NULL ) return NULL;
     if ( strcmp(pLabel,"") == 0 ) return NULL;
     if ( numLocations <= 0 ) return  NULL;
+
     iu3dps_t created = calloc(1,sizeof(Ius3DParametricSource));
     if( created == NULL ) return NULL;
 
-    created->pLocations = (struct Ius3DPosition *) calloc(numLocations, sizeof(Ius3DPosition));
+    created->pLocations = (struct Ius3DPosition *) calloc(numLocations, sizeof(struct Ius3DPosition));
     if( created->pLocations == NULL )
     {
         free(created);
@@ -85,8 +86,9 @@ int ius3DParametricSourceDelete
     int status = IUS_ERR_VALUE;
     if(ius3DParametricSource != NULL)
     {
+        free(ius3DParametricSource->pLocations);
+        free(ius3DParametricSource->base.label);
         free(ius3DParametricSource);
-        ius3DParametricSource = NULL;
         status = IUS_E_OK;
     }
     return status;
@@ -303,6 +305,7 @@ static int ius3DParametricSourceLoadLocations
             break;
         }
         ius3DParametricSourceSetPosition(source, pos, p);
+        ius3DPositionDelete(pos);
     }
     return status;
 }

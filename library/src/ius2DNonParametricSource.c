@@ -65,6 +65,8 @@ int ius2DNonParametricSourceDelete
     int status = IUS_ERR_VALUE;
     if(ius2DNonParametricSource != NULL)
     {
+        free(ius2DNonParametricSource->pLocations);
+        free(ius2DNonParametricSource->base.label);
         free(ius2DNonParametricSource);
         ius2DNonParametricSource = NULL;
         status = IUS_E_OK;

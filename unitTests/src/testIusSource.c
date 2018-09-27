@@ -153,6 +153,7 @@ TEST(IusSource, testIusSerialization)
     {
         iu3dp_t pos = ius3DPositionCreate(p * 1.0, p * 2.0, p * 3.0);
         ius3DParametricSourceSetPosition( (iu3dps_t) obj, pos, p);
+        ius3DPositionDelete(pos);
     }
 
     hid_t handle = H5Fcreate( filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT );
@@ -170,6 +171,7 @@ TEST(IusSource, testIusSerialization)
     TEST_ASSERT_EQUAL(IUS_TRUE, iusSourceCompare((ius_t)obj,savedObj));
     TEST_ASSERT_EQUAL(IUS_FALSE, iusSourceCompare((ius_t)notherObj,savedObj));
     iusSourceDelete(obj);
+    iusSourceDelete(notherObj);
     iusSourceDelete(savedObj);
 }
 

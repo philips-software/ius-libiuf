@@ -32,12 +32,30 @@ int iusSourceDelete
 )
 {
     int status = IUS_ERR_VALUE;
-    if(iusSource != NULL)
+    if( iusSource == IUS_INVALID ) return status;
+    switch (iusSource->type)
     {
-        free(iusSource);
-        iusSource = NULL;
-        status = IUS_E_OK;
+        case IUS_2D_NON_PARAMETRIC_SOURCE:
+        {
+            return ius2DNonParametricSourceDelete((iu2dnps_t) iusSource);
+        }
+        case IUS_2D_PARAMETRIC_SOURCE:
+        {
+            return ius2DParametricSourceDelete((iu2dps_t) iusSource);
+        }
+        case IUS_3D_NON_PARAMETRIC_SOURCE:
+        {
+            return ius3DNonParametricSourceDelete((iu3dnps_t) iusSource);
+        }
+        case IUS_3D_PARAMETRIC_SOURCE:
+        {
+            return ius3DParametricSourceDelete((iu3dps_t) iusSource);
+        }
+        case IUS_INVALID_SOURCE_TYPE:
+            break;
     }
+    free(iusSource->label);
+    free(iusSource);
     return status;
 }
 
@@ -210,7 +228,7 @@ static ius_t iusSourceCreate
     const char *label
 )
 {
-    ius_t source = (ius_t) calloc (1,sizeof(ius_t));
+    ius_t source = (ius_t) calloc (1,sizeof(IusSource));
     if(source == NULL) return IUS_INVALID;
     source->label = strdup(label);
     source->type = type;
@@ -226,13 +244,13 @@ ius_t iusBaseSourceLoad
 {
     int status = 0;
     IusSourceType type;
-    const char *label;
+    char label[256];
     char path[IUS_MAX_HDF5_PATH];
 
     sprintf(path, SOURCETYPEFMT, parentPath);
     status |= iusReadSourceType( handle, path, &(type));
     sprintf(path, LABELFMT, parentPath);
-    status |= iusHdf5ReadString( handle, path, &(label));
+    status |= iusHdf5ReadString( handle, path, label);
     if( status < 0 )
         return NULL;
 
@@ -245,29 +263,39 @@ ius_t iusSourceLoad
     char *parentPath
 )
 {
-    ius_t source=NULL;
+    IusSourceType type;
+    char label[256];
+    char path[IUS_MAX_HDF5_PATH];
 
-    source = iusBaseSourceLoad(handle,parentPath);
-    switch(source->type)
+    sprintf(path, SOURCETYPEFMT, parentPath);
+    int status = iusReadSourceType( handle, path, &(type));
+    sprintf(path, LABELFMT, parentPath);
+    status |= iusHdf5ReadString( handle, path, label);
+
+    if( status < 0 )
+        return IUS_INVALID;
+
+    ius_t source = NULL;
+    switch (type)
     {
         case IUS_2D_NON_PARAMETRIC_SOURCE:
         {
-            source = (ius_t) ius2DNonParametricSourceLoad(handle,parentPath,source->label);
+            source = (ius_t) ius2DNonParametricSourceLoad(handle,parentPath,label);
             break;
         }
         case IUS_2D_PARAMETRIC_SOURCE:
         {
-            source = (ius_t) ius2DParametricSourceLoad(handle,parentPath,source->label);
+            source = (ius_t) ius2DParametricSourceLoad(handle,parentPath,label);
             break;
         }
         case IUS_3D_NON_PARAMETRIC_SOURCE:
         {
-            source = (ius_t) ius3DNonParametricSourceLoad(handle,parentPath,source->label);
+            source = (ius_t) ius3DNonParametricSourceLoad(handle,parentPath,label);
             break;
         }
         case IUS_3D_PARAMETRIC_SOURCE:
         {
-            source = (ius_t) ius3DParametricSourceLoad(handle,parentPath,source->label);
+            source = (ius_t) ius3DParametricSourceLoad(handle,parentPath,label);
             break;
         }
         case IUS_INVALID_SOURCE_TYPE:

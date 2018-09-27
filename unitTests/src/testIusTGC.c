@@ -88,6 +88,7 @@ TEST(IusTGC, testIusTGCCompare)
     TEST_ASSERT_EQUAL(IUS_FALSE,equal);
     
     iusTGCDelete(obj);
+    iusTGCDelete(sameObj);
     iusTGCDelete(notherObj);
 }
 

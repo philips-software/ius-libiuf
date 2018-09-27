@@ -47,12 +47,29 @@ iu3dtel_t ius3DTransducerElementListCreate
     return list;
 }
 
+
+
+int ius3DTransducerElementListDeepDelete
+(
+    iu3dtel_t list
+)
+{
+    if(list == NULL) return IUS_ERR_VALUE;
+    for (int i = 0 ; i < list->count ; i++ )
+    {
+        ius3DTransducerElementDeepDelete(list->p3DTransducerElements[i]);
+    }
+    ius3DTransducerElementListDelete(list);
+    return IUS_E_OK;
+}
+
 int ius3DTransducerElementListDelete
 (
     iu3dtel_t list
 )
 {
     if(list == NULL) return IUS_ERR_VALUE;
+    free(list->p3DTransducerElements);
     free(list);
     return IUS_E_OK;
 }
