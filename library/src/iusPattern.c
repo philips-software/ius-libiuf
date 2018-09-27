@@ -68,13 +68,13 @@ iupa_t iusPatternCreate
 
     if( timeInFrame <= 0.0f ) return IUPA_INVALID;
     iupa_t created = calloc(1, sizeof(IusPattern));
-    created->pLabel = pLabel;
+    created->pLabel = strdup(pLabel);
     created->timeInFrame = timeInFrame;
-    created->pPulseLabel = pPulseLabel;
-    created->pSourceLabel = pSourceLabel;
-    created->pChannelMapLabel = pChannelMapLabel;
-    created->pApodizationLabel = pApodizationLabel;
-    created->pReceiveSettingsLabel = pReceiveSettingsLabel;
+    created->pPulseLabel = strdup(pPulseLabel);
+    created->pSourceLabel = strdup(pSourceLabel);
+    created->pChannelMapLabel = strdup(pChannelMapLabel);
+    created->pApodizationLabel = strdup(pApodizationLabel);
+    created->pReceiveSettingsLabel = strdup(pReceiveSettingsLabel);
     return created;
 }
 
@@ -83,14 +83,15 @@ int iusPatternDelete
     iupa_t iusPattern
 )
 {
-    int status = IUS_ERR_VALUE;
-    if(iusPattern != IUPA_INVALID)
-    {
-        free(iusPattern);
-        iusPattern = NULL;
-        status = IUS_E_OK;
-    }
-    return status;
+    if (iusPattern == IUPA_INVALID) return IUS_ERR_VALUE;
+    free((void *)iusPattern->pLabel);
+    free((void *)iusPattern->pPulseLabel);
+    free((void *)iusPattern->pSourceLabel);
+    free((void *)iusPattern->pChannelMapLabel);
+    free((void *)iusPattern->pApodizationLabel);
+    free((void *)iusPattern->pReceiveSettingsLabel);
+    free(iusPattern);
+    return IUS_E_OK;
 }
 
 
