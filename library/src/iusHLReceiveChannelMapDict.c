@@ -193,8 +193,9 @@ herr_t iusHLReceiveChannelMapDictSave
 			H5Gclose(group_id);
 			return IUS_ERR_VALUE;
 		}
-		status |= H5Gclose(subgroup_id);
+		
 		status |= iusHLReceiveChannelMapSave(receiveChannelMapDictItem->receiveChannelMap, subgroup_id);
+		status |= H5Gclose(subgroup_id);
 	}
 
 	status |= H5Gclose(group_id);

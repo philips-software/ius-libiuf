@@ -182,27 +182,15 @@ int iusHLPulseSave
 {
     int status=IUS_ERR_VALUE;
     // create a pulse group in "Pulses" and create Pulses if not existing
-	hid_t pulses_id;
-	status = H5Gget_objinfo(handle, "Pulses", 0, NULL); // todo centralize the path "Sources"
-	if (status != 0) // the group does not exist yet
-	{
-		pulses_id = H5Gcreate(handle, "Pulse", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-	}
-	else
-	{
-		pulses_id = H5Gopen(handle, "Pulses", H5P_DEFAULT);
-	}
 
-	hid_t pulse_id = H5Gcreate(pulses_id, pulse->label, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+	//hid_t pulse_id = H5Gcreate(handle, pulse->label, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
     // Make dataset for Experiment
     if( pulse->type == IUS_PARAMETRIC_PULSETYPE )
-        status = iusHLParametricPulseSave((iupp_t)pulse, pulse_id);
+        status = iusHLParametricPulseSave((iupp_t)pulse, handle);
 
     if( pulse->type == IUS_NON_PARAMETRIC_PULSETYPE )
-        status = iusHLNonParametricPulseSave((iunpp_t)pulse, pulse_id);
-
-	H5Gclose(pulse_id);
-	H5Gclose(pulses_id);
+        status = iusHLNonParametricPulseSave((iunpp_t)pulse, handle);
+	//H5Gclose(pulse_id);
 
     return status;
 }
@@ -226,26 +214,28 @@ iup_t iusHLBasePulseLoad
 
 iup_t iusHLPulseLoad
 (
-	hid_t handle,
-	char *label
+	hid_t handle
 )
 {
 	iup_t pulse = NULL;
-	char path[IUS_MAX_HDF5_PATH];
+	//char label[IUS_MAX_HDF5_PATH];
+	//int status=0;
+	//status |= iusHdf5ReadString(handle, PULSELABEL_STR, &(label));
 
-	sprintf(path, "%s/%s", "Pulses/%s", label);
-	hid_t pulse_id = H5Gopen(handle, path, H5P_DEFAULT);
+	//sprintf(path, "%s/%s", "Pulses/%s", label);
+	//hid_t pulse_id = H5Gopen(handle, path, H5P_DEFAULT);
 
-	pulse = iusHLBasePulseLoad(pulse_id);
+	pulse = iusHLBasePulseLoad(handle);
 	if (pulse == NULL) return IUP_INVALID;
 	//todo free pulse here to prevent memory loss?
 
 	switch (pulse->type)
 	{
-	case IUS_PARAMETRIC_PULSETYPE:
-		pulse = (iup_t)iusHLParametricPulseLoad(pulse_id); // TODO: decide if it is okay that the base pulse object is discarded during load? Is it causing a memory leak?
-	case IUS_NON_PARAMETRIC_PULSETYPE:
-		pulse = (iup_t)iusHLNonParametricPulseLoad(pulse_id); // TODO: decide if it is okay that the base pulse object is discarded during load? Is it causing a memory leak?
+		case IUS_PARAMETRIC_PULSETYPE:
+			pulse = (iup_t)iusHLParametricPulseLoad(handle); // TODO: decide if it is okay that the base pulse object is discarded during load? Is it causing a memory leak?
+			break;
+		case IUS_NON_PARAMETRIC_PULSETYPE:
+			pulse = (iup_t)iusHLNonParametricPulseLoad(handle); // TODO: decide if it is okay that the base pulse object is discarded during load? Is it causing a memory leak?
 	}
 	return pulse;
 }

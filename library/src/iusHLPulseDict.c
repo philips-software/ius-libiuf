@@ -175,18 +175,33 @@ int iusHLPulseDictSave
         return IUS_ERR_VALUE;
     if(handle == H5I_INVALID_HID)
         return IUS_ERR_VALUE;
-
+	hid_t group_id;
 	//hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+	 //hid_t group_id = H5Gcreate(handle, "ReceiveSettings", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+	status = H5Gget_objinfo(handle, "Pulses", 0, NULL); // todo centralize the path
+	if (status != 0) // the group does not exist yet
+	{
+		group_id = H5Gcreate(handle, "Pulses", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+	}
+	else
+	{
+		group_id = H5Gopen(handle, "Pulses", H5P_DEFAULT);
+	}
+	if (group_id == H5I_INVALID_HID)
+		return IUS_ERR_VALUE;
+	status = 0;
     HashablePulse *pulseDictItem;
 
     // iterate over source list elements and save'em
-    for (iter = hashmap_iter(&dict->map); iter; iter = hashmap_iter_next(&dict->map, iter))
+    for (iter = hashmap_iter(&dict->map); iter && status == IUS_E_OK; iter = hashmap_iter_next(&dict->map, iter))
     {
 		pulseDictItem = HashablePulse_hashmap_iter_get_data(iter);
+		hid_t subgroup_id = H5Gcreate(group_id, pulseDictItem->key, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
         //sprintf(path, LABELPATH, parentPath, sourceElement->pulse->label);
-        iusHLPulseSave(pulseDictItem->pulse, handle);
+        iusHLPulseSave(pulseDictItem->pulse, subgroup_id);
+		status |=  H5Gclose(subgroup_id);
     }
-    //status |= H5Gclose(group_id );
+    status |= H5Gclose(group_id );
     return status;
 }
 
@@ -199,7 +214,7 @@ iupd_t iusHLPulseDictLoad
 )
 {
 	int i;
-	int status = 0;
+	int status = IUS_E_OK;
 	//char path[IUS_MAX_HDF5_PATH];
 	char memb_name[MAX_NAME];
 
@@ -211,12 +226,14 @@ iupd_t iusHLPulseDictLoad
     status = H5Gget_num_objs(grpid, &nobj);
 
     iupd_t dict = iusHLPulseDictCreate();
-    for (i = 0; i < nobj; i++)
+    for (i = 0; i < nobj && status == IUS_E_OK; i++)
     {
         H5Gget_objname_by_idx(grpid, (hsize_t) i, memb_name, (size_t) MAX_NAME);
 		//sprintf(path, "Pulses/%s", memb_name);
-        iup_t pulse = iusHLPulseLoad(handle, memb_name); //note iusPulseLoad expect handle, not grpid!
-        status = iusHLPulseDictSet(dict, memb_name, pulse);
+		hid_t pulse_id = H5Gopen(grpid, memb_name, H5P_DEFAULT);
+        iup_t pulse = iusHLPulseLoad(pulse_id); //note iusPulseLoad expect handle, not grpid!
+		status |= H5Gclose(pulse_id);
+        status |= iusHLPulseDictSet(dict, memb_name, pulse);
     }
     H5Gclose(grpid);
     if( status != IUS_E_OK )

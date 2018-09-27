@@ -24,8 +24,7 @@ int iusHLPulseSave
 
 iup_t iusHLPulseLoad
 (
-    hid_t handle,
-	char *label
+    hid_t handle
 );
 
 int iusHLBasePulseSave

@@ -36,8 +36,7 @@ int iusHLSourceSave
 
 ius_t iusHLSourceLoad
 (
-    hid_t handle,
-	char *label
+    hid_t handle
 );
 
 #endif //IUSLIBRARY_IUSHLSOURCEIMP_H

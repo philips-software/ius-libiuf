@@ -146,7 +146,7 @@ TEST(IusPulse, testIusSerialization)
 
   // read back
   handle = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT );
-  iup_t savedObj = iusHLPulseLoad(handle, pulseLabel); //a the highest level you have to specifiy what pulse to load, not just the handle
+  iup_t savedObj = iusHLPulseLoad(handle); 
   TEST_ASSERT_NOT_EQUAL(NULL, savedObj);
   H5Fclose(handle);
 

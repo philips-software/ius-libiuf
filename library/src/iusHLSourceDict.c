@@ -189,7 +189,7 @@ iusd_t iusHLSourceDictLoad
 )
 {
     int i;
-    int status = 0;
+    int status = IUS_E_OK;
     char memb_name[MAX_NAME];
 
 	hid_t grpid = H5Gopen(handle, "Sources", H5P_DEFAULT);
@@ -200,14 +200,15 @@ iusd_t iusHLSourceDictLoad
     status = H5Gget_num_objs(grpid, &nobj);
 
     iusd_t dict = iusHLSourceDictCreate();
-    for (i = 0; i < nobj; i++)
+    for (i = 0; i < nobj && status == IUS_E_OK; i++)
     {
         H5Gget_objname_by_idx(grpid, (hsize_t) i, memb_name, (size_t) MAX_NAME);
-        ius_t source = iusHLSourceLoad(grpid, memb_name);
-        status = iusHLSourceDictSet(dict, memb_name, source);
+		hid_t source_id = H5Gopen(grpid, memb_name, H5P_DEFAULT);
+        ius_t source = iusHLSourceLoad(source_id);
+		status |= H5Gclose(source_id);
+        status |= iusHLSourceDictSet(dict, memb_name, source);
     }
-
-    H5Gclose(grpid);
+    status |= H5Gclose(grpid);
     if( status != IUS_E_OK )
     {
         return NULL;

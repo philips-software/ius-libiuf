@@ -259,7 +259,8 @@ herr_t iusHLTransducerSave
 	{
 		transducer_id = H5Gopen(handle, "Transducer", H5P_DEFAULT);
 	}
-
+	// todo check if transducer_id is valid
+	status = 0;
     if (transducer->type == IUS_3D_SHAPE)
 		status |= iusHL3DTransducerSave((Ius3DTransducer *) transducer, transducer_id);
 
@@ -316,15 +317,15 @@ iut_t iusHLTransducerLoad
 	int status = 0;
 	IusTransducerShape shape;
     //iut_t transducer = iusHLBaseTransducerLoad(handle);
-	hid_t group_id = H5Gcreate(handle, IUS_INPUT_STRUCTURE_TRANSDUCER, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+	hid_t group_id = H5Gopen(handle, IUS_INPUT_STRUCTURE_TRANSDUCER, H5P_DEFAULT);
 	status |= iusHLTransducerLoadShape(group_id, SHAPEFMT, &(shape));
 	if (status < 0)
 		return IUT_INVALID;
 
     if( shape == IUS_LINE || shape == IUS_CIRCLE )
-        return (iut_t) iusHL2DTransducerLoad(handle);
+        return (iut_t) iusHL2DTransducerLoad(group_id);
     if( shape == IUS_PLANE || shape == IUS_CYLINDER || shape == IUS_SPHERE)
-        return (iut_t) iusHL3DTransducerLoad(handle);
+        return (iut_t) iusHL3DTransducerLoad(group_id);
 
 	H5Gclose(group_id);
     return IUT_INVALID;

@@ -228,7 +228,7 @@ ius_t iusHLBaseSourceLoad
     //char path[IUS_MAX_HDF5_PATH];
 
     //sprintf(path, SOURCETYPEFMT, parentPath);
-    status |= iusReadSourceType( handle, "SourceType", &(type));
+    status = iusReadSourceType( handle, "SourceType", &(type));
     //sprintf(path, LABELFMT, parentPath);
     status |= iusHdf5ReadString( handle, "SourceLabel", &(label));  //todo find out when+how this string is freed
     if( status < 0 )
@@ -239,34 +239,36 @@ ius_t iusHLBaseSourceLoad
 
 ius_t iusHLSourceLoad
 (
-    hid_t handle,
-	char *sourceLabel
+    hid_t handle
 )
 {
-    ius_t source=NULL;
-	hid_t sources_id = H5Gopen(handle, "Sources", H5P_DEFAULT);
-	hid_t source_id = H5Gopen(sources_id, sourceLabel, H5P_DEFAULT);
-    source = iusHLBaseSourceLoad(source_id);
+	ius_t source;
+	//int status = IUS_E_OK;
+	//const char *label;
+
+    source = iusHLBaseSourceLoad(handle);
+	if (source == NULL) return IUS_INVALID;
+
     switch(source->type)
     {
         case IUS_2D_NON_PARAMETRIC_SOURCE:
         {
-            source = (ius_t) iusHL2DNonParametricSourceLoad(source_id, source->label);
+            source = (ius_t) iusHL2DNonParametricSourceLoad(handle, source->label);
             break;
         }
         case IUS_2D_PARAMETRIC_SOURCE:
         {
-            source = (ius_t) iusHL2DParametricSourceLoad(source_id, source->label);
+            source = (ius_t) iusHL2DParametricSourceLoad(handle, source->label);
             break;
         }
         case IUS_3D_NON_PARAMETRIC_SOURCE:
         {
-            source = (ius_t) iusHL3DNonParametricSourceLoad(source_id, source->label);
+            source = (ius_t) iusHL3DNonParametricSourceLoad(handle, source->label);
             break;
         }
         case IUS_3D_PARAMETRIC_SOURCE:
         {
-            source = (ius_t) iusHL3DParametricSourceLoad(source_id, source->label);
+            source = (ius_t) iusHL3DParametricSourceLoad(handle, source->label);
             break;
         }
         case IUS_INVALID_SOURCE_TYPE:

@@ -278,7 +278,7 @@ herr_t iusHdf5WriteFloat
 
     returnValue =
         H5LTmake_dataset_float( handle, pVariableString, 1, dims, pValues );
-    if (verbose)
+    if (0 && verbose)
     {
         printf("writing float(s) to hdf5\n");
     }

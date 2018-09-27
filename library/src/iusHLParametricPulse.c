@@ -136,23 +136,14 @@ int iusHLParametricPulseSave
 		return IUS_ERR_VALUE;
 
 	//TODO chekc if /Pulses exist
-	hid_t pulses_id;
-	status = H5Gget_objinfo(handle, "Pulses", 0, NULL); // todo centralize the path
-	if (status != 0) // the group does not exist yet
-	{
-		pulses_id = H5Gcreate(handle, "Pulses", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-	}
-	else
-	{
-		pulses_id = H5Gopen(handle, "Pulses", H5P_DEFAULT);
-	}
-	hid_t label_id = H5Gcreate(pulses_id, pulse->base.label, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-    status = iusHLBasePulseSave((iup_t)pulse, label_id);
-    status |= iusHdf5WriteFloat(label_id, IUS_PARAMPULSE_FREQUENCY, &(pulse->pulseFrequency), 1, verbose);
-    status |= iusHdf5WriteFloat(label_id, IUS_PARAMPULSE_AMPLITUDES, &(pulse->pulseAmplitude), 1, verbose);
-    status |= iusHdf5WriteInt(label_id, IUS_PARAMPULSE_COUNT, &(pulse->pulseCount), 1);
-	H5Gclose(label_id);
-	H5Gclose(pulses_id);
+	//hid_t pulses_id;
+	//hid_t label_id = H5Gcreate(handle, pulse->base.label, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+    status = iusHLBasePulseSave((iup_t)pulse, handle);
+    status |= iusHdf5WriteFloat(handle, IUS_PARAMPULSE_FREQUENCY, &(pulse->pulseFrequency), 1, verbose);
+    status |= iusHdf5WriteFloat(handle, IUS_PARAMPULSE_AMPLITUDES, &(pulse->pulseAmplitude), 1, verbose);
+    status |= iusHdf5WriteInt(handle, IUS_PARAMPULSE_COUNT, &(pulse->pulseCount), 1);
+	//H5Gclose(label_id);
+	//H5Gclose(pulses_id);
     return status;
 }
 
@@ -162,7 +153,7 @@ iupp_t iusHLParametricPulseLoad
 )
 {
     int     status = 0;
-    char label[IUS_MAX_HDF5_PATH];
+    char    *label;
     float   pulseFrequency;       /**< frequency that the pulse represents in Hz */
     float   pulseAmplitude;       /**< (max) amplitude of the pulse in Volts */
     int     pulseCount;           /**< number of cycles that the pulse represents */
@@ -173,7 +164,7 @@ iupp_t iusHLParametricPulseLoad
 
 	//sprintf(path, "Pulses/%s", label);
 	//hid_t pulse_id = H5Gopen(handle, path, H5P_DEFAULT);
-	status |= iusHdf5ReadString(handle, "pulseLabel", (const char **)&(label));
+	status |= iusHdf5ReadString(handle, "pulseLabel", &(label));
     //sprintf(path, FREQUENCYFMT, parentPath);
     status |= iusHdf5ReadFloat(handle, IUS_PARAMPULSE_FREQUENCY, &(pulseFrequency));
     //sprintf(path, AMPLITUDEFMT, parentPath);

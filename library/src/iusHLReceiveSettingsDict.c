@@ -196,7 +196,7 @@ int iusHLReceiveSettingsDictSave
 		receiveSettingsDictItem = HashableReceiveSettings_hashmap_iter_get_data(iter);
 		hid_t subgroup_id = H5Gcreate(group_id, receiveSettingsDictItem->key, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 		//sprintf(path, LABELPATH, parentPath, label);
-        status = iusHLReceiveSettingsSave(receiveSettingsDictItem->receiveSettings, handle);
+        status = iusHLReceiveSettingsSave(receiveSettingsDictItem->receiveSettings, subgroup_id);
 		status |= H5Gclose(subgroup_id);
     }
 
@@ -227,10 +227,10 @@ iursd_t iusHLReceiveSettingsDictLoad
     iursd_t dict = iusHLReceiveSettingsDictCreate();
     for (i = 0; i < nobj; i++)
     {
-        H5Gget_objname_by_idx(handle, (hsize_t) i, memb_name, (size_t) MAX_NAME);
+        H5Gget_objname_by_idx(grpid, (hsize_t) i, memb_name, (size_t) MAX_NAME);
         //sprintf(path,"/%s", memb_name);
 		hid_t settings_id = H5Gopen(grpid, memb_name, H5P_DEFAULT);
-        iurs_t receiveSettings = iusHLReceiveSettingsLoad(settings_id, memb_name);
+        iurs_t receiveSettings = iusHLReceiveSettingsLoad(settings_id);
         status = iusHLReceiveSettingsDictSet(dict, memb_name, receiveSettings);
 		H5Gclose(settings_id);
     }

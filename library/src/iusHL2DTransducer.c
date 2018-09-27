@@ -244,14 +244,14 @@ herr_t iusHL2DTransducerSave
 {
     herr_t status=0;
     //char path[IUS_MAX_HDF5_PATH];
-	hid_t transducer_id = H5Gcreate(handle, "Transducer", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-    status = iusHLBaseTransducerSave((iut_t)transducer, transducer_id);
+	//hid_t transducer_id = H5Gcreate(handle, "Transducer", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+    status = iusHLBaseTransducerSave((iut_t)transducer, handle);
     if (status != 0)
         return status;
 
     //sprintf(path, ELEMENTSFMT);	
-    status = iusHL2DTransducerElementListSave(transducer->elements, transducer_id);
-	H5Gclose(transducer_id);
+    status = iusHL2DTransducerElementListSave(transducer->elements, handle);
+	//H5Gclose(transducer_id);
     return status;
 }
 
@@ -263,11 +263,11 @@ iu2dt_t iusHL2DTransducerLoad
 {
     //char path[IUS_MAX_HDF5_PATH];
     //sprintf(path, ELEMENTSFMT);
-	hid_t transducer_id = H5Gopen(handle, "Transducer", H5P_DEFAULT); // todo put this string at central  location 
-	iut_t baseTransducer = iusHLBaseTransducerLoad(transducer_id);
-
+	//hid_t transducer_id = H5Gopen(handle, "Transducer", H5P_DEFAULT); // todo put this string at central  location 
+	iut_t baseTransducer = iusHLBaseTransducerLoad(handle);
     if (baseTransducer == IUT_INVALID) return IU2DT_INVALID;
-    iu2dtel_t elements = iusHL2DTransducerElementListLoad(transducer_id); 
+
+    iu2dtel_t elements = iusHL2DTransducerElementListLoad(handle); 
 	if (elements == IU2DTEL_INVALID) return IU2DT_INVALID;
 	int numElements = iusHL2DTransducerElementListGetSize(elements);
     iu2dt_t transducer = iusHL2DTransducerCreate( baseTransducer->pTransducerName,
@@ -276,7 +276,7 @@ iu2dt_t iusHL2DTransducerLoad
                                                   numElements);
 	if (transducer == IU2DT_INVALID) return IU2DT_INVALID;
 	transducer->elements = elements;
-	H5Gclose(transducer_id);
+	//H5Gclose(transducer_id);
     return transducer;
 }
 

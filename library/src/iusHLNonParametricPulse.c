@@ -158,29 +158,16 @@ int iusHLNonParametricPulseSave
 		return IUS_ERR_VALUE;
 
 	//TODO chekc if /Pulses exist
-	hid_t pulses_id;
-	status = H5Gget_objinfo(handle, "Pulses", 0, NULL); // todo centralize the path
-	if (status != 0) // the group does not exist yet
-	{
-		pulses_id = H5Gcreate(handle, "Pulses", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-	}
-	else
-	{
-		pulses_id = H5Gopen(handle, "Pulses", H5P_DEFAULT);
-	}
-	hid_t label_id = H5Gcreate(pulses_id, pulse->base.label, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-    status = iusHLBasePulseSave((iup_t)pulse, label_id);
+    status = iusHLBasePulseSave((iup_t)pulse, handle);
     //sprintf(path, IUS_NONPARAMPULSE_NUMPULSEVALUESFMT, parentPath);
-    status |= iusHdf5WriteInt(label_id, IUS_NONPARAMPULSE_NUMPULSEVALUES, &(pulse->numPulseValues), 1);
+    status |= iusHdf5WriteInt(handle, IUS_NONPARAMPULSE_NUMPULSEVALUES, &(pulse->numPulseValues), 1);
 
     hsize_t dims[1] = { 1 };
     dims[0] = pulse->numPulseValues;
     //sprintf(path, IUS_NONPARAMPULSE_PULSEAMPLITUDES, parentPath);
-    status |= H5LTmake_dataset_float(label_id, IUS_NONPARAMPULSE_PULSEAMPLITUDES, 1, dims, pulse->pRawPulseAmplitudes );
+    status |= H5LTmake_dataset_float(handle, IUS_NONPARAMPULSE_PULSEAMPLITUDES, 1, dims, pulse->pRawPulseAmplitudes );
     //sprintf(path, PULSETIMESFMT, parentPath);
-    status |= H5LTmake_dataset_float(label_id, IUS_NONPARAMPULSE_PULSETIMES, 1, dims, pulse->pRawPulseTimes );
-	H5Gclose(label_id);
-	H5Gclose(pulses_id);
+    status |= H5LTmake_dataset_float(handle, IUS_NONPARAMPULSE_PULSETIMES, 1, dims, pulse->pRawPulseTimes );
     return status;
 }
 
@@ -190,7 +177,7 @@ iunpp_t iusHLNonParametricPulseLoad
 )
 {
     int status = 0;
-    char label[IUS_MAX_HDF5_PATH];
+    const char *label;
     int  numPulseValues;
 	//char *label;
     iunpp_t  pulse;
@@ -203,7 +190,7 @@ iunpp_t iusHLNonParametricPulseLoad
 
     //sprintf(path, NUMPULSEVALUESFMT, parentPath);
     status |= iusHdf5ReadInt(handle, IUS_NONPARAMPULSE_NUMPULSEVALUES, &(numPulseValues));
-	status |= iusHdf5ReadString(handle, "pulseLabel", (const char **)&(label));
+	status |= iusHdf5ReadString(handle, "pulseLabel", &(label));
     if( status < 0 )
         return NULL;
 

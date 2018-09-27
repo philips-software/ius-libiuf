@@ -200,7 +200,7 @@ TEST(IusReceiveSettings, testIusSerialization)
 
     // read back
     handle = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT );
-    iurs_t savedObj = iusHLReceiveSettingsLoad(handle, pLabel);
+    iurs_t savedObj = iusHLReceiveSettingsLoad(handle);
     TEST_ASSERT(savedObj != NULL);
     H5Fclose(handle);
 

@@ -248,14 +248,14 @@ herr_t iusHL3DTransducerSave
 {
 	herr_t status=0;
     char path[IUS_MAX_HDF5_PATH];
-	hid_t transducer_id = H5Gcreate(handle, "Transducer", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-    status = iusHLBaseTransducerSave((iut_t)transducer, transducer_id);
+	//hid_t transducer_id = H5Gcreate(handle, "Transducer", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+    status = iusHLBaseTransducerSave((iut_t)transducer, handle);
     if (status != 0)
         return status;
 
     sprintf(path, ELEMENTSFMT);
-    status = iusHL3DTransducerElementListSave(transducer->elements, transducer_id);
-	H5Gclose(transducer_id);
+    status = iusHL3DTransducerElementListSave(transducer->elements, handle);
+	//H5Gclose(transducer_id);
     return status;
 }
 
@@ -267,15 +267,15 @@ iu3dt_t iusHL3DTransducerLoad
 {
     char path[IUS_MAX_HDF5_PATH];
     sprintf(path, ELEMENTSFMT);
-	hid_t transducer_id = H5Gopen(handle, "Transducer", H5P_DEFAULT);
-	if (transducer_id < 0) return IU3DT_INVALID;
+	//hid_t transducer_id = H5Gopen(handle, "Transducer", H5P_DEFAULT);
+	//if (transducer_id < 0) return IU3DT_INVALID;
 
-	iut_t baseTransducer = iusHLBaseTransducerLoad(transducer_id);
+	iut_t baseTransducer = iusHLBaseTransducerLoad(handle);
 	if (baseTransducer == IUT_INVALID) return IU3DT_INVALID;
 
-	iu3dtel_t elements = iusHL3DTransducerElementListLoad(transducer_id);
+	iu3dtel_t elements = iusHL3DTransducerElementListLoad(handle);
 	if (elements == IU3DTEL_INVALID) return IU3DT_INVALID;
-	H5Gclose(transducer_id);
+	//H5Gclose(transducer_id);
 
 	int numElements = iusHL3DTransducerElementListGetSize(elements);
 	iu3dt_t transducer = iusHL3DTransducerCreate( baseTransducer->pTransducerName,

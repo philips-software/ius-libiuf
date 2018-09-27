@@ -15,8 +15,7 @@ int iusHLReceiveSettingsSave
 
 iurs_t iusHLReceiveSettingsLoad
 (
-    hid_t handle,
-    char *label
+    hid_t handle
 );
 
 
