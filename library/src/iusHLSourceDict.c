@@ -8,6 +8,7 @@
 #include <ius.h>
 #include <iusError.h>
 #include <iusUtil.h>
+#include <iusInputFileStructure.h>
 #include <iusHLSourceImp.h>
 #include <iusHLSourceDict.h>
 #include <assert.h>
@@ -192,7 +193,7 @@ iusd_t iusHLSourceDictLoad
     int status = IUS_E_OK;
     char memb_name[MAX_NAME];
 
-	hid_t grpid = H5Gopen(handle, "Sources", H5P_DEFAULT);
+	hid_t grpid = H5Gopen(handle, IUS_INPUTFILE_PATH_SOURCEDICT, H5P_DEFAULT);
     if(handle == H5I_INVALID_HID)
         return NULL;
 

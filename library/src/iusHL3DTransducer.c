@@ -10,6 +10,7 @@
 #include <iusError.h>
 #include <iusTypes.h>
 #include <iusUtil.h>
+
 #include <iusHLPositionImp.h>
 #include <iusHLTransducer.h>
 #include <iusHL3DTransducer.h>
@@ -118,6 +119,7 @@ int iusHL3DTransducerSetElement
   return iusHL3DTransducerElementListSet(transducer->elements,element,elementIndex);
 }
 
+#if 0
 int ius3DTransducerWriteElementPositions(Ius3DTransducer *pTransducer, hid_t subgroup_id, int verbose)
 {
 	herr_t        status = 0;
@@ -237,8 +239,7 @@ int ius3DTransducerWriteElementAngles(Ius3DTransducer *pTransducer, hid_t subgro
 	status |= H5Dclose(dataset);
 	return status;
 }
-
-#define ELEMENTSFMT "Elements"
+#endif
 
 herr_t iusHL3DTransducerSave
 (
@@ -247,15 +248,12 @@ herr_t iusHL3DTransducerSave
 )
 {
 	herr_t status=0;
-    char path[IUS_MAX_HDF5_PATH];
-	//hid_t transducer_id = H5Gcreate(handle, "Transducer", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+
     status = iusHLBaseTransducerSave((iut_t)transducer, handle);
     if (status != 0)
         return status;
 
-    sprintf(path, ELEMENTSFMT);
     status = iusHL3DTransducerElementListSave(transducer->elements, handle);
-	//H5Gclose(transducer_id);
     return status;
 }
 
@@ -265,17 +263,11 @@ iu3dt_t iusHL3DTransducerLoad
 	hid_t handle
 )
 {
-    char path[IUS_MAX_HDF5_PATH];
-    sprintf(path, ELEMENTSFMT);
-	//hid_t transducer_id = H5Gopen(handle, "Transducer", H5P_DEFAULT);
-	//if (transducer_id < 0) return IU3DT_INVALID;
-
 	iut_t baseTransducer = iusHLBaseTransducerLoad(handle);
 	if (baseTransducer == IUT_INVALID) return IU3DT_INVALID;
 
 	iu3dtel_t elements = iusHL3DTransducerElementListLoad(handle);
 	if (elements == IU3DTEL_INVALID) return IU3DT_INVALID;
-	//H5Gclose(transducer_id);
 
 	int numElements = iusHL3DTransducerElementListGetSize(elements);
 	iu3dt_t transducer = iusHL3DTransducerCreate( baseTransducer->pTransducerName,

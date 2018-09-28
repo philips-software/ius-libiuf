@@ -3,6 +3,7 @@
 //
 #include <stdlib.h>
 
+#include <iusInputFileStructure.h>
 #include <iusHLPositionImp.h>
 #include <iusUtil.h>
 #include <include/iusHDF5.h>
@@ -78,12 +79,6 @@ void iusHL2DPositionDelete
     free(iusPos);
 }
 
-
-//#define SIZEXFMT "%s/x"
-//#define SIZEYFMT "%s/y"
-//#define SIZEZFMT "%s/z"
-
-
 // TODO: position should serialize to a "position" with x,y,z properties instead of 
 iu3dp_t iusHL3DPositionLoad
 (
@@ -91,16 +86,14 @@ iu3dp_t iusHL3DPositionLoad
 )
 {
     int status=0;
-    //char path[IUS_MAX_HDF5_PATH];
     float x,y,z;
-	hid_t position_id = H5Gopen(handle, "Position", H5P_DEFAULT);
-    //sprintf(path, SIZEXFMT, parentPath);
-    status |= iusHdf5ReadFloat(position_id, "x", &(x));
-    //sprintf(path, SIZEYFMT, parentPath);
-    status |= iusHdf5ReadFloat(position_id, "y", &(y));
-    //sprintf(path, SIZEZFMT, parentPath);
-    status |= iusHdf5ReadFloat(position_id, "z", &(z));
-    if (status < 0)
+	hid_t position_id = H5Gopen(handle, IUS_INPUTFILE_PATH_POSITION, H5P_DEFAULT);
+
+	status |= iusHdf5ReadFloat(position_id, IUS_INPUTFILE_PATH_POSITION_X, &(x));
+    status |= iusHdf5ReadFloat(position_id, IUS_INPUTFILE_PATH_POSITION_Y, &(y));
+    status |= iusHdf5ReadFloat(position_id, IUS_INPUTFILE_PATH_POSITION_Z, &(z));
+
+	if (status < 0)
         return IU3DP_INVALID;
 	H5Gclose(position_id);
     return iusHL3DPositionCreate(x,y,z);
@@ -112,15 +105,15 @@ iu2dp_t iusHL2DPositionLoad
 )
 {
     int status=0;
-    //char path[IUS_MAX_HDF5_PATH];
+    
     float x,z;
-	hid_t position_id = H5Gopen(handle, "Position", H5P_DEFAULT);
-    //sprintf(path, SIZEXFMT, parentPath);
-    status |= iusHdf5ReadFloat(position_id, "x", &(x));
-    //sprintf(path, SIZEZFMT, parentPath);
-    status |= iusHdf5ReadFloat(position_id, "z", &(z));
+	hid_t position_id = H5Gopen(handle, IUS_INPUTFILE_PATH_POSITION, H5P_DEFAULT);
+    
+    status |= iusHdf5ReadFloat(position_id, IUS_INPUTFILE_PATH_POSITION_X, &(x));
+    status |= iusHdf5ReadFloat(position_id, IUS_INPUTFILE_PATH_POSITION_Z, &(z));
     if (status < 0)
         return IU2DP_INVALID;
+
 	H5Gclose(position_id);
     return iusHL2DPositionCreate(x,z);
 }
@@ -131,29 +124,22 @@ int iusHL3DPositionSave
     hid_t handle
 )
 {
-    int status=0;
-    //char path[IUS_MAX_HDF5_PATH];
     const int verbose = 1;
 
 	hid_t position_id;
-	status = H5Gget_objinfo(handle, "Position", 0, NULL); // todo centralize the path "Sources"
+	int status = H5Gget_objinfo(handle, IUS_INPUTFILE_PATH_POSITION, 0, NULL); // todo centralize the path "Sources"
 	if (status != 0) // the group does not exist yet
 	{
-		position_id = H5Gcreate(handle, "Position", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+		position_id = H5Gcreate(handle, IUS_INPUTFILE_PATH_POSITION, 
+										H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 	}
 	else
 	{
-		position_id = H5Gopen(handle, "Position", H5P_DEFAULT);
+		position_id = H5Gopen(handle, IUS_INPUTFILE_PATH_POSITION, H5P_DEFAULT);
 	}
-	status = 0;
-    //hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-    //sprintf(path, SIZEXFMT, parentPath);
-    status |= iusHdf5WriteFloat(position_id, "x", &(position->x), 1, verbose);
-    //sprintf(path, SIZEYFMT, parentPath);
-    status |= iusHdf5WriteFloat(position_id, "y", &(position->y), 1, verbose);
-    //sprintf(path, SIZEZFMT, parentPath);
-    status |= iusHdf5WriteFloat(position_id, "z", &(position->z), 1, verbose);
-    //status |= H5Gclose(group_id );
+    status = iusHdf5WriteFloat(position_id, IUS_INPUTFILE_PATH_POSITION_X, &(position->x), 1, verbose);
+    status |= iusHdf5WriteFloat(position_id, IUS_INPUTFILE_PATH_POSITION_Y, &(position->y), 1, verbose);
+    status |= iusHdf5WriteFloat(position_id, IUS_INPUTFILE_PATH_POSITION_Z, &(position->z), 1, verbose);
 	H5Gclose(position_id);
     return status;
 }
@@ -164,26 +150,20 @@ int iusHL2DPositionSave
     hid_t handle
 )
 {
-    int status=0;
-    //char path[IUS_MAX_HDF5_PATH];
     const int verbose = 1;
 	hid_t position_id;
-	status = H5Gget_objinfo(handle, "Position", 0, NULL); // todo centralize the path "Sources"
+	int status = H5Gget_objinfo(handle, IUS_INPUTFILE_PATH_POSITION, 0, NULL); // todo centralize the path "Sources"
 	if (status != 0) // the group does not exist yet
 	{
-		position_id = H5Gcreate(handle, "Position", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+		position_id = H5Gcreate(handle, IUS_INPUTFILE_PATH_POSITION, 
+									H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 	}
 	else
 	{
-		position_id = H5Gopen(handle, "Position", H5P_DEFAULT);
+		position_id = H5Gopen(handle, IUS_INPUTFILE_PATH_POSITION, H5P_DEFAULT);
 	}
-	status = 0;
-    //hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-    //sprintf(path, SIZEXFMT, parentPath);
-    status |= iusHdf5WriteFloat(position_id, "x", &(position->x), 1, verbose);   //todo put x and z as defines in central place
-    //sprintf(path, SIZEZFMT, parentPath);
-    status |= iusHdf5WriteFloat(position_id, "z", &(position->z), 1, verbose);
-    //status |= H5Gclose(group_id );
+    status = iusHdf5WriteFloat(position_id, IUS_INPUTFILE_PATH_POSITION_X, &(position->x), 1, verbose);   //todo put x and z as defines in central place
+    status |= iusHdf5WriteFloat(position_id, IUS_INPUTFILE_PATH_POSITION_Z, &(position->z), 1, verbose);
 	H5Gclose(position_id);
 
     return status;

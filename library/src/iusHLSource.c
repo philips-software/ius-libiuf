@@ -11,6 +11,7 @@
 #include <iusTypes.h>
 #include <iusUtil.h>
 #include <string.h>
+#include <iusInputFileStructure.h>
 #include <include/iusHL3DNonParametricSource.h>
 #include <include/iusHL2DParametricSource.h>
 #include <include/iusHL2DNonParametricSource.h>
@@ -20,7 +21,6 @@
 #include <include/iusHL2DParametricSourceImp.h>
 #include <include/iusHL3DNonParametricSourceImp.h>
 #include <include/iusHL3DParametricSourceImp.h>
-
 #include "include/iusHLSourceImp.h"
 #include "include/iusHL3DParametricSource.h"
 
@@ -119,10 +119,7 @@ char * iusHLSourceGetLabel
 }
 
 // Serialization
-#define SOURCETYPEFMT "%s/SourceType"
-#define LABELFMT "%s/SourceLabel"
 #define TOSTR(x)    #x
-
 static herr_t iusWriteSourceType
 (
     hid_t group_id,
@@ -187,19 +184,13 @@ int iusHLBaseSourceSave
 )
 {
     int status=IUS_E_OK;
-    //char path[IUS_MAX_HDF5_PATH];
 
     if( source == IUS_INVALID )
     {
         return IUS_ERR_VALUE;
     }
-
-    //hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-    //sprintf(path, SOURCETYPEFMT, parentPath);
-    status |= iusWriteSourceType(handle, "SourceType", source->type);
-    //sprintf(path, LABELFMT, parentPath);
-    status |= iusHdf5WriteString(handle, "SourceLabel", source->label, 1);
-    //status |= H5Gclose(group_id );
+    status |= iusWriteSourceType(handle, IUS_INPUTFILE_PATH_SOURCE_SOURCETYPE, source->type);
+    status |= iusHdf5WriteString(handle, IUS_INPUTFILE_PATH_SOURCE_SOURCELABEL, source->label, 1);
     return status;
 }
 
@@ -225,12 +216,9 @@ ius_t iusHLBaseSourceLoad
     int status = 0;
     IusSourceType type;
     const char *label;
-    //char path[IUS_MAX_HDF5_PATH];
-
-    //sprintf(path, SOURCETYPEFMT, parentPath);
-    status = iusReadSourceType( handle, "SourceType", &(type));
-    //sprintf(path, LABELFMT, parentPath);
-    status |= iusHdf5ReadString( handle, "SourceLabel", &(label));  //todo find out when+how this string is freed
+    
+    status = iusReadSourceType( handle, IUS_INPUTFILE_PATH_SOURCE_SOURCETYPE, &(type));
+    status |= iusHdf5ReadString( handle, IUS_INPUTFILE_PATH_SOURCE_SOURCELABEL, &(label));  //todo find out when+how this string is freed
     if( status < 0 )
         return NULL;
 
@@ -243,8 +231,6 @@ ius_t iusHLSourceLoad
 )
 {
 	ius_t source;
-	//int status = IUS_E_OK;
-	//const char *label;
 
     source = iusHLBaseSourceLoad(handle);
 	if (source == NULL) return IUS_INVALID;
@@ -280,8 +266,6 @@ ius_t iusHLSourceLoad
     return source;
 }
 
-
-
 int iusHLSourceSave
 (
     ius_t source,
@@ -294,14 +278,14 @@ int iusHLSourceSave
     }
 
 	hid_t sources_id;
-	int status = H5Gget_objinfo(handle, "Sources", 0, NULL); // todo centralize the path "Sources"
+	int status = H5Gget_objinfo(handle, IUS_INPUTFILE_PATH_SOURCEDICT, 0, NULL); // todo centralize the path "Sources"
 	if (status != 0) // the group does not exist yet
 	{
-		sources_id = H5Gcreate(handle, "Sources", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+		sources_id = H5Gcreate(handle, IUS_INPUTFILE_PATH_SOURCEDICT, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 	}
 	else
 	{
-		sources_id = H5Gopen(handle, "Sources", H5P_DEFAULT);
+		sources_id = H5Gopen(handle, IUS_INPUTFILE_PATH_SOURCEDICT, H5P_DEFAULT);
 	}
 	hid_t label_id = H5Gcreate(sources_id, source->label, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
     switch (source->type)

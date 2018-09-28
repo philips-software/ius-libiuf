@@ -9,13 +9,13 @@
 #include <ius.h>
 #include <iusUtil.h>
 #include <iusError.h>
+#include <iusInputFileStructure.h>
 #include <iusHLExperimentImp.h>
 #include <include/iusHDF5.h>
 
 // ADT
-#define PULSETYPEFMT "%s/speedOfSound"
-#define LABELFMT "%s/description"
-
+//#define PULSETYPEFMT "%s/speedOfSound"
+//#define LABELFMT "%s/description"
 
 /** \brief An Ultrasound experiment is identified by a date and a description, also the speed of sound has been determined */
 struct IusExperiment
@@ -24,7 +24,6 @@ struct IusExperiment
     int    date;            /**< interger concatenation of year-month-day e.g. 20160123 for 23th Jan 2016 */
     char * pDescription;    /**< Experiment notes */
 } ;
-
 
 iue_t iusHLExperimentCreate
 (
@@ -140,19 +139,19 @@ int iusHLExperimentSave
 	const int verbose = 1;
 	
 	hid_t experiment_id;
-	status = H5Gget_objinfo(handle, "Experiment", 0, NULL); // todo centralize the path "Sources"
+	status = H5Gget_objinfo(handle, IUS_INPUTFILE_PATH_EXPERIMENT, 0, NULL); // todo centralize the path "Sources"
 	if (status != 0) // the group does not exist yet
 	{
-		experiment_id = H5Gcreate(handle, "Experiment", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+		experiment_id = H5Gcreate(handle, IUS_INPUTFILE_PATH_EXPERIMENT, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 	}
 	else
 	{
-		experiment_id = H5Gopen(handle, "Experiment", H5P_DEFAULT);
+		experiment_id = H5Gopen(handle, IUS_INPUTFILE_PATH_EXPERIMENT, H5P_DEFAULT);
 	}
 	if (experiment_id > 0) status = 0;
-    status |= iusHdf5WriteFloat(experiment_id, "speedOfSound", &experiment->speedOfSound, 1, verbose);
-    status |= iusHdf5WriteInt(experiment_id, "date", &experiment->date, 1);
-    status |= iusHdf5WriteString(experiment_id, "description", experiment->pDescription, verbose);
+    status |= iusHdf5WriteFloat(experiment_id, IUS_INPUTFILE_PATH_EXPERIMENT_SPEEDOFSOUND, &experiment->speedOfSound, 1, verbose);
+    status |= iusHdf5WriteInt(experiment_id, IUS_INPUTFILE_PATH_EXPERIMENT_DATE, &experiment->date, 1);
+    status |= iusHdf5WriteString(experiment_id, IUS_INPUTFILE_PATH_EXPERIMENT_DESCRIPTION, experiment->pDescription, verbose);
 
 	H5Gclose(experiment_id);
     return status;
@@ -169,10 +168,10 @@ iue_t iusHLExperimentLoad
     const char *pDescription;
     iue_t experiment;
 
-	hid_t experiment_id = H5Gopen(handle, "Experiment", H5P_DEFAULT); // todo move "Experiment" to central place
-    status |= iusHdf5ReadFloat(experiment_id, "speedOfSound", &(speedOfSound));
-    status |= iusHdf5ReadInt(experiment_id,    "date", &(date));
-    status |= iusHdf5ReadString(experiment_id, "description", &(pDescription));
+	hid_t experiment_id = H5Gopen(handle, IUS_INPUTFILE_PATH_EXPERIMENT, H5P_DEFAULT); // todo move "Experiment" to central place
+    status |= iusHdf5ReadFloat(experiment_id, IUS_INPUTFILE_PATH_EXPERIMENT_SPEEDOFSOUND, &(speedOfSound));
+    status |= iusHdf5ReadInt(experiment_id, IUS_INPUTFILE_PATH_EXPERIMENT_DATE, &(date));
+    status |= iusHdf5ReadString(experiment_id, IUS_INPUTFILE_PATH_EXPERIMENT_DESCRIPTION, &(pDescription));
 	
 	H5Gclose(experiment_id);
     if( status < 0 )

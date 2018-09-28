@@ -9,6 +9,7 @@
 #include <iusError.h>
 #include <iusTypes.h>
 #include <iusUtil.h>
+#include <iusInputFileStructure.h>
 #include <iusHL3DSize.h>
 #include <include/iusHDF5.h>
 
@@ -59,26 +60,18 @@ int iusHL3DSizeCompare
     return IUS_TRUE;
 }
 
-//#define SIZEXFMT "%s/sx"
-//#define SIZEYFMT "%s/xy"
-//#define SIZEZFMT "%s/sz"
-
 iu3ds_t iusHL3DSizeLoad
 (
     hid_t handle
 )
 {
     int status=0;
-    //char path[IUS_MAX_HDF5_PATH];
     float sx,sy,sz;
 
-	hid_t group_id = H5Gopen(handle, "Size", H5P_DEFAULT);
-    //sprintf(path, SIZEXFMT, parentPath);
-    status |= iusHdf5ReadFloat(group_id, "sx", &(sx));
-    //sprintf(path, SIZEYFMT, parentPath);
-    status |= iusHdf5ReadFloat(group_id, "sy", &(sy));
-    //sprintf(path, SIZEZFMT, parentPath);
-    status |= iusHdf5ReadFloat(group_id, "sz", &(sz));
+	hid_t group_id = H5Gopen(handle, IUS_INPUTFILE_PATH_SIZE, H5P_DEFAULT);
+    status |= iusHdf5ReadFloat(group_id, IUS_INPUTFILE_PATH_SIZE_X, &(sx));
+    status |= iusHdf5ReadFloat(group_id, IUS_INPUTFILE_PATH_SIZE_Y, &(sy));
+    status |= iusHdf5ReadFloat(group_id, IUS_INPUTFILE_PATH_SIZE_Z, &(sz));
     if (status < 0)
         return IU3DS_INVALID;
     return iusHL3DSizeCreate(sx,sy,sz);
@@ -91,16 +84,14 @@ int iusHL3DSizeSave
 )
 {
     int status=0;
-    //char path[IUS_MAX_HDF5_PATH];
     const int verbose = 1;
-    hid_t group_id = H5Gcreate(handle, "Size", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-    //sprintf(path, SIZEXFMT, parentPath);
-    status |= iusHdf5WriteFloat(group_id, "sx", &(size->sx), 1, verbose);
-    //sprintf(path, SIZEYFMT, parentPath);
-    status |= iusHdf5WriteFloat(group_id, "sy", &(size->sy), 1, verbose);
-    //sprintf(path, SIZEZFMT, parentPath);
-    status |= iusHdf5WriteFloat(group_id, "sz", &(size->sz), 1, verbose);
-    status |= H5Gclose(group_id );
+
+    hid_t group_id = H5Gcreate(handle, IUS_INPUTFILE_PATH_SIZE, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+    status |= iusHdf5WriteFloat(group_id, IUS_INPUTFILE_PATH_SIZE_X, &(size->sx), 1, verbose);
+    status |= iusHdf5WriteFloat(group_id, IUS_INPUTFILE_PATH_SIZE_Y, &(size->sy), 1, verbose);
+    status |= iusHdf5WriteFloat(group_id, IUS_INPUTFILE_PATH_SIZE_Z, &(size->sz), 1, verbose);
+    status |= H5Gclose(group_id);
+
     return status;
 }
 

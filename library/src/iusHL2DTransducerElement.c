@@ -8,6 +8,7 @@
 #include <ius.h>
 #include <iusError.h>
 #include <iusTypes.h>
+#include <iusInputFileStructure.h>
 #include <iusUtil.h>
 #include <iusHL2DSizeImp.h>
 #include <iusHLTransducerElement.h>
@@ -75,33 +76,21 @@ int iusHL2DTransducerElementCompare
 }
 
 
-#define ELEMENTSIZEPATH "Size"
-#define ELEMENTPOSITIONPATH  "Position"
-#define ELEMENTANGLEPATH  "theta"
-
 int iusHL2DTransducerElementSave
 (
     iu2dte_t element,
     hid_t handle
 )
 {
-    char path[IUS_MAX_HDF5_PATH];
+    
     if( element == IU2DTE_INVALID ) return IUS_ERR_VALUE;
 
-    //hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-    //sprintf(path, ELEMENTSIZEPATH);
     int status = iusHL2DSizeSave(element->size, handle);
-
-    //sprintf(path, ELEMENTPOSITIONPATH);
     status |= iusHL2DPositionSave(element->position, handle);
-
-    sprintf(path, ELEMENTANGLEPATH);
-    status |= iusHdf5WriteFloat(handle, path,&(element->theta),1,1);
-    //status |= H5Gclose(group_id );
+    status |= iusHdf5WriteFloat(handle, IUS_INPUTFILE_PATH_ANGLE_THETA, &(element->theta),1,1);
 
     return status;
 }
-
 
 
 iu2dte_t iusHL2DTransducerElementLoad
@@ -109,28 +98,20 @@ iu2dte_t iusHL2DTransducerElementLoad
     hid_t handle
 )
 {
-    //char path[IUS_MAX_HDF5_PATH];
     float theta;
     int status;
 	
-	//hid_t element_id = H5Gopen(handle, elementLabel, H5P_DEFAULT);
-    //sprintf(path, ELEMENTPOSITIONPATH); // todo clean up and centralize this fixed string
     iu2dp_t elemPos = iusHL2DPositionLoad(handle);
     if (elemPos == IU2DP_INVALID) return IU2DTE_INVALID;
 
-    //sprintf(path, ELEMENTSIZEPATH); // todo clean up and centralize this fixed string
     iu2ds_t elemSize = iusHL2DSizeLoad(handle);
     if (elemSize == IU2DS_INVALID) return IU2DTE_INVALID;
 
-    //sprintf(path, ELEMENTANGLEPATH); // todo clean up and centralize this fixed string
-    status = iusHdf5ReadFloat(handle, ELEMENTANGLEPATH, &theta);
+    status = iusHdf5ReadFloat(handle, IUS_INPUTFILE_PATH_ANGLE_THETA, &theta);
     if (status < 0) return IU2DTE_INVALID;
-	//H5Gclose(element_id);
 
     return iusHL2DTransducerElementCreate(elemPos, theta, elemSize);
 }
-
-
 
 // Getters
 iu2dp_t iusHL2DTransducerElementGetPosition

@@ -12,19 +12,9 @@
 #include <math.h>
 #include <string.h>
 #include <include/iusHDF5.h>
-
+#include <iusInputFileStructure.h>
 #include "include/iusHLPulse.h"
 #include "include/iusHLPatternImp.h"
-
-
-#define PULSELABEL "PulseLabel"
-#define PATTERNLABEL "PatternLabel"
-#define SOURCELABEL "SourceLabel"
-#define CHANNELMAPLABEL "ChannelMapLabel"
-#define APODIZATIONLABEL "ApodizationLabel"
-#define RECEIVESETTNGSLABEL "ReceiveSettingsLabel"
-#define TIMEINFRAME "TimeInFrame"
-#define TOSTR(x)    #x
 
 struct IusPattern
 {
@@ -38,7 +28,6 @@ struct IusPattern
 } ;
 
 // ADT
-
 iupa_t iusHLPatternCreate
 (
     const char *pLabel,
@@ -126,22 +115,13 @@ int iusHLPatternSave
   int status=IUS_E_OK;
   //char path[IUS_MAX_HDF5_PATH];
 
-  //hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-  //sprintf(path, PATTERNLABELFMT, parentPath);
-  status |= iusHdf5WriteString(handle, PATTERNLABEL, pattern->pLabel, 1);
-  //sprintf(path, PULSELABELFMT, parentPath);
-  status |= iusHdf5WriteString(handle, PULSELABEL, pattern->pPulseLabel, 1);
- // sprintf(path, SOURCELABELFMT, parentPath);
-  status |= iusHdf5WriteString(handle, SOURCELABEL, pattern->pSourceLabel, 1);
-  //sprintf(path, CHANNELMAPLABELFMT, parentPath);
-  status |= iusHdf5WriteString(handle, CHANNELMAPLABEL, pattern->pChannelMapLabel, 1);
-  //sprintf(path, APODIZATIONLABELFMT, parentPath);
-  status |= iusHdf5WriteString(handle, APODIZATIONLABEL, pattern->pApodizationLabel, 1);
-  //sprintf(path, RECEIVESETTNGSLABELFMT, parentPath);
-  status |= iusHdf5WriteString(handle, RECEIVESETTNGSLABEL, pattern->pReceiveSettingsLabel, 1);
-  //sprintf(path, TIMEINFRAMEFMT, parentPath);
-  status |= iusHdf5WriteFloat(handle, TIMEINFRAME, &(pattern->timeInFrame), 1, 1);
-  //status |= H5Gclose(group_id );
+  status |= iusHdf5WriteString(handle, IUS_INPUTFILE_PATH_PATTERNLIST_PATTERN_PATTERNLABEL, pattern->pLabel, 1);
+  status |= iusHdf5WriteString(handle, IUS_INPUTFILE_PATH_PATTERNLIST_PATTERN_PULSELABEL, pattern->pPulseLabel, 1);
+  status |= iusHdf5WriteString(handle, IUS_INPUTFILE_PATH_PATTERNLIST_PATTERN_SOURCELABEL, pattern->pSourceLabel, 1);
+  status |= iusHdf5WriteString(handle, IUS_INPUTFILE_PATH_PATTERNLIST_PATTERN_CHANNELMAPLABEL, pattern->pChannelMapLabel, 1);
+  status |= iusHdf5WriteString(handle, IUS_INPUTFILE_PATH_PATTERNLIST_PATTERN_APODIZATIONLABEL, pattern->pApodizationLabel, 1);
+  status |= iusHdf5WriteString(handle, IUS_INPUTFILE_PATH_PATTERNLIST_PATTERN_RECEIVESETTINGSLABEL, pattern->pReceiveSettingsLabel, 1);
+  status |= iusHdf5WriteFloat(handle,  IUS_INPUTFILE_PATH_PATTERNLIST_PATTERN_TIMEINFRAME, &(pattern->timeInFrame), 1, 1);
   return status;
 }
 
@@ -152,7 +132,7 @@ iupa_t iusHLPatternLoad
 )
 {
   int status = 0;
-  //IusPulseType type;
+
   const char *pLabel;
   float timeInFrame;
   const char *pPulseLabel;
@@ -160,22 +140,14 @@ iupa_t iusHLPatternLoad
   const char *pChannelMapLabel;
   const char *pApodizationLabel;
   const char *pReceiveSettingsLabel;
-  //char path[IUS_MAX_HDF5_PATH];
 
-  //sprintf(path, PATTERNLABELFMT, parentPath);
-  status |= iusHdf5ReadString(handle, PATTERNLABEL, &(pLabel));
-  //sprintf(path, PULSELABELFMT, parentPath);
-  status |= iusHdf5ReadString(handle, PULSELABEL, &(pPulseLabel));
-  //sprintf(path, SOURCELABELFMT, parentPath);
-  status |= iusHdf5ReadString(handle, SOURCELABEL, &(pSourceLabel));
-  //sprintf(path, CHANNELMAPLABELFMT, parentPath);
-  status |= iusHdf5ReadString(handle, CHANNELMAPLABEL, &(pChannelMapLabel));
-  //sprintf(path, APODIZATIONLABELFMT, parentPath);
-  status |= iusHdf5ReadString(handle, APODIZATIONLABEL, &(pApodizationLabel));
-  //sprintf(path, RECEIVESETTNGSLABELFMT, parentPath);
-  status |= iusHdf5ReadString(handle, RECEIVESETTNGSLABEL, &(pReceiveSettingsLabel));
-  //sprintf(path, TIMEINFRAMEFMT, parentPath);
-  status |= iusHdf5ReadFloat( handle, TIMEINFRAME, &(timeInFrame));
+  status |= iusHdf5ReadString(handle, IUS_INPUTFILE_PATH_PATTERNLIST_PATTERN_PATTERNLABEL, &(pLabel));
+  status |= iusHdf5ReadString(handle, IUS_INPUTFILE_PATH_PATTERNLIST_PATTERN_PULSELABEL, &(pPulseLabel));
+  status |= iusHdf5ReadString(handle, IUS_INPUTFILE_PATH_PATTERNLIST_PATTERN_SOURCELABEL, &(pSourceLabel));
+  status |= iusHdf5ReadString(handle, IUS_INPUTFILE_PATH_PATTERNLIST_PATTERN_CHANNELMAPLABEL, &(pChannelMapLabel));
+  status |= iusHdf5ReadString(handle, IUS_INPUTFILE_PATH_PATTERNLIST_PATTERN_APODIZATIONLABEL, &(pApodizationLabel));
+  status |= iusHdf5ReadString(handle, IUS_INPUTFILE_PATH_PATTERNLIST_PATTERN_RECEIVESETTINGSLABEL, &(pReceiveSettingsLabel));
+  status |= iusHdf5ReadFloat( handle, IUS_INPUTFILE_PATH_PATTERNLIST_PATTERN_TIMEINFRAME, &(timeInFrame));
 
   if( status < 0 )
     return NULL;

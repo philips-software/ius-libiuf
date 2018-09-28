@@ -12,6 +12,7 @@
 #include <iusError.h>
 #include <iusTypes.h>
 #include <iusUtil.h>
+#include <iusInputFileStructure.h>
 #include <include/iusHLExperimentImp.h>
 #include <include/iusHLInputFile.h>
 #include <include/iusHLPatternListImp.h>
@@ -27,19 +28,6 @@
 #include <include/iusHLTransducerImp.h>
 #include <include/iusHLTransmitApodizationDictImp.h>
 
-static char *const FRAME_LIST_PATH = "/Frames";
-static char *const PATTERN_LIST_PATH="/Patterns";
-static char *const PULSE_DICT_PATH="/Pulses";
-static char *const PULSE_SOURCE_DICT_PATH="/PulseSources";
-static char *const RECEIVE_CHANNEL_MAP_PATH="/ReceiveChannelMaps";
-static char *const TRANSMIT_APODIZATION_DICT_PATH="/TransmitApodizations";
-static char *const RECEIVE_SETTINGS_DICT_PATH="/ReceiveSettings";
-static char *const TRANSDUCER_PATH="/Transducer";
-static char *const EXPERIMENT_PATH="/Experiment";
-static char *const NUMFRAMES_PATH="/NumFrames";
-static char *const IUSVERSION_PATH="/IusVersion";
-
-
 struct IusInputFile
 {
     const char *pFilename;
@@ -54,7 +42,6 @@ struct IusInputFile
 	iue_t experiment;
     int numFrames;        /**< The number of frames in the data */
     int IusVersion;       /**< version of input file format */
-
 
     //  state variables
     hid_t fileChunkConfig;                /**< file chunck handle */
@@ -141,7 +128,6 @@ int iusHLInputFileDelete
 
 
 // operations
-
 iuif_t iusHLInputFileLoad
 (
     const char *pFilename
@@ -241,14 +227,14 @@ iuif_t iusHLInputFileLoad
         return IUIF_INVALID;
     }
 
-    int status = iusHdf5ReadInt( pFileInst->handle, IUSVERSION_PATH, &(pFileInst->IusVersion));
+    int status = iusHdf5ReadInt( pFileInst->handle, IUS_INPUTFILE_PATH_IUSVERSION, &(pFileInst->IusVersion));
     if( status != IUS_E_OK )
     {
         fprintf(stderr, "Warning from iusHLInputFileLoad: could not load IusVersion: %s\n", pFilename);
         return IUIF_INVALID;
     }
 
-    status = iusHdf5ReadInt( pFileInst->handle, NUMFRAMES_PATH, &(pFileInst->numFrames));
+    status = iusHdf5ReadInt( pFileInst->handle, IUS_INPUTFILE_PATH_NUMFRAMES, &(pFileInst->numFrames));
     if( status != IUS_E_OK )
     {
         fprintf(stderr, "Warning from iusHLInputFileLoad: could not load numFrames: %s\n", pFilename);
@@ -277,8 +263,8 @@ int iusHLInputFileSave
 	status |= iusHLExperimentSave(fileHandle->experiment, fileHandle->handle);
     status |= iusHLTransducerSave(fileHandle->transducer, fileHandle->handle);
 
-    status |= iusHdf5WriteInt( fileHandle->handle, IUSVERSION_PATH, &(fileHandle->IusVersion), 1);
-    status |= iusHdf5WriteInt( fileHandle->handle, NUMFRAMES_PATH, &(fileHandle->numFrames), 1);
+    status |= iusHdf5WriteInt( fileHandle->handle, IUS_INPUTFILE_PATH_IUSVERSION, &(fileHandle->IusVersion), 1);
+    status |= iusHdf5WriteInt( fileHandle->handle, IUS_INPUTFILE_PATH_NUMFRAMES, &(fileHandle->numFrames), 1);
 
 	return status;
 

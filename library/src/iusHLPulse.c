@@ -12,15 +12,13 @@
 #include <iusHDF5.h>
 #include <iusUtil.h>
 #include <iusError.h>
+#include <iusInputFileStructure.h>
 #include <iusHLPulse.h>
 #include <iusHLPulseImp.h>
 #include <iusHLParametricPulseImp.h>
 #include <iusHLNonParametricPulseImp.h>
 
 
-
-#define PULSETYPE_STR "pulseType"
-#define PULSELABEL_STR "pulseLabel"
 #define TOSTR(x)    #x
 
 
@@ -162,14 +160,9 @@ int iusHLBasePulseSave
 )
 {
     int status=IUS_E_OK;
-    //char path[IUS_MAX_HDF5_PATH];
 
-    //hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-    //sprintf(path, PULSETYPEFMT, parentPath);
-    status |= iusWritePulseType(handle, PULSETYPE_STR, pulse->type);
-    //sprintf(path, LABELFMT, parentPath);
-    status |= iusHdf5WriteString(handle, PULSELABEL_STR, pulse->label, 1);
-    //status |= H5Gclose(group_id );
+	status |= iusWritePulseType(handle, IUS_INPUTFILE_PATH_PULSE_PULSETYPE, pulse->type);
+    status |= iusHdf5WriteString(handle, IUS_INPUTFILE_PATH_PULSE_PULSELABEL, pulse->label, 1);
     return status;
 }
 
@@ -181,16 +174,12 @@ int iusHLPulseSave
 )
 {
     int status=IUS_ERR_VALUE;
-    // create a pulse group in "Pulses" and create Pulses if not existing
 
-	//hid_t pulse_id = H5Gcreate(handle, pulse->label, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-    // Make dataset for Experiment
     if( pulse->type == IUS_PARAMETRIC_PULSETYPE )
         status = iusHLParametricPulseSave((iupp_t)pulse, handle);
 
     if( pulse->type == IUS_NON_PARAMETRIC_PULSETYPE )
         status = iusHLNonParametricPulseSave((iunpp_t)pulse, handle);
-	//H5Gclose(pulse_id);
 
     return status;
 }
@@ -204,8 +193,8 @@ iup_t iusHLBasePulseLoad
 	IusPulseType type;
 	const char *label;
 
-	status |= iusReadPulseType(handle, PULSETYPE_STR, &(type));
-	status |= iusHdf5ReadString(handle, PULSELABEL_STR, &(label));
+	status |= iusReadPulseType(handle, IUS_INPUTFILE_PATH_PULSE_PULSETYPE, &(type));
+	status |= iusHdf5ReadString(handle, IUS_INPUTFILE_PATH_PULSE_PULSELABEL, &(label));
 	if (status < 0)
 		return NULL;
 
@@ -218,13 +207,6 @@ iup_t iusHLPulseLoad
 )
 {
 	iup_t pulse = NULL;
-	//char label[IUS_MAX_HDF5_PATH];
-	//int status=0;
-	//status |= iusHdf5ReadString(handle, PULSELABEL_STR, &(label));
-
-	//sprintf(path, "%s/%s", "Pulses/%s", label);
-	//hid_t pulse_id = H5Gopen(handle, path, H5P_DEFAULT);
-
 	pulse = iusHLBasePulseLoad(handle);
 	if (pulse == NULL) return IUP_INVALID;
 	//todo free pulse here to prevent memory loss?

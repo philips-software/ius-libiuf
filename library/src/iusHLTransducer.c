@@ -13,7 +13,7 @@
 #include <iusError.h>
 #include <iusTypes.h>
 #include <iusUtil.h>
-
+#include <iusInputFileStructure.h>
 #include <iusHLTransducerImp.h>
 #include <iusHL2DTransducerImp.h>
 #include <iusHL3DTransducerImp.h>
@@ -178,19 +178,6 @@ int iusHLTransducerSetElement
     return status;
 }
 
-/*
-hid_t iusWriteTransducerType
-(
-	hid_t handle,
-	IusShape transducerType
-)
-{
-	// TODO: implement this write function
-	return handle;
-} */
-
-#define TRANSDUCER_ELEMENTS_FMT "Elements"
-
 static herr_t iusHLBaseTransducerSaveShape(hid_t group_id,
                                            const char *pVariableString,
                                            IusTransducerShape shape)
@@ -210,12 +197,6 @@ static herr_t iusHLBaseTransducerSaveShape(hid_t group_id,
 	return status;
 }
 
-#define SHAPEFMT "shape"
-#define NAMEFMT "transducerName"
-#define CENTERFREQUENCYFMT "centerFrequency"
-
-#define IUS_INPUT_STRUCTURE_TRANSDUCER "Transducer"
-
 herr_t iusHLBaseTransducerSave
 (
     iut_t transducer,
@@ -223,18 +204,10 @@ herr_t iusHLBaseTransducerSave
 )
 {
 	herr_t status = IUS_E_OK;
-    //char path[IUS_MAX_HDF5_PATH];
- 
-	//TODO create a Transducer group if it doesn't exist yet
-	//status = H5Gget_objinfo(handle, IUS_INPUT_STRUCTURE_TRANSDUCER, 0, NULL);
 
-    // sprintf(path, SHAPEFMT, parentPath);
-    status |= iusHLBaseTransducerSaveShape(handle, SHAPEFMT, transducer->shape);
-    // sprintf(path, NAMEFMT, parentPath);
-	status |= iusHdf5WriteString(handle, NAMEFMT, transducer->pTransducerName, 1);
-    // sprintf(path, CENTERFREQUENCYFMT, parentPath);
-	status |= iusHdf5WriteFloat(handle, CENTERFREQUENCYFMT, &(transducer->centerFrequency), 1, 1);
-    //status |= H5Gclose(group_id );
+	status |= iusHLBaseTransducerSaveShape(handle, IUS_INPUTFILE_PATH_TRANSDUCER_SHAPE, transducer->shape);
+	status |= iusHdf5WriteString(handle, IUS_INPUTFILE_PATH_TRANSDUCER_NAME, transducer->pTransducerName, 1);
+	status |= iusHdf5WriteFloat(handle, IUS_INPUTFILE_PATH_TRANSDUCER_CENTERFREQUENCY, &(transducer->centerFrequency), 1, 1);
     
 	return status;
 }
@@ -250,14 +223,14 @@ herr_t iusHLTransducerSave
 	herr_t  status=0;
 	hid_t transducer_id;
 
-	status = H5Gget_objinfo(handle, "Transducer", 0, NULL); // todo centralize the path "Transducer"
+	status = H5Gget_objinfo(handle, IUS_INPUTFILE_PATH_TRANSDUCER, 0, NULL); // todo centralize the path "Transducer"
 	if (status != 0) // the group does not exist yet
 	{
-		transducer_id = H5Gcreate(handle, "Transducer", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+		transducer_id = H5Gcreate(handle, IUS_INPUTFILE_PATH_TRANSDUCER, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 	}
 	else
 	{
-		transducer_id = H5Gopen(handle, "Transducer", H5P_DEFAULT);
+		transducer_id = H5Gopen(handle, IUS_INPUTFILE_PATH_TRANSDUCER, H5P_DEFAULT);
 	}
 	// todo check if transducer_id is valid
 	status = 0;
@@ -301,9 +274,9 @@ iut_t iusHLBaseTransducerLoad
     IusTransducerShape shape;
     float centerFrequency;
 
-    status |= iusHdf5ReadString(handle, NAMEFMT, &name);
-    status |= iusHdf5ReadFloat(handle, CENTERFREQUENCYFMT, &(centerFrequency));
-    status |= iusHLTransducerLoadShape( handle, SHAPEFMT, &(shape));
+    status |= iusHdf5ReadString(handle, IUS_INPUTFILE_PATH_TRANSDUCER_NAME, &name);
+    status |= iusHdf5ReadFloat(handle, IUS_INPUTFILE_PATH_TRANSDUCER_CENTERFREQUENCY, &(centerFrequency));
+    status |= iusHLTransducerLoadShape( handle, IUS_INPUTFILE_PATH_TRANSDUCER_SHAPE, &(shape));
     if( status < 0 )
         return IUT_INVALID;
     return iusHLTransducerCreate(name,shape,centerFrequency);
@@ -317,8 +290,8 @@ iut_t iusHLTransducerLoad
 	int status = 0;
 	IusTransducerShape shape;
     //iut_t transducer = iusHLBaseTransducerLoad(handle);
-	hid_t group_id = H5Gopen(handle, IUS_INPUT_STRUCTURE_TRANSDUCER, H5P_DEFAULT);
-	status |= iusHLTransducerLoadShape(group_id, SHAPEFMT, &(shape));
+	hid_t group_id = H5Gopen(handle, IUS_INPUTFILE_PATH_TRANSDUCER, H5P_DEFAULT);
+	status |= iusHLTransducerLoadShape(group_id, IUS_INPUTFILE_PATH_TRANSDUCER_SHAPE, &(shape));
 	if (status < 0)
 		return IUT_INVALID;
 

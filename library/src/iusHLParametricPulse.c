@@ -10,7 +10,7 @@
 #include <iusHLPulse.h>
 #include <iusUtil.h>
 #include <iusHDF5.h>
-
+#include <iusInputFileStructure.h>
 #include <iusHLParametricPulse.h>
 #include <iusHLPulseImp.h>
 
@@ -22,7 +22,6 @@ struct IusParametricPulse
     float   pulseAmplitude;       /**< (max) amplitude of the pulse in Volts */
     int     pulseCount;           /**< number of cycles that the pulse represents */
 } ;
-
 
 iupp_t iusHLParametricPulseCreate
 (
@@ -109,18 +108,6 @@ int iusHLParametricPulseGetCount
     return ((IusParametricPulse *)pulse)->pulseCount;
 }
 
-
-// float   pulseFrequency;       /**< frequency that the pulse represents in Hz */
-// float   pulseAmplitude;       /**< (max) amplitude of the pulse in Volts */
-// int     pulseCount;           /**< number of cycles that the pulse represents */
-//#define FREQUENCYFMT "%s/pulseFrequency"
-//#define AMPLITUDEFMT "%s/pulseAmplitude"
-//#define COUNTFMT "%s/pulseCount"
-
-#define IUS_PARAMPULSE_FREQUENCY  "numPulseValues"
-#define IUS_PARAMPULSE_AMPLITUDES "pulseAmplitudes"
-#define IUS_PARAMPULSE_COUNT      "pulseTimes"
-
 int iusHLParametricPulseSave
 (
     iupp_t pulse,
@@ -128,7 +115,6 @@ int iusHLParametricPulseSave
 )
 {
     int status=0;
-    //char path[IUS_MAX_HDF5_PATH];
 	const int verbose = 1;
 	if (pulse == NULL || iusHLPulseGetType((iup_t)pulse) != IUS_PARAMETRIC_PULSETYPE)
 		return IUS_ERR_VALUE;
@@ -136,14 +122,11 @@ int iusHLParametricPulseSave
 		return IUS_ERR_VALUE;
 
 	//TODO chekc if /Pulses exist
-	//hid_t pulses_id;
-	//hid_t label_id = H5Gcreate(handle, pulse->base.label, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
     status = iusHLBasePulseSave((iup_t)pulse, handle);
-    status |= iusHdf5WriteFloat(handle, IUS_PARAMPULSE_FREQUENCY, &(pulse->pulseFrequency), 1, verbose);
-    status |= iusHdf5WriteFloat(handle, IUS_PARAMPULSE_AMPLITUDES, &(pulse->pulseAmplitude), 1, verbose);
-    status |= iusHdf5WriteInt(handle, IUS_PARAMPULSE_COUNT, &(pulse->pulseCount), 1);
-	//H5Gclose(label_id);
-	//H5Gclose(pulses_id);
+    status |= iusHdf5WriteFloat(handle, IUS_INPUTFILE_PATH_PULSE_FREQUENCY, &(pulse->pulseFrequency), 1, verbose);
+    status |= iusHdf5WriteFloat(handle, IUS_INPUTFILE_PATH_PULSE_PULSEAMPLITUDES, &(pulse->pulseAmplitude), 1, verbose);
+    status |= iusHdf5WriteInt(handle, IUS_INPUTFILE_PATH_PULSE_COUNT, &(pulse->pulseCount), 1);
+
     return status;
 }
 
@@ -161,17 +144,11 @@ iupp_t iusHLParametricPulseLoad
 
 	if (handle == H5I_INVALID_HID)
 		return NULL;
+	status |= iusHdf5ReadString(handle, IUS_INPUTFILE_PATH_PULSE_PULSELABEL, &(label));
+    status |= iusHdf5ReadFloat(handle, IUS_INPUTFILE_PATH_PULSE_FREQUENCY, &(pulseFrequency));
+    status |= iusHdf5ReadFloat(handle, IUS_INPUTFILE_PATH_PULSE_PULSEAMPLITUDES, &(pulseAmplitude));
+    status |= iusHdf5ReadInt(handle, IUS_INPUTFILE_PATH_PULSE_COUNT, &(pulseCount));
 
-	//sprintf(path, "Pulses/%s", label);
-	//hid_t pulse_id = H5Gopen(handle, path, H5P_DEFAULT);
-	status |= iusHdf5ReadString(handle, "pulseLabel", &(label));
-    //sprintf(path, FREQUENCYFMT, parentPath);
-    status |= iusHdf5ReadFloat(handle, IUS_PARAMPULSE_FREQUENCY, &(pulseFrequency));
-    //sprintf(path, AMPLITUDEFMT, parentPath);
-    status |= iusHdf5ReadFloat(handle, IUS_PARAMPULSE_AMPLITUDES, &(pulseAmplitude));
-    //sprintf(path, COUNTFMT, parentPath);
-    status |= iusHdf5ReadInt(handle, IUS_PARAMPULSE_COUNT, &(pulseCount));
-	//H5Gclose(pulse_id);
     if( status < 0 )
         return NULL;
 

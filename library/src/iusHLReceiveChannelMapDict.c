@@ -8,6 +8,7 @@
 #include <ius.h>
 #include <iusError.h>
 #include <iusUtil.h>
+#include <iusInputFileStructure.h>
 #include <iusHLReceiveChannelMapImp.h>
 #include <iusHLReceiveChannelMapDict.h>
 #include <assert.h>
@@ -166,14 +167,14 @@ herr_t iusHLReceiveChannelMapDictSave
 		return IUS_ERR_VALUE;
 
 	//hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-	status = H5Gget_objinfo(handle, "ReceiveChannelMaps", 0, NULL); // todo centralize the path
+	status = H5Gget_objinfo(handle, IUS_INPUTFILE_PATH_RECEIVECHANNELMAPDICT, 0, NULL); // todo centralize the path
 	if (status != 0) // the group does not exist yet
 	{
-		group_id = H5Gcreate(handle, "ReceiveChannelMaps", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+		group_id = H5Gcreate(handle, IUS_INPUTFILE_PATH_RECEIVECHANNELMAPDICT, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 	}
 	else
 	{
-		group_id = H5Gopen(handle, "ReceiveChannelMaps", H5P_DEFAULT);
+		group_id = H5Gopen(handle, IUS_INPUTFILE_PATH_RECEIVECHANNELMAPDICT, H5P_DEFAULT);
 	}
 	if (group_id == H5I_INVALID_HID)
 		return IUS_ERR_VALUE;
@@ -215,7 +216,7 @@ iurcmd_t iusHLReceiveChannelMapDictLoad
 	hsize_t i;
 	char memberName[MAX_NAME];
 
-	hid_t groupId = H5Gopen(handle, "ReceiveChannelMaps", H5P_DEFAULT);
+	hid_t groupId = H5Gopen(handle, IUS_INPUTFILE_PATH_RECEIVECHANNELMAPDICT, H5P_DEFAULT);
 	if (handle == H5I_INVALID_HID || groupId == H5I_INVALID_HID)
 		return NULL;
 

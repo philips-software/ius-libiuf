@@ -7,6 +7,7 @@
 #include <ius.h>
 #include <iusError.h>
 #include <iusUtil.h>
+#include <iusInputFileStructure.h>
 #include <iusHLFrameListImp.h>
 #include <include/iusHDF5.h>
 #include <include/iusHLFrameImp.h>
@@ -104,9 +105,7 @@ int iusHLFrameListSet
     return IUS_E_OK;
 }
 
-
-#define FRAMELISTFMT "Frame[%d]"
-#define FRAMELISTSIZE "Size"
+//TODO: do we need "numframes" if we have framelist size?
 
 iufl_t iusHLFrameListLoad
 (
@@ -116,8 +115,8 @@ iufl_t iusHLFrameListLoad
     char path[IUS_MAX_HDF5_PATH];
     int numFrames,i;
 
-	hid_t frameList_id = H5Gopen(handle, "/Frames", H5P_DEFAULT);
-    int status = iusHdf5ReadInt(frameList_id, FRAMELISTSIZE, &(numFrames));
+	hid_t frameList_id = H5Gopen(handle, IUS_INPUTFILE_PATH_FRAMELIST, H5P_DEFAULT);
+    int status = iusHdf5ReadInt(frameList_id, IUS_INPUTFILE_PATH_FRAMELIST_SIZE, &(numFrames));
     if(status!=0) return IUFL_INVALID;
 	
     iufl_t frameList = iusHLFrameListCreate(numFrames);
@@ -126,7 +125,7 @@ iufl_t iusHLFrameListLoad
     // Load frames
     for (i=0;i < numFrames; i++)
     {
-        sprintf(path, FRAMELISTFMT, i);
+        sprintf(path, IUS_INPUTFILE_PATH_FRAMELIST_FRAME, i);
 	
 		hid_t frame_id = H5Gopen(frameList_id, path, H5P_DEFAULT);
         sourceElement = iusHLFrameLoad(frame_id);
@@ -179,14 +178,14 @@ int iusHLFrameListSave
         return IUS_ERR_VALUE;
 
 
-	status = H5Gget_objinfo(handle, "Frames", 0, NULL); // todo centralize the path
+	status = H5Gget_objinfo(handle, IUS_INPUTFILE_PATH_FRAMELIST, 0, NULL); // todo centralize the path
 	if (status != 0) // the group does not exist yet
 	{
-		group_id = H5Gcreate(handle, "Frames", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+		group_id = H5Gcreate(handle, IUS_INPUTFILE_PATH_FRAMELIST, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 	}
 	else
 	{
-		group_id = H5Gopen(handle, "Frames", H5P_DEFAULT);
+		group_id = H5Gopen(handle, IUS_INPUTFILE_PATH_FRAMELIST, H5P_DEFAULT);
 	}
 	if (group_id == H5I_INVALID_HID)
 		return IUS_ERR_VALUE;
@@ -194,8 +193,7 @@ int iusHLFrameListSave
 	status = 0;
 	iuf_t sourceElement;
     size = iusHLFrameListGetSize(list);
-    //sprintf(path, FRAMELISTSIZE, handle);
-    status = iusHdf5WriteInt(group_id, FRAMELISTSIZE, &(size), 1);
+    status = iusHdf5WriteInt(group_id, IUS_INPUTFILE_PATH_FRAMELIST_SIZE, &(size), 1);
 	if (status != IUS_E_OK) return IUS_ERR_VALUE;
 
     // iterate over source list elements and save'em
@@ -204,11 +202,9 @@ int iusHLFrameListSave
         sourceElement = iusHLFrameListGet(list,i);
         if(sourceElement == IUF_INVALID) continue;
 
-        sprintf(path, FRAMELISTFMT, i);
+        sprintf(path, IUS_INPUTFILE_PATH_FRAMELIST_FRAME, i);
 		hid_t frame_id = H5Gcreate(group_id, path, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-		//H5close(frame_id);
 		
-		//hid_t grp = H5Gopen(group_id, path, H5P_DEFAULT);
         status = iusHLFrameSave(sourceElement, frame_id);
 		H5Gclose(frame_id);
 		

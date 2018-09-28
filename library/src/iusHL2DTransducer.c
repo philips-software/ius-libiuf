@@ -118,6 +118,7 @@ int iusHL2DTransducerSetElement
     return iusHL2DTransducerElementListSet(transducer->elements,element,elementIndex);
 }
 
+#if 0
 int ius2DTransducerWriteElementPositions(Ius2DTransducer *pTransducer, hid_t subgroup_id, int verbose)
 {
 	herr_t status = 0;
@@ -232,9 +233,7 @@ int ius2DTransducerWriteElementAngles(Ius2DTransducer *pTransducer, hid_t subgro
 	status |= H5Dclose(dataset);
 	return status;
 }
-
-
-#define ELEMENTSFMT "Elements"
+#endif
 
 herr_t iusHL2DTransducerSave
 (
@@ -243,15 +242,11 @@ herr_t iusHL2DTransducerSave
 )
 {
     herr_t status=0;
-    //char path[IUS_MAX_HDF5_PATH];
-	//hid_t transducer_id = H5Gcreate(handle, "Transducer", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
     status = iusHLBaseTransducerSave((iut_t)transducer, handle);
     if (status != 0)
         return status;
 
-    //sprintf(path, ELEMENTSFMT);	
     status = iusHL2DTransducerElementListSave(transducer->elements, handle);
-	//H5Gclose(transducer_id);
     return status;
 }
 
@@ -261,9 +256,6 @@ iu2dt_t iusHL2DTransducerLoad
     hid_t handle
 )
 {
-    //char path[IUS_MAX_HDF5_PATH];
-    //sprintf(path, ELEMENTSFMT);
-	//hid_t transducer_id = H5Gopen(handle, "Transducer", H5P_DEFAULT); // todo put this string at central  location 
 	iut_t baseTransducer = iusHLBaseTransducerLoad(handle);
     if (baseTransducer == IUT_INVALID) return IU2DT_INVALID;
 
@@ -276,7 +268,6 @@ iu2dt_t iusHL2DTransducerLoad
                                                   numElements);
 	if (transducer == IU2DT_INVALID) return IU2DT_INVALID;
 	transducer->elements = elements;
-	//H5Gclose(transducer_id);
     return transducer;
 }
 

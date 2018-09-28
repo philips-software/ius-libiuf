@@ -13,6 +13,7 @@
 #include <iusTypes.h>
 #include <iusUtil.h>
 
+#include <include/iusInputFileStructure.h>
 #include <include/iusHLSourceImp.h>
 #include <include/iusHLPositionImp.h>
 #include <include/iusHL2DNonParametricSource.h>
@@ -23,16 +24,7 @@ struct Ius2DNonParametricSource
     struct IusSource base;
     int locationCount;
     struct Ius2DPosition *pLocations;
-} ;
-
-#define DELTAPHIFMT      "%s/deltaPhi"
-#define STARTPHIFMT      "%s/startPhi"
-#define LOCATIONSFMT     "%s/Locations"
-#define LOCATIONSSIZEFMT "%s/Size"
-
-#define LOCATIONFMT     "%s/Location[%d]"
-
-
+};
 
 // ADT
 iu2dnps_t iusHL2DNonParametricSourceCreate
@@ -137,26 +129,23 @@ static int iusHL2DNonParametricSourceSaveLocations
 {
 	hid_t location_id;
     char path[IUS_MAX_HDF5_PATH];
-    //hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
     iu2dp_t sourceElement;
 
     int i, size = pSource->locationCount;
-    //sprintf(path, LOCATIONSSIZEFMT, parentPath);
-    int status = iusHdf5WriteInt(handle, "Size", &(size), 1);
+    int status = iusHdf5WriteInt(handle, IUS_INPUTFILE_PATH_SOURCE_LISTSIZE, &(size), 1);
 
     // iterate over source list elements and save'em
     for (i=0;i < size;i++)
     {
         sourceElement = &pSource->pLocations[i];
         if(sourceElement == IU2DP_INVALID) continue;
-		sprintf(path, "Location[%d]", i);
+		sprintf(path, IUS_INPUTFILE_PATH_SOURCE_LOCATION, i);
 		location_id = H5Gcreate(handle, path, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
         status = iusHL2DPositionSave(sourceElement, location_id);
 		H5Gclose(location_id);
         if(status != IUS_E_OK) break;
     }
 
-    //status |= H5Gclose(location_id);
     return status;
 }
 
@@ -172,7 +161,7 @@ static int iusHL2DNonParametricSourceLoadLocations
 
     for (p = 0; p < source->locationCount; p++)
     {
-        sprintf(path, "Location[%d]", p);
+        sprintf(path, IUS_INPUTFILE_PATH_SOURCE_LOCATION, p);
 		hid_t location_id = H5Gopen(handle, path, H5P_DEFAULT);
         pos = iusHL2DPositionLoad(location_id);
         if (pos == IU2DP_INVALID)
@@ -192,12 +181,10 @@ int iusHL2DNonParametricSourceSave
     hid_t handle
 )
 {
-    //char path[IUS_MAX_HDF5_PATH];
     // Base
     int status = iusHLBaseSourceSave((ius_t)source, handle);
 
     // Save locations
-    //sprintf(path, LOCATIONSFMT, parentPath);
     status |= iusHL2DNonParametricSourceSaveLocations(source, handle);
     return status;
 }
@@ -209,20 +196,14 @@ iu2dnps_t iusHL2DNonParametricSourceLoad
     char *label
 )
 {
-//    char path[IUS_MAX_HDF5_PATH];
-//    char lpath[IUS_MAX_HDF5_PATH];
-
     int locationCount;
     iu2dnps_t  source;
 
-    //sprintf(lpath, LOCATIONSFMT, parentPath);
-    //sprintf(path, LOCATIONSSIZEFMT, lpath);
-    int status = iusHdf5ReadInt(handle, "Size", &(locationCount));
+    int status = iusHdf5ReadInt(handle, IUS_INPUTFILE_PATH_SOURCE_LISTSIZE, &(locationCount));
     if (status < 0)
         return NULL;
 
     source = iusHL2DNonParametricSourceCreate(label,locationCount);
-    //sprintf(path, LOCATIONSFMT, parentPath);
     status = iusHL2DNonParametricSourceLoadLocations(source, handle);
     if (status <-0)
         return NULL;

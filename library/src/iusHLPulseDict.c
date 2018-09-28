@@ -8,6 +8,7 @@
 #include <ius.h>
 #include <iusError.h>
 #include <iusUtil.h>
+#include <iusInputFileStructure.h>
 #include <iusHLPulseImp.h>
 #include <iusHLParametricPulseImp.h>
 #include <iusHLNonParametricPulseImp.h>
@@ -155,12 +156,6 @@ int iusHLPulseDictSet
 
 
 // serialization
-#define NUMPULSEVALUESFMT  "%s/numPulseValues"
-#define PULSEAMPLITUDESFMT "%s/rawPulseAmplitudes"
-#define PULSETIMESFMT      "%s/rawPulseTimes"
-
-
-#define LABELPATH          "%s/%s"
 int iusHLPulseDictSave
 (
     iupd_t dict,
@@ -178,14 +173,14 @@ int iusHLPulseDictSave
 	hid_t group_id;
 	//hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 	 //hid_t group_id = H5Gcreate(handle, "ReceiveSettings", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-	status = H5Gget_objinfo(handle, "Pulses", 0, NULL); // todo centralize the path
+	status = H5Gget_objinfo(handle, IUS_INPUTFILE_PATH_PULSEDICT, 0, NULL); // todo centralize the path
 	if (status != 0) // the group does not exist yet
 	{
-		group_id = H5Gcreate(handle, "Pulses", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+		group_id = H5Gcreate(handle, IUS_INPUTFILE_PATH_PULSEDICT, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 	}
 	else
 	{
-		group_id = H5Gopen(handle, "Pulses", H5P_DEFAULT);
+		group_id = H5Gopen(handle, IUS_INPUTFILE_PATH_PULSEDICT, H5P_DEFAULT);
 	}
 	if (group_id == H5I_INVALID_HID)
 		return IUS_ERR_VALUE;
@@ -218,7 +213,7 @@ iupd_t iusHLPulseDictLoad
 	//char path[IUS_MAX_HDF5_PATH];
 	char memb_name[MAX_NAME];
 
-	hid_t grpid = H5Gopen(handle, "Pulses", H5P_DEFAULT);
+	hid_t grpid = H5Gopen(handle, IUS_INPUTFILE_PATH_PULSEDICT, H5P_DEFAULT);
 	if (handle == H5I_INVALID_HID || grpid == H5I_INVALID_HID)
         return NULL;
 
@@ -229,7 +224,6 @@ iupd_t iusHLPulseDictLoad
     for (i = 0; i < nobj && status == IUS_E_OK; i++)
     {
         H5Gget_objname_by_idx(grpid, (hsize_t) i, memb_name, (size_t) MAX_NAME);
-		//sprintf(path, "Pulses/%s", memb_name);
 		hid_t pulse_id = H5Gopen(grpid, memb_name, H5P_DEFAULT);
         iup_t pulse = iusHLPulseLoad(pulse_id); //note iusPulseLoad expect handle, not grpid!
 		status |= H5Gclose(pulse_id);
