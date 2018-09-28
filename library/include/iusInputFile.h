@@ -53,8 +53,6 @@ int iusInputFileSave
  * \pre         The instance object is empty.
  * \post        The instance object is initialized and parameters have been set.
  * \param[in]   pFullFileName   : full name of hdf5 output file (path + name + ext).
- * \param[in]   pInst: File instance pointer (or NULL)
- * \param[in]   version: the ius compatibility vesion number (or NULL)
  */
 IusInputFileInstance *iusInputFileCreate
 (

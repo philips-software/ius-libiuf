@@ -3,9 +3,6 @@
 #ifndef IUSLIBRARY_IUSHLPATTERN_H
 #define IUSLIBRARY_IUSHLPATTERN_H
 
-//#ifndef IUSLIBRARY_IMPLEMENTATION
-//typedef struct IusPattern IusPattern;
-//#endif // IUSLIBRARY_IMPLEMENTATION
 
 // ADT
 typedef struct IusPattern IusPattern;

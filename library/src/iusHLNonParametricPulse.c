@@ -18,7 +18,7 @@
 
 struct IusNonParametricPulse
 {
-    struct IusPulse base;
+    struct IusPulse base;         /**< The basic/common properties of a pulse  */
     int     numPulseValues;       /**< number of points to describe waveform, 0 implies a parametric description only */
     float * pRawPulseAmplitudes;  /**< shape of waveform [in Volts] */
     float * pRawPulseTimes;       /**< corresponding timestamps of amplitudes [in seconds] */
