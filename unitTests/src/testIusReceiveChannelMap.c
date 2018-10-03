@@ -83,7 +83,7 @@ TEST(IusReceiveChannelMap, testIusReceiveChannelMapGet)
 	const int numChannels=5;
 
 	iurcm_t obj = iusReceiveChannelMapCreate(numChannels);
-
+	TEST_ASSERT_EQUAL(numChannels, iusReceiveChannelMapGetNumChannels(obj));
 	iusReceiveChannelMapDelete(obj);
 }
 

@@ -28,6 +28,11 @@ IUS_BOOL  iusReceiveChannelMapCompare
 	iurcm_t actual
 );
 
+int iusReceiveChannelMapGetNumChannels
+(
+    iurcm_t receiveChannelMap
+);
+
 int iusReceiveChannelMapGetChannel
 (
 	iurcm_t receiveChannelMap,

@@ -35,6 +35,10 @@ struct IusPattern
     const char* pChannelMapLabel;
     const char* pApodizationLabel;
     const char* pReceiveSettingsLabel;
+
+    // state variables
+    hid_t fileChunkConfig;                /**< file chunck handle */
+    hid_t rfDataset;                      /**< dataset handle */
 } ;
 
 // ADT
@@ -116,6 +120,16 @@ int iusPatternCompare
     return IUS_TRUE;
 }
 
+// TODO: Make close function
+//if( instance->fileChunkConfig != H5I_INVALID_HID )
+//{
+//status |= H5Pclose(instance->fileChunkConfig);
+//}
+//
+//if( instance->rfDataset != H5I_INVALID_HID )
+//{
+//status |= H5Dclose(instance->rfDataset);
+//}
 
 
 int iusPatternSave

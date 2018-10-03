@@ -119,7 +119,7 @@ iupal_t iusPatternListLoad
     int numPatterns,i;
     sprintf(path, FRAMELISTSIZEFMT, parentPath);
     int status = iusHdf5ReadInt(handle, path, &(numPatterns));
-    if(status!=0) return IUPAL_INVALID;
+    if (status!=0) return IUPAL_INVALID;
 
     iupal_t patternList = iusPatternListCreate(numPatterns);
     iupa_t sourceElement;

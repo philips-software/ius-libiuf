@@ -365,6 +365,26 @@ TEST(IusInputFile, testIusInputFileSerialization)
     iusInputFileDelete(savedObj);
 }
 
+
+
+TEST(IusInputFile, testIusInputFileDataIO)
+{
+    char *ptestFileName = "testIusInputFileDataIO.hdf5";
+
+    // create
+    iuif_t inputFile = dgGenerateInputFile(ptestFileName,"S5-1");
+    //    iusInputFileSaveChannel(inputFile,"bmode", float *, intnumfloats);
+//    iusInputFileSaveResponse(inputFile,"bmode", float *, intnumfloats);
+//    iusInputFileSaveFrame
+//    iusInputFileSaveSequence
+
+    const float values[] = { 100.0f, 101.0 };
+    char *label = "one-to-one";
+    int status = iusInputFileSaveChannel(inputFile, label, values);
+    TEST_ASSERT_EQUAL(status, IUS_E_OK);
+
+}
+
 TEST_GROUP_RUNNER(IusInputFile)
 {
     RUN_TEST_CASE(IusInputFile, testIusInputFileCreate);
@@ -380,4 +400,5 @@ TEST_GROUP_RUNNER(IusInputFile)
     RUN_TEST_CASE(IusInputFile, iusInputFileSetGetExperiment);
     RUN_TEST_CASE(IusInputFile, iusInputFileSetGetTransducer);
     RUN_TEST_CASE(IusInputFile, testIusInputFileSerialization);
+    RUN_TEST_CASE(IusInputFile, testIusInputFileDataIO);
 }

@@ -151,4 +151,14 @@ int iusInputFileSetTransducer
 	iuif_t inputFile,
 	iut_t  transducer
 );
+
+
+int iusInputFileSaveChannel
+(
+    iuif_t inputFile,
+    char *label,
+    const float *samples
+);
+
+
 #endif //IUSLIBRARY_IUSHLINPUTFILE_H
