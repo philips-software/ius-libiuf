@@ -168,7 +168,7 @@ iunpp_t iusHLNonParametricPulseLoad
 )
 {
     int status = 0;
-    char *label;
+    const char *label;
     int  numPulseValues;
 
     iunpp_t  pulse;

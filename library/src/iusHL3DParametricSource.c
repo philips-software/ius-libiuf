@@ -66,8 +66,7 @@ iu3dps_t iusHL3DParametricSourceCreate
     }
 
     created->base.type = IUS_3D_PARAMETRIC_SOURCE;
-	created->base.label = malloc(strlen(pLabel) * sizeof(char)); //strdup(pLabel);
-	sprintf(created->base.label, pLabel);
+	created->base.label = strdup(pLabel);
     created->locationCount = numLocations;
     created->angularDelta = angularDelta;
     created->startAngle = startAngle;
