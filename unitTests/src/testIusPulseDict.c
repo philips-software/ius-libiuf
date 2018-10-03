@@ -7,9 +7,9 @@
 
 #include <hdf5.h>
 #include <ius.h>
-#include <iusHLPulseDictImp.h>
-#include <iusHLParametricPulse.h>
-#include <iusHLNonParametricPulse.h>
+#include <iusPulseDictImp.h>
+#include <iusParametricPulse.h>
+#include <iusNonParametricPulse.h>
 
 TEST_GROUP(IusPulseDict);
 
@@ -24,12 +24,12 @@ TEST_TEAR_DOWN(IusPulseDict)
 
 TEST(IusPulseDict, testIusCreatePulseDict)
 {
-    iupd_t obj = iusHLPulseDictCreate();
-    iupd_t notherObj = iusHLPulseDictCreate();
+    iupd_t obj = iusPulseDictCreate();
+    iupd_t notherObj = iusPulseDictCreate();
     TEST_ASSERT(obj != IUPD_INVALID);
     TEST_ASSERT(notherObj != IUPD_INVALID);
-    iusHLPulseDictDelete(obj);
-    iusHLPulseDictDelete(notherObj);
+    iusPulseDictDelete(obj);
+    iusPulseDictDelete(notherObj);
 }
 
 
@@ -45,49 +45,49 @@ TEST(IusPulseDict, testIusComparePulseDict)
     iupp_t  parametricPulse;
     iunpp_t nonParametricPulse;
 
-    iupd_t dict = iusHLPulseDictCreate();
-    iupd_t notherDict = iusHLPulseDictCreate();
+    iupd_t dict = iusPulseDictCreate();
+    iupd_t notherDict = iusPulseDictCreate();
     TEST_ASSERT(dict != IUPD_INVALID);
     TEST_ASSERT(notherDict != IUPD_INVALID);
 
     // Same empty lists...
-    equal = iusHLPulseDictCompare(dict, dict);
+    equal = iusPulseDictCompare(dict, dict);
     TEST_ASSERT_EQUAL(IUS_TRUE,equal);
-    equal = iusHLPulseDictCompare(dict, notherDict);
+    equal = iusPulseDictCompare(dict, notherDict);
     TEST_ASSERT_EQUAL(IUS_TRUE,equal);
 
-    parametricPulse = iusHLParametricPulseCreate("parametricPulse", pulseFrequency, pulseAmplitude, pulseCount);
-    nonParametricPulse = iusHLNonParametricPulseCreate("nonParametricPulse",numPulseValues);
+    parametricPulse = iusParametricPulseCreate("parametricPulse", pulseFrequency, pulseAmplitude, pulseCount);
+    nonParametricPulse = iusNonParametricPulseCreate("nonParametricPulse",numPulseValues);
 
-    char *label = iusHLPulseGetLabel((iup_t) parametricPulse);
-    status = iusHLPulseDictSet(dict,label,(iup_t) parametricPulse);
+    char *label = iusPulseGetLabel((iup_t) parametricPulse);
+    status = iusPulseDictSet(dict,label,(iup_t) parametricPulse);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
-    equal = iusHLPulseDictCompare(dict, notherDict);
+    equal = iusPulseDictCompare(dict, notherDict);
     TEST_ASSERT_EQUAL(IUS_FALSE,equal);
-    status = iusHLPulseDictSet(notherDict,label,(iup_t) parametricPulse);
+    status = iusPulseDictSet(notherDict,label,(iup_t) parametricPulse);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
-    equal = iusHLPulseDictCompare(dict, notherDict);
+    equal = iusPulseDictCompare(dict, notherDict);
     TEST_ASSERT_EQUAL(IUS_TRUE,equal);
 
-    label = iusHLPulseGetLabel((iup_t) nonParametricPulse);
-    status = iusHLPulseDictSet(dict,label,(iup_t) nonParametricPulse);
+    label = iusPulseGetLabel((iup_t) nonParametricPulse);
+    status = iusPulseDictSet(dict,label,(iup_t) nonParametricPulse);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
-    equal = iusHLPulseDictCompare(dict, notherDict);
+    equal = iusPulseDictCompare(dict, notherDict);
     TEST_ASSERT_EQUAL(IUS_FALSE,equal);
-    status = iusHLPulseDictSet(notherDict,label,(iup_t) nonParametricPulse);
+    status = iusPulseDictSet(notherDict,label,(iup_t) nonParametricPulse);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
-    equal = iusHLPulseDictCompare(dict, notherDict);
+    equal = iusPulseDictCompare(dict, notherDict);
     TEST_ASSERT_EQUAL(IUS_TRUE,equal);
 
 
     // invalid params
-    equal = iusHLPulseDictCompare(dict, NULL);
+    equal = iusPulseDictCompare(dict, NULL);
     TEST_ASSERT_EQUAL(IUS_FALSE,equal);
-    equal = iusHLPulseDictCompare(NULL, dict);
+    equal = iusPulseDictCompare(NULL, dict);
     TEST_ASSERT_EQUAL(IUS_FALSE,equal);
 
-    iusHLPulseDictDelete(dict);
-    iusHLPulseDictDelete(notherDict);
+    iusPulseDictDelete(dict);
+    iusPulseDictDelete(notherDict);
 }
 
 TEST(IusPulseDict, testIusSerialization)
@@ -103,38 +103,38 @@ TEST(IusPulseDict, testIusSerialization)
     //char *dictPath =  "/PulseDict"; fixed to /Pulses
 
     // create
-    iupd_t dict = iusHLPulseDictCreate();
+    iupd_t dict = iusPulseDictCreate();
     TEST_ASSERT(dict != IUPD_INVALID);
 
     // fill
     char *parametricLabel = "parametricPulseLabel";
     char *nonParametricLabel = "nonParametricPulseLabel";
-    iupp_t parametricPulse = iusHLParametricPulseCreate(parametricLabel, pulseFrequency, pulseAmplitude, pulseCount);
-    iunpp_t nonParametricPulse = iusHLNonParametricPulseCreate(nonParametricLabel,numPulseValues);
-    iusHLNonParametricPulseSetValue(nonParametricPulse,0,10.0f,10.0f);
-    iusHLNonParametricPulseSetValue(nonParametricPulse,1,20.0f,10.0f);
-    status = iusHLPulseDictSet(dict,nonParametricLabel, (iup_t) nonParametricPulse);
+    iupp_t parametricPulse = iusParametricPulseCreate(parametricLabel, pulseFrequency, pulseAmplitude, pulseCount);
+    iunpp_t nonParametricPulse = iusNonParametricPulseCreate(nonParametricLabel,numPulseValues);
+    iusNonParametricPulseSetValue(nonParametricPulse,0,10.0f,10.0f);
+    iusNonParametricPulseSetValue(nonParametricPulse,1,20.0f,10.0f);
+    status = iusPulseDictSet(dict,nonParametricLabel, (iup_t) nonParametricPulse);
     TEST_ASSERT(status == IUS_E_OK);
-    status = iusHLPulseDictSet(dict,parametricLabel, (iup_t) parametricPulse);
+    status = iusPulseDictSet(dict,parametricLabel, (iup_t) parametricPulse);
     TEST_ASSERT(status == IUS_E_OK);
 
     // save
     hid_t handle = H5Fcreate( filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT );
     TEST_ASSERT(handle > 0);
-    status = iusHLPulseDictSave(dict, handle);
+    status = iusPulseDictSave(dict, handle);
     H5Fclose(handle);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
     // read back
     handle = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT );
-    iupd_t savedObj = iusHLPulseDictLoad(handle);
+    iupd_t savedObj = iusPulseDictLoad(handle);
     TEST_ASSERT(savedObj != NULL);
     H5Fclose(handle);
 
-    TEST_ASSERT_EQUAL(IUS_TRUE, iusHLPulseDictCompare(dict,savedObj));
+    TEST_ASSERT_EQUAL(IUS_TRUE, iusPulseDictCompare(dict,savedObj));
 
-    iusHLPulseDictDelete(dict);
-    iusHLPulseDictDelete(savedObj);
+    iusPulseDictDelete(dict);
+    iusPulseDictDelete(savedObj);
 }
 
 TEST_GROUP_RUNNER(IusPulseDict)

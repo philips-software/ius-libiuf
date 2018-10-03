@@ -7,7 +7,7 @@
 
 #include <hdf5.h>
 #include <ius.h>
-#include <iusHLReceiveSettingsDictImp.h>
+#include <iusReceiveSettingsDictImp.h>
 #include <testDataGenerators.h>
 
 TEST_GROUP(IusReceiveSettingsDict);
@@ -23,13 +23,13 @@ TEST_TEAR_DOWN(IusReceiveSettingsDict)
 
 TEST(IusReceiveSettingsDict, testIusCreateSourceDict)
 {
-    iursd_t obj = iusHLReceiveSettingsDictCreate();
-    iursd_t notherObj = iusHLReceiveSettingsDictCreate();
+    iursd_t obj = iusReceiveSettingsDictCreate();
+    iursd_t notherObj = iusReceiveSettingsDictCreate();
 
     TEST_ASSERT(obj != IURSD_INVALID);
     TEST_ASSERT(notherObj != IURSD_INVALID);
-    iusHLReceiveSettingsDictDelete(obj);
-    iusHLReceiveSettingsDictDelete(notherObj);
+    iusReceiveSettingsDictDelete(obj);
+    iusReceiveSettingsDictDelete(notherObj);
 }
 
 
@@ -45,48 +45,48 @@ TEST(IusReceiveSettingsDict, testIusCompareSourceDict)
     int numTGCentries = 1;
     int status;
 
-    iurs_t obj = iusHLReceiveSettingsCreate(pObjLabel, sampleFrequency, numDelays, numSamplesPerLine, numTGCentries);
-    iurs_t notherObj = iusHLReceiveSettingsCreate(pNotherObjLabel, sampleFrequency, numDelays, numSamplesPerLine, numTGCentries);
-    iurs_t differentObj = iusHLReceiveSettingsCreate(pDifferentLabel, sampleFrequency, numDelays, numSamplesPerLine, numTGCentries+1);
+    iurs_t obj = iusReceiveSettingsCreate(pObjLabel, sampleFrequency, numDelays, numSamplesPerLine, numTGCentries);
+    iurs_t notherObj = iusReceiveSettingsCreate(pNotherObjLabel, sampleFrequency, numDelays, numSamplesPerLine, numTGCentries);
+    iurs_t differentObj = iusReceiveSettingsCreate(pDifferentLabel, sampleFrequency, numDelays, numSamplesPerLine, numTGCentries+1);
 
     // Create
-    iursd_t  dict = iusHLReceiveSettingsDictCreate();
-    iursd_t  notherDict = iusHLReceiveSettingsDictCreate();
+    iursd_t  dict = iusReceiveSettingsDictCreate();
+    iursd_t  notherDict = iusReceiveSettingsDictCreate();
 
     // Same empty lists...
-    equal = iusHLReceiveSettingsDictCompare(dict, dict);
+    equal = iusReceiveSettingsDictCompare(dict, dict);
     TEST_ASSERT_EQUAL(IUS_TRUE, equal);
-    equal = iusHLReceiveSettingsDictCompare(dict, notherDict);
+    equal = iusReceiveSettingsDictCompare(dict, notherDict);
     TEST_ASSERT_EQUAL(IUS_TRUE, equal);
 
     // Fill
-    status = iusHLReceiveSettingsDictSet(dict,pObjLabel,obj);
+    status = iusReceiveSettingsDictSet(dict,pObjLabel,obj);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
-    status = iusHLReceiveSettingsDictSet(dict,pNotherObjLabel,notherObj);
+    status = iusReceiveSettingsDictSet(dict,pNotherObjLabel,notherObj);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
-    equal = iusHLReceiveSettingsDictCompare(dict, notherDict);
+    equal = iusReceiveSettingsDictCompare(dict, notherDict);
     TEST_ASSERT_EQUAL(IUS_FALSE, equal);
 
-    status = iusHLReceiveSettingsDictSet(notherDict,pObjLabel,obj);
+    status = iusReceiveSettingsDictSet(notherDict,pObjLabel,obj);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
-    status = iusHLReceiveSettingsDictSet(notherDict,pNotherObjLabel,notherObj);
+    status = iusReceiveSettingsDictSet(notherDict,pNotherObjLabel,notherObj);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
-    equal = iusHLReceiveSettingsDictCompare(dict, notherDict);
+    equal = iusReceiveSettingsDictCompare(dict, notherDict);
     TEST_ASSERT_EQUAL(IUS_TRUE, equal);
 
-    status = iusHLReceiveSettingsDictSet(notherDict,pDifferentLabel,differentObj);
+    status = iusReceiveSettingsDictSet(notherDict,pDifferentLabel,differentObj);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
-    equal = iusHLReceiveSettingsDictCompare(dict, notherDict);
+    equal = iusReceiveSettingsDictCompare(dict, notherDict);
     TEST_ASSERT_EQUAL(IUS_FALSE, equal);
 
-    iusHLReceiveSettingsDelete(obj);
-    iusHLReceiveSettingsDelete(differentObj);
-    iusHLReceiveSettingsDelete(notherObj);
-    iusHLReceiveSettingsDictDelete(dict);
-    iusHLReceiveSettingsDictDelete(notherDict);
+    iusReceiveSettingsDelete(obj);
+    iusReceiveSettingsDelete(differentObj);
+    iusReceiveSettingsDelete(notherObj);
+    iusReceiveSettingsDictDelete(dict);
+    iusReceiveSettingsDictDelete(notherDict);
 }
 
 TEST(IusReceiveSettingsDict, testIusSerialization)
@@ -100,19 +100,19 @@ TEST(IusReceiveSettingsDict, testIusSerialization)
     // Save
     hid_t handle = H5Fcreate(filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
     TEST_ASSERT(handle > 0);
-    int status = iusHLReceiveSettingsDictSave(dict, handle);
+    int status = iusReceiveSettingsDictSave(dict, handle);
     H5Fclose(handle);
     TEST_ASSERT_EQUAL(IUS_E_OK, status);
 
     // read back
     handle = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT);
-    iursd_t savedDict = iusHLReceiveSettingsDictLoad(handle);
+    iursd_t savedDict = iusReceiveSettingsDictLoad(handle);
     TEST_ASSERT_NOT_EQUAL(NULL, savedDict);
     H5Fclose(handle);
 
-    TEST_ASSERT_EQUAL(IUS_TRUE, iusHLReceiveSettingsDictCompare(dict, savedDict));
-    iusHLReceiveSettingsDictDelete(dict);
-    iusHLReceiveSettingsDictDelete(savedDict);
+    TEST_ASSERT_EQUAL(IUS_TRUE, iusReceiveSettingsDictCompare(dict, savedDict));
+    iusReceiveSettingsDictDelete(dict);
+    iusReceiveSettingsDictDelete(savedDict);
 }
 
 

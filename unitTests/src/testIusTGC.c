@@ -10,7 +10,7 @@
 #include <include/ius.h>
 #include <include/iusError.h>
 #include <include/iusTypes.h>
-#include "include/iusHLTGCImp.h"
+#include "include/iusTGCImp.h"
 
 TEST_GROUP(IusTGC);
 
@@ -30,26 +30,26 @@ TEST(IusTGC, testIusTGCCreate)
     iutgc_t tgc;
 
     numTGCValues = 20;
-    tgc = iusHLTGCCreate(numTGCValues);
+    tgc = iusTGCCreate(numTGCValues);
     TEST_ASSERT(tgc != IUTGC_INVALID);
 
     // Invalid operation on nonparametric dta type
-    TEST_ASSERT_EQUAL(NULL, iusHLTGCCreate(-1));
+    TEST_ASSERT_EQUAL(NULL, iusTGCCreate(-1));
 
-    status = iusHLTGCDelete(tgc);
+    status = iusTGCDelete(tgc);
     TEST_ASSERT(status == IUS_E_OK);
 }
 
 TEST(IusTGC, testIusTGCDelete)
 {
     int numTGCValues=2;
-    iutgc_t obj = iusHLTGCCreate(numTGCValues);
+    iutgc_t obj = iusTGCCreate(numTGCValues);
     TEST_ASSERT(obj != IUTGC_INVALID);
-    int status = iusHLTGCDelete(obj);
+    int status = iusTGCDelete(obj);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
     // invalid params
-    status = iusHLTGCDelete(NULL);
+    status = iusTGCDelete(NULL);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
 }
 
@@ -59,36 +59,36 @@ TEST(IusTGC, testIusTGCCompare)
 {
     IUS_BOOL equal;
     int numTGCValues=2;
-    iutgc_t obj = iusHLTGCCreate(numTGCValues);
-    iutgc_t sameObj = iusHLTGCCreate(numTGCValues);
-    iutgc_t notherObj = iusHLTGCCreate(numTGCValues + 10);
+    iutgc_t obj = iusTGCCreate(numTGCValues);
+    iutgc_t sameObj = iusTGCCreate(numTGCValues);
+    iutgc_t notherObj = iusTGCCreate(numTGCValues + 10);
     TEST_ASSERT(obj != IUTGC_INVALID);
     TEST_ASSERT(notherObj != IUTGC_INVALID);
 
-    equal = iusHLTGCCompare(obj,obj);
+    equal = iusTGCCompare(obj,obj);
     TEST_ASSERT_EQUAL(IUS_TRUE,equal);
-    equal = iusHLTGCCompare(obj,sameObj);
+    equal = iusTGCCompare(obj,sameObj);
     TEST_ASSERT_EQUAL(IUS_TRUE,equal);
-    equal = iusHLTGCCompare(obj,notherObj);
+    equal = iusTGCCompare(obj,notherObj);
     TEST_ASSERT_EQUAL(IUS_FALSE,equal);
 
-    int status = iusHLTGCSet(obj,0,1.0f,2.0f);
+    int status = iusTGCSet(obj,0,1.0f,2.0f);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
-    equal = iusHLTGCCompare(obj,sameObj);
+    equal = iusTGCCompare(obj,sameObj);
     TEST_ASSERT_EQUAL(IUS_FALSE,equal);
-    status = iusHLTGCSet(sameObj,0,1.0f,2.0f);
+    status = iusTGCSet(sameObj,0,1.0f,2.0f);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
-    equal = iusHLTGCCompare(obj,sameObj);
+    equal = iusTGCCompare(obj,sameObj);
     TEST_ASSERT_EQUAL(IUS_TRUE,equal);
 
     // invalid params
-    equal = iusHLTGCCompare(obj,NULL);
+    equal = iusTGCCompare(obj,NULL);
     TEST_ASSERT_EQUAL(IUS_FALSE,equal);
-    equal = iusHLTGCCompare(NULL,obj);
+    equal = iusTGCCompare(NULL,obj);
     TEST_ASSERT_EQUAL(IUS_FALSE,equal);
     
-    iusHLTGCDelete(obj);
-    iusHLTGCDelete(notherObj);
+    iusTGCDelete(obj);
+    iusTGCDelete(notherObj);
 }
 
 
@@ -96,21 +96,21 @@ TEST(IusTGC, testIusTGCSetGet)
 {
 //    IUS_BOOL equal;
     int numTGCValues=2;
-    iutgc_t obj = iusHLTGCCreate(numTGCValues);
+    iutgc_t obj = iusTGCCreate(numTGCValues);
     TEST_ASSERT(obj != IUTGC_INVALID);
 
-    iusHLTGCSet(obj,0,1.0f,2.0f);
+    iusTGCSet(obj,0,1.0f,2.0f);
     // float param
-    TEST_ASSERT_EQUAL_FLOAT(1.0f, iusHLTGCGetTime(obj, 0));
-    TEST_ASSERT_EQUAL_FLOAT(2.0f, iusHLTGCGetGain(obj, 0));
+    TEST_ASSERT_EQUAL_FLOAT(1.0f, iusTGCGetTime(obj, 0));
+    TEST_ASSERT_EQUAL_FLOAT(2.0f, iusTGCGetGain(obj, 0));
 
 
     // invalid param
-    TEST_ASSERT_EQUAL_FLOAT(NAN, iusHLTGCGetTime(NULL, 1));
-    TEST_ASSERT_EQUAL_FLOAT(NAN, iusHLTGCGetGain(NULL, 1));
-    TEST_ASSERT_EQUAL_FLOAT(NAN, iusHLTGCGetTime(NULL, 0));
-    TEST_ASSERT_EQUAL_FLOAT(NAN, iusHLTGCGetGain(NULL, 0));
-    iusHLTGCDelete(obj);
+    TEST_ASSERT_EQUAL_FLOAT(NAN, iusTGCGetTime(NULL, 1));
+    TEST_ASSERT_EQUAL_FLOAT(NAN, iusTGCGetGain(NULL, 1));
+    TEST_ASSERT_EQUAL_FLOAT(NAN, iusTGCGetTime(NULL, 0));
+    TEST_ASSERT_EQUAL_FLOAT(NAN, iusTGCGetGain(NULL, 0));
+    iusTGCDelete(obj);
 }
 
 
@@ -123,32 +123,32 @@ TEST(IusTGC, testIusSerialization)
     int numTGCValues = 20;
 
     // create
-    iutgc_t TGC = iusHLTGCCreate(numTGCValues);
+    iutgc_t TGC = iusTGCCreate(numTGCValues);
 
     // fill
     int i,status;
     for (i=0;i<numTGCValues;i++)
     {
-        status = iusHLTGCSet(TGC,i,i*1.0f,i*2.0f);
+        status = iusTGCSet(TGC,i,i*1.0f,i*2.0f);
         TEST_ASSERT_EQUAL(IUS_E_OK,status);
     }
 
     // save
     hid_t handle = H5Fcreate( filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT );
     TEST_ASSERT(handle > 0);
-    status = iusHLTGCSave(TGC, handle);
+    status = iusTGCSave(TGC, handle);
     H5Fclose(handle);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
     // read back
     handle = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT );
-    iutgc_t savedObj = iusHLTGCLoad(handle);
+    iutgc_t savedObj = iusTGCLoad(handle);
     TEST_ASSERT(savedObj != NULL);
     H5Fclose(handle);
 
-    TEST_ASSERT_EQUAL(IUS_TRUE, iusHLTGCCompare(TGC, savedObj));
-    iusHLTGCDelete(TGC);
-    iusHLTGCDelete(savedObj);
+    TEST_ASSERT_EQUAL(IUS_TRUE, iusTGCCompare(TGC, savedObj));
+    iusTGCDelete(TGC);
+    iusTGCDelete(savedObj);
 }
 
 TEST_GROUP_RUNNER(IusTGC)

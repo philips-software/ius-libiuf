@@ -10,13 +10,13 @@
 #include <include/ius.h>
 #include <include/iusError.h>
 #include <include/iusTypes.h>
-#include <include/iusHLInputFile.h>
-#include <include/iusHLPulseDict.h>
-#include <include/iusHLReceiveChannelMapDict.h>
-#include <include/iusHLTransmitApodizationDict.h>
+#include <include/iusInputFile.h>
+#include <include/iusPulseDict.h>
+#include <include/iusReceiveChannelMapDict.h>
+#include <include/iusTransmitApodizationDict.h>
 
-#include <include/iusHLParametricPulse.h>
-#include <include/iusHLNonParametricPulse.h>
+#include <include/iusParametricPulse.h>
+#include <include/iusNonParametricPulse.h>
 
 #include <testDataGenerators.h>
 
@@ -47,40 +47,40 @@ TEST(IusInputFile, testIusInputFileCreate)
     const char *pEmptyFilename = "";
     const char *pSpecialCharsFilename = "*&/";
 
-    iuif_t ifh = iusHLInputFileCreate(pFilename);
+    iuif_t ifh = iusInputFileCreate(pFilename);
     TEST_ASSERT(ifh != IUIF_INVALID);
 
     // Create file that is already open should result in error
-    iuif_t ifh2 = iusHLInputFileCreate(pFilename);
+    iuif_t ifh2 = iusInputFileCreate(pFilename);
     TEST_ASSERT(ifh2 == IUIF_INVALID);
 
-    int status = iusHLInputFileClose(ifh);
+    int status = iusInputFileClose(ifh);
     TEST_ASSERT(status == IUS_E_OK);
 
     // Closing file that has already been closed results in error
-    status = iusHLInputFileClose(ifh);
+    status = iusInputFileClose(ifh);
     TEST_ASSERT(status != IUS_E_OK);
 
     // Invalid argument should result in error.
-    ifh = iusHLInputFileCreate(pEmptyFilename);
+    ifh = iusInputFileCreate(pEmptyFilename);
     TEST_ASSERT(ifh == IUIF_INVALID);
-    ifh = iusHLInputFileCreate(pSpecialCharsFilename);
+    ifh = iusInputFileCreate(pSpecialCharsFilename);
     TEST_ASSERT(ifh == IUIF_INVALID);
 }
 
 TEST(IusInputFile, testIusInputFileDelete)
 {
-    iuif_t obj = iusHLInputFileCreate(pFilename);
+    iuif_t obj = iusInputFileCreate(pFilename);
     TEST_ASSERT(obj != IUIF_INVALID);
 
-	int status = iusHLInputFileClose(obj);
+	int status = iusInputFileClose(obj);
 	TEST_ASSERT_EQUAL(IUS_E_OK, status);
 	
-	status = iusHLInputFileDelete(obj);
+	status = iusInputFileDelete(obj);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
     // invalid params
-    status = iusHLInputFileDelete(NULL);
+    status = iusInputFileDelete(NULL);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
 }
 
@@ -88,255 +88,255 @@ TEST(IusInputFile, testIusInputFileDelete)
 TEST(IusInputFile, testIusInputFileCompare)
 {
     IUS_BOOL equal;
-    iuif_t obj = iusHLInputFileCreate(pFilename);
-    iuif_t notherObj = iusHLInputFileCreate(pNotherFilename);
+    iuif_t obj = iusInputFileCreate(pFilename);
+    iuif_t notherObj = iusInputFileCreate(pNotherFilename);
     TEST_ASSERT(obj != IUIF_INVALID);
     TEST_ASSERT(notherObj != IUIF_INVALID);
-    equal = iusHLInputFileCompare(obj,obj);
+    equal = iusInputFileCompare(obj,obj);
     TEST_ASSERT_EQUAL(IUS_TRUE,equal);
-    equal = iusHLInputFileCompare(obj,notherObj);
+    equal = iusInputFileCompare(obj,notherObj);
     TEST_ASSERT_EQUAL(IUS_FALSE,equal);
     
     // invalid params
-    equal = iusHLInputFileCompare(obj,NULL);
+    equal = iusInputFileCompare(obj,NULL);
     TEST_ASSERT_EQUAL(IUS_FALSE,equal);
-    equal = iusHLInputFileCompare(NULL,obj);
+    equal = iusInputFileCompare(NULL,obj);
     TEST_ASSERT_EQUAL(IUS_FALSE,equal);
 
-	int status = iusHLInputFileClose(obj);
+	int status = iusInputFileClose(obj);
 	TEST_ASSERT(status == IUS_E_OK);
-	status = iusHLInputFileClose(notherObj);
+	status = iusInputFileClose(notherObj);
 	TEST_ASSERT(status == IUS_E_OK);
-	iusHLInputFileDelete(obj);
-    iusHLInputFileDelete(notherObj);
+	iusInputFileDelete(obj);
+    iusInputFileDelete(notherObj);
 }
 
-TEST(IusInputFile, iusHLInputFileSetGetFrameList)
+TEST(IusInputFile, iusInputFileSetGetFrameList)
 {
     IUS_BOOL equal;
     int status;
     iufl_t frameList = dgGenerateFrameList();
-    iuif_t obj = iusHLInputFileCreate(pFilename);
+    iuif_t obj = iusInputFileCreate(pFilename);
 
-    status = iusHLInputFileSetFrameList(obj,frameList);
+    status = iusInputFileSetFrameList(obj,frameList);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
-    iufl_t gotMeAFrameList = iusHLInputFileGetFrameList(obj);
+    iufl_t gotMeAFrameList = iusInputFileGetFrameList(obj);
     TEST_ASSERT_NOT_EQUAL(IUFL_INVALID, gotMeAFrameList);
 
-    equal = iusHLFrameListCompare(frameList,gotMeAFrameList);
+    equal = iusFrameListCompare(frameList,gotMeAFrameList);
     TEST_ASSERT_EQUAL(IUS_TRUE, equal);
 
-    status = iusHLInputFileClose(obj);
+    status = iusInputFileClose(obj);
     TEST_ASSERT(status == IUS_E_OK);
-    iusHLInputFileDelete(obj);
+    iusInputFileDelete(obj);
 }
 
-TEST(IusInputFile, iusHLInputFileSetGetPatternList)
+TEST(IusInputFile, iusInputFileSetGetPatternList)
 {
     IUS_BOOL equal;
     int status;
     iupal_t patternList = dgGeneratePatternList();
-    iuif_t obj = iusHLInputFileCreate(pFilename);
+    iuif_t obj = iusInputFileCreate(pFilename);
 
-    status = iusHLInputFileSetPatternList(obj,patternList);
+    status = iusInputFileSetPatternList(obj,patternList);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
-    iupal_t gotMeAPatternList = iusHLInputFileGetPatternList(obj);
+    iupal_t gotMeAPatternList = iusInputFileGetPatternList(obj);
     TEST_ASSERT_NOT_EQUAL(IUPAL_INVALID, gotMeAPatternList);
 
-    equal = iusHLPatternListCompare(patternList,gotMeAPatternList);
+    equal = iusPatternListCompare(patternList,gotMeAPatternList);
     TEST_ASSERT_EQUAL(IUS_TRUE, equal);
 
-    status = iusHLInputFileClose(obj);
+    status = iusInputFileClose(obj);
     TEST_ASSERT(status == IUS_E_OK);
-    iusHLInputFileDelete(obj);
+    iusInputFileDelete(obj);
 }
 
 
-TEST(IusInputFile, iusHLInputFileSetGetPulseDict)
+TEST(IusInputFile, iusInputFileSetGetPulseDict)
 {
-    iuif_t obj = iusHLInputFileCreate(pFilename);
+    iuif_t obj = iusInputFileCreate(pFilename);
     iupd_t pulseDict = dgGeneratePulseDict();
 
-    int status = iusHLInputFileSetPulseDict(obj, pulseDict);
+    int status = iusInputFileSetPulseDict(obj, pulseDict);
     TEST_ASSERT(status == IUS_E_OK);
-    iupd_t gotMeAPulseDict = iusHLInputFileGetPulseDict(obj);
+    iupd_t gotMeAPulseDict = iusInputFileGetPulseDict(obj);
     TEST_ASSERT_NOT_EQUAL(NULL, gotMeAPulseDict);
 
-    IUS_BOOL equal = iusHLPulseDictCompare(pulseDict,gotMeAPulseDict);
+    IUS_BOOL equal = iusPulseDictCompare(pulseDict,gotMeAPulseDict);
     TEST_ASSERT_EQUAL(IUS_TRUE, equal);
 
-    status = iusHLInputFileClose(obj);
+    status = iusInputFileClose(obj);
     TEST_ASSERT(status == IUS_E_OK);
-    iusHLInputFileDelete(obj);
+    iusInputFileDelete(obj);
 }
 
-TEST(IusInputFile, iusHLInputFileSetGetSourceDict)
+TEST(IusInputFile, iusInputFileSetGetSourceDict)
 {
-    iuif_t obj = iusHLInputFileCreate(pFilename);
+    iuif_t obj = iusInputFileCreate(pFilename);
     iusd_t sourceDict = dgGenerateSourceDict();
 
-    int status = iusHLInputFileSetSourceDict(obj, sourceDict);
+    int status = iusInputFileSetSourceDict(obj, sourceDict);
     TEST_ASSERT(status == IUS_E_OK);
-    iusd_t gotMeASourceDict = iusHLInputFileGetSourceDict(obj);
+    iusd_t gotMeASourceDict = iusInputFileGetSourceDict(obj);
     TEST_ASSERT_NOT_EQUAL(IUSD_INVALID, gotMeASourceDict);
 
-    IUS_BOOL equal = iusHLSourceDictCompare(sourceDict,gotMeASourceDict);
+    IUS_BOOL equal = iusSourceDictCompare(sourceDict,gotMeASourceDict);
     TEST_ASSERT_EQUAL(IUS_TRUE, equal);
 
-    status = iusHLInputFileClose(obj);
+    status = iusInputFileClose(obj);
     TEST_ASSERT(status == IUS_E_OK);
-    iusHLInputFileDelete(obj);
+    iusInputFileDelete(obj);
 }
 
 
-TEST(IusInputFile, iusHLInputFileSetGetReceiveChannelMapDict)
+TEST(IusInputFile, iusInputFileSetGetReceiveChannelMapDict)
 {
-    iuif_t obj = iusHLInputFileCreate(pFilename);
-    iurcmd_t receiveChannelMapDict = iusHLReceiveChannelMapDictCreate();
+    iuif_t obj = iusInputFileCreate(pFilename);
+    iurcmd_t receiveChannelMapDict = iusReceiveChannelMapDictCreate();
 
-    int status = iusHLInputFileSetReceiveChannelMapDict(obj, receiveChannelMapDict);
+    int status = iusInputFileSetReceiveChannelMapDict(obj, receiveChannelMapDict);
     TEST_ASSERT_EQUAL(IUS_E_OK, status);
 
-    iurcmd_t gotMeAReceiveChannelMapDict = iusHLInputFileGetReceiveChannelMapDict(obj);
+    iurcmd_t gotMeAReceiveChannelMapDict = iusInputFileGetReceiveChannelMapDict(obj);
     TEST_ASSERT_NOT_EQUAL(NULL, gotMeAReceiveChannelMapDict);
 
-    IUS_BOOL equal = iusHLReceiveChannelMapDictCompare(receiveChannelMapDict, gotMeAReceiveChannelMapDict);
+    IUS_BOOL equal = iusReceiveChannelMapDictCompare(receiveChannelMapDict, gotMeAReceiveChannelMapDict);
     TEST_ASSERT_EQUAL(IUS_TRUE, equal);
 
-    status = iusHLInputFileClose(obj);
+    status = iusInputFileClose(obj);
     TEST_ASSERT(status == IUS_E_OK);
-    iusHLInputFileDelete(obj);
+    iusInputFileDelete(obj);
 }
 
-TEST(IusInputFile, iusHLInputFileSetGetTransmitApodizationDict)
+TEST(IusInputFile, iusInputFileSetGetTransmitApodizationDict)
 {
     IUS_BOOL equal;
     int status;
-	iutad_t transmitApodizationDict = iusHLTransmitApodizationDictCreate();
-    iuif_t obj = iusHLInputFileCreate(pFilename);
+	iutad_t transmitApodizationDict = iusTransmitApodizationDictCreate();
+    iuif_t obj = iusInputFileCreate(pFilename);
     TEST_ASSERT(obj != IUIF_INVALID);
 
 	// transmitApodizationDict param
-	status = iusHLInputFileSetTransmitApodizationDict(obj, transmitApodizationDict);
+	status = iusInputFileSetTransmitApodizationDict(obj, transmitApodizationDict);
 	TEST_ASSERT_EQUAL(IUS_E_OK, status);
 
-	iutad_t gotMeATransmitApodizationDict = iusHLInputFileGetTransmitApodizationDict(obj);
+	iutad_t gotMeATransmitApodizationDict = iusInputFileGetTransmitApodizationDict(obj);
 	TEST_ASSERT_NOT_EQUAL(NULL, gotMeATransmitApodizationDict);
 
-	equal = iusHLTransmitApodizationDictCompare(transmitApodizationDict, gotMeATransmitApodizationDict);
+	equal = iusTransmitApodizationDictCompare(transmitApodizationDict, gotMeATransmitApodizationDict);
 	TEST_ASSERT_EQUAL(IUS_TRUE, equal);
 
     // invalid param
-    status = iusHLInputFileSetTransmitApodizationDict(obj, NULL);
+    status = iusInputFileSetTransmitApodizationDict(obj, NULL);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
 
-    status = iusHLInputFileSetTransmitApodizationDict(NULL, transmitApodizationDict);
+    status = iusInputFileSetTransmitApodizationDict(NULL, transmitApodizationDict);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
 
-    gotMeATransmitApodizationDict = iusHLInputFileGetTransmitApodizationDict(NULL);
+    gotMeATransmitApodizationDict = iusInputFileGetTransmitApodizationDict(NULL);
     TEST_ASSERT_EQUAL(IUTAD_INVALID, gotMeATransmitApodizationDict);
 
-	status = iusHLInputFileClose(obj);
+	status = iusInputFileClose(obj);
 	TEST_ASSERT(status == IUS_E_OK);
-    iusHLInputFileDelete(obj);
+    iusInputFileDelete(obj);
 }
 
-TEST(IusInputFile, iusHLInputFileSetGetReceiveSettingsDict)
+TEST(IusInputFile, iusInputFileSetGetReceiveSettingsDict)
 {
     IUS_BOOL equal;
     int status;
     iursd_t receiveSettingsDict = dgGenerateReceiveSettingsDict();
-    iuif_t obj = iusHLInputFileCreate(pFilename);
+    iuif_t obj = iusInputFileCreate(pFilename);
     TEST_ASSERT(obj != IUIF_INVALID);
 
-    status = iusHLInputFileSetReceiveSettingsDict(obj, receiveSettingsDict);
+    status = iusInputFileSetReceiveSettingsDict(obj, receiveSettingsDict);
     TEST_ASSERT_EQUAL(IUS_E_OK, status);
 
-    iursd_t gotMeATransmitReceiveSettingsDict = iusHLInputFileGetReceiveSettingsDict(obj);
+    iursd_t gotMeATransmitReceiveSettingsDict = iusInputFileGetReceiveSettingsDict(obj);
     TEST_ASSERT_NOT_EQUAL(NULL, gotMeATransmitReceiveSettingsDict);
 
-    equal = iusHLReceiveSettingsDictCompare(receiveSettingsDict, gotMeATransmitReceiveSettingsDict);
+    equal = iusReceiveSettingsDictCompare(receiveSettingsDict, gotMeATransmitReceiveSettingsDict);
     TEST_ASSERT_EQUAL(IUS_TRUE, equal);
 
     // invalid param
-    status = iusHLInputFileSetReceiveSettingsDict(obj, NULL);
+    status = iusInputFileSetReceiveSettingsDict(obj, NULL);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
 
-    status = iusHLInputFileSetReceiveSettingsDict(NULL, receiveSettingsDict);
+    status = iusInputFileSetReceiveSettingsDict(NULL, receiveSettingsDict);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
 
-    gotMeATransmitReceiveSettingsDict = iusHLInputFileGetReceiveSettingsDict(NULL);
+    gotMeATransmitReceiveSettingsDict = iusInputFileGetReceiveSettingsDict(NULL);
     TEST_ASSERT_EQUAL(IURSD_INVALID, gotMeATransmitReceiveSettingsDict);
 
-    status = iusHLInputFileClose(obj);
+    status = iusInputFileClose(obj);
     TEST_ASSERT(status == IUS_E_OK);
-    iusHLInputFileDelete(obj);
+    iusInputFileDelete(obj);
 }
 
-TEST(IusInputFile, iusHLInputFileSetGetExperiment)
+TEST(IusInputFile, iusInputFileSetGetExperiment)
 {
     IUS_BOOL equal;
     int status;
     iue_t experiment = dgGenerateExperiment();
-    iuif_t obj = iusHLInputFileCreate(pFilename);
+    iuif_t obj = iusInputFileCreate(pFilename);
     TEST_ASSERT(obj != IUIF_INVALID);
 
-    status = iusHLInputFileSetExperiment(obj, experiment);
+    status = iusInputFileSetExperiment(obj, experiment);
     TEST_ASSERT_EQUAL(IUS_E_OK, status);
 
-    iue_t gotMeAnExperiment = iusHLInputFileGetExperiment(obj);
+    iue_t gotMeAnExperiment = iusInputFileGetExperiment(obj);
     TEST_ASSERT_NOT_EQUAL(NULL, gotMeAnExperiment);
 
-    equal = iusHLExperimentCompare(experiment, gotMeAnExperiment);
+    equal = iusExperimentCompare(experiment, gotMeAnExperiment);
     TEST_ASSERT_EQUAL(IUS_TRUE, equal);
 
     // invalid param
-    status = iusHLInputFileSetExperiment(obj, NULL);
+    status = iusInputFileSetExperiment(obj, NULL);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
 
-    status = iusHLInputFileSetExperiment(NULL, experiment);
+    status = iusInputFileSetExperiment(NULL, experiment);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
 
-    gotMeAnExperiment = iusHLInputFileGetExperiment(NULL);
+    gotMeAnExperiment = iusInputFileGetExperiment(NULL);
     TEST_ASSERT_EQUAL(IURSD_INVALID, gotMeAnExperiment);
 
-    status = iusHLInputFileClose(obj);
+    status = iusInputFileClose(obj);
     TEST_ASSERT(status == IUS_E_OK);
-    iusHLInputFileDelete(obj);
+    iusInputFileDelete(obj);
 }
 
-TEST(IusInputFile, iusHLInputFileSetGetTransducer)
+TEST(IusInputFile, iusInputFileSetGetTransducer)
 {
     IUS_BOOL equal;
     int status;
     iut_t transducer = dgGenerateTransducer();
-    iuif_t obj = iusHLInputFileCreate(pFilename);
+    iuif_t obj = iusInputFileCreate(pFilename);
     TEST_ASSERT(obj != IUIF_INVALID);
 
-    status = iusHLInputFileSetTransducer(obj, transducer);
+    status = iusInputFileSetTransducer(obj, transducer);
     TEST_ASSERT_EQUAL(IUS_E_OK, status);
 
-    iut_t gotMeATransducer = iusHLInputFileGetTransducer(obj);
+    iut_t gotMeATransducer = iusInputFileGetTransducer(obj);
     TEST_ASSERT_NOT_EQUAL(NULL, gotMeATransducer);
 
-    equal = iusHLTransducerCompare(transducer, gotMeATransducer);
+    equal = iusTransducerCompare(transducer, gotMeATransducer);
     TEST_ASSERT_EQUAL(IUS_TRUE, equal);
 
     // invalid param
-    status = iusHLInputFileSetTransducer(obj, NULL);
+    status = iusInputFileSetTransducer(obj, NULL);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
 
-    status = iusHLInputFileSetTransducer(NULL, transducer);
+    status = iusInputFileSetTransducer(NULL, transducer);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
 
-    gotMeATransducer = iusHLInputFileGetTransducer(NULL);
+    gotMeATransducer = iusInputFileGetTransducer(NULL);
     TEST_ASSERT_EQUAL(IURSD_INVALID, gotMeATransducer);
 
-    status = iusHLInputFileClose(obj);
+    status = iusInputFileClose(obj);
     TEST_ASSERT(status == IUS_E_OK);
-    iusHLInputFileDelete(obj);
+    iusInputFileDelete(obj);
 }
 
 TEST(IusInputFile, testIusInputFileSerialization)
@@ -344,69 +344,69 @@ TEST(IusInputFile, testIusInputFileSerialization)
     const char *ptestFileName = "testIusInputFileSerialization.hdf5";
 
     // create
-    iuif_t inputFile = iusHLInputFileCreate(ptestFileName);
+    iuif_t inputFile = iusInputFileCreate(ptestFileName);
     TEST_ASSERT(inputFile != IUIF_INVALID);
 
     // fill
     iufl_t frameList = dgGenerateFrameList();
-    int status = iusHLInputFileSetFrameList(inputFile,frameList);
+    int status = iusInputFileSetFrameList(inputFile,frameList);
     TEST_ASSERT(status == IUS_E_OK);
 
     iupal_t patternList = dgGeneratePatternList();
-    status = iusHLInputFileSetPatternList(inputFile,patternList);
+    status = iusInputFileSetPatternList(inputFile,patternList);
     TEST_ASSERT(status == IUS_E_OK);
 
     iupd_t pulseDict = dgGeneratePulseDict();
-    status = iusHLInputFileSetPulseDict(inputFile, pulseDict);
+    status = iusInputFileSetPulseDict(inputFile, pulseDict);
     TEST_ASSERT(status == IUS_E_OK);
 
     iusd_t sourceDict = dgGenerateSourceDict();
-    status = iusHLInputFileSetSourceDict(inputFile, sourceDict);
+    status = iusInputFileSetSourceDict(inputFile, sourceDict);
     TEST_ASSERT(status == IUS_E_OK);
 
     iurcmd_t receiveChannelMapDict = dgGenerateReceiveChannelMapDict();
-	status = iusHLInputFileSetReceiveChannelMapDict(inputFile, receiveChannelMapDict);
+	status = iusInputFileSetReceiveChannelMapDict(inputFile, receiveChannelMapDict);
 	TEST_ASSERT(status == IUS_E_OK);
 
 	iutad_t transmitApodizationDict = dgGenerateTransmitApodizationDict();
-	status = iusHLInputFileSetTransmitApodizationDict(inputFile, transmitApodizationDict);
+	status = iusInputFileSetTransmitApodizationDict(inputFile, transmitApodizationDict);
 	TEST_ASSERT(status == IUS_E_OK);
 
     iursd_t receiveSettingsDict = dgGenerateReceiveSettingsDict();
-    status = iusHLInputFileSetReceiveSettingsDict(inputFile, receiveSettingsDict);
+    status = iusInputFileSetReceiveSettingsDict(inputFile, receiveSettingsDict);
     TEST_ASSERT_EQUAL(IUS_E_OK, status);
 
     // save
 	iue_t experiment = dgGenerateExperiment();
-	status = iusHLInputFileSetExperiment(inputFile, experiment);
+	status = iusInputFileSetExperiment(inputFile, experiment);
 	TEST_ASSERT(status == IUS_E_OK);
 
 
     iut_t transducer = dgGenerateTransducer();
-    status = iusHLInputFileSetTransducer(inputFile, transducer);
+    status = iusInputFileSetTransducer(inputFile, transducer);
     TEST_ASSERT(status == IUS_E_OK);
 
 	// save
-    status = iusHLInputFileSave(inputFile);
+    status = iusInputFileSave(inputFile);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
-    status = iusHLInputFileClose(inputFile);
+    status = iusInputFileClose(inputFile);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
     // read back
-    iuif_t savedObj = iusHLInputFileLoad(ptestFileName);
+    iuif_t savedObj = iusInputFileLoad(ptestFileName);
     TEST_ASSERT(savedObj != NULL);
-    TEST_ASSERT_EQUAL(IUS_TRUE, iusHLInputFileCompare(inputFile,savedObj));
+    TEST_ASSERT_EQUAL(IUS_TRUE, iusInputFileCompare(inputFile,savedObj));
 
-	status = iusHLInputFileClose(savedObj);
+	status = iusInputFileClose(savedObj);
 	TEST_ASSERT(status == IUS_E_OK);
 
-    iusHLPulseDictDelete(pulseDict);
-	iusHLReceiveChannelMapDictDelete(receiveChannelMapDict);
-	iusHLTransmitApodizationDictDelete(transmitApodizationDict);
+    iusPulseDictDelete(pulseDict);
+	iusReceiveChannelMapDictDelete(receiveChannelMapDict);
+	iusTransmitApodizationDictDelete(transmitApodizationDict);
 
-	iusHLExperimentDelete(experiment);
-    iusHLInputFileDelete(inputFile);
-    iusHLInputFileDelete(savedObj);
+	iusExperimentDelete(experiment);
+    iusInputFileDelete(inputFile);
+    iusInputFileDelete(savedObj);
 }
 
 TEST_GROUP_RUNNER(IusInputFile)
@@ -414,14 +414,14 @@ TEST_GROUP_RUNNER(IusInputFile)
     RUN_TEST_CASE(IusInputFile, testIusInputFileCreate);
     RUN_TEST_CASE(IusInputFile, testIusInputFileDelete);
     RUN_TEST_CASE(IusInputFile, testIusInputFileCompare);
-    RUN_TEST_CASE(IusInputFile, iusHLInputFileSetGetFrameList);
-    RUN_TEST_CASE(IusInputFile, iusHLInputFileSetGetPatternList);
-    RUN_TEST_CASE(IusInputFile, iusHLInputFileSetGetPulseDict);
-    RUN_TEST_CASE(IusInputFile, iusHLInputFileSetGetSourceDict);
-    RUN_TEST_CASE(IusInputFile, iusHLInputFileSetGetReceiveChannelMapDict);
-    RUN_TEST_CASE(IusInputFile, iusHLInputFileSetGetTransmitApodizationDict);
-    RUN_TEST_CASE(IusInputFile, iusHLInputFileSetGetReceiveSettingsDict);
-    RUN_TEST_CASE(IusInputFile, iusHLInputFileSetGetExperiment);
-    RUN_TEST_CASE(IusInputFile, iusHLInputFileSetGetTransducer);
+    RUN_TEST_CASE(IusInputFile, iusInputFileSetGetFrameList);
+    RUN_TEST_CASE(IusInputFile, iusInputFileSetGetPatternList);
+    RUN_TEST_CASE(IusInputFile, iusInputFileSetGetPulseDict);
+    RUN_TEST_CASE(IusInputFile, iusInputFileSetGetSourceDict);
+    RUN_TEST_CASE(IusInputFile, iusInputFileSetGetReceiveChannelMapDict);
+    RUN_TEST_CASE(IusInputFile, iusInputFileSetGetTransmitApodizationDict);
+    RUN_TEST_CASE(IusInputFile, iusInputFileSetGetReceiveSettingsDict);
+    RUN_TEST_CASE(IusInputFile, iusInputFileSetGetExperiment);
+    RUN_TEST_CASE(IusInputFile, iusInputFileSetGetTransducer);
     RUN_TEST_CASE(IusInputFile, testIusInputFileSerialization);
 }

@@ -4,15 +4,15 @@
 #ifndef IUSLIBRARY_TESTDATAGENERATORS_H
 #define IUSLIBRARY_TESTDATAGENERATORS_H
 
-#include <include/iusHLExperiment.h>
-#include <include/iusHLPatternList.h>
-#include <include/iusHLPulseDict.h>
-#include <include/iusHLReceiveChannelMapDict.h>
-#include <include/iusHLTransmitApodizationDict.h>
-#include <include/iusHLReceiveSettingsDict.h>
-#include <include/iusHLFrameList.h>
-#include <include/iusHLSourceDict.h>
-#include <include/iusHLTransducer.h>
+#include <include/iusExperiment.h>
+#include <include/iusPatternList.h>
+#include <include/iusPulseDict.h>
+#include <include/iusReceiveChannelMapDict.h>
+#include <include/iusTransmitApodizationDict.h>
+#include <include/iusReceiveSettingsDict.h>
+#include <include/iusFrameList.h>
+#include <include/iusSourceDict.h>
+#include <include/iusTransducer.h>
 
 iufl_t dgGenerateFrameList
 (

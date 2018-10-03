@@ -9,7 +9,7 @@
 #include <iusHDF5.h>
 #include <iusError.h>
 #include <iusTypes.h>
-#include <iusHLTransmitApodization.h>
+#include <iusTransmitApodization.h>
 
 TEST_GROUP(IusTransmitApodization);
 
@@ -26,16 +26,16 @@ TEST(IusTransmitApodization, testIusTransmitApodizationCreate)
 {
 	const int numElements = 5;
 	float apod[5] = { 0.4f,0.3f,0.2f,0.1f, 0.0f };
-	iuta_t obj = iusHLTransmitApodizationCreate(numElements);
-	int status = iusHLTransmitApodizationSetApodization(obj, apod);
+	iuta_t obj = iusTransmitApodizationCreate(numElements);
+	int status = iusTransmitApodizationSetApodization(obj, apod);
 	TEST_ASSERT(status == IUS_E_OK);
 	TEST_ASSERT(obj != IUTA_INVALID);
-	iusHLTransmitApodizationDelete(obj);
+	iusTransmitApodizationDelete(obj);
 
 	// invalid params
-	obj = iusHLTransmitApodizationCreate(0);
+	obj = iusTransmitApodizationCreate(0);
 	TEST_ASSERT(obj == IUTA_INVALID);
-	obj = iusHLTransmitApodizationCreate(-1);
+	obj = iusTransmitApodizationCreate(-1);
 	TEST_ASSERT(obj == IUTA_INVALID);
 }
 
@@ -43,13 +43,13 @@ TEST(IusTransmitApodization, testIusTransmitApodizationDelete)
 {
 	const int numElements = 5;
 
-	iuta_t obj = iusHLTransmitApodizationCreate(numElements);
+	iuta_t obj = iusTransmitApodizationCreate(numElements);
 	TEST_ASSERT(obj != IUTA_INVALID);
-	int status = iusHLTransmitApodizationDelete(obj);
+	int status = iusTransmitApodizationDelete(obj);
 	TEST_ASSERT_EQUAL(IUS_E_OK, status);
 
 	// invalid params
-	status = iusHLTransmitApodizationDelete(NULL);
+	status = iusTransmitApodizationDelete(NULL);
 	TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
 }
 
@@ -57,33 +57,33 @@ TEST(IusTransmitApodization, testIusTransmitApodizationCompare)
 {
 	IUS_BOOL equal;
 
-	iuta_t obj = iusHLTransmitApodizationCreate(5);
-	iuta_t notherObj = iusHLTransmitApodizationCreate(6);
+	iuta_t obj = iusTransmitApodizationCreate(5);
+	iuta_t notherObj = iusTransmitApodizationCreate(6);
 	TEST_ASSERT(obj != IUTA_INVALID);
 	TEST_ASSERT(notherObj != IUTA_INVALID);
 
-	equal = iusHLTransmitApodizationCompare(obj, obj);
+	equal = iusTransmitApodizationCompare(obj, obj);
 	TEST_ASSERT_EQUAL(IUS_TRUE, equal);
-	equal = iusHLTransmitApodizationCompare(obj, notherObj);
+	equal = iusTransmitApodizationCompare(obj, notherObj);
 	TEST_ASSERT_EQUAL(IUS_FALSE, equal);
 
 	// invalid params
-	equal = iusHLTransmitApodizationCompare(obj, NULL);
+	equal = iusTransmitApodizationCompare(obj, NULL);
 	TEST_ASSERT_EQUAL(IUS_FALSE, equal);
-	equal = iusHLTransmitApodizationCompare(NULL, obj);
+	equal = iusTransmitApodizationCompare(NULL, obj);
 	TEST_ASSERT_EQUAL(IUS_FALSE, equal);
 
-	iusHLTransmitApodizationDelete(obj);
-	iusHLTransmitApodizationDelete(notherObj);
+	iusTransmitApodizationDelete(obj);
+	iusTransmitApodizationDelete(notherObj);
 }
 
 TEST(IusTransmitApodization, testIusTransmitApodizationGet)
 {
 	const int numElements = 5;
 
-	iuta_t obj = iusHLTransmitApodizationCreate(numElements);
+	iuta_t obj = iusTransmitApodizationCreate(numElements);
 
-	iusHLTransmitApodizationDelete(obj);
+	iusTransmitApodizationDelete(obj);
 }
 
 TEST_GROUP_RUNNER(IusTransmitApodization)

@@ -9,7 +9,7 @@
 #include <ius.h>
 #include <iusError.h>
 #include <iusTypes.h>
-#include <iusHLExperimentImp.h>
+#include <iusExperimentImp.h>
 
 TEST_GROUP(IusExperiment);
 
@@ -27,19 +27,19 @@ TEST(IusExperiment, testIusCreateExperiment)
     int date = 20160124;
     char *pDescription = "My important experiment notes, by testIusCreateExperiment";
 
-    iue_t obj = iusHLExperimentCreate(speedOfSound, date, pDescription);
-    iue_t notherObj = iusHLExperimentCreate(speedOfSound, date, pDescription);
+    iue_t obj = iusExperimentCreate(speedOfSound, date, pDescription);
+    iue_t notherObj = iusExperimentCreate(speedOfSound, date, pDescription);
     TEST_ASSERT(obj != IUE_INVALID);
     TEST_ASSERT(notherObj != IUE_INVALID);
-    iusHLExperimentDelete(obj);
-    iusHLExperimentDelete(notherObj);
+    iusExperimentDelete(obj);
+    iusExperimentDelete(notherObj);
 
     // invalid params
-    obj = iusHLExperimentCreate(-1.0f, date, pDescription);
+    obj = iusExperimentCreate(-1.0f, date, pDescription);
     TEST_ASSERT(obj == IUE_INVALID);
-    obj = iusHLExperimentCreate(speedOfSound, -1, pDescription);
+    obj = iusExperimentCreate(speedOfSound, -1, pDescription);
     TEST_ASSERT(obj == IUE_INVALID);
-    obj = iusHLExperimentCreate(speedOfSound, -1, NULL);
+    obj = iusExperimentCreate(speedOfSound, -1, NULL);
     TEST_ASSERT(obj == IUE_INVALID);
 }
 
@@ -48,13 +48,13 @@ TEST(IusExperiment, testIusDeleteExperiment)
     float speedOfSound = 1498.1f;
     int date = 20160124;
     char *pDescription = "My important experiment notes, by testIusCreateExperiment";
-    iue_t obj = iusHLExperimentCreate(speedOfSound, date, pDescription);
+    iue_t obj = iusExperimentCreate(speedOfSound, date, pDescription);
     TEST_ASSERT(obj != IUE_INVALID);
-    int status = iusHLExperimentDelete(obj);
+    int status = iusExperimentDelete(obj);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
     // invalid params
-    status = iusHLExperimentDelete(NULL);
+    status = iusExperimentDelete(NULL);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
 }
 
@@ -65,29 +65,29 @@ TEST(IusExperiment, testIusCompareExperiment)
     int date = 20160124;
     char *pDescription = "My important experiment notes, by testIusCreateExperiment";
 
-    iue_t obj = iusHLExperimentCreate(speedOfSound, date, pDescription);
-    iue_t notherObj = iusHLExperimentCreate(speedOfSound, date, pDescription);
-    iue_t differentObj = iusHLExperimentCreate(speedOfSound, date + 1, pDescription);
+    iue_t obj = iusExperimentCreate(speedOfSound, date, pDescription);
+    iue_t notherObj = iusExperimentCreate(speedOfSound, date, pDescription);
+    iue_t differentObj = iusExperimentCreate(speedOfSound, date + 1, pDescription);
     TEST_ASSERT(obj != IUE_INVALID);
     TEST_ASSERT(notherObj != IUE_INVALID);
-    equal = iusHLExperimentCompare(obj, obj);
+    equal = iusExperimentCompare(obj, obj);
     TEST_ASSERT_EQUAL(IUS_TRUE,equal);
-    equal = iusHLExperimentCompare(NULL, NULL);
+    equal = iusExperimentCompare(NULL, NULL);
     TEST_ASSERT_EQUAL(IUS_TRUE,equal);
-    equal = iusHLExperimentCompare(obj, notherObj);
+    equal = iusExperimentCompare(obj, notherObj);
     TEST_ASSERT_EQUAL(IUS_TRUE,equal);
-    equal = iusHLExperimentCompare(obj, differentObj);
+    equal = iusExperimentCompare(obj, differentObj);
     TEST_ASSERT_EQUAL(IUS_FALSE,equal);
 
     // invalid params
-    equal = iusHLExperimentCompare(obj, NULL);
+    equal = iusExperimentCompare(obj, NULL);
     TEST_ASSERT_EQUAL(IUS_FALSE,equal);
-    equal = iusHLExperimentCompare(NULL, obj);
+    equal = iusExperimentCompare(NULL, obj);
     TEST_ASSERT_EQUAL(IUS_FALSE,equal);
 
-  iusHLExperimentDelete(obj);
-  iusHLExperimentDelete(notherObj);
-  iusHLExperimentDelete(differentObj);
+  iusExperimentDelete(obj);
+  iusExperimentDelete(notherObj);
+  iusExperimentDelete(differentObj);
 }
 
 TEST(IusExperiment, testIusGetExperiment)
@@ -96,17 +96,17 @@ TEST(IusExperiment, testIusGetExperiment)
     int date = 20160124;
     char *pDescription = "My important experiment notes, by testIusCreateExperiment";
 
-    iue_t obj = iusHLExperimentCreate(speedOfSound, date, pDescription);
+    iue_t obj = iusExperimentCreate(speedOfSound, date, pDescription);
 
-    TEST_ASSERT_EQUAL_FLOAT(speedOfSound,iusHLExperimentGetSpeedOfSound(obj));
-    TEST_ASSERT_EQUAL(date,iusHLExperimentGetDate(obj));
-    TEST_ASSERT(strcmp(pDescription,iusHLExperimentGetDescription(obj))==0);
+    TEST_ASSERT_EQUAL_FLOAT(speedOfSound,iusExperimentGetSpeedOfSound(obj));
+    TEST_ASSERT_EQUAL(date,iusExperimentGetDate(obj));
+    TEST_ASSERT(strcmp(pDescription,iusExperimentGetDescription(obj))==0);
 
     // invalid params
-    TEST_ASSERT_EQUAL_FLOAT(NAN,iusHLExperimentGetSpeedOfSound(NULL));
-    TEST_ASSERT_EQUAL(-1,iusHLExperimentGetDate(NULL));
-    TEST_ASSERT(iusHLExperimentGetDescription(NULL)==NULL);
-  iusHLExperimentDelete(obj);
+    TEST_ASSERT_EQUAL_FLOAT(NAN,iusExperimentGetSpeedOfSound(NULL));
+    TEST_ASSERT_EQUAL(-1,iusExperimentGetDate(NULL));
+    TEST_ASSERT(iusExperimentGetDescription(NULL)==NULL);
+  iusExperimentDelete(obj);
 }
 
 TEST(IusExperiment, testIusSerialization)
@@ -118,14 +118,14 @@ TEST(IusExperiment, testIusSerialization)
     //char *experimentPath =  "/Experiment";
 
     // create and save
-    iue_t obj = iusHLExperimentCreate(speedOfSound, date, pDescription);
-    iue_t notherObj = iusHLExperimentCreate(speedOfSound+1.0f, date+1, pDescription);
+    iue_t obj = iusExperimentCreate(speedOfSound, date, pDescription);
+    iue_t notherObj = iusExperimentCreate(speedOfSound+1.0f, date+1, pDescription);
 
     hid_t handle = H5Fcreate( filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT );
     TEST_ASSERT(handle > 0);
 	//hid_t group_id = H5Gcreate(handle, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 	//TEST_ASSERT(group_id > 0);
-    int status = iusHLExperimentSave(obj, handle);
+    int status = iusExperimentSave(obj, handle);
 	//H5Gclose(group_id);
     H5Fclose(handle);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
@@ -135,14 +135,14 @@ TEST(IusExperiment, testIusSerialization)
 	TEST_ASSERT(handle > 0);
 	//group_id = H5Gopen(handle, experimentPath, H5P_DEFAULT);
 	//TEST_ASSERT(group_id > 0);
-    iue_t savedObj = iusHLExperimentLoad(handle);
+    iue_t savedObj = iusExperimentLoad(handle);
 	//H5Gclose(group_id);
     H5Fclose(handle);
 
-    TEST_ASSERT_EQUAL(IUS_TRUE, iusHLExperimentCompare(obj,savedObj));
-    TEST_ASSERT_EQUAL(IUS_FALSE, iusHLExperimentCompare(notherObj,savedObj));
-    iusHLExperimentDelete(obj);
-    iusHLExperimentDelete(savedObj);
+    TEST_ASSERT_EQUAL(IUS_TRUE, iusExperimentCompare(obj,savedObj));
+    TEST_ASSERT_EQUAL(IUS_FALSE, iusExperimentCompare(notherObj,savedObj));
+    iusExperimentDelete(obj);
+    iusExperimentDelete(savedObj);
 }
 
 

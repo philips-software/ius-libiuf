@@ -6,8 +6,8 @@
 #include <unity_internals.h>
 #include <unity_fixture.h>
 
-#include <iusHLNode.h>
-#include <iusHLInputInstance.h>
+#include <iusNode.h>
+#include <iusInputInstance.h>
 
 TEST_GROUP(InputfileNode);
 
@@ -30,15 +30,15 @@ TEST(InputfileNode, testNode)
     int numParents = 0;
     char pNodeType[] = "IUSINPUTFILETYPE_V3";
 
-    IusNode *hSimpleNode = iusHLCreateNode(pNodeType, numParents);
+    IusNode *hSimpleNode = iusCreateNode(pNodeType, numParents);
     TEST_ASSERT(hSimpleNode != IUN_INVALID);
     // Check type
-    char *pActualNodeType = iusHLGetNodeType(hSimpleNode);
+    char *pActualNodeType = iusGetNodeType(hSimpleNode);
     TEST_ASSERT_EQUAL_STRING(pNodeType, pActualNodeType);
     // Check numParents
-    TEST_ASSERT(iusHLNodeGetNumParents(hSimpleNode) == 0);
+    TEST_ASSERT(iusNodeGetNumParents(hSimpleNode) == 0);
     // Check unique
-    TEST_ASSERT(iusHLGetNodeId(hSimpleNode) != IUN_INVALID);
+    TEST_ASSERT(iusGetNodeId(hSimpleNode) != IUN_INVALID);
 }
 
 

@@ -6,7 +6,7 @@
 
 #include <iusTypes.h>
 
-int iusHLDiagDisable();
+int iusDiagDisable();
 
 #define FLOAT_PRECISION (0.00001f)
 //#define IUS_EQUAL_FLOAT(a,b)    equalFloat(FLOAT_PRECISION*a,a,b)

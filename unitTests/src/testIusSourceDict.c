@@ -7,9 +7,9 @@
 
 #include <hdf5.h>
 #include <ius.h>
-#include <iusHLSourceDictImp.h>
-#include <include/iusHL3DParametricSource.h>
-#include <include/iusHL3DNonParametricSource.h>
+#include <iusSourceDictImp.h>
+#include <include/ius3DParametricSource.h>
+#include <include/ius3DNonParametricSource.h>
 
 TEST_GROUP(IusSourceDict);
 
@@ -24,12 +24,12 @@ TEST_TEAR_DOWN(IusSourceDict)
 
 TEST(IusSourceDict, testIusCreateSourceDict)
 {
-    iusd_t obj = iusHLSourceDictCreate();
-    iusd_t notherObj = iusHLSourceDictCreate();
+    iusd_t obj = iusSourceDictCreate();
+    iusd_t notherObj = iusSourceDictCreate();
     TEST_ASSERT(obj != IUSD_INVALID);
     TEST_ASSERT(notherObj != IUSD_INVALID);
-    iusHLSourceDictDelete(obj);
-    iusHLSourceDictDelete(notherObj);
+    iusSourceDictDelete(obj);
+    iusSourceDictDelete(notherObj);
 }
 
 
@@ -47,55 +47,55 @@ TEST(IusSourceDict, testIusCompareSourceDict)
     float startAngle = 3.14f;
     float startPhi = startAngle;
     float deltaPhi = angularDelta;
-    iu3dps_t parametricSource = iusHL3DParametricSourceCreate(_3d_parametric_label, locationCount, FNumber,
+    iu3dps_t parametricSource = ius3DParametricSourceCreate(_3d_parametric_label, locationCount, FNumber,
                                                         angularDelta, startAngle, deltaPhi, startPhi);
 
     TEST_ASSERT(parametricSource != IU3DPS_INVALID);
-    iu3dps_t _nother3dps = iusHL3DParametricSourceCreate(_3d_parametric_label, locationCount, FNumber,
+    iu3dps_t _nother3dps = ius3DParametricSourceCreate(_3d_parametric_label, locationCount, FNumber,
                                                               angularDelta, startAngle, deltaPhi, startPhi);
 
     TEST_ASSERT(_nother3dps != IU3DPS_INVALID);
-    iu3dnps_t nonParametricSource = iusHL3DNonParametricSourceCreate(_3d_non_parametric_label, locationCount);
+    iu3dnps_t nonParametricSource = ius3DNonParametricSourceCreate(_3d_non_parametric_label, locationCount);
     TEST_ASSERT(nonParametricSource != IU3DNPS_INVALID);
 
     // Same empty lists...
-    iusd_t dict = iusHLSourceDictCreate();
-    iusd_t notherDict = iusHLSourceDictCreate();
+    iusd_t dict = iusSourceDictCreate();
+    iusd_t notherDict = iusSourceDictCreate();
     TEST_ASSERT(dict != IUSD_INVALID);
     TEST_ASSERT(notherDict != IUSD_INVALID);
 
-    equal = iusHLSourceDictCompare(dict, dict);
+    equal = iusSourceDictCompare(dict, dict);
     TEST_ASSERT_EQUAL(IUS_TRUE,equal);
-    equal = iusHLSourceDictCompare(dict, notherDict);
-    TEST_ASSERT_EQUAL(IUS_TRUE,equal);
-
-    int status = iusHLSourceDictSet(dict, _3d_parametric_label,(ius_t) parametricSource);
-    TEST_ASSERT_EQUAL(IUS_E_OK,status);
-    equal = iusHLSourceDictCompare(dict, notherDict);
-    TEST_ASSERT_EQUAL(IUS_FALSE,equal);
-    status = iusHLSourceDictSet(notherDict,_3d_parametric_label,(ius_t) parametricSource);
-    TEST_ASSERT_EQUAL(IUS_E_OK,status);
-    equal = iusHLSourceDictCompare(dict, notherDict);
+    equal = iusSourceDictCompare(dict, notherDict);
     TEST_ASSERT_EQUAL(IUS_TRUE,equal);
 
-    status = iusHLSourceDictSet(dict,_3d_non_parametric_label,(ius_t) nonParametricSource);
+    int status = iusSourceDictSet(dict, _3d_parametric_label,(ius_t) parametricSource);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
-    equal = iusHLSourceDictCompare(dict, notherDict);
+    equal = iusSourceDictCompare(dict, notherDict);
     TEST_ASSERT_EQUAL(IUS_FALSE,equal);
-    status = iusHLSourceDictSet(notherDict,_3d_non_parametric_label,(ius_t) nonParametricSource);
+    status = iusSourceDictSet(notherDict,_3d_parametric_label,(ius_t) parametricSource);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
-    equal = iusHLSourceDictCompare(dict, notherDict);
+    equal = iusSourceDictCompare(dict, notherDict);
+    TEST_ASSERT_EQUAL(IUS_TRUE,equal);
+
+    status = iusSourceDictSet(dict,_3d_non_parametric_label,(ius_t) nonParametricSource);
+    TEST_ASSERT_EQUAL(IUS_E_OK,status);
+    equal = iusSourceDictCompare(dict, notherDict);
+    TEST_ASSERT_EQUAL(IUS_FALSE,equal);
+    status = iusSourceDictSet(notherDict,_3d_non_parametric_label,(ius_t) nonParametricSource);
+    TEST_ASSERT_EQUAL(IUS_E_OK,status);
+    equal = iusSourceDictCompare(dict, notherDict);
     TEST_ASSERT_EQUAL(IUS_TRUE,equal);
 
 
     // invalid params
-    equal = iusHLSourceDictCompare(dict, NULL);
+    equal = iusSourceDictCompare(dict, NULL);
     TEST_ASSERT_EQUAL(IUS_FALSE,equal);
-    equal = iusHLSourceDictCompare(NULL, dict);
+    equal = iusSourceDictCompare(NULL, dict);
     TEST_ASSERT_EQUAL(IUS_FALSE,equal);
 
-    iusHLSourceDictDelete(dict);
-    iusHLSourceDictDelete(notherDict);
+    iusSourceDictDelete(dict);
+    iusSourceDictDelete(notherDict);
 }
 
 TEST(IusSourceDict, testIusSerialization)
@@ -114,44 +114,44 @@ TEST(IusSourceDict, testIusSerialization)
     float startAngle = 3.14f;
     float startPhi = startAngle;
     float deltaPhi = angularDelta;
-    iu3dps_t parametricSource = iusHL3DParametricSourceCreate(_3d_parametric_label, locationCount, FNumber,
+    iu3dps_t parametricSource = ius3DParametricSourceCreate(_3d_parametric_label, locationCount, FNumber,
                                                               angularDelta, startAngle, deltaPhi, startPhi);
 
     TEST_ASSERT(parametricSource != IU3DPS_INVALID);
-    iu3dps_t _nother3dps = iusHL3DParametricSourceCreate(_3d_parametric_label, locationCount, FNumber,
+    iu3dps_t _nother3dps = ius3DParametricSourceCreate(_3d_parametric_label, locationCount, FNumber,
                                                          angularDelta, startAngle, deltaPhi, startPhi);
 
     TEST_ASSERT(_nother3dps != IU3DPS_INVALID);
-    iu3dnps_t nonParametricSource = iusHL3DNonParametricSourceCreate(_3d_non_parametric_label, locationCount);
+    iu3dnps_t nonParametricSource = ius3DNonParametricSourceCreate(_3d_non_parametric_label, locationCount);
     TEST_ASSERT(nonParametricSource != IU3DNPS_INVALID);
 
     // create
-    iusd_t dict = iusHLSourceDictCreate();
+    iusd_t dict = iusSourceDictCreate();
     TEST_ASSERT(dict != IUSD_INVALID);
 
     // fill
-    int status = iusHLSourceDictSet(dict, _3d_parametric_label,(ius_t) parametricSource);
+    int status = iusSourceDictSet(dict, _3d_parametric_label,(ius_t) parametricSource);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
-    status = iusHLSourceDictSet(dict, _3d_non_parametric_label,(ius_t) nonParametricSource);
+    status = iusSourceDictSet(dict, _3d_non_parametric_label,(ius_t) nonParametricSource);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
     // save
     hid_t handle = H5Fcreate( filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT );
     TEST_ASSERT(handle > 0);
-    status = iusHLSourceDictSave(dict, handle);
+    status = iusSourceDictSave(dict, handle);
     H5Fclose(handle);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
     // read back
     handle = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT );
-    iusd_t savedObj = iusHLSourceDictLoad(handle);
+    iusd_t savedObj = iusSourceDictLoad(handle);
     TEST_ASSERT(savedObj != NULL);
     H5Fclose(handle);
 
-    TEST_ASSERT_EQUAL(IUS_TRUE, iusHLSourceDictCompare(dict,savedObj));
+    TEST_ASSERT_EQUAL(IUS_TRUE, iusSourceDictCompare(dict,savedObj));
 
-    iusHLSourceDictDelete(dict);
-    iusHLSourceDictDelete(savedObj);
+    iusSourceDictDelete(dict);
+    iusSourceDictDelete(savedObj);
 
 }
 

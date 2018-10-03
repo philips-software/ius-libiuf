@@ -4,17 +4,17 @@
 #include <util.h>
 #include <unity_fixture.h>
 
-#include <iusHLDrivingScheme.h>
+#include <iusDrivingScheme.h>
 #include <ius.h>
 #include <iusError.h>
 #include <iusTypes.h>
-#include <iusHLTransducer.h>
-#include <iusHLTransmitPattern.h>
-#include <iusHLTransmitPatternList.h>
-#include <iusHLSourceListOld.h>
-#include <iusHLTransmitPulseList.h>
-#include <iusHLParametricPulse.h>
-#include <iusHLNonParametricPulse.h>
+#include <iusTransducer.h>
+#include <iusTransmitPattern.h>
+#include <iusTransmitPatternList.h>
+#include <iusSourceListOld.h>
+#include <iusTransmitPulseList.h>
+#include <iusParametricPulse.h>
+#include <iusNonParametricPulse.h>
 
 #include <testDataGenerators.h>
 #include <testDrivingScheme.h>
@@ -42,8 +42,8 @@ TEST_TEAR_DOWN(InputfileDrivingScheme)
 //    int i;
 //    iutpul_t pulseList;
 //
-//    drivingScheme = iusHLCreateDrivingScheme( IUS_DIVERGING_WAVES_PARAMETRIZED, IUS_3D_SHAPE, numTransmitPulses,numTransmitSources,numElements);
-//    pulseList = iusHLDrivingSchemeGetTransmitPulseList(drivingScheme);
+//    drivingScheme = iusCreateDrivingScheme( IUS_DIVERGING_WAVES_PARAMETRIZED, IUS_3D_SHAPE, numTransmitPulses,numTransmitSources,numElements);
+//    pulseList = iusDrivingSchemeGetTransmitPulseList(drivingScheme);
 //    TEST_ASSERT( pulseList != IUTPUL_INVALID );
 //    fillTransmitPulseList(pulseList);
 //}
@@ -64,12 +64,12 @@ int createTestAndDeleteScheme
     int status = 0;
     drivingScheme = dgCreateDrivingScheme(type,shape,locationType,numTransmitPulses,numTransmitSources,numElements);
     TEST_ASSERT(drivingScheme != IUDS_INVALID);
-    TEST_ASSERT((shape) == iusHLDrivingSchemeGetShape(drivingScheme));
-    TEST_ASSERT((type) == iusHLDrivingSchemeGetType(drivingScheme));
-    TEST_ASSERT((numTransmitPulses) == iusHLDrivingSchemeGetNumTransmitPulses(drivingScheme));
-    TEST_ASSERT((numTransmitSources) == iusHLDrivingSchemeGetNumTransmitSources(drivingScheme));
-    TEST_ASSERT((numElements) == iusHLDrivingSchemeGetNumElements(drivingScheme));
-    status = iusHLDeleteDrivingScheme(drivingScheme);
+    TEST_ASSERT((shape) == iusDrivingSchemeGetShape(drivingScheme));
+    TEST_ASSERT((type) == iusDrivingSchemeGetType(drivingScheme));
+    TEST_ASSERT((numTransmitPulses) == iusDrivingSchemeGetNumTransmitPulses(drivingScheme));
+    TEST_ASSERT((numTransmitSources) == iusDrivingSchemeGetNumTransmitSources(drivingScheme));
+    TEST_ASSERT((numElements) == iusDrivingSchemeGetNumElements(drivingScheme));
+    status = iusDeleteDrivingScheme(drivingScheme);
     TEST_ASSERT(status == (IUS_E_OK));
     return status;
 }
@@ -130,11 +130,11 @@ TEST(InputfileDrivingScheme, testIusHLCreateDrivingScheme)
 
 
 //    // test invalid arguments
-//    drivingScheme = iusHLCreateDrivingScheme( (IusDrivingSchemeType) 0, IUS_3D_SHAPE, IUS_PARAMETRIC_3D_SOURCE_LOCATION, numTransmitPulses,numTransmitSources,numElements);
+//    drivingScheme = iusCreateDrivingScheme( (IusDrivingSchemeType) 0, IUS_3D_SHAPE, IUS_PARAMETRIC_3D_SOURCE_LOCATION, numTransmitPulses,numTransmitSources,numElements);
 //    TEST_ASSERT(drivingScheme == IUDS_INVALID);
-//    drivingScheme = iusHLCreateDrivingScheme(IUS_CUSTOM_WAVES, (IusShape) 0, IUS_PARAMETRIC_3D_SOURCE_LOCATION, numTransmitPulses,numTransmitSources,numElements);
+//    drivingScheme = iusCreateDrivingScheme(IUS_CUSTOM_WAVES, (IusShape) 0, IUS_PARAMETRIC_3D_SOURCE_LOCATION, numTransmitPulses,numTransmitSources,numElements);
 //    TEST_ASSERT(drivingScheme == IUDS_INVALID);
-//    drivingScheme = iusHLCreateDrivingScheme(IUS_CUSTOM_WAVES, IUS_3D_SHAPE, -1,numTransmitSources,numElements);
+//    drivingScheme = iusCreateDrivingScheme(IUS_CUSTOM_WAVES, IUS_3D_SHAPE, -1,numTransmitSources,numElements);
 //    TEST_ASSERT(drivingScheme == IUDS_INVALID);
 }
 
@@ -156,25 +156,25 @@ TEST(InputfileDrivingScheme, testIusHLCreateDrivingScheme)
 //
 //    // Diverging waves type is not parametrized
 //    // but specified by source locations.
-//    drivingScheme = iusHLCreateDrivingScheme( IUS_DIVERGING_WAVES, IUS_3D_SHAPE,
+//    drivingScheme = iusCreateDrivingScheme( IUS_DIVERGING_WAVES, IUS_3D_SHAPE,
 //                                              numTransmitPulses,
 //                                              numTransmitSources,
 //                                              numElements );
 //
-//    TEST_ASSERT(numTransmitSources == iusHLDrivingSchemeGetNumTransmitSources(drivingScheme));
+//    TEST_ASSERT(numTransmitSources == iusDrivingSchemeGetNumTransmitSources(drivingScheme));
 //    for(index = 0; index < numTransmitSources; index++)
 //    {
 //        x=1.0f/((index%10)+1.0f);
 //        y=1.0f/((index%10)+1.0f);
 //        z=1.0f/((index%10)+1.0f);
-//        iu3dp_t pos = iusHLCreate3DPosition(
+//        iu3dp_t pos = iusCreate3DPosition(
 //            x,
 //            y,
 //            z
 //        );
-//        status=iusHLDrivingSchemeSet3DSourceLocation(drivingScheme,pos,index);
+//        status=iusDrivingSchemeSet3DSourceLocation(drivingScheme,pos,index);
 //        TEST_ASSERT(status == IUS_E_OK);
-//        iu3dp_t actual = iusHLDrivingSchemeGet3DSourceLocation(drivingScheme,index);
+//        iu3dp_t actual = iusDrivingSchemeGet3DSourceLocation(drivingScheme,index);
 //        TEST_ASSERT(iusCompare3DPosition(pos,actual) == IUS_TRUE);
 //    }
 //
@@ -182,8 +182,8 @@ TEST(InputfileDrivingScheme, testIusHLCreateDrivingScheme)
 //    // invalid params/operations
 //
 //    // 3D shape transducer, should not alow 2d source positions
-//    iu2dp_t _2dpos = iusHLCreate2DPosition(x, z);
-//    status=iusHLDrivingSchemeSet2DSourceLocation(drivingScheme,_2dpos,index);
+//    iu2dp_t _2dpos = iusCreate2DPosition(x, z);
+//    status=iusDrivingSchemeSet2DSourceLocation(drivingScheme,_2dpos,index);
 //    TEST_ASSERT(status == IUS_ERR_VALUE);
 //
 //
@@ -196,7 +196,7 @@ TEST(InputfileDrivingScheme, testIusHLCreateDrivingScheme)
 //    TEST_ASSERT(status == IUS_ERR_VALUE);
 //    status |= iusDrivingSchemeSetSourceStartTheta(drivingScheme,startAngle);
 //    TEST_ASSERT(status == IUS_ERR_VALUE);
-//    status = iusHLDeleteDrivingScheme(drivingScheme);
+//    status = iusDeleteDrivingScheme(drivingScheme);
 //    TEST_ASSERT(status == IUS_E_OK);
 //}
 //
@@ -218,7 +218,7 @@ TEST(InputfileDrivingScheme, testIusHLCreateDrivingScheme)
 //
 //
 //    IusShape shape = IUS_2D_SHAPE;
-//    parametrizedDrivingScheme = iusHLCreateDrivingScheme( IUS_DIVERGING_WAVES_PARAMETRIZED,
+//    parametrizedDrivingScheme = iusCreateDrivingScheme( IUS_DIVERGING_WAVES_PARAMETRIZED,
 //                                                          shape,
 //                                                          numTransmitPulses,
 //                                                          numTransmitSources,
@@ -235,7 +235,7 @@ TEST(InputfileDrivingScheme, testIusHLCreateDrivingScheme)
 //    TEST_ASSERT_EQUAL_FLOAT(startAngle,iusDrivingSchemeGetSourceStartTheta(parametrizedDrivingScheme));
 //
 //
-//    status = iusHLDeleteDrivingScheme(parametrizedDrivingScheme);
+//    status = iusDeleteDrivingScheme(parametrizedDrivingScheme);
 //    TEST_ASSERT(status == IUS_E_OK);
 //
 //    // invalid params/operations

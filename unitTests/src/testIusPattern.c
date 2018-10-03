@@ -10,7 +10,7 @@
 #include <include/ius.h>
 #include <include/iusError.h>
 #include <include/iusTypes.h>
-#include "include/iusHLPatternImp.h"
+#include "include/iusPatternImp.h"
 
 
 static const char *pBmodePatternLabel = "bmode";
@@ -34,7 +34,7 @@ TEST_TEAR_DOWN(IusPattern)
 
 TEST(IusPattern, testIusPatternCreate)
 {
-    iupa_t obj = iusHLPatternCreate(pBmodePatternLabel,
+    iupa_t obj = iusPatternCreate(pBmodePatternLabel,
                                    0.01f,
                                    pPulseLabel,
                                    pSourceLabel,
@@ -42,7 +42,7 @@ TEST(IusPattern, testIusPatternCreate)
                                    pApodizationLabel,
                                    pReceivesettingsLabel);
 
-    iupa_t notherObj = iusHLPatternCreate(pDopplerPatternLabel,
+    iupa_t notherObj = iusPatternCreate(pDopplerPatternLabel,
                                          0.01f,
                                          pPulseLabel,
                                          pSourceLabel,
@@ -51,11 +51,11 @@ TEST(IusPattern, testIusPatternCreate)
                                          pReceivesettingsLabel);
     TEST_ASSERT(obj != IUPA_INVALID);
     TEST_ASSERT(notherObj != IUPA_INVALID);
-    iusHLPatternDelete(obj);
-    iusHLPatternDelete(notherObj);
+    iusPatternDelete(obj);
+    iusPatternDelete(notherObj);
 
     // invalid params
-    obj = iusHLPatternCreate(NULL,
+    obj = iusPatternCreate(NULL,
                              0.01f,
                              pPulseLabel,
                              pSourceLabel,
@@ -64,7 +64,7 @@ TEST(IusPattern, testIusPatternCreate)
                              pReceivesettingsLabel);
     TEST_ASSERT(obj == IUPA_INVALID);
 
-    obj = iusHLPatternCreate("",
+    obj = iusPatternCreate("",
                              0.01f,
                              pPulseLabel,
                              pSourceLabel,
@@ -73,7 +73,7 @@ TEST(IusPattern, testIusPatternCreate)
                              pReceivesettingsLabel);
     TEST_ASSERT(obj == IUPA_INVALID);
 
-    obj = iusHLPatternCreate(pBmodePatternLabel,
+    obj = iusPatternCreate(pBmodePatternLabel,
                              0.01f,
                              "",
                              pSourceLabel,
@@ -82,7 +82,7 @@ TEST(IusPattern, testIusPatternCreate)
                              pReceivesettingsLabel);
     TEST_ASSERT(obj == IUPA_INVALID);
 
-    obj = iusHLPatternCreate(pBmodePatternLabel,
+    obj = iusPatternCreate(pBmodePatternLabel,
                              0.01f,
                              pPulseLabel,
                              "",
@@ -91,7 +91,7 @@ TEST(IusPattern, testIusPatternCreate)
                              pReceivesettingsLabel);
     TEST_ASSERT(obj == IUPA_INVALID);
 
-    obj = iusHLPatternCreate(pBmodePatternLabel,
+    obj = iusPatternCreate(pBmodePatternLabel,
                              0.01f,
                              pPulseLabel,
                              pSourceLabel,
@@ -100,7 +100,7 @@ TEST(IusPattern, testIusPatternCreate)
                              pReceivesettingsLabel);
     TEST_ASSERT(obj == IUPA_INVALID);
 
-    obj = iusHLPatternCreate(pBmodePatternLabel,
+    obj = iusPatternCreate(pBmodePatternLabel,
                              0.01f,
                              pPulseLabel,
                              pSourceLabel,
@@ -109,7 +109,7 @@ TEST(IusPattern, testIusPatternCreate)
                              pReceivesettingsLabel);
     TEST_ASSERT(obj == IUPA_INVALID);
 
-    obj = iusHLPatternCreate(pBmodePatternLabel,
+    obj = iusPatternCreate(pBmodePatternLabel,
                              0.01f,
                              pPulseLabel,
                              pSourceLabel,
@@ -122,7 +122,7 @@ TEST(IusPattern, testIusPatternCreate)
 
 TEST(IusPattern, testIusPatternDelete)
 {
-    iupa_t obj = iusHLPatternCreate(pBmodePatternLabel,
+    iupa_t obj = iusPatternCreate(pBmodePatternLabel,
                                  0.01f,
                                  pPulseLabel,
                                  pSourceLabel,
@@ -130,11 +130,11 @@ TEST(IusPattern, testIusPatternDelete)
                                  pApodizationLabel,
                                  pReceivesettingsLabel);
     TEST_ASSERT(obj != IUPA_INVALID);
-    int status = iusHLPatternDelete(obj);
+    int status = iusPatternDelete(obj);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
     // invalid params
-    status = iusHLPatternDelete(NULL);
+    status = iusPatternDelete(NULL);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
 }
 
@@ -151,7 +151,7 @@ int createAndCompare
     const char *pReceiveSettingsLabel
 )
 {
-  iupa_t actual = iusHLPatternCreate(pLabel,
+  iupa_t actual = iusPatternCreate(pLabel,
                                     timeInFrame,
                                     pPulseLabel,
                                     pSourceLabel,
@@ -159,15 +159,15 @@ int createAndCompare
                                     pApodizationLabel,
                                     pReceiveSettingsLabel);
   if(actual == IUPA_INVALID) return IUS_ERR_VALUE;
-  int equal = iusHLPatternCompare(reference,actual);
-  iusHLPatternDelete(actual);
+  int equal = iusPatternCompare(reference,actual);
+  iusPatternDelete(actual);
   return equal;
 }
 
 TEST(IusPattern, testIusPatternCompare)
 {
     IUS_BOOL equal;
-    iupa_t obj = iusHLPatternCreate(pBmodePatternLabel,
+    iupa_t obj = iusPatternCreate(pBmodePatternLabel,
                                  0.01f,
                                  pPulseLabel,
                                  pSourceLabel,
@@ -198,19 +198,19 @@ TEST(IusPattern, testIusPatternCompare)
 
 
     // invalid params
-    equal = iusHLPatternCompare(obj,NULL);
+    equal = iusPatternCompare(obj,NULL);
     TEST_ASSERT_EQUAL(IUS_FALSE,equal);
-    equal = iusHLPatternCompare(NULL,obj);
+    equal = iusPatternCompare(NULL,obj);
     TEST_ASSERT_EQUAL(IUS_FALSE,equal);
     
-    iusHLPatternDelete(obj);
+    iusPatternDelete(obj);
 }
 
 
 TEST(IusPattern, testIusPatternSetGet)
 {
     float timeInFrame = 0.01f;
-    iupa_t obj = iusHLPatternCreate(pBmodePatternLabel,
+    iupa_t obj = iusPatternCreate(pBmodePatternLabel,
                                    timeInFrame,
                                    pPulseLabel,
                                    pSourceLabel,
@@ -220,27 +220,27 @@ TEST(IusPattern, testIusPatternSetGet)
     TEST_ASSERT(obj != IUPA_INVALID);
     
     // label
-    TEST_ASSERT_EQUAL_STRING(pBmodePatternLabel, iusHLPatternGetLabel(obj));
-    TEST_ASSERT_EQUAL_STRING(pPulseLabel, iusHLPatternGetPulseLabel(obj));
-    TEST_ASSERT_EQUAL_STRING(pSourceLabel, iusHLPatternGetSourceLabel(obj));
-    TEST_ASSERT_EQUAL_STRING(pChannelMapLabel, iusHLPatternGetChannelMapLabel(obj));
-    TEST_ASSERT_EQUAL_STRING(pApodizationLabel, iusHLPatternGetApodizationLabel(obj));
-    TEST_ASSERT_EQUAL_STRING(pReceivesettingsLabel, iusHLPatternGetReceivesettingsLabel(obj));
-    TEST_ASSERT_EQUAL_FLOAT(timeInFrame, iusHLPatternGetTimeInFrame(obj) );
+    TEST_ASSERT_EQUAL_STRING(pBmodePatternLabel, iusPatternGetLabel(obj));
+    TEST_ASSERT_EQUAL_STRING(pPulseLabel, iusPatternGetPulseLabel(obj));
+    TEST_ASSERT_EQUAL_STRING(pSourceLabel, iusPatternGetSourceLabel(obj));
+    TEST_ASSERT_EQUAL_STRING(pChannelMapLabel, iusPatternGetChannelMapLabel(obj));
+    TEST_ASSERT_EQUAL_STRING(pApodizationLabel, iusPatternGetApodizationLabel(obj));
+    TEST_ASSERT_EQUAL_STRING(pReceivesettingsLabel, iusPatternGetReceivesettingsLabel(obj));
+    TEST_ASSERT_EQUAL_FLOAT(timeInFrame, iusPatternGetTimeInFrame(obj) );
 
 
     // invalid param
-    iusHLPatternDelete(obj);
+    iusPatternDelete(obj);
     obj = IUPA_INVALID;
-    TEST_ASSERT_EQUAL(NULL, iusHLPatternGetLabel(obj));
-    TEST_ASSERT_EQUAL(NULL, iusHLPatternGetPulseLabel(obj));
-    TEST_ASSERT_EQUAL(NULL, iusHLPatternGetSourceLabel(obj));
-    TEST_ASSERT_EQUAL(NULL, iusHLPatternGetChannelMapLabel(obj));
-    TEST_ASSERT_EQUAL(NULL, iusHLPatternGetApodizationLabel(obj));
-    TEST_ASSERT_EQUAL(NULL, iusHLPatternGetReceivesettingsLabel(obj));
-    TEST_ASSERT_EQUAL_FLOAT(NAN, iusHLPatternGetTimeInFrame(obj) );
+    TEST_ASSERT_EQUAL(NULL, iusPatternGetLabel(obj));
+    TEST_ASSERT_EQUAL(NULL, iusPatternGetPulseLabel(obj));
+    TEST_ASSERT_EQUAL(NULL, iusPatternGetSourceLabel(obj));
+    TEST_ASSERT_EQUAL(NULL, iusPatternGetChannelMapLabel(obj));
+    TEST_ASSERT_EQUAL(NULL, iusPatternGetApodizationLabel(obj));
+    TEST_ASSERT_EQUAL(NULL, iusPatternGetReceivesettingsLabel(obj));
+    TEST_ASSERT_EQUAL_FLOAT(NAN, iusPatternGetTimeInFrame(obj) );
 
-    iusHLPatternDelete(obj);
+    iusPatternDelete(obj);
 }
 
 TEST(IusPattern, testIusSerialization)
@@ -250,7 +250,7 @@ TEST(IusPattern, testIusSerialization)
 
     // create and save
     float timeInFrame = 0.01f;
-    iupa_t obj = iusHLPatternCreate(pBmodePatternLabel,
+    iupa_t obj = iusPatternCreate(pBmodePatternLabel,
                                    timeInFrame,
                                    pPulseLabel,
                                    pSourceLabel,
@@ -258,7 +258,7 @@ TEST(IusPattern, testIusSerialization)
                                    pApodizationLabel,
                                    pReceivesettingsLabel);
 
-    iupa_t notherObj = iusHLPatternCreate(pDopplerPatternLabel,
+    iupa_t notherObj = iusPatternCreate(pDopplerPatternLabel,
                                           0.01f,
                                           pPulseLabel,
                                           pSourceLabel,
@@ -270,20 +270,20 @@ TEST(IusPattern, testIusSerialization)
 
     hid_t handle = H5Fcreate( filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT );
     TEST_ASSERT(handle > 0);
-    int status = iusHLPatternSave( obj, handle);
+    int status = iusPatternSave( obj, handle);
     H5Fclose(handle);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
     // read back
     handle = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT );
-    iupa_t savedObj = iusHLPatternLoad(handle);
+    iupa_t savedObj = iusPatternLoad(handle);
     TEST_ASSERT_NOT_EQUAL(NULL, savedObj);
     H5Fclose(handle);
 
-    TEST_ASSERT_EQUAL(IUS_TRUE, iusHLPatternCompare(obj,savedObj));
-    TEST_ASSERT_EQUAL(IUS_FALSE, iusHLPatternCompare(notherObj,savedObj));
-    iusHLPatternDelete((iupa_t)obj);
-    iusHLPatternDelete(savedObj);
+    TEST_ASSERT_EQUAL(IUS_TRUE, iusPatternCompare(obj,savedObj));
+    TEST_ASSERT_EQUAL(IUS_FALSE, iusPatternCompare(notherObj,savedObj));
+    iusPatternDelete((iupa_t)obj);
+    iusPatternDelete(savedObj);
 }
 
 TEST_GROUP_RUNNER(IusPattern)

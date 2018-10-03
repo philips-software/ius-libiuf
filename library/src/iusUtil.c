@@ -8,7 +8,7 @@
 #include <iusHDF5.h>
 #include <iusUtil.h>
 
-int iusHLDiagDisable()
+int iusDiagDisable()
 {
     return iusHdf5DisableMessages();
 }

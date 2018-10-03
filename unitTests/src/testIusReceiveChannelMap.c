@@ -9,8 +9,8 @@
 #include <iusHDF5.h>
 #include <iusError.h>
 #include <iusTypes.h>
-#include <iusHLReceiveChannelMap.h>
-#include <iusHLReceiveChannelMapDict.h>
+#include <iusReceiveChannelMap.h>
+#include <iusReceiveChannelMapDict.h>
 
 TEST_GROUP(IusReceiveChannelMap);
 
@@ -27,16 +27,16 @@ TEST(IusReceiveChannelMap, testIusReceiveChannelMapCreate)
 {
 	const int numChannels = 5;
 	int map[5] = { 4,3,2,1,0 };
-	iurcm_t obj = iusHLReceiveChannelMapCreate(numChannels);
-	int status = iusHLReceiveChannelMapSetMap(obj, map);
+	iurcm_t obj = iusReceiveChannelMapCreate(numChannels);
+	int status = iusReceiveChannelMapSetMap(obj, map);
 	TEST_ASSERT(status == IUS_E_OK);
 	TEST_ASSERT(obj != IURCM_INVALID);
-	iusHLReceiveChannelMapDelete(obj);
+	iusReceiveChannelMapDelete(obj);
 	
 	// invalid params
-	obj = iusHLReceiveChannelMapCreate(0);
+	obj = iusReceiveChannelMapCreate(0);
 	TEST_ASSERT(obj == IURCM_INVALID);
-	obj = iusHLReceiveChannelMapCreate(-1);
+	obj = iusReceiveChannelMapCreate(-1);
 	TEST_ASSERT(obj == IURCM_INVALID);
 }
 
@@ -44,13 +44,13 @@ TEST(IusReceiveChannelMap, testIusReceiveChannelMapDelete)
 {
 	const int numChannels = 5;
 
-	iurcm_t obj = iusHLReceiveChannelMapCreate(numChannels);
+	iurcm_t obj = iusReceiveChannelMapCreate(numChannels);
 	TEST_ASSERT(obj != IURCM_INVALID);
-	int status = iusHLReceiveChannelMapDelete(obj);
+	int status = iusReceiveChannelMapDelete(obj);
 	TEST_ASSERT_EQUAL(IUS_E_OK, status);
 
 	// invalid params
-	status = iusHLReceiveChannelMapDelete(NULL);
+	status = iusReceiveChannelMapDelete(NULL);
 	TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
 }
 
@@ -58,33 +58,33 @@ TEST(IusReceiveChannelMap, testIusReceiveChannelMapCompare)
 {
 	IUS_BOOL equal;
 
-	iurcm_t obj = iusHLReceiveChannelMapCreate(5);
-	iurcm_t notherObj = iusHLReceiveChannelMapCreate(6);
+	iurcm_t obj = iusReceiveChannelMapCreate(5);
+	iurcm_t notherObj = iusReceiveChannelMapCreate(6);
 	TEST_ASSERT(obj != IURCM_INVALID);
 	TEST_ASSERT(notherObj != IURCM_INVALID);
 
-	equal = iusHLReceiveChannelMapCompare(obj, obj);
+	equal = iusReceiveChannelMapCompare(obj, obj);
 	TEST_ASSERT_EQUAL(IUS_TRUE, equal);
-	equal = iusHLReceiveChannelMapCompare(obj, notherObj);
+	equal = iusReceiveChannelMapCompare(obj, notherObj);
 	TEST_ASSERT_EQUAL(IUS_FALSE, equal);
 
 	// invalid params
-	equal = iusHLReceiveChannelMapCompare(obj, NULL);
+	equal = iusReceiveChannelMapCompare(obj, NULL);
 	TEST_ASSERT_EQUAL(IUS_FALSE, equal);
-	equal = iusHLReceiveChannelMapCompare(NULL, obj);
+	equal = iusReceiveChannelMapCompare(NULL, obj);
 	TEST_ASSERT_EQUAL(IUS_FALSE, equal);
 
-	iusHLReceiveChannelMapDelete(obj);
-	iusHLReceiveChannelMapDelete(notherObj);
+	iusReceiveChannelMapDelete(obj);
+	iusReceiveChannelMapDelete(notherObj);
 }
 
 TEST(IusReceiveChannelMap, testIusReceiveChannelMapGet)
 {
 	const int numChannels=5;
 
-	iurcm_t obj = iusHLReceiveChannelMapCreate(numChannels);
+	iurcm_t obj = iusReceiveChannelMapCreate(numChannels);
 
-	iusHLReceiveChannelMapDelete(obj);
+	iusReceiveChannelMapDelete(obj);
 }
 
 TEST_GROUP_RUNNER(IusReceiveChannelMap)

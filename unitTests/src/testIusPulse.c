@@ -10,9 +10,9 @@
 #include <ius.h>
 #include <iusError.h>
 #include <iusTypes.h>
-#include <iusHLPulseImp.h>
-#include <iusHLNonParametricPulse.h>
-#include <iusHLParametricPulse.h>
+#include <iusPulseImp.h>
+#include <iusNonParametricPulse.h>
+#include <iusParametricPulse.h>
 
 TEST_GROUP(IusPulse);
 
@@ -36,18 +36,18 @@ TEST(IusPulse, testIusPulseDelete)
 
 
     // create and save
-    iup_t obj = (iup_t) iusHLParametricPulseCreate(label, pulseFrequency, pulseAmplitude, pulseCount);
-    iup_t notherObj = (iup_t) iusHLNonParametricPulseCreate(notherLabel, numPulseValues);
+    iup_t obj = (iup_t) iusParametricPulseCreate(label, pulseFrequency, pulseAmplitude, pulseCount);
+    iup_t notherObj = (iup_t) iusNonParametricPulseCreate(notherLabel, numPulseValues);
 
-    int status = iusHLPulseDelete(obj);
+    int status = iusPulseDelete(obj);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
 
-    status = iusHLPulseDelete(notherObj);
+    status = iusPulseDelete(notherObj);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
     // invalid params
-    status = iusHLPulseDelete(NULL);
+    status = iusPulseDelete(NULL);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
 }
 
@@ -65,24 +65,24 @@ TEST(IusPulse, testIusPulseCompare)
 
 
     // create and save
-    iup_t obj = (iup_t) iusHLParametricPulseCreate(label, pulseFrequency, pulseAmplitude, pulseCount);
-    iup_t notherObj = (iup_t) iusHLNonParametricPulseCreate(notherLabel, numPulseValues);
+    iup_t obj = (iup_t) iusParametricPulseCreate(label, pulseFrequency, pulseAmplitude, pulseCount);
+    iup_t notherObj = (iup_t) iusNonParametricPulseCreate(notherLabel, numPulseValues);
     TEST_ASSERT(obj != IUP_INVALID);
     TEST_ASSERT(notherObj != IUP_INVALID);
 
-    equal = iusHLPulseCompare(obj,obj);
+    equal = iusPulseCompare(obj,obj);
     TEST_ASSERT_EQUAL(IUS_TRUE,equal);
-    equal = iusHLPulseCompare(obj,notherObj);
+    equal = iusPulseCompare(obj,notherObj);
     TEST_ASSERT_EQUAL(IUS_FALSE,equal);
     
     // invalid params
-    equal = iusHLPulseCompare(obj,NULL);
+    equal = iusPulseCompare(obj,NULL);
     TEST_ASSERT_EQUAL(IUS_FALSE,equal);
-    equal = iusHLPulseCompare(NULL,obj);
+    equal = iusPulseCompare(NULL,obj);
     TEST_ASSERT_EQUAL(IUS_FALSE,equal);
     
-    iusHLPulseDelete(obj);
-    iusHLPulseDelete(notherObj);
+    iusPulseDelete(obj);
+    iusPulseDelete(notherObj);
 }
 
 
@@ -95,22 +95,22 @@ TEST(IusPulse, testIusPulseGet)
     char    *notherLabel = "label for IUS_NON_PARAMETRIC_PULSETYPE";
 
     // create and save
-    iup_t obj = (iup_t) iusHLParametricPulseCreate(pLabel, pulseFrequency, pulseAmplitude, pulseCount);
-    iup_t notherObj = (iup_t) iusHLNonParametricPulseCreate(notherLabel, pulseCount);
+    iup_t obj = (iup_t) iusParametricPulseCreate(pLabel, pulseFrequency, pulseAmplitude, pulseCount);
+    iup_t notherObj = (iup_t) iusNonParametricPulseCreate(notherLabel, pulseCount);
 
     // int param
-    TEST_ASSERT_EQUAL(IUS_PARAMETRIC_PULSETYPE,iusHLPulseGetType( (iup_t) obj));
-    TEST_ASSERT_EQUAL_STRING(pLabel,iusHLPulseGetLabel((iup_t) obj));
+    TEST_ASSERT_EQUAL(IUS_PARAMETRIC_PULSETYPE,iusPulseGetType( (iup_t) obj));
+    TEST_ASSERT_EQUAL_STRING(pLabel,iusPulseGetLabel((iup_t) obj));
 
-    TEST_ASSERT_EQUAL(IUS_NON_PARAMETRIC_PULSETYPE,iusHLPulseGetType( (iup_t) notherObj));
-    TEST_ASSERT_EQUAL_STRING(notherLabel,iusHLPulseGetLabel((iup_t) notherObj));
+    TEST_ASSERT_EQUAL(IUS_NON_PARAMETRIC_PULSETYPE,iusPulseGetType( (iup_t) notherObj));
+    TEST_ASSERT_EQUAL_STRING(notherLabel,iusPulseGetLabel((iup_t) notherObj));
 
     // invalid param
-    TEST_ASSERT_EQUAL(IUS_INVALID_PULSETYPE,iusHLPulseGetType(NULL));
-    TEST_ASSERT_EQUAL(NULL,iusHLPulseGetLabel(NULL));
+    TEST_ASSERT_EQUAL(IUS_INVALID_PULSETYPE,iusPulseGetType(NULL));
+    TEST_ASSERT_EQUAL(NULL,iusPulseGetLabel(NULL));
    
-    iusHLPulseDelete(obj);
-    iusHLPulseDelete(notherObj);
+    iusPulseDelete(obj);
+    iusPulseDelete(notherObj);
 }
 
 
@@ -128,32 +128,32 @@ TEST(IusPulse, testIusSerialization)
 
   // create and save
   char *pulseLabel = "Parametric Pulse Created_in_IusPulse_testIusSerialization";
-  iupp_t obj = iusHLParametricPulseCreate(pulseLabel, pulseFrequency, pulseAmplitude, pulseCount);
-  iunpp_t notherObj = iusHLNonParametricPulseCreate("Non Parametric Pulse Created_in_IusPulse_testIusSerialization", numPulseValues);
+  iupp_t obj = iusParametricPulseCreate(pulseLabel, pulseFrequency, pulseAmplitude, pulseCount);
+  iunpp_t notherObj = iusNonParametricPulseCreate("Non Parametric Pulse Created_in_IusPulse_testIusSerialization", numPulseValues);
 
   // fill
-  int status = iusHLNonParametricPulseSetValue(notherObj,0,0.1f,10.0f);
+  int status = iusNonParametricPulseSetValue(notherObj,0,0.1f,10.0f);
   TEST_ASSERT_EQUAL(IUS_E_OK,status);
-  status = iusHLNonParametricPulseSetValue(notherObj,1,0.2f,10.0f);
+  status = iusNonParametricPulseSetValue(notherObj,1,0.2f,10.0f);
   TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
 
   hid_t handle = H5Fcreate( filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT );
   TEST_ASSERT(handle > 0);
-  status = iusHLPulseSave( (iup_t) obj, handle);
+  status = iusPulseSave( (iup_t) obj, handle);
   H5Fclose(handle);
   TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
   // read back
   handle = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT );
-  iup_t savedObj = iusHLPulseLoad(handle); 
+  iup_t savedObj = iusPulseLoad(handle);
   TEST_ASSERT_NOT_EQUAL(NULL, savedObj);
   H5Fclose(handle);
 
-  TEST_ASSERT_EQUAL(IUS_TRUE, iusHLPulseCompare((iup_t)obj,savedObj));
-  TEST_ASSERT_EQUAL(IUS_FALSE, iusHLPulseCompare((iup_t)notherObj, savedObj));
-  iusHLPulseDelete((iup_t)obj);
-  iusHLPulseDelete(savedObj);
+  TEST_ASSERT_EQUAL(IUS_TRUE, iusPulseCompare((iup_t)obj,savedObj));
+  TEST_ASSERT_EQUAL(IUS_FALSE, iusPulseCompare((iup_t)notherObj, savedObj));
+  iusPulseDelete((iup_t)obj);
+  iusPulseDelete(savedObj);
 }
 
 
