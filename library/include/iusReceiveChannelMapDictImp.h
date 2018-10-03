@@ -10,14 +10,12 @@
 herr_t iusReceiveChannelMapDictSave
 (
     iurcmd_t dict,
-    char *parentPath,
     hid_t handle
 );
 
 iurcmd_t iusReceiveChannelMapDictLoad
 (
-    hid_t handle,
-    char *parentPath
+    hid_t handle
 );
 
 #endif //IUSLIBRARY_IUSHLRECEIVECHANNELMAPDICTIMP_H

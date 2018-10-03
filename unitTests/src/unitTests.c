@@ -14,7 +14,6 @@ static void RunAllTests(void)
 {
     RUN_TEST_GROUP(Ius2DNonParametricSource);
     RUN_TEST_GROUP(Ius2DParametricSource);
-    RUN_TEST_GROUP(Ius2DParametricSource);
     RUN_TEST_GROUP(Ius2DTransducer);
     RUN_TEST_GROUP(Ius2DTransducerElement);
     RUN_TEST_GROUP(Ius2DTransducerElementList);
@@ -33,10 +32,8 @@ static void RunAllTests(void)
     RUN_TEST_GROUP(IusParameterDict);
     RUN_TEST_GROUP(IusNonParametricPulse);
     RUN_TEST_GROUP(IusParametricPulse);
-    RUN_TEST_GROUP(IusParametricPulse);
     RUN_TEST_GROUP(IusPattern);
     RUN_TEST_GROUP(IusPatternList);
-    RUN_TEST_GROUP(IusPulse);
     RUN_TEST_GROUP(IusPulse);
     RUN_TEST_GROUP(IusPulseDict);
     RUN_TEST_GROUP(IusReceiveChannelMap);

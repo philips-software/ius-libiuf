@@ -115,7 +115,7 @@ TEST(IusExperiment, testIusSerialization)
     int date = 20160124;
     char *pDescription = "My important experiment notes, by testIusCreateExperiment";
     char *filename = "testIusExperiment.hdf5";
-    char *experimentPath =  "/Experiment";
+    //char *experimentPath =  "/Experiment";
 
     // create and save
     iue_t obj = iusExperimentCreate(speedOfSound, date, pDescription);
@@ -123,20 +123,20 @@ TEST(IusExperiment, testIusSerialization)
 
     hid_t handle = H5Fcreate( filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT );
     TEST_ASSERT(handle > 0);
-	hid_t group_id = H5Gcreate(handle, experimentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-	TEST_ASSERT(group_id > 0);
-    int status = iusExperimentSave(obj, group_id);
-	H5Gclose(group_id);
+	//hid_t group_id = H5Gcreate(handle, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+	//TEST_ASSERT(group_id > 0);
+    int status = iusExperimentSave(obj, handle);
+	//H5Gclose(group_id);
     H5Fclose(handle);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
     // read back
     handle = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT );
 	TEST_ASSERT(handle > 0);
-	group_id = H5Gopen(handle, experimentPath, H5P_DEFAULT);
-	TEST_ASSERT(group_id > 0);
-    iue_t savedObj = iusExperimentLoad(group_id);
-	H5Gclose(group_id);
+	//group_id = H5Gopen(handle, experimentPath, H5P_DEFAULT);
+	//TEST_ASSERT(group_id > 0);
+    iue_t savedObj = iusExperimentLoad(handle);
+	//H5Gclose(group_id);
     H5Fclose(handle);
 
     TEST_ASSERT_EQUAL(IUS_TRUE, iusExperimentCompare(obj,savedObj));

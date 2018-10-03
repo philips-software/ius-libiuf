@@ -3,6 +3,7 @@
 // Created by nlv09165 on 25/07/2018.
 //
 #include <stdlib.h>
+#include <string.h>
 #include <memory.h>
 #include <math.h>
 
@@ -10,7 +11,7 @@
 #include <iusError.h>
 #include <iusTypes.h>
 #include <iusUtil.h>
-
+#include <iusInputFileStructure.h>
 #include <include/iusSourceImp.h>
 #include <include/iusPositionImp.h>
 #include <include/ius3DParametricSource.h>
@@ -29,17 +30,15 @@ struct Ius3DParametricSource
     float startPhi;         /**< angle in [rad] between sources */
 } ;
 
-#define FNUMBERFMT       "%s/fNumber"
-#define ANGULARDELTAFMT  "%s/angularDelta"
-#define STARTANGLEFMT    "%s/startAngle"
-#define DELTAPHIFMT      "%s/deltaPhi"
-#define STARTPHIFMT      "%s/startPhi"
-#define LOCATIONSFMT     "%s/Locations"
+//#define FNUMBER       "fNumber"
+//#define ANGULARDELTA  "angularDelta"
+//#define STARTANGLE    "startAngle"
+//#define DELTAPHI      "deltaPhi"
+//#define STARTPHI      "startPhi"
+//#define LOCATIONS     "Locations"
 
-#define LOCATIONFMT     "%s/Location[%d]"
-#define LOCATIONSSIZEFMT "%s/Size"
-
-
+//#define LOCATIONFMT     "Location[%d]"
+//#define LOCATIONSSIZEFMT "Size"
 
 // ADT
 iu3dps_t ius3DParametricSourceCreate
@@ -67,7 +66,7 @@ iu3dps_t ius3DParametricSourceCreate
     }
 
     created->base.type = IUS_3D_PARAMETRIC_SOURCE;
-    created->base.label = strdup(pLabel);
+	created->base.label = strdup(pLabel);
     created->locationCount = numLocations;
     created->angularDelta = angularDelta;
     created->startAngle = startAngle;
@@ -254,54 +253,54 @@ int ius3DParametricSourceSetStartPhi
 static int ius3DParametricSourceSaveLocations
 (
     iu3dps_t pSource,
-    char *parentPath,
     hid_t handle
 )
 {
+	hid_t location_id;
     char path[IUS_MAX_HDF5_PATH];
-    hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
     iu3dp_t sourceElement;
-    int i,size = pSource->locationCount;
-    sprintf(path, LOCATIONSSIZEFMT, parentPath);
-    int status = iusHdf5WriteInt(group_id, path, &(size), 1);
 
-//     iterate over source list elements and save'em
+    int i, size = pSource->locationCount;
+    int status = iusHdf5WriteInt(handle, IUS_INPUTFILE_PATH_SOURCE_LISTSIZE, &(size), 1);
+
+    // iterate over source list elements and save'em
     for (i=0;i < size;i++)
     {
         sourceElement = &pSource->pLocations[i];
-        if(sourceElement == IU3DP_INVALID) continue;
-        sprintf(path, LOCATIONFMT, parentPath, i);
-        status = ius3DPositionSave(sourceElement,path,group_id);
+        if(sourceElement == IU3DP_INVALID) 
+			continue;
+        sprintf(path, IUS_INPUTFILE_PATH_SOURCE_LOCATION, i);
+		location_id = H5Gcreate(handle, path, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+        status = ius3DPositionSave(sourceElement, location_id);
+		H5Gclose(location_id);
         if(status != IUS_E_OK) break;
     }
 
-    status |= H5Gclose(group_id );
     return status;
 }
 
 static int ius3DParametricSourceLoadLocations
 (
     iu3dps_t source,
-    char *parentPath,
     hid_t handle
 )
 {
-    int p;
+    int p, status = IUS_E_OK;
     char path[IUS_MAX_HDF5_PATH];
     iu3dp_t pos;
 
-    sprintf(path, LOCATIONSSIZEFMT, parentPath);
-    int status = iusHdf5ReadInt(handle, path, &(source->locationCount));
-
+    status = iusHdf5ReadInt(handle, IUS_INPUTFILE_PATH_SOURCE_LISTSIZE, &(source->locationCount));
     for (p = 0; p < source->locationCount; p++)
     {
-        sprintf(path, LOCATIONFMT, parentPath, p);
-        pos = ius3DPositionLoad(handle,path);
+        sprintf(path, IUS_INPUTFILE_PATH_SOURCE_LOCATION, p);
+		hid_t location_id = H5Gopen(handle, path, H5P_DEFAULT);
+        pos = ius3DPositionLoad(location_id);
         if (pos == IU3DP_INVALID)
         {
             status = IUS_E_OK;
             break;
         }
+		H5Gclose(location_id);
         ius3DParametricSourceSetPosition(source, pos, p);
     }
     return status;
@@ -310,31 +309,24 @@ static int ius3DParametricSourceLoadLocations
 int ius3DParametricSourceSave
 (
     iu3dps_t source,
-    char *parentPath,
     hid_t handle
 )
 {
     int status=0;
-    char path[IUS_MAX_HDF5_PATH];
 
     // Base
-    status = iusBaseSourceSave((ius_t)source,parentPath,handle);
+    status = iusBaseSourceSave((ius_t)source, handle);
 
     // Parametric stuff
-    sprintf(path, FNUMBERFMT, parentPath);
-    status |= iusHdf5WriteFloat( handle, path, &(source->fNumber), 1);
-    sprintf(path, ANGULARDELTAFMT, parentPath);
-    status |= iusHdf5WriteFloat( handle, path, &(source->angularDelta), 1);
-    sprintf(path, STARTANGLEFMT, parentPath);
-    status |= iusHdf5WriteFloat( handle, path, &(source->startAngle), 1);
-    sprintf(path, DELTAPHIFMT, parentPath);
-    status |= iusHdf5WriteFloat( handle, path, &(source->deltaPhi), 1);
-    sprintf(path, STARTPHIFMT, parentPath);
-    status |= iusHdf5WriteFloat( handle, path, &(source->startPhi), 1);
-    sprintf(path, LOCATIONSFMT, parentPath);
+    status |= iusHdf5WriteFloat( handle, IUS_INPUTFILE_PATH_SOURCE_FNUMBER, &(source->fNumber), 1);
+    status |= iusHdf5WriteFloat( handle, IUS_INPUTFILE_PATH_SOURCE_ANGULARDELTA, &(source->angularDelta), 1);
+    status |= iusHdf5WriteFloat( handle, IUS_INPUTFILE_PATH_SOURCE_STARTANGLE, &(source->startAngle), 1);
+    status |= iusHdf5WriteFloat( handle, IUS_INPUTFILE_PATH_SOURCE_DELTAPHI, &(source->deltaPhi), 1);
+    status |= iusHdf5WriteFloat( handle, IUS_INPUTFILE_PATH_SOURCE_STARTPHI, &(source->startPhi), 1);
 
     // Save locations
-    status |= ius3DParametricSourceSaveLocations(source,path,handle);
+    status |= ius3DParametricSourceSaveLocations(source, handle);
+
     return status;
 }
 
@@ -342,13 +334,10 @@ int ius3DParametricSourceSave
 iu3dps_t ius3DParametricSourceLoad
 (
     hid_t handle,
-    char *parentPath,
     char *label
 )
 {
     int status = 0;
-    char path[IUS_MAX_HDF5_PATH];
-    char lpath[IUS_MAX_HDF5_PATH];
 
     float fNumber;          /**< distance in [m] of sources to transducer for POLAR */
     float angularDelta;     /**< angle in [rad] between sources */
@@ -358,27 +347,17 @@ iu3dps_t ius3DParametricSourceLoad
     int locationCount;
     iu3dps_t  source;
 
-
-    sprintf(path, FNUMBERFMT, parentPath);
-    status |= iusHdf5ReadFloat( handle, path, &(fNumber));
-    sprintf(path, ANGULARDELTAFMT, parentPath);
-    status |= iusHdf5ReadFloat( handle, path, &(angularDelta));
-    sprintf(path, STARTANGLEFMT, parentPath);
-    status |= iusHdf5ReadFloat( handle, path, &(startAngle));
-    sprintf(path, DELTAPHIFMT, parentPath);
-    status |= iusHdf5ReadFloat( handle, path, &(deltaPhi));
-    sprintf(path, STARTPHIFMT, parentPath);
-    status |= iusHdf5ReadFloat( handle, path, &(startPhi));
-    sprintf(lpath, LOCATIONSFMT, parentPath);
-    sprintf(path, LOCATIONSSIZEFMT, lpath);
-    status |= iusHdf5ReadInt(handle, path, &(locationCount));
+    status |= iusHdf5ReadFloat( handle, IUS_INPUTFILE_PATH_SOURCE_FNUMBER, &(fNumber));
+    status |= iusHdf5ReadFloat( handle, IUS_INPUTFILE_PATH_SOURCE_ANGULARDELTA, &(angularDelta));
+    status |= iusHdf5ReadFloat( handle, IUS_INPUTFILE_PATH_SOURCE_STARTANGLE, &(startAngle));
+    status |= iusHdf5ReadFloat( handle, IUS_INPUTFILE_PATH_SOURCE_DELTAPHI, &(deltaPhi));
+    status |= iusHdf5ReadFloat( handle, IUS_INPUTFILE_PATH_SOURCE_STARTPHI, &(startPhi));
+	status |= iusHdf5ReadInt(handle, IUS_INPUTFILE_PATH_SOURCE_LISTSIZE, &(locationCount));
     if (status < 0)
         return NULL;
 
     source = ius3DParametricSourceCreate(label,locationCount,fNumber,angularDelta,startAngle,deltaPhi,startPhi);
-
-    sprintf(path, LOCATIONSFMT, parentPath);
-    status = ius3DParametricSourceLoadLocations(source,path,handle);
+    status = ius3DParametricSourceLoadLocations(source, handle);
     if (status <-0)
         return NULL;
     return source;

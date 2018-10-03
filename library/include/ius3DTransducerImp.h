@@ -7,14 +7,12 @@
 herr_t ius3DTransducerSave
 (
     iu3dt_t transducer,
-    char *parentPath,
     hid_t handle
 );
 
 iu3dt_t ius3DTransducerLoad
 (
-    hid_t handle,
-    char *parentPath
+    hid_t handle
 );
 
 #endif //IUSLIBRARY_IUSHL3DTRANSDUCERIMP_H

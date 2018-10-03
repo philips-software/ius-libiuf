@@ -12,14 +12,12 @@
 int iusFrameSave
 (
     iuf_t frame,
-    char *parentPath,
     hid_t handle
 );
 
 iuf_t iusFrameLoad
 (
-    hid_t handle,
-    char *parentPath
+    hid_t handle
 );
 
 #endif //IUSLIBRARY_IUSHLFRAMEIMP_H

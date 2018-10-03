@@ -8,6 +8,7 @@
 #include <ius.h>
 #include <iusError.h>
 #include <iusUtil.h>
+#include <iusInputFileStructure.h>
 #include <iusTransmitApodizationImp.h>
 #include <iusTransmitApodizationDict.h>
 #include <assert.h>
@@ -18,8 +19,6 @@
 struct HashableTransmitApodization
 {
 	iuta_t transmitApodization;
-	// TODO: Factor out char[256] into char *
-	// Since size of key is known during set
 	char key[256];
 };
 
@@ -154,30 +153,38 @@ int iusTransmitApodizationDictSet
 herr_t iusTransmitApodizationDictSave
 (
 	iutad_t dict,
-	char *parentPath,
 	hid_t handle
 )
 {
 	herr_t status = 0;
-	char path[IUS_MAX_HDF5_PATH];
+	hid_t group_id;
 	struct hashmap_iter *iter;
 
 	if (dict == NULL)
 		return IUS_ERR_VALUE;
-	if (parentPath == NULL || handle == H5I_INVALID_HID)
+	if (handle == H5I_INVALID_HID)
 		return IUS_ERR_VALUE;
 
-	hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-	HashableTransmitApodization *sourceElement;
+	status = H5Gget_objinfo(handle, IUS_INPUTFILE_PATH_TRANSMITAPODIZATIONDICT, 0, NULL); // todo centralize the path
+	if (status != 0) // the group does not exist yet
+	{
+		group_id = H5Gcreate(handle, IUS_INPUTFILE_PATH_TRANSMITAPODIZATIONDICT, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+	}
+	else
+	{
+		group_id = H5Gopen(handle, IUS_INPUTFILE_PATH_TRANSMITAPODIZATIONDICT, H5P_DEFAULT);
+	}
+	if (group_id == H5I_INVALID_HID)
+		return IUS_ERR_VALUE;
+	status = 0;
+	HashableTransmitApodization *transmitApodizationDictItem;
 
 	// iterate over source list elements and save'em
 	for (iter = hashmap_iter(&dict->map); iter && status == 0; iter = hashmap_iter_next(&dict->map, iter))
 	{
-		hid_t subgroup_id;
-		sourceElement = HashableTransmitApodization_hashmap_iter_get_data(iter);
-		sprintf(path, "%s/%s", parentPath, sourceElement->key);
-		subgroup_id = H5Gcreate(handle, path, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-		status = iusTransmitApodizationSave(sourceElement->transmitApodization, subgroup_id);
+		transmitApodizationDictItem = HashableTransmitApodization_hashmap_iter_get_data(iter);
+		hid_t subgroup_id = H5Gcreate(group_id, transmitApodizationDictItem->key, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+		status = iusTransmitApodizationSave(transmitApodizationDictItem->transmitApodization, subgroup_id);
 		status |= H5Gclose(subgroup_id);
 	}
 
@@ -189,18 +196,16 @@ herr_t iusTransmitApodizationDictSave
 
 iutad_t iusTransmitApodizationDictLoad
 (
-	hid_t handle,
-	char *parentPath
+	hid_t handle
 )
 {
 	int status = 0;
-	//char path[64];
 	iuta_t transmitApodization;
 	hsize_t i;
 	char memberName[MAX_NAME];
 
-	hid_t groupId = H5Gopen(handle, parentPath, H5P_DEFAULT);
-	if (parentPath == NULL || handle == H5I_INVALID_HID || groupId == H5I_INVALID_HID)
+	hid_t groupId = H5Gopen(handle, IUS_INPUTFILE_PATH_TRANSMITAPODIZATIONDICT, H5P_DEFAULT);
+	if (handle == H5I_INVALID_HID || groupId == H5I_INVALID_HID)
 		return NULL;
 
 	hsize_t nobj;
@@ -210,14 +215,12 @@ iutad_t iusTransmitApodizationDictLoad
 	for (i = 0; i < nobj && status == IUS_E_OK; i++)
 	{
 		H5Gget_objname_by_idx(groupId, i, memberName, (size_t)MAX_NAME);
-		//sprintf(path, "%s/%s", parentPath, memberName);
 		hid_t subgroupId = H5Gopen(groupId, memberName, H5P_DEFAULT);
 		transmitApodization = iusTransmitApodizationLoad(subgroupId);
-		status = iusTransmitApodizationDictSet(dict, memberName, transmitApodization);
-
+		status |= iusTransmitApodizationDictSet(dict, memberName, transmitApodization);
 		H5Gclose(subgroupId);
 	}
-	H5Gclose(handle);
+	H5Gclose(groupId);
 
 	if (status != IUS_E_OK)
 	{

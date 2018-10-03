@@ -10,15 +10,12 @@
 int iusParametricPulseSave
 (
     iupp_t pulse,
-    char *parentPath,
     hid_t handle
 );
 
 iupp_t iusParametricPulseLoad
 (
-  hid_t handle,
-  char *parentPath,
-  char *label
+  hid_t handle
 );
 
 #endif //IUSLIBRARY_IUSHLPARAMETRICPULSEIMP_H

@@ -10,15 +10,12 @@
 int iusNonParametricPulseSave
 (
   iunpp_t pulse,
-  char *parentPath,
   hid_t handle
 );
 
 iunpp_t iusNonParametricPulseLoad
 (
-  hid_t handle,
-  char *parentPath,
-  char *label
+  hid_t handle
 );
 
 #endif //IUSLIBRARY_IUSHLNONPARAMETRICPULSEIMP_H

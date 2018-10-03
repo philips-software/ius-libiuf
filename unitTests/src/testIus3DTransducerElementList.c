@@ -90,9 +90,9 @@ TEST(Ius3DTransducerElementList, testIus3DTransducerElementListCompare)
 
 TEST(Ius3DTransducerElementList, testIus3DTransducerElementListSetGet)
 {
-    int i, num3DTransducerElements = 2;
+    int num3DTransducerElements = 2;
     int status;
-    IUS_BOOL equal;
+    //IUS_BOOL equal;
 
     const int numTransducerElements = 128;
     const float transducerPitch = 0.000005f;
@@ -119,7 +119,7 @@ TEST(Ius3DTransducerElementList, testIus3DTransducerElementListSerialization)
     int status;
     IUS_BOOL equal;
     char *pFilename = "testIus3DTransducerElementListSerialization.hdf5";
-    char *p3DTransducerElementListPath = "/3DTransducerElementList";
+    //char *p3DTransducerElementListPath = "/3DTransducerElementList";
     const float transducerPitch = 0.000005f;
 
     // Non-happy flow
@@ -129,7 +129,7 @@ TEST(Ius3DTransducerElementList, testIus3DTransducerElementListSerialization)
     TEST_ASSERT_NOT_EQUAL(IU3DTEL_INVALID, _3dTransducerElementList);
     hid_t handle = H5Fcreate(pFilename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
     TEST_ASSERT(handle > 0);
-    status = ius3DTransducerElementListSave(_3dTransducerElementList, p3DTransducerElementListPath, handle);
+    status = ius3DTransducerElementListSave(_3dTransducerElementList, handle);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
     status = H5Fclose(handle);
     TEST_ASSERT_EQUAL(IUS_E_OK, status);
@@ -149,14 +149,14 @@ TEST(Ius3DTransducerElementList, testIus3DTransducerElementListSerialization)
     // save
     handle = H5Fcreate(pFilename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
     TEST_ASSERT(handle > 0);
-    status = ius3DTransducerElementListSave(_3dTransducerElementList, p3DTransducerElementListPath, handle);
+    status = ius3DTransducerElementListSave(_3dTransducerElementList, handle);
     TEST_ASSERT_EQUAL(IUS_E_OK, status);
     status = H5Fclose(handle);
     TEST_ASSERT_EQUAL(IUS_E_OK, status);
 
     // read back
     handle = H5Fopen(pFilename, H5F_ACC_RDONLY, H5P_DEFAULT);
-    iu3dtel_t saved3DTransducerElementList = ius3DTransducerElementListLoad(handle, p3DTransducerElementListPath);
+    iu3dtel_t saved3DTransducerElementList = ius3DTransducerElementListLoad(handle);
     TEST_ASSERT_NOT_EQUAL(IU3DTEL_INVALID, saved3DTransducerElementList);
     status |= H5Fclose(handle);
     TEST_ASSERT_EQUAL(IUS_E_OK, status);
@@ -165,9 +165,7 @@ TEST(Ius3DTransducerElementList, testIus3DTransducerElementListSerialization)
     equal = ius3DTransducerElementListCompare(_3dTransducerElementList, saved3DTransducerElementList);
     TEST_ASSERT_EQUAL(IUS_TRUE, equal);
 
-
     ius3DTransducerElementListDelete(_3dTransducerElementList);
-
 
 }
 

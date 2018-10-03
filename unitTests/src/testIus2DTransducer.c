@@ -181,7 +181,6 @@ TEST(Ius2DTransducer, testIus2DTransducerSerialization)
 {
 	int status = 0;
 	char *filename = "testIus2DTransducerSerialization.hdf5";
-	char *path = "/Transducer";
 	char *transducerName = "S5-1";
 	const int numTransducerElements = 128;
 	int i = 0;
@@ -203,13 +202,13 @@ TEST(Ius2DTransducer, testIus2DTransducerSerialization)
 	// save
 	hid_t handle = H5Fcreate(filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
 	TEST_ASSERT(handle > 0);
-	status = ius2DTransducerSave(transducer, path, handle);
+	status = ius2DTransducerSave(transducer, handle);
 	H5Fclose(handle);
 	TEST_ASSERT_EQUAL(IUS_E_OK, status);
 
     // read back
     handle = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT );
-    iu2dt_t savedObj = ius2DTransducerLoad(handle, path);
+    iu2dt_t savedObj = ius2DTransducerLoad(handle);
     TEST_ASSERT_NOT_EQUAL(NULL, savedObj);
     H5Fclose(handle);
 

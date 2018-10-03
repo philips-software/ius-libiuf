@@ -9,16 +9,13 @@
 
 int iusReceiveSettingsSave
 (
-    iurs_t pulse,
-    char *parentPath,
+    iurs_t receiveSettings,
     hid_t handle
 );
 
 iurs_t iusReceiveSettingsLoad
 (
-    hid_t handle,
-    char *parentPath,
-    char *label
+    hid_t handle
 );
 
 

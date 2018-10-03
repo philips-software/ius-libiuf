@@ -10,14 +10,12 @@
 int ius2DTransducerElementSave
 (
     iu2dte_t element,
-    const char *parentPath,
     hid_t handle
 );
 
 iu2dte_t ius2DTransducerElementLoad
 (
-    hid_t handle,
-    const char *parentPath
+    hid_t handle
 );
 
 

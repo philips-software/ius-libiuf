@@ -8,6 +8,7 @@
 #include <iusHDF5.h>
 #include <iusUtil.h>
 #include <iusError.h>
+#include <iusInputFileStructure.h>
 #include <iusReceiveChannelMap.h>
 #include <iusReceiveChannelMapImp.h>
 
@@ -116,11 +117,11 @@ int iusReceiveChannelMapSave
 	hid_t   group_id
 )
 {
-	/* write the /Transducer data */
+	/* write the /Receivechannelmap data */
 	herr_t  status;
 
-	status = iusHdf5WriteInt(group_id, "numChannels", &(receiveChannelMap->numChannels), 1);
-	status |= iusHdf5WriteInt(group_id, "map", receiveChannelMap->map, receiveChannelMap->numChannels);
+	status = iusHdf5WriteInt(group_id, IUS_INPUTFILE_PATH_RECEIVECHANNELMAP_NUMCHANNELS, &(receiveChannelMap->numChannels), 1);
+	status |= iusHdf5WriteInt(group_id, IUS_INPUTFILE_PATH_RECEIVECHANNELMAP_MAP, receiveChannelMap->map, receiveChannelMap->numChannels);
 
 	return status;
 }
@@ -136,11 +137,11 @@ iurcm_t iusReceiveChannelMapLoad
 	int numChannels=0;
 	int *channelMap;
 
-	status = iusHdf5ReadInt(group_id, "numChannels", &numChannels);
+	status = iusHdf5ReadInt(group_id, IUS_INPUTFILE_PATH_RECEIVECHANNELMAP_NUMCHANNELS, &numChannels);
 	if (status != 0 || numChannels <= 0) return NULL;
 
 	channelMap = (int *)calloc(numChannels, sizeof(int));
-	status |= iusHdf5ReadInt(group_id, "map", channelMap);
+	status |= iusHdf5ReadInt(group_id, IUS_INPUTFILE_PATH_RECEIVECHANNELMAP_MAP, channelMap);
 	if (status != 0) return NULL;
 	
 	receiveChannelMap = iusReceiveChannelMapCreate(numChannels);

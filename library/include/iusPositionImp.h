@@ -30,28 +30,23 @@ struct Ius2DPosition
 int ius3DPositionSave
 (
     iu3dp_t position,
-    char *parentPath,
     hid_t handle
 );
 
 iu3dp_t ius3DPositionLoad
 (
-    hid_t handle,
-    char *parentPath
+    hid_t handle
 );
-
 
 int ius2DPositionSave
 (
     iu2dp_t position,
-    char *parentPath,
     hid_t handle
 );
 
 iu2dp_t ius2DPositionLoad
 (
-    hid_t handle,
-    char *parentPath
+    hid_t handle
 );
 
 #endif //IUSLIBRARY_IUSHLPOSITIONIMP_H

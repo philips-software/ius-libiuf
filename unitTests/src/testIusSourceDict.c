@@ -100,13 +100,13 @@ TEST(IusSourceDict, testIusCompareSourceDict)
 
 TEST(IusSourceDict, testIusSerialization)
 {
-    IUS_BOOL equal;
+//    IUS_BOOL equal;
 
     char *_3d_non_parametric_label = "label for 3d non parametric source";
     char *_3d_parametric_label = "label for 3d parametric source";
     int locationCount = 5; /**< number of locations */
     char *filename = "testIusSourceDictSerialization.hdf5";
-    char *dictPath =  "/SourceDict";
+    //char *dictPath =  "/SourceDict";
 
     // Happy flow
     float angularDelta = 0.13f;
@@ -138,13 +138,13 @@ TEST(IusSourceDict, testIusSerialization)
     // save
     hid_t handle = H5Fcreate( filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT );
     TEST_ASSERT(handle > 0);
-    status = iusSourceDictSave(dict, dictPath, handle);
+    status = iusSourceDictSave(dict, handle);
     H5Fclose(handle);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
     // read back
     handle = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT );
-    iusd_t savedObj = iusSourceDictLoad(handle, dictPath);
+    iusd_t savedObj = iusSourceDictLoad(handle);
     TEST_ASSERT(savedObj != NULL);
     H5Fclose(handle);
 

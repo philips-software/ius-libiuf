@@ -7,14 +7,12 @@
 
 iu2ds_t ius2DSizeLoad
 (
-    hid_t handle,
-    char *parentPath
+    hid_t handle
 );
 
 int ius2DSizeSave
 (
     iu2ds_t size,
-    char *parentPath,
     hid_t handle
 );
 

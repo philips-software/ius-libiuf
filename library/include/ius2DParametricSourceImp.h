@@ -11,14 +11,12 @@
 int ius2DParametricSourceSave
 (
     iu2dps_t source,
-    char *parentPath,
     hid_t handle
 );
 
 iu2dps_t ius2DParametricSourceLoad
 (
     hid_t handle,
-    char *parentPath,
     char *label
 );
 

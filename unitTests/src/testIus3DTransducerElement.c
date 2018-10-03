@@ -161,7 +161,7 @@ TEST(Ius3DTransducerElement, testIus3DTransducerElementSerialization)
 {
     int status = 0;
     char *filename = "testIus3DTransducerElementSerialization.hdf5";
-    char *path = "/TransducerElement";
+    //char *path = "/TransducerElement";
     const float transducerPitch = 0.000005f;
     const int numTransducerElements = 128;
     iu3dp_t elemPos = ius3DPositionCreate((10 - numTransducerElements / 2)*transducerPitch, 0.0f, 0.0f);
@@ -174,13 +174,13 @@ TEST(Ius3DTransducerElement, testIus3DTransducerElementSerialization)
     // save
     hid_t handle = H5Fcreate(filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
     TEST_ASSERT(handle > 0);
-    status = ius3DTransducerElementSave(element, path, handle);
+    status = ius3DTransducerElementSave(element, handle);
     H5Fclose(handle);
     TEST_ASSERT_EQUAL(IUS_E_OK, status);
 
     // read back
     handle = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT );
-    iu3dte_t savedObj = ius3DTransducerElementLoad(handle, path);
+    iu3dte_t savedObj = ius3DTransducerElementLoad(handle);
     TEST_ASSERT_NOT_EQUAL(NULL, savedObj);
     H5Fclose(handle);
 

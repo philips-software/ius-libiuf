@@ -12,14 +12,12 @@
 int ius3DNonParametricSourceSave
 (
     iu3dnps_t source,
-    char *parentPath,
     hid_t handle
 );
 
 iu3dnps_t ius3DNonParametricSourceLoad
 (
     hid_t handle,
-    char *parentPath,
     char *label
 );
 

@@ -12,14 +12,12 @@
 int iusSourceDictSave
 (
     iusd_t dict,
-    const char *path,
     hid_t handle
 );
 
 iusd_t iusSourceDictLoad
 (
-    hid_t handle,
-    const char *path
+    hid_t handle
 );
 
 

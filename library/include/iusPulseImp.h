@@ -19,27 +19,23 @@ struct IusPulse
 int iusPulseSave
 (
     iup_t pulse,
-    char *parentPath,
     hid_t handle
 );
 
 iup_t iusPulseLoad
 (
-    hid_t handle,
-    char *parentPath
+    hid_t handle
 );
 
 int iusBasePulseSave
 (
     iup_t pulse,
-    char *parentPath,
     hid_t handle
 );
 
 iup_t iusBasePulseLoad
 (
-    hid_t handle,
-    char *parentPath
+    hid_t handle
 );
 
 IUS_BOOL iusBasePulseCompare

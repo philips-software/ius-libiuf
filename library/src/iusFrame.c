@@ -7,7 +7,7 @@
 #include <iusError.h>
 #include <iusTypes.h>
 #include <iusUtil.h>
-
+#include <iusInputFileStructure.h>
 #include <iusFrameImp.h>
 #include <include/iusHDF5.h>
 #include <math.h>
@@ -18,10 +18,6 @@ struct IusFrame
     int dataIndex;
     float time;
 } ;
-
-#define PATTERNLISTINDEXFMT "%s/PatternListIndex"
-#define DATAINDEXFMT "%s/DataIndex"
-#define TIMEFMT "%s/Time"
 
 // ADT
 iuf_t iusFrameCreate
@@ -102,43 +98,33 @@ int iusFrameGetDataIndex
 int iusFrameSave
 (
     iuf_t frame,
-    char *parentPath,
     hid_t handle
 )
 {
-    int status=IUS_E_OK;
-    char path[IUS_MAX_HDF5_PATH];
-
-    hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-    sprintf(path, PATTERNLISTINDEXFMT, parentPath);
-    status |= iusHdf5WriteInt(group_id, path, &(frame->patternListIndex), 1);
-    sprintf(path, DATAINDEXFMT, parentPath);
-    status |= iusHdf5WriteInt(group_id, path, &(frame->dataIndex), 1);
-    sprintf(path, TIMEFMT, parentPath);
-    status |= iusHdf5WriteFloat(group_id, path, &(frame->time), 1);
-    status |= H5Gclose(group_id );
+    int  status=IUS_E_OK;
+ 
+    status |= iusHdf5WriteInt(handle, IUS_INPUTFILE_PATH_FRAMELIST_FRAME_PATTERNLISTINDEX, &(frame->patternListIndex), 1);
+    status |= iusHdf5WriteInt(handle, IUS_INPUTFILE_PATH_FRAMELIST_FRAME_DATAINDEX, &(frame->dataIndex), 1);
+    status |= iusHdf5WriteFloat(handle, IUS_INPUTFILE_PATH_FRAMELIST_FRAME_TIME, &(frame->time), 1);
     return status;
 }
 
 iuf_t iusFrameLoad
 (
-    hid_t handle,
-    char *parentPath
+    hid_t handle
 )
 {
     int status=IUS_E_OK;
-    char path[IUS_MAX_HDF5_PATH];
+
     int patternListIndex;
     int dataIndex;
     float time;
 
-    sprintf(path, PATTERNLISTINDEXFMT, parentPath);
-    status |= iusHdf5ReadInt( handle, path, &(patternListIndex));
-    sprintf(path, DATAINDEXFMT, parentPath);
-    status |= iusHdf5ReadInt( handle, path, &(dataIndex));
-    sprintf(path, TIMEFMT, parentPath);
-    status |= iusHdf5ReadFloat( handle, path, &(time));
+    status |= iusHdf5ReadInt( handle, IUS_INPUTFILE_PATH_FRAMELIST_FRAME_PATTERNLISTINDEX, &(patternListIndex));
+    status |= iusHdf5ReadInt( handle, IUS_INPUTFILE_PATH_FRAMELIST_FRAME_DATAINDEX, &(dataIndex));
+    status |= iusHdf5ReadFloat( handle, IUS_INPUTFILE_PATH_FRAMELIST_FRAME_TIME, &(time));
     if( status < 0 )
         return IUF_INVALID;
-    return iusFrameCreate(patternListIndex,dataIndex,time);
+
+	return iusFrameCreate(patternListIndex,dataIndex,time);
 }

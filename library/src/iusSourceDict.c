@@ -8,6 +8,7 @@
 #include <ius.h>
 #include <iusError.h>
 #include <iusUtil.h>
+#include <iusInputFileStructure.h>
 #include <iusSourceImp.h>
 #include <iusSourceDict.h>
 #include <assert.h>
@@ -153,42 +154,30 @@ int iusSourceDictSet
 
 
 // serialization
-#define NUMPULSEVALUESFMT  "%s/numSourceValues"
-#define PULSEAMPLITUDESFMT "%s/rawSourceAmplitudes"
-#define PULSETIMESFMT      "%s/rawSourceTimes"
-
-
-#define LABELPATH          "%s/%s"
 int iusSourceDictSave
 (
     iusd_t dict,
-    char *parentPath,
     hid_t handle
 )
 {
+
     int status=0;
-    char path[IUS_MAX_HDF5_PATH];
     struct hashmap_iter *iter;
 
     if(dict == NULL)
         return IUS_ERR_VALUE;
-    if(parentPath == NULL || handle == H5I_INVALID_HID)
+    if(handle == H5I_INVALID_HID)
         return IUS_ERR_VALUE;
 
-
-
-    hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
     HashableSource *sourceElement;
 
     // iterate over source list elements and save'em
     for (iter = hashmap_iter(&dict->map); iter; iter = hashmap_iter_next(&dict->map, iter))
     {
         sourceElement = HashableSource_hashmap_iter_get_data(iter);
-        sprintf(path, LABELPATH, parentPath, sourceElement->source->label);
-        iusSourceSave(sourceElement->source,path,handle);
+        iusSourceSave(sourceElement->source, handle);
     }
 
-    status |= H5Gclose(group_id );
     return status;
 }
 
@@ -197,34 +186,30 @@ int iusSourceDictSave
 
 iusd_t iusSourceDictLoad
 (
-    hid_t handle,
-    const char *parentPath
+    hid_t handle
 )
 {
     int i;
-    int status = 0;
-    char path[IUS_MAX_HDF5_PATH];
+    int status = IUS_E_OK;
     char memb_name[MAX_NAME];
 
-
-    hid_t grpid = H5Gopen(handle, parentPath, H5P_DEFAULT);
-    if(parentPath == NULL || handle == H5I_INVALID_HID || grpid == H5I_INVALID_HID)
+	hid_t grpid = H5Gopen(handle, IUS_INPUTFILE_PATH_SOURCEDICT, H5P_DEFAULT);
+    if(handle == H5I_INVALID_HID)
         return NULL;
 
     hsize_t nobj;
     status = H5Gget_num_objs(grpid, &nobj);
 
     iusd_t dict = iusSourceDictCreate();
-    for (i = 0; i < (int) nobj; i++)
+    for (i = 0; i < (int) nobj && status == IUS_E_OK; i++)
     {
-        H5Gget_objname_by_idx(grpid, (hsize_t) i,
-                                    memb_name, (size_t) MAX_NAME);
-        sprintf(path,"%s/%s", parentPath,memb_name);
-        ius_t pulse = iusSourceLoad(handle,path);
-        status = iusSourceDictSet(dict, memb_name, pulse);
+        H5Gget_objname_by_idx(grpid, (hsize_t) i, memb_name, (size_t) MAX_NAME);
+		hid_t source_id = H5Gopen(grpid, memb_name, H5P_DEFAULT);
+        ius_t source = iusSourceLoad(source_id);
+		status |= H5Gclose(source_id);
+        status |= iusSourceDictSet(dict, memb_name, source);
     }
-
-    H5Gclose(handle);
+    status |= H5Gclose(grpid);
     if( status != IUS_E_OK )
     {
         return NULL;

@@ -12,6 +12,7 @@
 #include <iusError.h>
 #include <iusTypes.h>
 #include <iusUtil.h>
+#include <iusInputFileStructure.h>
 #include <iusHDF5.h>
 #include <iusTGCImp.h>
 #include <hdf5_hl.h>
@@ -117,7 +118,6 @@ float iusTGCGetGain
 }
 
 // Setters
-
 int iusTGCSet
 (
     iutgc_t iusTGC,
@@ -134,64 +134,47 @@ int iusTGCSet
     return IUS_E_OK;
 }
 
-
-#define NUMTGCVALUESFMT  "%s/numTGCValues"
-#define TGCTIMESFMT      "%s/Times"
-#define TGCGAINSFMT      "%s/Gains"
-
-
 int iusTGCSave
 (
     iutgc_t iusTGC,
-    char *parentPath,
     hid_t handle
 )
 {
     int status=0;
-    char path[IUS_MAX_HDF5_PATH];
     if( iusTGC == NULL )
         return IUS_ERR_VALUE;
-    if(parentPath == NULL || handle == H5I_INVALID_HID)
+    if(handle == H5I_INVALID_HID)
         return IUS_ERR_VALUE;
 
-    hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-    sprintf(path, NUMTGCVALUESFMT, parentPath);
-    status |= iusHdf5WriteInt(group_id, path, &(iusTGC->numTGCValues), 1);
+    status |= iusHdf5WriteInt(handle, IUS_INPUTFILE_PATH_RECEIVESETTINGS_TGC_NUMTGCVALUES, &(iusTGC->numTGCValues), 1);
 
     hsize_t dims[1] = { 1 };
     dims[0] = iusTGC->numTGCValues;
-    sprintf(path, TGCGAINSFMT, parentPath);
-    status |= H5LTmake_dataset_float( group_id, path, 1, dims, iusTGC->pGains );
-    sprintf(path, TGCTIMESFMT, parentPath);
-    status |= H5LTmake_dataset_float( group_id, path, 1, dims, iusTGC->pTimes );
-    status |= H5Gclose(group_id );
-    return status;
+    status |= H5LTmake_dataset_float(handle, IUS_INPUTFILE_PATH_RECEIVESETTINGS_TGC_GAINS, 1, dims, iusTGC->pGains );
+    status |= H5LTmake_dataset_float(handle, IUS_INPUTFILE_PATH_RECEIVESETTINGS_TGC_TIMES, 1, dims, iusTGC->pTimes );
+
+	return status;
 }
 
 iutgc_t iusTGCLoad
 (
-    hid_t handle,
-    char *parentPath
+    hid_t handle
 )
 {
     int status = 0;
-    char path[IUS_MAX_HDF5_PATH];
     int  numTGCValues;
     iutgc_t  tgc;
 
-    if(parentPath == NULL || handle == H5I_INVALID_HID)
+    if(handle == H5I_INVALID_HID)
         return NULL;
 
-    sprintf(path, NUMTGCVALUESFMT, parentPath);
-    status |= iusHdf5ReadInt(handle, path, &(numTGCValues));
+    status |= iusHdf5ReadInt(handle, IUS_INPUTFILE_PATH_RECEIVESETTINGS_TGC_NUMTGCVALUES, &(numTGCValues));
     if( status < 0 )
         return NULL;
 
     tgc = iusTGCCreate(numTGCValues);
-    sprintf(path, TGCTIMESFMT, parentPath);
-    status |= H5LTread_dataset_float( handle, path, tgc->pTimes );
-    sprintf(path, TGCGAINSFMT, parentPath);
-    status |= H5LTread_dataset_float( handle, path, tgc->pGains );
+    status |= H5LTread_dataset_float( handle, IUS_INPUTFILE_PATH_RECEIVESETTINGS_TGC_TIMES, tgc->pTimes );
+    status |= H5LTread_dataset_float( handle, IUS_INPUTFILE_PATH_RECEIVESETTINGS_TGC_GAINS, tgc->pGains );
     if( status < 0 )
         return NULL;
     return tgc;

@@ -25,21 +25,18 @@ IUS_BOOL iusBaseSourceCompare
 int iusBaseSourceSave
 (
     ius_t source,
-    char *parentPath,
     hid_t handle
 );
 
 int iusSourceSave
 (
     ius_t source,
-    char *parentPath,
     hid_t handle
 );
 
 ius_t iusSourceLoad
 (
-    hid_t handle,
-    char *parentPath
+    hid_t handle
 );
 
 #endif //IUSLIBRARY_IUSHLSOURCEIMP_H

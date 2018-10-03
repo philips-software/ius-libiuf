@@ -10,6 +10,7 @@
 #include <iusError.h>
 #include <iusTypes.h>
 #include <iusUtil.h>
+
 #include <iusPositionImp.h>
 #include <iusTransducer.h>
 #include <ius3DTransducer.h>
@@ -118,7 +119,8 @@ int ius3DTransducerSetElement
   return ius3DTransducerElementListSet(transducer->elements,element,elementIndex);
 }
 
-int ius3DTransducerWriteElementPositions(Ius3DTransducer *pTransducer, hid_t subgroup_id)
+#if 0
+int ius3DTransducerWriteElementPositions(Ius3DTransducer *pTransducer, hid_t subgroup_id, int verbose)
 {
 	herr_t        status = 0;
 	hid_t position_tid; // File datatype identifier for IusPosition
@@ -163,7 +165,7 @@ int ius3DTransducerWriteElementPositions(Ius3DTransducer *pTransducer, hid_t sub
 	return status;
 }
 
-int ius3DTransducerWriteElementSizes(Ius3DTransducer *pTransducer, hid_t subgroup_id)
+int ius3DTransducerWriteElementSizes(Ius3DTransducer *pTransducer, hid_t subgroup_id, int verbose)
 {
 	herr_t        status = 0;
 	hid_t size_tid; // File datatype identifier for IusPosition
@@ -204,7 +206,7 @@ int ius3DTransducerWriteElementSizes(Ius3DTransducer *pTransducer, hid_t subgrou
 	return status;
 }
 
-int ius3DTransducerWriteElementAngles(Ius3DTransducer *pTransducer, hid_t subgroup_id)
+int ius3DTransducerWriteElementAngles(Ius3DTransducer *pTransducer, hid_t subgroup_id, int verbose)
 {
 	herr_t        status = 0;
 	hid_t dataset, space;
@@ -237,39 +239,36 @@ int ius3DTransducerWriteElementAngles(Ius3DTransducer *pTransducer, hid_t subgro
 	status |= H5Dclose(dataset);
 	return status;
 }
-
-#define ELEMENTSFMT "%s/Elements"
+#endif
 
 herr_t ius3DTransducerSave
 (
     iu3dt_t transducer,
-    char *parentPath,
     hid_t handle
 )
 {
 	herr_t status=0;
-    char path[IUS_MAX_HDF5_PATH];
-    status = iusBaseTransducerSave((iut_t)transducer,parentPath,handle);
+
+    status = iusBaseTransducerSave((iut_t)transducer, handle);
     if (status != 0)
         return status;
 
-
-    sprintf(path, ELEMENTSFMT, parentPath);
-    status = ius3DTransducerElementListSave(transducer->elements, path,handle);
+    status = ius3DTransducerElementListSave(transducer->elements, handle);
     return status;
 }
 
 
 iu3dt_t ius3DTransducerLoad
 (
-	hid_t handle,
-	char *parentPath
+	hid_t handle
 )
 {
-    char path[IUS_MAX_HDF5_PATH];
-    sprintf(path, ELEMENTSFMT, parentPath);
-    iut_t baseTransducer = iusBaseTransducerLoad(handle,parentPath);
-	iu3dtel_t elements = ius3DTransducerElementListLoad(handle,path);
+	iut_t baseTransducer = iusBaseTransducerLoad(handle);
+	if (baseTransducer == IUT_INVALID) return IU3DT_INVALID;
+
+	iu3dtel_t elements = ius3DTransducerElementListLoad(handle);
+	if (elements == IU3DTEL_INVALID) return IU3DT_INVALID;
+
 	int numElements = ius3DTransducerElementListGetSize(elements);
 	iu3dt_t transducer = ius3DTransducerCreate( baseTransducer->pTransducerName,
 	                                              baseTransducer->shape,

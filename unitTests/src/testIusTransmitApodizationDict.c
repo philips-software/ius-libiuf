@@ -8,7 +8,7 @@
 #include <hdf5.h>
 #include <ius.h>
 #include <iusTransmitApodization.h>
-#include <iusTransmitApodizationDict.h>
+#include <iusTransmitApodizationDictImp.h>
 
 TEST_GROUP(IusTransmitApodizationDict);
 
@@ -73,8 +73,9 @@ TEST(IusTransmitApodizationDict, testIusTransmitApodizationDictCompare)
 
 TEST(IusTransmitApodizationDict, testIusTransmitApodizationDictSerialization)
 {
+	//hid_t group_id;
 	char *filename = "testIusTransmitApodizationSerialization.hdf5";
-	char *TransmitApodizationDictPath = "/TransmitApodization";
+	//char *TransmitApodizationDictPath = "/TransmitApodization";
 
 	int numElements = 8;
 	char *label = "ones";
@@ -89,14 +90,21 @@ TEST(IusTransmitApodizationDict, testIusTransmitApodizationDictSerialization)
 
 	hid_t handle = H5Fcreate(filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
 	TEST_ASSERT(handle > 0);
-	status = iusTransmitApodizationDictSave(transmitApodizationDict, TransmitApodizationDictPath, handle);
-	H5Fclose(handle);
+	//group_id = H5Gcreate(handle, TransmitApodizationDictPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+	//TEST_ASSERT(group_id > 0);
+	status = iusTransmitApodizationDictSave(transmitApodizationDict, handle);
 	TEST_ASSERT_EQUAL(IUS_E_OK, status);
+	//H5Gclose(group_id);
+	H5Fclose(handle);
 
 	// read back
 	handle = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT);
-	iutad_t savedDict = iusTransmitApodizationDictLoad(handle, TransmitApodizationDictPath);
+	TEST_ASSERT(handle > 0);
+	//group_id = H5Gcreate(handle, TransmitApodizationDictPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+	//TEST_ASSERT(group_id > 0);
+	iutad_t savedDict = iusTransmitApodizationDictLoad(handle);
 	TEST_ASSERT_NOT_EQUAL(NULL, savedDict);
+	//H5Gclose(group_id);
 	H5Fclose(handle);
 
 	TEST_ASSERT_EQUAL(IUS_TRUE, iusTransmitApodizationDictCompare(transmitApodizationDict, savedDict));

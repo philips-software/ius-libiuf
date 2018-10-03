@@ -26,6 +26,41 @@ static const char *pApodizationLabel = "apodizationLabel";
 static const char *pReceivesettingsLabel = "receivesettingsLabel";
 
 
+iursd_t dgGenerateReceiveSettingsDict
+(
+void
+)
+{
+    char *pObjLabel = "Label for IusReceiveSettingsDict, created in testIusCompareSourceDict";
+    char *pNotherObjLabel = "Another Label for IusReceiveSettingsDict, created in testIusCompareSourceDict";
+    float sampleFrequency=4000;
+    int numDelays=10;
+    int numSamplesPerLine=10;
+    int numTGCentries = 1;
+    int status=0,i;
+
+    iurs_t obj = iusReceiveSettingsCreate(pObjLabel, sampleFrequency, numDelays, numSamplesPerLine, numTGCentries);
+    iurs_t notherObj = iusReceiveSettingsCreate(pNotherObjLabel, sampleFrequency, numDelays, numSamplesPerLine, numTGCentries);
+
+    // Create
+    iursd_t  dict = iusReceiveSettingsDictCreate();
+
+    // Fill
+
+    // Delays
+    for(i=0;i<numDelays;i++)
+    {
+        float delay = i*2.0f;
+        status |= iusReceiveSettingsSetStartDelay(obj, i, delay);
+        status |= iusReceiveSettingsSetStartDelay(notherObj, i, delay*3.14f);
+        TEST_ASSERT(status == IUS_E_OK);
+    }
+
+    status |= iusReceiveSettingsDictSet(dict,pObjLabel,obj);
+    status |= iusReceiveSettingsDictSet(dict,pNotherObjLabel,notherObj);
+    TEST_ASSERT_EQUAL(IUS_E_OK,status);
+    return dict;
+}
 
 iuhn_t dgGenerateHistoryNode
 (
@@ -238,41 +273,6 @@ iusd_t dgGenerateSourceDict
     return dict;
 }
 
-iursd_t dgGenerateReceiveSettingsDict
-(
-    void
-)
-{
-    char *pObjLabel = "Label for IusReceiveSettingsDict, created in testIusCompareSourceDict";
-    char *pNotherObjLabel = "Another Label for IusReceiveSettingsDict, created in testIusCompareSourceDict";
-    float sampleFrequency=4000;
-    int numDelays=10;
-    int numSamplesPerLine=10;
-    int numTGCentries = 1;
-    int status=0,i;
-
-    iurs_t obj = iusReceiveSettingsCreate(pObjLabel, sampleFrequency, numDelays, numSamplesPerLine, numTGCentries);
-    iurs_t notherObj = iusReceiveSettingsCreate(pNotherObjLabel, sampleFrequency, numDelays, numSamplesPerLine, numTGCentries);
-
-    // Create
-    iursd_t  dict = iusReceiveSettingsDictCreate();
-
-    // Fill
-
-    // Delays
-    for(i=0;i<numDelays;i++)
-    {
-        float delay = i*2.0f;
-        status |= iusReceiveSettingsSetStartDelay(obj, i, delay);
-        status |= iusReceiveSettingsSetStartDelay(notherObj, i, delay*3.14f);
-        TEST_ASSERT(status == IUS_E_OK);
-    }
-
-    status |= iusReceiveSettingsDictSet(dict,pObjLabel,obj);
-    status |= iusReceiveSettingsDictSet(dict,pNotherObjLabel,notherObj);
-    TEST_ASSERT_EQUAL(IUS_E_OK,status);
-    return dict;
-};
 
 iurcmd_t dgGenerateReceiveChannelMapDict
 (
@@ -815,4 +815,6 @@ iuds_t dgCreateDrivingScheme
                                                           numElements );
     return parametrizedDrivingScheme;
 }
+
+
 #endif

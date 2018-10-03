@@ -8,6 +8,7 @@
 #include <ius.h>
 #include <iusError.h>
 #include <iusUtil.h>
+#include <iusInputFileStructure.h>
 #include <iusReceiveChannelMapImp.h>
 #include <iusReceiveChannelMapDict.h>
 #include <assert.h>
@@ -108,7 +109,7 @@ size_t iusReceiveChannelMapDictGetSize
 	iurcmd_t dict
 )
 {
-	if (dict == NULL) return -1;
+	if (dict == NULL) return (size_t)-1;
 	return hashmap_size(&dict->map);
 }
 
@@ -152,30 +153,49 @@ int iusReceiveChannelMapDictSet
 herr_t iusReceiveChannelMapDictSave
 (
 	iurcmd_t dict,
-	char *parentPath,
 	hid_t handle
 )
 {
 	herr_t status = 0;
-	char path[IUS_MAX_HDF5_PATH];
+	//char path[IUS_MAX_HDF5_PATH];
 	struct hashmap_iter *iter;
+	hid_t group_id;
 
 	if (dict == NULL)
 		return IUS_ERR_VALUE;
-	if (parentPath == NULL || handle == H5I_INVALID_HID)
+	if (handle == H5I_INVALID_HID)
 		return IUS_ERR_VALUE;
 
-	hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-	HashableReceiveChannelMap *sourceElement;
+	//hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+	status = H5Gget_objinfo(handle, IUS_INPUTFILE_PATH_RECEIVECHANNELMAPDICT, 0, NULL); // todo centralize the path
+	if (status != 0) // the group does not exist yet
+	{
+		group_id = H5Gcreate(handle, IUS_INPUTFILE_PATH_RECEIVECHANNELMAPDICT, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+	}
+	else
+	{
+		group_id = H5Gopen(handle, IUS_INPUTFILE_PATH_RECEIVECHANNELMAPDICT, H5P_DEFAULT);
+	}
+	if (group_id == H5I_INVALID_HID)
+		return IUS_ERR_VALUE;
+	status = 0;
+
+	HashableReceiveChannelMap *receiveChannelMapDictItem;
 
 	// iterate over source list elements and save'em
 	for (iter = hashmap_iter(&dict->map); iter && status == 0; iter = hashmap_iter_next(&dict->map, iter))
 	{
 		hid_t subgroup_id;
-		sourceElement = HashableReceiveChannelMap_hashmap_iter_get_data(iter);
-		sprintf(path, "%s/%s", parentPath, sourceElement->key);
-		subgroup_id = H5Gcreate(handle, path, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-		status = iusReceiveChannelMapSave(sourceElement->receiveChannelMap, subgroup_id);
+		receiveChannelMapDictItem = HashableReceiveChannelMap_hashmap_iter_get_data(iter);
+		//sprintf(path, "%s/%s", parentPath, sourceElement->key);
+		subgroup_id = H5Gcreate(group_id, receiveChannelMapDictItem->key, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+		if (subgroup_id <= 0)
+		{
+			H5Gclose(group_id);
+			return IUS_ERR_VALUE;
+		}
+		
+		status |= iusReceiveChannelMapSave(receiveChannelMapDictItem->receiveChannelMap, subgroup_id);
 		status |= H5Gclose(subgroup_id);
 	}
 
@@ -187,8 +207,7 @@ herr_t iusReceiveChannelMapDictSave
 
 iurcmd_t iusReceiveChannelMapDictLoad
 (
-	hid_t handle,
-	char *parentPath
+	hid_t handle
 )
 {
 	int status = 0;
@@ -197,8 +216,8 @@ iurcmd_t iusReceiveChannelMapDictLoad
 	hsize_t i;
 	char memberName[MAX_NAME];
 
-	hid_t groupId = H5Gopen(handle, parentPath, H5P_DEFAULT);
-	if (parentPath == NULL || handle == H5I_INVALID_HID || groupId == H5I_INVALID_HID)
+	hid_t groupId = H5Gopen(handle, IUS_INPUTFILE_PATH_RECEIVECHANNELMAPDICT, H5P_DEFAULT);
+	if (handle == H5I_INVALID_HID || groupId == H5I_INVALID_HID)
 		return NULL;
 
 	hsize_t nobj;

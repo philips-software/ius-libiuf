@@ -92,7 +92,7 @@ TEST(IusReceiveSettingsDict, testIusCompareSourceDict)
 TEST(IusReceiveSettingsDict, testIusSerialization)
 {
     char *filename = "testIusReceiveSettingsDictSerialization.hdf5";
-    char *ReceiveChannelMapDictPath = "/ReceiveSettingsDict";
+    //char *ReceiveChannelMapDictPath = "/ReceiveSettingsDict";
 
     // Create and fill
     iursd_t  dict = dgGenerateReceiveSettingsDict();
@@ -100,13 +100,13 @@ TEST(IusReceiveSettingsDict, testIusSerialization)
     // Save
     hid_t handle = H5Fcreate(filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
     TEST_ASSERT(handle > 0);
-    int status = iusReceiveSettingsDictSave(dict, ReceiveChannelMapDictPath, handle);
+    int status = iusReceiveSettingsDictSave(dict, handle);
     H5Fclose(handle);
     TEST_ASSERT_EQUAL(IUS_E_OK, status);
 
     // read back
     handle = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT);
-    iursd_t savedDict = iusReceiveSettingsDictLoad(handle, ReceiveChannelMapDictPath);
+    iursd_t savedDict = iusReceiveSettingsDictLoad(handle);
     TEST_ASSERT_NOT_EQUAL(NULL, savedDict);
     H5Fclose(handle);
 
