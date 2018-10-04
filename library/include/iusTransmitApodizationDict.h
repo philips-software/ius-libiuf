@@ -2,8 +2,8 @@
 #ifndef IUSLIBRARY_IUSHLTRANSMITAPODIZATIONDICT_H
 #define IUSLIBRARY_IUSHLTRANSMITAPODIZATIONDICT_H
 
+#include <stdio.h>
 #include <iusTransmitApodization.h>
-#include <iusTransmitApodizationPrivate.h>
 
 // ADT
 typedef struct IusTransmitApodizationDict IusTransmitApodizationDict;
