@@ -25,15 +25,12 @@ struct IusParametricPulse
 
 iupp_t iusParametricPulseCreate
 (
-    char *label,
     float pulseFrequency,
     float pulseAmplitude,
     int pulseCount
 )
 {
     IusParametricPulse *pulse;
-    if( label == NULL ) return NULL;
-    if( strcmp(label,"") == 0 ) return NULL;
     if( pulseCount < 0 ) return NULL;
     if( pulseFrequency < 0.0f ) return NULL;
 
@@ -44,7 +41,6 @@ iupp_t iusParametricPulseCreate
     pulse->pulseAmplitude = pulseAmplitude;
     pulse->pulseCount = pulseCount;
     pulse->base.type = IUS_PARAMETRIC_PULSETYPE;
-    pulse->base.label = strdup(label);
     return pulse;
 }
 
@@ -135,7 +131,6 @@ iupp_t iusParametricPulseLoad
 )
 {
     int     status = 0;
-    char    *label;
     float   pulseFrequency;       /**< frequency that the pulse represents in Hz */
     float   pulseAmplitude;       /**< (max) amplitude of the pulse in Volts */
     int     pulseCount;           /**< number of cycles that the pulse represents */
@@ -143,7 +138,6 @@ iupp_t iusParametricPulseLoad
 
 	if (handle == H5I_INVALID_HID)
 		return NULL;
-	status |= iusHdf5ReadString(handle, IUS_INPUTFILE_PATH_PULSE_PULSELABEL, (const char **)&(label));
     status |= iusHdf5ReadFloat(handle, IUS_INPUTFILE_PATH_PULSE_FREQUENCY, &(pulseFrequency));
     status |= iusHdf5ReadFloat(handle, IUS_INPUTFILE_PATH_PULSE_PULSEAMPLITUDES, &(pulseAmplitude));
     status |= iusHdf5ReadInt(handle, IUS_INPUTFILE_PATH_PULSE_COUNT, &(pulseCount));
@@ -151,6 +145,6 @@ iupp_t iusParametricPulseLoad
     if( status < 0 )
         return NULL;
 
-    pulse = iusParametricPulseCreate(label,pulseFrequency,pulseAmplitude,pulseCount);
+    pulse = iusParametricPulseCreate(pulseFrequency,pulseAmplitude,pulseCount);
     return pulse;
 }

@@ -225,8 +225,8 @@ iupd_t dgGeneratePulseDict
   // fill
   char *parametricLabel = "parametricPulseLabel";
   char *nonParametricLabel = "nonParametricPulseLabel";
-  iupp_t parametricPulse = iusParametricPulseCreate(parametricLabel, pulseFrequency, pulseAmplitude, pulseCount);
-  iunpp_t nonParametricPulse = iusNonParametricPulseCreate(nonParametricLabel,numPulseValues);
+  iupp_t parametricPulse = iusParametricPulseCreate(pulseFrequency, pulseAmplitude, pulseCount);
+  iunpp_t nonParametricPulse = iusNonParametricPulseCreate(numPulseValues);
   iusNonParametricPulseSetValue(nonParametricPulse,0,10.0f,10.0f);
   iusNonParametricPulseSetValue(nonParametricPulse,1,20.0f,10.0f);
   status = iusPulseDictSet(dict,nonParametricLabel, (iup_t) nonParametricPulse);

@@ -12,7 +12,6 @@ typedef IusParametricPulse *iupp_t;
 
 iupp_t iusParametricPulseCreate
 (
-    char *label,
     float pulseFrequency,
     float pulseAmplitude,
     int pulseCount

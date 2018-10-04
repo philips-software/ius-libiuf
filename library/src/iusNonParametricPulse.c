@@ -26,14 +26,11 @@ struct IusNonParametricPulse
 
 iunpp_t iusNonParametricPulseCreate
 (
-    char *label,
     int numPulseValues
 )
 {
     IusNonParametricPulse *pulse;
 
-    if( label == NULL ) return NULL;
-    if( strcmp(label,"") == 0 ) return NULL;
     if( numPulseValues < 0 ) return NULL;
 
     pulse = (IusNonParametricPulse *) calloc (1,sizeof(IusNonParametricPulse));
@@ -45,7 +42,6 @@ iunpp_t iusNonParametricPulseCreate
 
     pulse->numPulseValues = numPulseValues;
     pulse->base.type = IUS_NON_PARAMETRIC_PULSETYPE;
-    pulse->base.label = strdup(label);
     return pulse;
 }
 
@@ -168,7 +164,6 @@ iunpp_t iusNonParametricPulseLoad
 )
 {
     int status = 0;
-     char *label;
     int  numPulseValues;
 
     iunpp_t  pulse;
@@ -177,11 +172,10 @@ iunpp_t iusNonParametricPulseLoad
         return NULL;
 
     status |= iusHdf5ReadInt(handle, IUS_INPUTFILE_PATH_PULSE_NUMPULSEVALUES, &(numPulseValues));
-	status |= iusHdf5ReadString(handle, IUS_INPUTFILE_PATH_PULSE_PULSELABEL, (const char**)&(label));
     if( status < 0 )
         return NULL;
 
-    pulse = iusNonParametricPulseCreate(label, numPulseValues);
+    pulse = iusNonParametricPulseCreate(numPulseValues);
     status |= H5LTread_dataset_float(handle, IUS_INPUTFILE_PATH_PULSE_RAWPULSEAMPLITUDES, pulse->pRawPulseAmplitudes );
     status |= H5LTread_dataset_float(handle, IUS_INPUTFILE_PATH_PULSE_RAWPULSETIMES, pulse->pRawPulseTimes );
 

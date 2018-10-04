@@ -27,8 +27,6 @@ TEST_TEAR_DOWN(IusPulse)
 
 TEST(IusPulse, testIusPulseDelete)
 {
-    char *label = "label for IUS_PARAMETRIC_PULSETYPE";
-    char *notherLabel = "label for IUS_NON_PARAMETRIC_PULSETYPE";
     float   pulseFrequency=8000000.0f;   /**< frequency that the pulse represents in Hz */
     float   pulseAmplitude=800.0f;       /**< (max) amplitude of the pulse in Volts */
     int     pulseCount=10;               /**< number of cycles that the pulse represents */
@@ -36,8 +34,8 @@ TEST(IusPulse, testIusPulseDelete)
 
 
     // create and save
-    iup_t obj = (iup_t) iusParametricPulseCreate(label, pulseFrequency, pulseAmplitude, pulseCount);
-    iup_t notherObj = (iup_t) iusNonParametricPulseCreate(notherLabel, numPulseValues);
+    iup_t obj = (iup_t) iusParametricPulseCreate(pulseFrequency, pulseAmplitude, pulseCount);
+    iup_t notherObj = (iup_t) iusNonParametricPulseCreate(numPulseValues);
 
     int status = iusPulseDelete(obj);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
@@ -56,8 +54,6 @@ TEST(IusPulse, testIusPulseDelete)
 TEST(IusPulse, testIusPulseCompare)
 {
     IUS_BOOL equal;
-    char *label = "label for IUS_PARAMETRIC_PULSETYPE";
-    char *notherLabel = "label for IUS_NON_PARAMETRIC_PULSETYPE";
     float   pulseFrequency=8000000.0f;   /**< frequency that the pulse represents in Hz */
     float   pulseAmplitude=800.0f;       /**< (max) amplitude of the pulse in Volts */
     int     pulseCount=10;               /**< number of cycles that the pulse represents */
@@ -65,8 +61,8 @@ TEST(IusPulse, testIusPulseCompare)
 
 
     // create and save
-    iup_t obj = (iup_t) iusParametricPulseCreate(label, pulseFrequency, pulseAmplitude, pulseCount);
-    iup_t notherObj = (iup_t) iusNonParametricPulseCreate(notherLabel, numPulseValues);
+    iup_t obj = (iup_t) iusParametricPulseCreate(pulseFrequency, pulseAmplitude, pulseCount);
+    iup_t notherObj = (iup_t) iusNonParametricPulseCreate(numPulseValues);
     TEST_ASSERT(obj != IUP_INVALID);
     TEST_ASSERT(notherObj != IUP_INVALID);
 
@@ -91,23 +87,16 @@ TEST(IusPulse, testIusPulseGet)
     float   pulseFrequency=8000000.0f;   /**< frequency that the pulse represents in Hz */
     float   pulseAmplitude=800.0f;       /**< (max) amplitude of the pulse in Volts */
     int     pulseCount=10;               /**< number of cycles that the pulse represents */
-    char    *pLabel="Parametric Pulse testIusPulseGet";
-    char    *notherLabel = "label for IUS_NON_PARAMETRIC_PULSETYPE";
 
     // create and save
-    iup_t obj = (iup_t) iusParametricPulseCreate(pLabel, pulseFrequency, pulseAmplitude, pulseCount);
-    iup_t notherObj = (iup_t) iusNonParametricPulseCreate(notherLabel, pulseCount);
+    iup_t obj = (iup_t) iusParametricPulseCreate(pulseFrequency, pulseAmplitude, pulseCount);
+    iup_t notherObj = (iup_t) iusNonParametricPulseCreate(pulseCount);
 
     // int param
     TEST_ASSERT_EQUAL(IUS_PARAMETRIC_PULSETYPE,iusPulseGetType( (iup_t) obj));
-    TEST_ASSERT_EQUAL_STRING(pLabel,iusPulseGetLabel((iup_t) obj));
-
     TEST_ASSERT_EQUAL(IUS_NON_PARAMETRIC_PULSETYPE,iusPulseGetType( (iup_t) notherObj));
-    TEST_ASSERT_EQUAL_STRING(notherLabel,iusPulseGetLabel((iup_t) notherObj));
-
     // invalid param
     TEST_ASSERT_EQUAL(IUS_INVALID_PULSETYPE,iusPulseGetType(NULL));
-    TEST_ASSERT_EQUAL(NULL,iusPulseGetLabel(NULL));
    
     iusPulseDelete(obj);
     iusPulseDelete(notherObj);
@@ -124,12 +113,11 @@ TEST(IusPulse, testIusSerialization)
   float   pulseFrequency=8000000.0f;   /**< frequency that the pulse represents in Hz */
   float   pulseAmplitude=800.0f;       /**< (max) amplitude of the pulse in Volts */
   int     pulseCount=10;               /**< number of cycles that the pulse represents */
-  int     numPulseValues=2;               /**< number of cycles that the pulse represents */
+  int     numPulseValues=2;            /**< number of cycles that the pulse represents */
 
   // create and save
-  char *pulseLabel = "Parametric Pulse Created_in_IusPulse_testIusSerialization";
-  iupp_t obj = iusParametricPulseCreate(pulseLabel, pulseFrequency, pulseAmplitude, pulseCount);
-  iunpp_t notherObj = iusNonParametricPulseCreate("Non Parametric Pulse Created_in_IusPulse_testIusSerialization", numPulseValues);
+  iupp_t obj = iusParametricPulseCreate(pulseFrequency, pulseAmplitude, pulseCount);
+  iunpp_t notherObj = iusNonParametricPulseCreate(numPulseValues);
 
   // fill
   int status = iusNonParametricPulseSetValue(notherObj,0,0.1f,10.0f);
