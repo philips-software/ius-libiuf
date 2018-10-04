@@ -7,7 +7,7 @@
 
 #include <hdf5.h>
 #include <ius.h>
-#include <iusReceiveChannelMapDictImp.h>
+#include <iusReceiveChannelMapDictPrivate.h>
 
 TEST_GROUP(IusReceiveChannelMapDict);
 

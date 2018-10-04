@@ -9,7 +9,7 @@
 #include <iusError.h>
 #include <iusUtil.h>
 #include <iusInputFileStructure.h>
-#include <iusTransmitApodizationImp.h>
+#include <iusTransmitApodizationPrivate.h>
 #include <iusTransmitApodizationDict.h>
 #include <assert.h>
 #include <string.h>

@@ -10,7 +10,7 @@
 #include <iusUtil.h>
 #include <iusError.h>
 #include <iusInputFileStructure.h>
-#include <iusExperimentImp.h>
+#include <iusExperimentPrivate.h>
 #include <include/iusHDF5.h>
 
 // ADT

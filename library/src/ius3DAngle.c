@@ -10,7 +10,7 @@
 #include <iusError.h>
 #include <iusTypes.h>
 #include <iusUtil.h>
-#include <ius3DAngleImp.h>
+#include <ius3DAnglePrivate.h>
 #include <include/iusHDF5.h>
 
 // ADT

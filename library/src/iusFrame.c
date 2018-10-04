@@ -8,7 +8,7 @@
 #include <iusTypes.h>
 #include <iusUtil.h>
 #include <iusInputFileStructure.h>
-#include <iusFrameImp.h>
+#include <iusFramePrivate.h>
 #include <include/iusHDF5.h>
 #include <math.h>
 

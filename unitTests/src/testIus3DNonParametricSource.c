@@ -9,7 +9,7 @@
 #include <include/ius.h>
 #include <include/iusError.h>
 #include <include/iusTypes.h>
-#include "include/ius3DNonParametricSourceImp.h"
+#include "include/ius3DNonParametricSourcePrivate.h"
 
 TEST_GROUP(Ius3DNonParametricSource);
 

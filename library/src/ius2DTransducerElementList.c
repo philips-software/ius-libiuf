@@ -9,7 +9,7 @@
 #include <iusUtil.h>
 #include <iusInputFileStructure.h>
 #include <ius2DTransducerElementList.h>
-#include <include/ius2DTransducerElementImp.h>
+#include <include/ius2DTransducerElementPrivate.h>
 
 // ADT
 struct Ius2DTransducerElementList

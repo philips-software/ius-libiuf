@@ -11,8 +11,8 @@
 #include <iusTypes.h>
 #include <iusUtil.h>
 #include <iusInputFileStructure.h>
-#include <iusReceiveSettingsImp.h>
-#include <iusTGCImp.h>
+#include <iusReceiveSettingsPrivate.h>
+#include <iusTGCPrivate.h>
 #include <include/iusHDF5.h>
 
 struct IusReceiveSettings

@@ -7,7 +7,7 @@
 
 #include <hdf5.h>
 #include <ius.h>
-#include <iusPulseDictImp.h>
+#include <iusPulseDictPrivate.h>
 #include <iusParametricPulse.h>
 #include <iusNonParametricPulse.h>
 

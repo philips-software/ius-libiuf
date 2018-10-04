@@ -12,22 +12,22 @@
 #include <iusError.h>
 #include <iusTypes.h>
 #include <iusUtil.h>
-#include <include/iusExperimentImp.h>
-#include <include/iusInputFileImp.h>
-#include <include/iusPatternListImp.h>
-#include <include/iusPulseDictImp.h>
-#include <include/iusReceiveChannelMapDictImp.h>
+#include <include/iusExperimentPrivate.h>
+#include <include/iusInputFilePrivate.h>
+#include <include/iusPatternListPrivate.h>
+#include <include/iusPulseDictPrivate.h>
+#include <include/iusReceiveChannelMapDictPrivate.h>
 #include <include/iusFrameList.h>
 #include <include/iusSourceDict.h>
 #include <include/iusReceiveSettings.h>
 #include <include/iusTransducer.h>
-#include <include/iusFrameListImp.h>
-#include <include/iusSourceDictImp.h>
-#include <include/iusReceiveSettingsDictImp.h>
-#include <include/iusTransducerImp.h>
+#include <include/iusFrameListPrivate.h>
+#include <include/iusSourceDictPrivate.h>
+#include <include/iusReceiveSettingsDictPrivate.h>
+#include <include/iusTransducerPrivate.h>
 #include <include/iusHistoryNode.h>
-#include <include/iusHistoryNodeImp.h>
-#include <include/iusTransmitApodizationDictImp.h>
+#include <include/iusHistoryNodePrivate.h>
+#include <include/iusTransmitApodizationDictPrivate.h>
 #include <include/iusInputFileStructure.h>
 
 

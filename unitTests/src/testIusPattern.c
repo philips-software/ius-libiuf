@@ -10,7 +10,7 @@
 #include <include/ius.h>
 #include <include/iusError.h>
 #include <include/iusTypes.h>
-#include "include/iusPatternImp.h"
+#include "include/iusPatternPrivate.h"
 
 
 static const char *pBmodePatternLabel = "bmode";

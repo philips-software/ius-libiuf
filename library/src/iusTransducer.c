@@ -14,9 +14,9 @@
 #include <iusTypes.h>
 #include <iusUtil.h>
 #include <iusInputFileStructure.h>
-#include <iusTransducerImp.h>
-#include <ius2DTransducerImp.h>
-#include <ius3DTransducerImp.h>
+#include <iusTransducerPrivate.h>
+#include <ius2DTransducerPrivate.h>
+#include <ius3DTransducerPrivate.h>
 #include <iusTransducerElement.h>
 #include <ius2DTransducerElementList.h>
 #include <ius3DTransducerElementList.h>

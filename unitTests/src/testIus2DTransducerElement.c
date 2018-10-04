@@ -11,7 +11,7 @@
 #include <include/ius.h>
 #include <include/iusError.h>
 #include <include/iusTypes.h>
-#include "include/ius2DTransducerElementImp.h"
+#include "include/ius2DTransducerElementPrivate.h"
 
 TEST_GROUP(Ius2DTransducerElement);
 

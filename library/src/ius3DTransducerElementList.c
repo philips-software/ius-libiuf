@@ -8,8 +8,8 @@
 #include <iusError.h>
 #include <iusUtil.h>
 #include <iusInputFileStructure.h>
-#include <ius3DTransducerElementListImp.h>
-#include <ius3DTransducerElementImp.h>
+#include <ius3DTransducerElementListPrivate.h>
+#include <ius3DTransducerElementPrivate.h>
 #include <include/iusHDF5.h>
 
 struct Ius3DTransducerElementList

@@ -12,7 +12,7 @@
 #include <iusHDF5.h>
 #include <iusInputFileStructure.h>
 #include <iusParametricPulse.h>
-#include <iusPulseImp.h>
+#include <iusPulsePrivate.h>
 
 // ADT
 struct IusParametricPulse

@@ -14,7 +14,7 @@
 #include <iusUtil.h>
 #include <iusInputFileStructure.h>
 #include <iusHDF5.h>
-#include <iusTGCImp.h>
+#include <iusTGCPrivate.h>
 #include <hdf5_hl.h>
 
 struct IusTGC

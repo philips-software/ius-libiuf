@@ -8,7 +8,7 @@
 #include <ius.h>
 #include <iusError.h>
 #include <iusTypes.h>
-#include <iusFrameImp.h>
+#include <iusFramePrivate.h>
 
 TEST_GROUP(IusFrame);
 

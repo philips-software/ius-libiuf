@@ -8,7 +8,7 @@
 #include <hdf5.h>
 #include <ius.h>
 #include <iusTransmitApodization.h>
-#include <iusTransmitApodizationDictImp.h>
+#include <iusTransmitApodizationDictPrivate.h>
 
 TEST_GROUP(IusTransmitApodizationDict);
 

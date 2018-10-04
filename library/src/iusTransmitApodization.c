@@ -10,7 +10,7 @@
 #include <iusError.h>
 #include <iusInputFileStructure.h>
 #include <iusTransmitApodization.h>
-#include <iusTransmitApodizationImp.h>
+#include <iusTransmitApodizationPrivate.h>
 
 
 iuta_t iusTransmitApodizationCreate

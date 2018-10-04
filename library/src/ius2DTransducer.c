@@ -12,15 +12,15 @@
 #include <iusUtil.h>
 
 #include <iusTransducer.h>
-#include <iusTransducerImp.h>
+#include <iusTransducerPrivate.h>
 #include <ius2DTransducer.h>
 #include <ius2DTransducerElement.h>
 #include <ius2DTransducerElementList.h>
 #include <ius3DTransducer.h>
 #include <ius3DTransducerElement.h>
 #include <ius3DTransducerElementList.h>
-#include <iusPositionImp.h>
-#include <include/ius2DTransducerElementListImp.h>
+#include <iusPositionPrivate.h>
+#include <include/ius2DTransducerElementListPrivate.h>
 
 struct Ius2DTransducer
 {

@@ -8,8 +8,8 @@
 #include <ius.h>
 #include <iusError.h>
 #include <iusTypes.h>
-#include <iusPulseImp.h>
-#include <iusParametricPulseImp.h>
+#include <iusPulsePrivate.h>
+#include <iusParametricPulsePrivate.h>
 #include <iusNonParametricPulse.h>
 
 TEST_GROUP(IusParametricPulse);

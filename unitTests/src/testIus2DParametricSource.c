@@ -10,7 +10,7 @@
 #include <include/iusError.h>
 #include <include/iusTypes.h>
 #include <include/iusPosition.h>
-#include "include/ius2DParametricSourceImp.h"
+#include "include/ius2DParametricSourcePrivate.h"
 
 TEST_GROUP(Ius2DParametricSource);
 

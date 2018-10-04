@@ -10,7 +10,7 @@
 #include <iusTypes.h>
 #include <iusUtil.h>
 #include <iusInputFileStructure.h>
-#include <ius2DSizeImp.h>
+#include <ius2DSizePrivate.h>
 #include <include/iusHDF5.h>
 
 // ADT

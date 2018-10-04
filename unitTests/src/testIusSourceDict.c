@@ -7,7 +7,7 @@
 
 #include <hdf5.h>
 #include <ius.h>
-#include <iusSourceDictImp.h>
+#include <iusSourceDictPrivate.h>
 #include <include/ius3DParametricSource.h>
 #include <include/ius3DNonParametricSource.h>
 

@@ -10,7 +10,7 @@
 #include <include/ius.h>
 #include <include/iusError.h>
 #include <include/iusTypes.h>
-#include "include/ius3DParametricSourceImp.h"
+#include "include/ius3DParametricSourcePrivate.h"
 
 TEST_GROUP(Ius3DParametricSource);
 

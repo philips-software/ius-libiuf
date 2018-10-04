@@ -17,11 +17,11 @@
 #include <include/ius2DNonParametricSource.h>
 #include <include/iusHDF5.h>
 #include <hdf5_hl.h>
-#include <include/ius2DNonParametricSourceImp.h>
-#include <include/ius2DParametricSourceImp.h>
-#include <include/ius3DNonParametricSourceImp.h>
-#include <include/ius3DParametricSourceImp.h>
-#include "include/iusSourceImp.h"
+#include <include/ius2DNonParametricSourcePrivate.h>
+#include <include/ius2DParametricSourcePrivate.h>
+#include <include/ius3DNonParametricSourcePrivate.h>
+#include <include/ius3DParametricSourcePrivate.h>
+#include "include/iusSourcePrivate.h"
 #include "include/ius3DParametricSource.h"
 
 

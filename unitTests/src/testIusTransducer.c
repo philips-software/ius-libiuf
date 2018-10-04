@@ -10,9 +10,9 @@
 #include <ius.h>
 #include <iusError.h>
 #include <iusTypes.h>
-#include <include/iusTransducerImp.h>
-#include <include/ius2DTransducerImp.h>
-#include <include/ius3DTransducerImp.h>
+#include <include/iusTransducerPrivate.h>
+#include <include/ius2DTransducerPrivate.h>
+#include <include/ius3DTransducerPrivate.h>
 
 TEST_GROUP(IusTransducer);
 

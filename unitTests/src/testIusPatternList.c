@@ -6,7 +6,7 @@
 #include <unity_internals.h>
 #include <unity_fixture.h>
 #include <include/iusPattern.h>
-#include <include/iusPatternListImp.h>
+#include <include/iusPatternListPrivate.h>
 #include <include/ius.h>
 
 static const char *pBmodePatternLabel = "bmode";

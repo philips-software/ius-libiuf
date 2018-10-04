@@ -3,7 +3,7 @@
 #define IUSLIBRARY_IUSHLTRANSMITAPODIZATIONDICT_H
 
 #include <iusTransmitApodization.h>
-#include <iusTransmitApodizationImp.h>
+#include <iusTransmitApodizationPrivate.h>
 
 // ADT
 typedef struct IusTransmitApodizationDict IusTransmitApodizationDict;

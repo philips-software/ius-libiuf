@@ -14,7 +14,7 @@
 #include <include/iusHDF5.h>
 #include <iusInputFileStructure.h>
 #include "include/iusPulse.h"
-#include "include/iusPatternImp.h"
+#include "include/iusPatternPrivate.h"
 
 struct IusPattern
 {

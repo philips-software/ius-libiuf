@@ -14,9 +14,9 @@
 #include <hdf5_hl.h>
 #include <iusHistoryNodeList.h>
 #include <iusHistoryNode.h>
-#include <include/iusHistoryNodeListImp.h>
-#include <include/iusParameterDictImp.h>
-#include <include/iusInputFileImp.h>
+#include <include/iusHistoryNodeListPrivate.h>
+#include <include/iusParameterDictPrivate.h>
+#include <include/iusInputFilePrivate.h>
 
 #define MAX_TYPE_LENGTH 40
 #define MAX_ID_LENGTH   40

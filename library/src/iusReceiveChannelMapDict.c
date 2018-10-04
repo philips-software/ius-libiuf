@@ -9,7 +9,7 @@
 #include <iusError.h>
 #include <iusUtil.h>
 #include <iusInputFileStructure.h>
-#include <iusReceiveChannelMapImp.h>
+#include <iusReceiveChannelMapPrivate.h>
 #include <iusReceiveChannelMapDict.h>
 #include <assert.h>
 #include <string.h>

@@ -4,7 +4,7 @@
 #include <stdlib.h>
 
 #include <iusInputFileStructure.h>
-#include <iusPositionImp.h>
+#include <iusPositionPrivate.h>
 #include <iusUtil.h>
 #include <include/iusHDF5.h>
 

@@ -16,7 +16,7 @@
 #include <include/ius2DParametricSource.h>
 #include <include/ius2DNonParametricSource.h>
 #include <hdf5.h>
-#include "include/iusSourceImp.h"
+#include "include/iusSourcePrivate.h"
 
 
 

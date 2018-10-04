@@ -11,10 +11,10 @@
 
 #include <iusFile.h>
 #include <hdf5.h>
-#include <include/iusHistoryNodeImp.h>
+#include <include/iusHistoryNodePrivate.h>
 #include <memory.h>
 #include <include/iusInputFile.h>
-#include <include/iusInputFileImp.h>
+#include <include/iusInputFilePrivate.h>
 
 struct IusFile
 {

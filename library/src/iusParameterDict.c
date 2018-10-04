@@ -10,7 +10,7 @@
 #include <ius.h>
 #include <iusError.h>
 #include <iusUtil.h>
-#include <iusParameterDictImp.h>
+#include <iusParameterDictPrivate.h>
 #include <include/iusHDF5.h>
 
 // ADT

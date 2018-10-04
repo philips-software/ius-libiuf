@@ -10,7 +10,7 @@
 #include <include/ius.h>
 #include <include/iusError.h>
 #include <include/iusTypes.h>
-#include "include/iusTGCImp.h"
+#include "include/iusTGCPrivate.h"
 
 TEST_GROUP(IusTGC);
 

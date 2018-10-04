@@ -6,7 +6,7 @@
 #include <unity_fixture.h>
 
 #include <iusFrame.h>
-#include <iusFrameListImp.h>
+#include <iusFrameListPrivate.h>
 #include <ius.h>
 
 TEST_GROUP(IusFrameList);

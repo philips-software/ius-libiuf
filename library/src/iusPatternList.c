@@ -4,12 +4,12 @@
 //
 #include <stdlib.h>
 #include <math.h>
-#include <include/iusPatternListImp.h>
+#include <include/iusPatternListPrivate.h>
 #include <include/ius.h>
 #include <include/iusError.h>
 #include <include/iusUtil.h>
 #include <iusInputFileStructure.h>
-#include <include/iusPatternImp.h>
+#include <include/iusPatternPrivate.h>
 #include <include/iusHDF5.h>
 
 // ADT

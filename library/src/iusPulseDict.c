@@ -9,9 +9,9 @@
 #include <iusError.h>
 #include <iusUtil.h>
 #include <iusInputFileStructure.h>
-#include <iusPulseImp.h>
-#include <iusParametricPulseImp.h>
-#include <iusNonParametricPulseImp.h>
+#include <iusPulsePrivate.h>
+#include <iusParametricPulsePrivate.h>
+#include <iusNonParametricPulsePrivate.h>
 #include <iusPulseDict.h>
 #include <assert.h>
 #include <string.h>

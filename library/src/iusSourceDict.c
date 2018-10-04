@@ -9,7 +9,7 @@
 #include <iusError.h>
 #include <iusUtil.h>
 #include <iusInputFileStructure.h>
-#include <iusSourceImp.h>
+#include <iusSourcePrivate.h>
 #include <iusSourceDict.h>
 #include <assert.h>
 #include <string.h>

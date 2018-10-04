@@ -8,9 +8,9 @@
 #include <iusError.h>
 #include <iusUtil.h>
 #include <iusInputFileStructure.h>
-#include <iusFrameListImp.h>
+#include <iusFrameListPrivate.h>
 #include <include/iusHDF5.h>
-#include <include/iusFrameImp.h>
+#include <include/iusFramePrivate.h>
 
 
 // ADT

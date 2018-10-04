@@ -6,7 +6,7 @@
 #include <unity_internals.h>
 #include <unity_fixture.h>
 #include <include/ius2DTransducerElement.h>
-#include <include/ius2DTransducerElementListImp.h>
+#include <include/ius2DTransducerElementListPrivate.h>
 #include <include/ius.h>
 #include <iusError.h>
 

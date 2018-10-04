@@ -10,7 +10,7 @@
 #include <ius.h>
 #include <iusError.h>
 #include <iusTypes.h>
-#include <iusPulseImp.h>
+#include <iusPulsePrivate.h>
 #include <iusNonParametricPulse.h>
 #include <iusParametricPulse.h>
 

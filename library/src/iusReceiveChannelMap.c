@@ -10,7 +10,7 @@
 #include <iusError.h>
 #include <iusInputFileStructure.h>
 #include <iusReceiveChannelMap.h>
-#include <iusReceiveChannelMapImp.h>
+#include <iusReceiveChannelMapPrivate.h>
 
 
 iurcm_t iusReceiveChannelMapCreate

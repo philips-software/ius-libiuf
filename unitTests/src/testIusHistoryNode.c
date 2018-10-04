@@ -13,7 +13,7 @@
 #include <include/iusHistoryNodeList.h>
 #include <include/iusParameterDict.h>
 #include <testDataGenerators.h>
-#include <include/iusHistoryNodeImp.h>
+#include <include/iusHistoryNodePrivate.h>
 
 TEST_GROUP(IusHistoryNode);
 

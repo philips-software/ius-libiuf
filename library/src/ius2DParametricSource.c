@@ -12,8 +12,8 @@
 #include <iusUtil.h>
 
 #include <include/iusInputFileStructure.h>
-#include <include/iusSourceImp.h>
-#include <include/iusPositionImp.h>
+#include <include/iusSourcePrivate.h>
+#include <include/iusPositionPrivate.h>
 #include <include/ius2DParametricSource.h>
 #include <include/iusHDF5.h>
 

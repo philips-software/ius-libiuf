@@ -13,7 +13,7 @@
 #include <iusPulse.h>
 #include <iusInputFileStructure.h>
 #include <iusNonParametricPulse.h>
-#include <iusPulseImp.h>
+#include <iusPulsePrivate.h>
 #include <include/iusHDF5.h>
 
 struct IusNonParametricPulse

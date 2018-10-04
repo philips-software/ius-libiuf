@@ -11,7 +11,7 @@
 #include <iusError.h>
 #include <iusUtil.h>
 #include <iusInputFileStructure.h>
-#include <iusReceiveSettingsImp.h>
+#include <iusReceiveSettingsPrivate.h>
 #include <iusReceiveSettingsDict.h>
 
 // ADT

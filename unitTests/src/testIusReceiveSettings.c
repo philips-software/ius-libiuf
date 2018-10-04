@@ -11,7 +11,7 @@
 #include <include/iusError.h>
 #include <include/iusTypes.h>
 #include <include/iusTGC.h>
-#include "include/iusReceiveSettingsImp.h"
+#include "include/iusReceiveSettingsPrivate.h"
 
 TEST_GROUP(IusReceiveSettings);
 

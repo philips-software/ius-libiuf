@@ -8,9 +8,9 @@
 #include <ius.h>
 #include <iusError.h>
 #include <iusTypes.h>
-#include <iusPulseImp.h>
+#include <iusPulsePrivate.h>
 #include <iusParametricPulse.h>
-#include <iusNonParametricPulseImp.h>
+#include <iusNonParametricPulsePrivate.h>
 
 #include <testDataGenerators.h>
 

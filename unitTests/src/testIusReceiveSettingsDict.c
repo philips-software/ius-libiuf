@@ -7,7 +7,7 @@
 
 #include <hdf5.h>
 #include <ius.h>
-#include <iusReceiveSettingsDictImp.h>
+#include <iusReceiveSettingsDictPrivate.h>
 #include <testDataGenerators.h>
 
 TEST_GROUP(IusReceiveSettingsDict);

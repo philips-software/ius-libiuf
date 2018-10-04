@@ -9,7 +9,7 @@
 #include <ius.h>
 #include <iusError.h>
 #include <iusTypes.h>
-#include <iusExperimentImp.h>
+#include <iusExperimentPrivate.h>
 
 TEST_GROUP(IusExperiment);
 

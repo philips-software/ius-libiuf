@@ -12,8 +12,8 @@
 #include <iusUtil.h>
 #include <iusInputFileStructure.h>
 // todo: check if the "include" filder below is needed
-#include <include/iusSourceImp.h>
-#include <include/iusPositionImp.h>
+#include <include/iusSourcePrivate.h>
+#include <include/iusPositionPrivate.h>
 #include <include/ius3DNonParametricSource.h>
 #include <include/iusHDF5.h>
 

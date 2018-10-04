@@ -14,9 +14,9 @@
 #include <iusError.h>
 #include <iusInputFileStructure.h>
 #include <iusPulse.h>
-#include <iusPulseImp.h>
-#include <iusParametricPulseImp.h>
-#include <iusNonParametricPulseImp.h>
+#include <iusPulsePrivate.h>
+#include <iusParametricPulsePrivate.h>
+#include <iusNonParametricPulsePrivate.h>
 
 
 #define TOSTR(x)    #x
