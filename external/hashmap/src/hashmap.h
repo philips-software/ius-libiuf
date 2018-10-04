@@ -25,6 +25,10 @@
  * Macros to declare type-specific versions of hashmap_*() functions to
  * allow compile-time type checking and avoid the need for type casting.
  */
+#ifdef _WIN32
+#pragma warning(disable: 4204)
+#endif
+
 #define HASHMAP_FUNCS_DECLARE(name, key_type, data_type)		\
 	data_type *name##_hashmap_put(struct hashmap *map, key_type *key, \
 		data_type *data);					\
