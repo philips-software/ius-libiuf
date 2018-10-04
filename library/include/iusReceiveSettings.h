@@ -11,7 +11,6 @@ typedef IusReceiveSettings *iurs_t;
 
 iurs_t iusReceiveSettingsCreate
 (
-    char *pLabel,
     float sampleFrequency,
     int numDelays,
     int numSamplesPerLine,
@@ -29,12 +28,6 @@ int iusReceiveSettingsCompare
 (
     iurs_t reference,
     iurs_t actual
-);
-
-// Getters
-char *iusReceiveSettingsGetLabel
-(
-    iurs_t iusReceiveSettings
 );
 
 float iusReceiveSettingsGetSampleFrequency

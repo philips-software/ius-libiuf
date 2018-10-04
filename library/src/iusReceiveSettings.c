@@ -18,7 +18,6 @@
 struct IusReceiveSettings
 {
     iutgc_t  TGC;                   /**< TimeGainControl points (time,gain) */
-    char    *pLabel;
     float    sampleFrequency;       /**< The sampling frequency that was used */
     int      numDelays;           // should be identical to the number of pulses
     float   *startDelay;            /**< The start delay of RFlines, array length is the number of pulses per frame, values are in seconds */
@@ -28,27 +27,18 @@ struct IusReceiveSettings
 // ADT
 iurs_t iusReceiveSettingsCreate
 (
-    char *pLabel,
     float sampleFrequency,
     int numDelays,
     int numSamplesPerLine,
     int numTGCentries
 )
 {
-    if( pLabel == NULL ) return NULL;
-    if( strcmp(pLabel,"") == 0 ) return NULL;
     if( sampleFrequency <= 0.0f ) return IURS_INVALID;
     if( numDelays <= 0 ) return IURS_INVALID;
     if( numSamplesPerLine < 0 ) return IURS_INVALID;
     if( numTGCentries <= 0 ) return IURS_INVALID;
 
 	iurs_t created = calloc(1,sizeof(IusReceiveSettings));
-	created->pLabel = NULL;
-	created->pLabel = strdup(pLabel);
-	if (created->pLabel == NULL)
-	{
-		return NULL;
-	}
     created->sampleFrequency = sampleFrequency;
     created->startDelay = (float *) calloc(numDelays, sizeof(float));
     created->numSamplesPerLine = numSamplesPerLine;
@@ -65,7 +55,6 @@ int iusReceiveSettingsDelete
     int status = IUS_ERR_VALUE;
     if(iusReceiveSettings != NULL)
     {
-        free(iusReceiveSettings->pLabel);
         free(iusReceiveSettings->startDelay);
         free(iusReceiveSettings);
         status = IUS_E_OK;
@@ -84,7 +73,6 @@ int iusReceiveSettingsCompare
     int i;
     if( reference == actual ) return IUS_TRUE;
     if( reference == NULL || actual == NULL ) return IUS_FALSE;
-    if( strcmp(reference->pLabel,actual->pLabel) != 0 ) return IUS_FALSE;
     if( IUS_EQUAL_FLOAT(reference->sampleFrequency, actual->sampleFrequency ) == IUS_FALSE ) return IUS_FALSE;
     if( reference->numSamplesPerLine != actual->numSamplesPerLine ) return IUS_FALSE;
     for (i=0;i<reference->numDelays;i++)
@@ -102,15 +90,6 @@ iutgc_t iusReceiveSettingsGetTGC
 {
     if(iusReceiveSettings == NULL) return IUTGC_INVALID;
     return iusReceiveSettings->TGC;
-}
-
-char *iusReceiveSettingsGetLabel
-(
-    iurs_t iusReceiveSettings
-)
-{
-    if(iusReceiveSettings == NULL) return NULL;
-    return iusReceiveSettings->pLabel;
 }
 
 float iusReceiveSettingsGetSampleFrequency
@@ -185,7 +164,6 @@ int iusReceiveSettingsSave
 {
 	int status = 0;
 
-    status |= iusHdf5WriteString(handle, IUS_INPUTFILE_PATH_RECEIVESETTINGS_LABEL, iusReceiveSettings->pLabel);
     status |= iusHdf5WriteFloat(handle, IUS_INPUTFILE_PATH_RECEIVESETTINGS_SAMPLEFREQUENCY, &(iusReceiveSettings->sampleFrequency), 1);
     status |= iusHdf5WriteInt(handle, IUS_INPUTFILE_PATH_RECEIVESETTINGS_NUMDELAYS, &(iusReceiveSettings->numDelays), 1);
     status |= iusHdf5WriteInt(handle, IUS_INPUTFILE_PATH_RECEIVESETTINGS_NUMSAMPLESPERLINE, &(iusReceiveSettings->numSamplesPerLine), 1);
@@ -208,7 +186,6 @@ iurs_t iusReceiveSettingsLoad
     int numSamplesPerLine;
     int numTGCentries;
     int status=0;
-    char *label;
 	
     iutgc_t tgc;
     iurs_t iusReceiveSettings;
@@ -218,14 +195,13 @@ iurs_t iusReceiveSettingsLoad
     status |= iusHdf5ReadInt(handle, IUS_INPUTFILE_PATH_RECEIVESETTINGS_NUMSAMPLESPERLINE, &numSamplesPerLine);
     if ( status != 0 ) return IURS_INVALID;
 
-	status |= iusHdf5ReadString(handle, IUS_INPUTFILE_PATH_RECEIVESETTINGS_LABEL, (const char **)&label);
 	hid_t tgc_id = H5Gopen(handle, IUS_INPUTFILE_PATH_RECEIVESETTINGS_TGC, H5P_DEFAULT);
     tgc = iusTGCLoad(tgc_id);
 	H5Gclose(tgc_id);
     if ( tgc == IUTGC_INVALID ) return IURS_INVALID;
 
     numTGCentries = iusTGCGetNumValues(tgc);
-    iusReceiveSettings = iusReceiveSettingsCreate(label,sampleFrequency,numDelays,numSamplesPerLine,numTGCentries);
+    iusReceiveSettings = iusReceiveSettingsCreate(sampleFrequency,numDelays,numSamplesPerLine,numTGCentries);
 
     status |= iusHdf5ReadFloat(handle, IUS_INPUTFILE_PATH_RECEIVESETTINGS_STATRDELAY, iusReceiveSettings->startDelay); //todo: understand why startDelay is not in iusReceiveSettingsCreate
     if ( status != 0 )

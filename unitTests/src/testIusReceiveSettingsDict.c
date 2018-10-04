@@ -45,9 +45,9 @@ TEST(IusReceiveSettingsDict, testIusCompareSourceDict)
     int numTGCentries = 1;
     int status;
 
-    iurs_t obj = iusReceiveSettingsCreate(pObjLabel, sampleFrequency, numDelays, numSamplesPerLine, numTGCentries);
-    iurs_t notherObj = iusReceiveSettingsCreate(pNotherObjLabel, sampleFrequency, numDelays, numSamplesPerLine, numTGCentries);
-    iurs_t differentObj = iusReceiveSettingsCreate(pDifferentLabel, sampleFrequency, numDelays, numSamplesPerLine, numTGCentries+1);
+    iurs_t obj = iusReceiveSettingsCreate(sampleFrequency, numDelays, numSamplesPerLine, numTGCentries);
+    iurs_t notherObj = iusReceiveSettingsCreate(sampleFrequency, numDelays, numSamplesPerLine, numTGCentries);
+    iurs_t differentObj = iusReceiveSettingsCreate(sampleFrequency, numDelays, numSamplesPerLine, numTGCentries+1);
 
     // Create
     iursd_t  dict = iusReceiveSettingsDictCreate();
