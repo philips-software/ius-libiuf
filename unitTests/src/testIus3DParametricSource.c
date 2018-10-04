@@ -22,7 +22,6 @@ TEST_TEAR_DOWN(Ius3DParametricSource)
 {
 }
 
-
 TEST(Ius3DParametricSource, testIus3DParametricSourceCreate)
 {
     float angularDelta = 0.13f;
@@ -30,20 +29,19 @@ TEST(Ius3DParametricSource, testIus3DParametricSourceCreate)
     float startAngle = 3.14f;
     float startPhi = startAngle;
     float deltaPhi = angularDelta;
-    char *pLabel = "label for 3d parametric source";
     int numLocations = 5 ;
 
-    iu3dps_t obj = ius3DParametricSourceCreate(pLabel, numLocations, FNumber, angularDelta, startAngle, deltaPhi, startPhi);
-    iu3dps_t notherObj = ius3DParametricSourceCreate(pLabel, numLocations, FNumber, angularDelta, startAngle, deltaPhi, startPhi);
+    iu3dps_t obj = ius3DParametricSourceCreate(numLocations, FNumber, angularDelta, startAngle, deltaPhi, startPhi);
+    iu3dps_t notherObj = ius3DParametricSourceCreate(numLocations, FNumber, angularDelta, startAngle, deltaPhi, startPhi);
     TEST_ASSERT(obj != IU3DPS_INVALID);
     TEST_ASSERT(notherObj != IU3DPS_INVALID);
     ius3DParametricSourceDelete(obj);
     ius3DParametricSourceDelete(notherObj);
 
     // invalid params
-    obj = ius3DParametricSourceCreate(NULL, 0, -1, 2.0f, 0, 0, 0);
+    obj = ius3DParametricSourceCreate(0, -1, 2.0f, 0, 0, 0);
     TEST_ASSERT(obj == IU3DPS_INVALID);
-    obj = ius3DParametricSourceCreate(NULL, 0, 1, -2.0f, 0, 0, 0);
+    obj = ius3DParametricSourceCreate(0, 1, -2.0f, 0, 0, 0);
     TEST_ASSERT(obj == IU3DPS_INVALID);
 }
 
@@ -54,10 +52,9 @@ TEST(Ius3DParametricSource, testIus3DParametricSourceDelete)
     float startAngle = 3.14f;
     float startPhi = startAngle;
     float deltaPhi = angularDelta;
-    char *pLabel = "label for 3d parametric source";
     int numLocations = 5;
 
-    iu3dps_t obj = ius3DParametricSourceCreate(pLabel, numLocations, FNumber, angularDelta, startAngle, deltaPhi, startPhi);
+    iu3dps_t obj = ius3DParametricSourceCreate(numLocations, FNumber, angularDelta, startAngle, deltaPhi, startPhi);
     TEST_ASSERT(obj != IU3DPS_INVALID);
     int status = ius3DParametricSourceDelete(obj);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
@@ -77,13 +74,12 @@ TEST(Ius3DParametricSource, testIus3DParametricSourceCompare)
     float startAngle = 3.14f;
     float startPhi = startAngle;
     float deltaPhi = angularDelta;
-    char *pLabel = "label for 3d parametric source";
     int numLocations = 5;
 
-    iu3dps_t obj = ius3DParametricSourceCreate(pLabel, numLocations, FNumber, angularDelta, startAngle, deltaPhi, startPhi);
-    iu3dps_t notherObj = ius3DParametricSourceCreate(pLabel, numLocations, FNumber, angularDelta, startAngle, deltaPhi, startPhi);
+    iu3dps_t obj = ius3DParametricSourceCreate(numLocations, FNumber, angularDelta, startAngle, deltaPhi, startPhi);
+    iu3dps_t notherObj = ius3DParametricSourceCreate(numLocations, FNumber, angularDelta, startAngle, deltaPhi, startPhi);
     iu3dps_t differentObj =
-    ius3DParametricSourceCreate(pLabel, numLocations, FNumber + 0.01f, angularDelta, startAngle, deltaPhi, startPhi);
+    ius3DParametricSourceCreate(numLocations, FNumber + 0.01f, angularDelta, startAngle, deltaPhi, startPhi);
     TEST_ASSERT(obj != IU3DPS_INVALID);
     TEST_ASSERT(notherObj != IU3DPS_INVALID);
     equal = ius3DParametricSourceCompare(obj,obj);
@@ -122,10 +118,9 @@ TEST(Ius3DParametricSource, testIus3DParametricSourceSetGet)
     float startAngle = 3.14f;
     float startPhi = startAngle;
     float deltaPhi = angularDelta;
-    char *pLabel = "label for 3d parametric source";
     int p,numLocations = 5;
 
-    iu3dps_t obj = ius3DParametricSourceCreate(pLabel, numLocations, FNumber, angularDelta, startAngle, deltaPhi, startPhi);
+    iu3dps_t obj = ius3DParametricSourceCreate(numLocations, FNumber, angularDelta, startAngle, deltaPhi, startPhi);
 
     TEST_ASSERT_EQUAL_FLOAT(FNumber,ius3DParametricSourceGetFNumber(obj));
     TEST_ASSERT_EQUAL_FLOAT(angularDelta,ius3DParametricSourceGetAngularDelta(obj));
@@ -159,21 +154,18 @@ TEST(Ius3DParametricSource, testIus3DParametricSourceSetGet)
 TEST(Ius3DParametricSource, testIus3DParametricSourceSerialization)
 {
     char *filename = "testIus3DParametricSourceSerialization.hdf5";
-    //char *sourcePath =  "/3DParametricSource";
 
-    //IUS_BOOL equal;
     float angularDelta = 0.13f;
     float FNumber = -0.955f;
     float startAngle = 3.14f;
     float startPhi = startAngle;
     float deltaPhi = angularDelta;
-    char *pLabel = "label for 3d parametric source";
     int p, numLocations = 5, status;
 
 
     // create
     iu3dps_t
-    obj = ius3DParametricSourceCreate(pLabel, numLocations, FNumber, angularDelta, startAngle, deltaPhi, startPhi);
+    obj = ius3DParametricSourceCreate(numLocations, FNumber, angularDelta, startAngle, deltaPhi, startPhi);
 
     // fill
     TEST_ASSERT_EQUAL_FLOAT(FNumber, ius3DParametricSourceGetFNumber(obj));
@@ -197,7 +189,7 @@ TEST(Ius3DParametricSource, testIus3DParametricSourceSerialization)
 
     // read back
     handle = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT );
-    iu3dps_t savedObj = ius3DParametricSourceLoad(handle, pLabel);
+    iu3dps_t savedObj = ius3DParametricSourceLoad(handle);
     H5Fclose(handle);
 
     TEST_ASSERT_EQUAL(IUS_TRUE, ius3DParametricSourceCompare(obj,savedObj));

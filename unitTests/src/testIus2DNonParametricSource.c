@@ -25,29 +25,27 @@ TEST_TEAR_DOWN(Ius2DNonParametricSource)
 
 TEST(Ius2DNonParametricSource, testIus2DNonParametricSourceCreate)
 {
-    char *pLabel = "label for 2d parametric source";
     int numLocations = 5 ;
 
-    iu2dnps_t obj = ius2DNonParametricSourceCreate(pLabel, numLocations);
-    iu2dnps_t notherObj = ius2DNonParametricSourceCreate(pLabel, numLocations);
+    iu2dnps_t obj = ius2DNonParametricSourceCreate(numLocations);
+    iu2dnps_t notherObj = ius2DNonParametricSourceCreate(numLocations);
     TEST_ASSERT(obj != IU2DNPS_INVALID);
     TEST_ASSERT(notherObj != IU2DNPS_INVALID);
     ius2DNonParametricSourceDelete(obj);
     ius2DNonParametricSourceDelete(notherObj);
 
     // invalid params
-    obj = ius2DNonParametricSourceCreate(NULL, 0);
+    obj = ius2DNonParametricSourceCreate(0);
     TEST_ASSERT(obj == IU2DNPS_INVALID);
-    obj = ius2DNonParametricSourceCreate(NULL, 0);
+    obj = ius2DNonParametricSourceCreate(0);
     TEST_ASSERT(obj == IU2DNPS_INVALID);
 }
 
 TEST(Ius2DNonParametricSource, testIus2DNonParametricSourceDelete)
 {
-    char *pLabel = "label for 2d parametric source";
     int numLocations = 5;
 
-    iu2dnps_t obj = ius2DNonParametricSourceCreate(pLabel, numLocations);
+    iu2dnps_t obj = ius2DNonParametricSourceCreate(numLocations);
     TEST_ASSERT(obj != IU2DNPS_INVALID);
     int status = ius2DNonParametricSourceDelete(obj);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
@@ -62,13 +60,11 @@ TEST(Ius2DNonParametricSource, testIus2DNonParametricSourceDelete)
 TEST(Ius2DNonParametricSource, testIus2DNonParametricSourceCompare)
 {
     IUS_BOOL equal;
-    char *pLabel = "label for 2d parametric source";
     int numLocations = 5;
 
-    iu2dnps_t obj = ius2DNonParametricSourceCreate(pLabel, numLocations);
-    iu2dnps_t notherObj = ius2DNonParametricSourceCreate(pLabel, numLocations);
-    iu2dnps_t differentObj =
-    ius2DNonParametricSourceCreate(pLabel, numLocations+2);
+    iu2dnps_t obj = ius2DNonParametricSourceCreate(numLocations);
+    iu2dnps_t notherObj = ius2DNonParametricSourceCreate(numLocations);
+    iu2dnps_t differentObj = ius2DNonParametricSourceCreate(numLocations+2);
     TEST_ASSERT(obj != IU2DNPS_INVALID);
     TEST_ASSERT(notherObj != IU2DNPS_INVALID);
     equal = ius2DNonParametricSourceCompare(obj,obj);
@@ -101,11 +97,9 @@ TEST(Ius2DNonParametricSource, testIus2DNonParametricSourceCompare)
 
 TEST(Ius2DNonParametricSource, testIus2DNonParametricSourceSetGet)
 {
-    //IUS_BOOL equal;
-    char *pLabel = "label for 2d parametric source";
     int p,numLocations = 5;
 
-    iu2dnps_t obj = ius2DNonParametricSourceCreate(pLabel, numLocations);
+    iu2dnps_t obj = ius2DNonParametricSourceCreate(numLocations);
 
     // Set/Get location test
     for(p=0; p<numLocations; p++)
@@ -115,8 +109,6 @@ TEST(Ius2DNonParametricSource, testIus2DNonParametricSourceSetGet)
         iu2dp_t get = ius2DNonParametricSourceGetPosition(obj,p);
         TEST_ASSERT_EQUAL(IUS_TRUE, ius2DPositionCompare(pos,get));
     }
-
-
 
     // invalid param
     TEST_ASSERT_EQUAL(IU2DP_INVALID, ius2DNonParametricSourceGetPosition(NULL,0));
@@ -128,19 +120,16 @@ TEST(Ius2DNonParametricSource, testIus2DNonParametricSourceSetGet)
 TEST(Ius2DNonParametricSource, testIus2DNonParametricSourceSerialization)
 {
     char *filename = "testIus2DNonParametricSourceSerialization.hdf5";
-    //char *sourcePath =  "/2DNonParametricSource";
 
-    //IUS_BOOL equal;
     float angularDelta = 0.13f;
     float FNumber = -0.955f;
     float startAngle = 3.14f;
-    char *pLabel = "label for 2d parametric source";
     int p, numLocations = 5, status;
 
 
     // create
     iu2dnps_t
-    obj = ius2DNonParametricSourceCreate(pLabel, numLocations);
+    obj = ius2DNonParametricSourceCreate(numLocations);
 
     // fill
     for (p = 0; p < numLocations; p++)
@@ -160,13 +149,12 @@ TEST(Ius2DNonParametricSource, testIus2DNonParametricSourceSerialization)
 
     // read back
     handle = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT );
-    iu2dnps_t savedObj = ius2DNonParametricSourceLoad(handle, pLabel);
+    iu2dnps_t savedObj = ius2DNonParametricSourceLoad(handle);
     H5Fclose(handle);
 
     TEST_ASSERT_EQUAL(IUS_TRUE, ius2DNonParametricSourceCompare(obj,savedObj));
     ius2DNonParametricSourceDelete(obj);
     ius2DNonParametricSourceDelete(savedObj);
-
 }
 
 TEST_GROUP_RUNNER(Ius2DNonParametricSource)

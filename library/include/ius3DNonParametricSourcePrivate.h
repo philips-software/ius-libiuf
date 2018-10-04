@@ -17,8 +17,7 @@ int ius3DNonParametricSourceSave
 
 iu3dnps_t ius3DNonParametricSourceLoad
 (
-    hid_t handle,
-    char *label
+    hid_t handle
 );
 
 #endif //IUSLIBRARY_IUSHL3DNONPARAMETRICSOURCEIMP_H

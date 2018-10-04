@@ -16,8 +16,7 @@ int ius2DParametricSourceSave
 
 iu2dps_t ius2DParametricSourceLoad
 (
-    hid_t handle,
-    char *label
+    hid_t handle
 );
 
 

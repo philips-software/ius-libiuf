@@ -12,7 +12,6 @@ typedef Ius3DNonParametricSource *iu3dnps_t;
 
 iu3dnps_t ius3DNonParametricSourceCreate
 (
-    char *pLabel,
     int numLocations
 );
 

@@ -219,10 +219,10 @@ int iusHistoryNodeSetInstanceData
 }
 
 #define NODE_ID "ID"
-#define NODE_TYPE "type"
-#define NODE_NUMBER_OF_PARENTS "numberOfParents"
-#define NODE_NUMBER_OF_PARAMETERS "numberOfParameters"
-#define NODE_PARAMETERS "nodeParameters"
+#define NODE_TYPE "Type"
+#define NODE_NUMBER_OF_PARENTS "NumParents"
+#define NODE_NUMBER_OF_PARAMETERS "NumParameters"
+#define NODE_PARAMETERS "NodeParameters"
 
 
 //if (strcmp(iusHistoryNodeGetType(file->history),IUS_INPUT_TYPE)==0)

@@ -51,7 +51,6 @@ IUS_BOOL iusBaseSourceCompare
     if ( reference == actual ) return IUS_TRUE;
     if ( reference == NULL || actual == NULL ) return IUS_FALSE;
     if ( reference->type != actual->type ) return IUS_FALSE;
-    if ( strcmp(reference->label,actual->label) != 0 ) return IUS_FALSE;
     return IUS_TRUE;
 }
 
@@ -106,18 +105,6 @@ IusSourceType iusSourceGetType
     return iusSource->type;
 }
 
-char * iusSourceGetLabel
-(
-    ius_t iusSource
-)
-{
-    if( iusSource == IUS_INVALID )
-    {
-        return NULL;
-    }
-    return iusSource->label;
-}
-
 // Serialization
 #define TOSTR(x)    #x
 static herr_t iusWriteSourceType
@@ -147,7 +134,6 @@ static herr_t iusWriteSourceType
     status |= H5LTmake_dataset( group_id, pVariableString, 1, dims, hdf_sourceType, &enumValue );
     return status;
 }
-
 
 static int iusReadSourceType
 (
@@ -190,19 +176,16 @@ int iusBaseSourceSave
         return IUS_ERR_VALUE;
     }
     status |= iusWriteSourceType(handle, IUS_INPUTFILE_PATH_SOURCE_SOURCETYPE, source->type);
-    status |= iusHdf5WriteString(handle, IUS_INPUTFILE_PATH_SOURCE_SOURCELABEL, source->label);
     return status;
 }
 
 static ius_t iusSourceCreate
 (
-    IusSourceType type,
-    const char *label
+    IusSourceType type
 )
 {
     ius_t source = (ius_t) calloc (1,sizeof(ius_t));
     if(source == NULL) return IUS_INVALID;
-    source->label = strdup(label);
     source->type = type;
     return source;
 }
@@ -215,14 +198,12 @@ ius_t iusBaseSourceLoad
 {
     int status = 0;
     IusSourceType type;
-    const char *label;
     
     status = iusReadSourceType( handle, IUS_INPUTFILE_PATH_SOURCE_SOURCETYPE, &(type));
-    status |= iusHdf5ReadString( handle, IUS_INPUTFILE_PATH_SOURCE_SOURCELABEL, &(label));  //todo find out when+how this string is freed
     if( status < 0 )
         return NULL;
 
-    return iusSourceCreate(type, label);
+    return iusSourceCreate(type);
 }
 
 ius_t iusSourceLoad
@@ -239,22 +220,22 @@ ius_t iusSourceLoad
     {
         case IUS_2D_NON_PARAMETRIC_SOURCE:
         {
-            source = (ius_t) ius2DNonParametricSourceLoad(handle, source->label);
+            source = (ius_t) ius2DNonParametricSourceLoad(handle);
             break;
         }
         case IUS_2D_PARAMETRIC_SOURCE:
         {
-            source = (ius_t) ius2DParametricSourceLoad(handle, source->label);
+            source = (ius_t) ius2DParametricSourceLoad(handle);
             break;
         }
         case IUS_3D_NON_PARAMETRIC_SOURCE:
         {
-            source = (ius_t) ius3DNonParametricSourceLoad(handle, source->label);
+            source = (ius_t) ius3DNonParametricSourceLoad(handle);
             break;
         }
         case IUS_3D_PARAMETRIC_SOURCE:
         {
-            source = (ius_t) ius3DParametricSourceLoad(handle, source->label);
+            source = (ius_t) ius3DParametricSourceLoad(handle);
             break;
         }
         case IUS_INVALID_SOURCE_TYPE:
@@ -276,35 +257,23 @@ int iusSourceSave
     {
         return IUS_ERR_VALUE;
     }
-
-	hid_t sources_id;
-	int status = H5Gget_objinfo(handle, IUS_INPUTFILE_PATH_SOURCEDICT, 0, NULL); // todo centralize the path "Sources"
-	if (status != 0) // the group does not exist yet
-	{
-		sources_id = H5Gcreate(handle, IUS_INPUTFILE_PATH_SOURCEDICT, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-	}
-	else
-	{
-		sources_id = H5Gopen(handle, IUS_INPUTFILE_PATH_SOURCEDICT, H5P_DEFAULT);
-	}
-	hid_t label_id = H5Gcreate(sources_id, source->label, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
     switch (source->type)
     {
         case IUS_2D_NON_PARAMETRIC_SOURCE:
         {
-            return ius2DNonParametricSourceSave((iu2dnps_t) source, label_id);
+            return ius2DNonParametricSourceSave((iu2dnps_t) source, handle);
         }
         case IUS_2D_PARAMETRIC_SOURCE:
         {
-            return ius2DParametricSourceSave((iu2dps_t) source, label_id);
+            return ius2DParametricSourceSave((iu2dps_t) source, handle);
         }
         case IUS_3D_NON_PARAMETRIC_SOURCE:
         {
-            return ius3DNonParametricSourceSave((iu3dnps_t) source, label_id);
+            return ius3DNonParametricSourceSave((iu3dnps_t) source, handle);
         }
         case IUS_3D_PARAMETRIC_SOURCE:
         {
-            return ius3DParametricSourceSave((iu3dps_t) source, label_id);
+            return ius3DParametricSourceSave((iu3dps_t) source, handle);
         }
         case IUS_INVALID_SOURCE_TYPE:
             break;

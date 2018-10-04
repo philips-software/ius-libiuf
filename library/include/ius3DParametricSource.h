@@ -12,7 +12,6 @@ typedef Ius3DParametricSource *iu3dps_t;
 
 iu3dps_t ius3DParametricSourceCreate
 (
-    char *pLabel,
     int numLocations,
     float fNumber,
     float deltaTheta,

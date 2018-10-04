@@ -43,7 +43,6 @@ struct Ius3DParametricSource
 // ADT
 iu3dps_t ius3DParametricSourceCreate
 (
-    char *pLabel,
     int numLocations,
     float fNumber,
     float angularDelta,
@@ -52,8 +51,6 @@ iu3dps_t ius3DParametricSourceCreate
     float startPhi
 )
 {
-    if ( pLabel == NULL ) return NULL;
-    if ( strcmp(pLabel,"") == 0 ) return NULL;
     if ( numLocations <= 0 ) return  NULL;
     iu3dps_t created = calloc(1,sizeof(Ius3DParametricSource));
     if( created == NULL ) return NULL;
@@ -66,7 +63,6 @@ iu3dps_t ius3DParametricSourceCreate
     }
 
     created->base.type = IUS_3D_PARAMETRIC_SOURCE;
-	created->base.label = strdup(pLabel);
     created->locationCount = numLocations;
     created->angularDelta = angularDelta;
     created->startAngle = startAngle;
@@ -333,8 +329,7 @@ int ius3DParametricSourceSave
 
 iu3dps_t ius3DParametricSourceLoad
 (
-    hid_t handle,
-    char *label
+    hid_t handle
 )
 {
     int status = 0;
@@ -356,7 +351,7 @@ iu3dps_t ius3DParametricSourceLoad
     if (status < 0)
         return NULL;
 
-    source = ius3DParametricSourceCreate(label,locationCount,fNumber,angularDelta,startAngle,deltaPhi,startPhi);
+    source = ius3DParametricSourceCreate(locationCount,fNumber,angularDelta,startAngle,deltaPhi,startPhi);
     status = ius3DParametricSourceLoadLocations(source, handle);
     if (status <-0)
         return NULL;

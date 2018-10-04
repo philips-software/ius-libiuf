@@ -29,12 +29,9 @@ struct Ius2DNonParametricSource
 // ADT
 iu2dnps_t ius2DNonParametricSourceCreate
 (
-    char *pLabel,
     int numLocations
 )
 {
-    if ( pLabel == NULL ) return NULL;
-    if ( strcmp(pLabel,"") == 0 ) return NULL;
     if ( numLocations <= 0 ) return  NULL;
     iu2dnps_t created = calloc(1,sizeof(Ius2DNonParametricSource));
     if( created == NULL ) return NULL;
@@ -47,7 +44,6 @@ iu2dnps_t ius2DNonParametricSourceCreate
     }
 
     created->base.type = IUS_2D_NON_PARAMETRIC_SOURCE;
-    created->base.label = strdup(pLabel);
     created->locationCount = numLocations;
     return created;
 }
@@ -192,8 +188,7 @@ int ius2DNonParametricSourceSave
 
 iu2dnps_t ius2DNonParametricSourceLoad
 (
-    hid_t handle,
-    char *label
+    hid_t handle
 )
 {
     int locationCount;
@@ -203,7 +198,7 @@ iu2dnps_t ius2DNonParametricSourceLoad
     if (status < 0)
         return NULL;
 
-    source = ius2DNonParametricSourceCreate(label,locationCount);
+    source = ius2DNonParametricSourceCreate(locationCount);
     status = ius2DNonParametricSourceLoadLocations(source, handle);
     if (status <-0)
         return NULL;

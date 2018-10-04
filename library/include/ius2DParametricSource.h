@@ -12,7 +12,6 @@ typedef Ius2DParametricSource *iu2dps_t;
 
 iu2dps_t ius2DParametricSourceCreate
 (
-    char *pLabel,
     int numLocations,
     float fNumber,
     float deltaTheta,

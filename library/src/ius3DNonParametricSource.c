@@ -27,12 +27,9 @@ struct Ius3DNonParametricSource
 // ADT
 iu3dnps_t ius3DNonParametricSourceCreate
 (
-    char *pLabel,
     int numLocations
 )
 {
-    if ( pLabel == NULL ) return NULL;
-    if ( strcmp(pLabel,"") == 0 ) return NULL;
     if ( numLocations <= 0 ) return  NULL;
     iu3dnps_t created = calloc(1,sizeof(Ius3DNonParametricSource));
     if( created == NULL ) return NULL;
@@ -45,7 +42,6 @@ iu3dnps_t ius3DNonParametricSourceCreate
     }
 
     created->base.type = IUS_3D_NON_PARAMETRIC_SOURCE;
-    created->base.label = strdup(pLabel);
     created->locationCount = numLocations;
     return created;
 }
@@ -187,8 +183,7 @@ int ius3DNonParametricSourceSave
 
 iu3dnps_t ius3DNonParametricSourceLoad
 (
-    hid_t handle,
-    char *label
+    hid_t handle
 )
 {
     int locationCount;
@@ -198,7 +193,7 @@ iu3dnps_t ius3DNonParametricSourceLoad
     if (status < 0)
         return NULL;
 
-    source = ius3DNonParametricSourceCreate(label,locationCount);
+    source = ius3DNonParametricSourceCreate(locationCount);
     status = ius3DNonParametricSourceLoadLocations(source, handle);
     if (status <-0)
         return NULL;

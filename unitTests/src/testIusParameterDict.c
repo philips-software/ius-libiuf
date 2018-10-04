@@ -78,7 +78,6 @@ TEST(IusParameterDict, testIusCompareParameterDict)
 
 TEST(IusParameterDict, testIusSerialization)
 {
-    IUS_BOOL equal;
 
     // create and fill
     iupad_t dict = dgGenerateParameterDict(100);
@@ -117,7 +116,6 @@ TEST(IusParameterDict, testIusSerialization)
 
 TEST(IusParameterDict, testIusSerializationErrorFlow)
 {
-    IUS_BOOL equal;
 
     // create and fill
     iupad_t dict = dgGenerateParameterDict(100);

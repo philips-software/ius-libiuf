@@ -32,15 +32,12 @@ struct Ius2DParametricSource
 // ADT
 iu2dps_t ius2DParametricSourceCreate
 (
-    char *pLabel,
     int numLocations,
     float fNumber,
     float angularDelta,
     float startAngle
 )
 {
-    if ( pLabel == NULL ) return NULL;
-    if ( strcmp(pLabel,"") == 0 ) return NULL;
     if ( numLocations <= 0 ) return  NULL;
     iu2dps_t created = calloc(1,sizeof(Ius2DParametricSource));
     if( created == NULL ) return NULL;
@@ -53,7 +50,6 @@ iu2dps_t ius2DParametricSourceCreate
     }
 
     created->base.type = IUS_2D_PARAMETRIC_SOURCE;
-    created->base.label = strdup(pLabel);
     created->locationCount = numLocations;
     created->angularDelta = angularDelta;
     created->startAngle = startAngle;
@@ -270,8 +266,7 @@ int ius2DParametricSourceSave
 
 iu2dps_t ius2DParametricSourceLoad
 (
-    hid_t handle,
-    char *label
+    hid_t handle
 )
 {
     int status = 0;
@@ -289,7 +284,7 @@ iu2dps_t ius2DParametricSourceLoad
     if (status < 0)
         return NULL;
 
-    source = ius2DParametricSourceCreate(label,locationCount,fNumber,angularDelta,startAngle);
+    source = ius2DParametricSourceCreate(locationCount,fNumber,angularDelta,startAngle);
 
     status = ius2DParametricSourceLoadLocations(source, handle);
     if (status <-0)

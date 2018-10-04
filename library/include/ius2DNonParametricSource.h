@@ -11,7 +11,6 @@ typedef Ius2DNonParametricSource *iu2dnps_t;
 
 iu2dnps_t ius2DNonParametricSourceCreate
 (
-    char *pLabel,
     int numLocations
 );
 

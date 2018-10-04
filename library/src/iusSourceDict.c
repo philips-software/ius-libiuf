@@ -74,7 +74,7 @@ static int iusSourceDictSourceInTarget
     for (iter = hashmap_iter(&source->map); iter; iter = hashmap_iter_next(&source->map, iter)) {
       iterElement = HashableSource_hashmap_iter_get_data(iter);
       sourceElement=iterElement->source;
-      targetElement = iusSourceDictGet(target, iusSourceGetLabel(sourceElement));
+      targetElement = iusSourceDictGet(target, iterElement->key);
       if( targetElement == IUS_INVALID)
         return IUS_FALSE;
 
@@ -163,20 +163,36 @@ int iusSourceDictSave
 
     int status=0;
     struct hashmap_iter *iter;
+	hid_t sources_id;
 
     if(dict == NULL)
         return IUS_ERR_VALUE;
     if(handle == H5I_INVALID_HID)
         return IUS_ERR_VALUE;
-
+	status = H5Gget_objinfo(handle, IUS_INPUTFILE_PATH_SOURCEDICT, 0, NULL); // todo centralize the path
+	if (status != 0) // the group does not exist yet
+	{
+		sources_id = H5Gcreate(handle, IUS_INPUTFILE_PATH_SOURCEDICT, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+	}
+	else
+	{
+		sources_id = H5Gopen(handle, IUS_INPUTFILE_PATH_SOURCEDICT, H5P_DEFAULT);
+	}
+	if (sources_id == H5I_INVALID_HID)
+		return IUS_ERR_VALUE;
+	status = 0;
     HashableSource *sourceElement;
 
     // iterate over source list elements and save'em
     for (iter = hashmap_iter(&dict->map); iter; iter = hashmap_iter_next(&dict->map, iter))
     {
         sourceElement = HashableSource_hashmap_iter_get_data(iter);
-        iusSourceSave(sourceElement->source, handle);
+		const char *sourceLabel = HashableSource_hashmap_iter_get_key(iter);
+		hid_t src_id = H5Gcreate(sources_id, sourceLabel, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+        iusSourceSave(sourceElement->source, src_id);
+		H5Gclose(src_id);
     }
+	H5Gclose(sources_id);
 
     return status;
 }

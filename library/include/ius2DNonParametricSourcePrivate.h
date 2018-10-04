@@ -17,8 +17,7 @@ int ius2DNonParametricSourceSave
 
 iu2dnps_t ius2DNonParametricSourceLoad
 (
-    hid_t handle,
-    char *label
+    hid_t handle
 );
 
 #endif //IUSLIBRARY_IUSHL2DNONPARAMETRICSOURCEIMP_H
