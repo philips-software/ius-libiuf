@@ -74,7 +74,7 @@ static int iusReceiveSettingsDictSourceInTarget
     for (iter = hashmap_iter(&source->map); iter; iter = hashmap_iter_next(&source->map, iter)) {
       iterElement = HashableReceiveSettings_hashmap_iter_get_data(iter);
       sourceElement=iterElement->receiveSettings;
-      targetElement = iusReceiveSettingsDictGet(target, iusReceiveSettingsGetLabel(sourceElement));
+      targetElement = iusReceiveSettingsDictGet(target, iterElement->key);
       if( targetElement == IURS_INVALID)
         return IUS_FALSE;
 

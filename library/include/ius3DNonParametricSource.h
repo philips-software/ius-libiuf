@@ -11,7 +11,9 @@ typedef Ius3DNonParametricSource *iu3dnps_t;
 #define  IU3DNPS_INVALID (iu3dnps_t) NULL
 
 iu3dnps_t ius3DNonParametricSourceCreate
-(int numLocations);
+(
+    int numLocations
+);
 
 
 int ius3DNonParametricSourceDelete

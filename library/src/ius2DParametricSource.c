@@ -65,8 +65,8 @@ int ius2DParametricSourceDelete
     int status = IUS_ERR_VALUE;
     if(ius2DParametricSource != NULL)
     {
-        free(ius2DParametricSource->pLocations);
         free(ius2DParametricSource);
+        ius2DParametricSource = NULL;
         status = IUS_E_OK;
     }
     return status;
@@ -198,8 +198,9 @@ static int ius2DParametricSourceSaveLocations
     char path[IUS_MAX_HDF5_PATH];
     iu2dp_t sourceElement;
 
+	hid_t locationList_id = H5Gcreate(handle, IUS_INPUTFILE_PATH_SOURCE_LOCATIONLIST, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
     int i,size = pSource->locationCount;
-    int status = iusHdf5WriteInt(handle, IUS_INPUTFILE_PATH_SOURCE_LISTSIZE, &(size), 1);
+    int status = iusHdf5WriteInt(locationList_id, IUS_INPUTFILE_PATH_SOURCE_LISTSIZE, &(size), 1);
 
 //  iterate over source list elements and save'em
     for (i=0;i < size;i++)
@@ -207,11 +208,12 @@ static int ius2DParametricSourceSaveLocations
         sourceElement = &pSource->pLocations[i];
         if(sourceElement == IU2DP_INVALID) continue;
 		sprintf(path, IUS_INPUTFILE_PATH_SOURCE_LOCATION, i);
-		location_id = H5Gcreate(handle, path, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+		location_id = H5Gcreate(locationList_id, path, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
         status = ius2DPositionSave(sourceElement, location_id);
 		H5Gclose(location_id);
         if(status != IUS_E_OK) break;
     }
+	H5Gclose(locationList_id);
     return status;
 }
 
@@ -224,11 +226,11 @@ static int ius2DParametricSourceLoadLocations
     int p,status=IUS_E_OK;
     char path[IUS_MAX_HDF5_PATH];
     iu2dp_t pos;
-
-    for (p = 0; p < source->locationCount; p++)
+	hid_t locationList_id = H5Gopen(handle, IUS_INPUTFILE_PATH_SOURCE_LOCATIONLIST, H5P_DEFAULT);
+    for (p = 0; p < source->locationCount; p++) // locationCount could be loaded from the handle, but is already know and set before... is this smart? 
     {
         sprintf(path, IUS_INPUTFILE_PATH_SOURCE_LOCATION, p);
-		hid_t location_id = H5Gopen(handle, path, H5P_DEFAULT);
+		hid_t location_id = H5Gopen(locationList_id, path, H5P_DEFAULT);
         pos = ius2DPositionLoad(location_id);
         if (pos == IU2DP_INVALID)
         {
@@ -238,6 +240,8 @@ static int ius2DParametricSourceLoadLocations
 		H5Gclose(location_id);
         ius2DParametricSourceSetPosition(source, pos, p);
     }
+	H5Gclose(locationList_id);
+
     return status;
 }
 
@@ -265,7 +269,9 @@ int ius2DParametricSourceSave
 
 
 iu2dps_t ius2DParametricSourceLoad
-(hid_t handle)
+(
+    hid_t handle
+)
 {
     int status = 0;
 
@@ -278,12 +284,13 @@ iu2dps_t ius2DParametricSourceLoad
     status |= iusHdf5ReadFloat(handle, IUS_INPUTFILE_PATH_SOURCE_FNUMBER, &(fNumber));
     status |= iusHdf5ReadFloat(handle, IUS_INPUTFILE_PATH_SOURCE_ANGULARDELTA, &(angularDelta));
     status |= iusHdf5ReadFloat(handle, IUS_INPUTFILE_PATH_SOURCE_STARTANGLE, &(startAngle));
-    status |= iusHdf5ReadInt(handle, IUS_INPUTFILE_PATH_SOURCE_LISTSIZE, &(locationCount));
+	hid_t locationList_id = H5Gopen(handle, IUS_INPUTFILE_PATH_SOURCE_LOCATIONLIST, H5P_DEFAULT);
+    status |= iusHdf5ReadInt(locationList_id, IUS_INPUTFILE_PATH_SOURCE_LISTSIZE, &(locationCount));
+	H5Gclose(locationList_id);
     if (status < 0)
         return NULL;
 
-    source = ius2DParametricSourceCreate(fNumber, angularDelta, startAngle, 0);
-
+    source = ius2DParametricSourceCreate(locationCount,fNumber,angularDelta,startAngle);
     status = ius2DParametricSourceLoadLocations(source, handle);
     if (status <-0)
         return NULL;

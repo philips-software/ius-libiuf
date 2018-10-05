@@ -56,7 +56,6 @@ int ius2DNonParametricSourceDelete
     int status = IUS_ERR_VALUE;
     if(ius2DNonParametricSource != NULL)
     {
-        free(ius2DNonParametricSource->pLocations);
         free(ius2DNonParametricSource);
         ius2DNonParametricSource = NULL;
         status = IUS_E_OK;
@@ -128,8 +127,9 @@ static int ius2DNonParametricSourceSaveLocations
     char path[IUS_MAX_HDF5_PATH];
     iu2dp_t sourceElement;
 
+	hid_t locationList_id = H5Gcreate(handle, IUS_INPUTFILE_PATH_SOURCE_LOCATIONLIST, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
     int i, size = pSource->locationCount;
-    int status = iusHdf5WriteInt(handle, IUS_INPUTFILE_PATH_SOURCE_LISTSIZE, &(size), 1);
+    int status = iusHdf5WriteInt(locationList_id, IUS_INPUTFILE_PATH_SOURCE_LISTSIZE, &(size), 1);
 
     // iterate over source list elements and save'em
     for (i=0;i < size;i++)
@@ -137,12 +137,13 @@ static int ius2DNonParametricSourceSaveLocations
         sourceElement = &pSource->pLocations[i];
         if(sourceElement == IU2DP_INVALID) continue;
 		sprintf(path, IUS_INPUTFILE_PATH_SOURCE_LOCATION, i);
-		location_id = H5Gcreate(handle, path, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+		location_id = H5Gcreate(locationList_id, path, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
         status = ius2DPositionSave(sourceElement, location_id);
 		H5Gclose(location_id);
         if(status != IUS_E_OK) break;
     }
 
+	H5Gclose(locationList_id);
     return status;
 }
 
@@ -155,11 +156,11 @@ static int ius2DNonParametricSourceLoadLocations
     int p, status = IUS_E_OK;
     char path[IUS_MAX_HDF5_PATH];
     iu2dp_t pos;
-
+	hid_t locationList_id = H5Gopen(handle, IUS_INPUTFILE_PATH_SOURCE_LOCATIONLIST, H5P_DEFAULT);
     for (p = 0; p < source->locationCount; p++)
     {
         sprintf(path, IUS_INPUTFILE_PATH_SOURCE_LOCATION, p);
-		hid_t location_id = H5Gopen(handle, path, H5P_DEFAULT);
+		hid_t location_id = H5Gopen(locationList_id, path, H5P_DEFAULT);
         pos = ius2DPositionLoad(location_id);
         if (pos == IU2DP_INVALID)
         {
@@ -169,6 +170,8 @@ static int ius2DNonParametricSourceLoadLocations
 		H5Gclose(location_id);
         ius2DNonParametricSourceSetPosition(source, pos, p);
     }
+	H5Gclose(locationList_id);
+
     return status;
 }
 
@@ -194,8 +197,9 @@ iu2dnps_t ius2DNonParametricSourceLoad
 {
     int locationCount;
     iu2dnps_t  source;
-
-    int status = iusHdf5ReadInt(handle, IUS_INPUTFILE_PATH_SOURCE_LISTSIZE, &(locationCount));
+	hid_t locationList_id = H5Gopen(handle, IUS_INPUTFILE_PATH_SOURCE_LOCATIONLIST, H5P_DEFAULT);
+    int status = iusHdf5ReadInt(locationList_id, IUS_INPUTFILE_PATH_SOURCE_LISTSIZE, &(locationCount));
+	H5Gclose(locationList_id);
     if (status < 0)
         return NULL;
 

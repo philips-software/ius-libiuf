@@ -30,16 +30,6 @@ struct Ius3DParametricSource
     float startPhi;         /**< angle in [rad] between sources */
 } ;
 
-//#define FNUMBER       "fNumber"
-//#define ANGULARDELTA  "angularDelta"
-//#define STARTANGLE    "startAngle"
-//#define DELTAPHI      "deltaPhi"
-//#define STARTPHI      "startPhi"
-//#define LOCATIONS     "Locations"
-
-//#define LOCATIONFMT     "Location[%d]"
-//#define LOCATIONSSIZEFMT "Size"
-
 // ADT
 iu3dps_t ius3DParametricSourceCreate
 (
@@ -52,11 +42,10 @@ iu3dps_t ius3DParametricSourceCreate
 )
 {
     if ( numLocations <= 0 ) return  NULL;
-
     iu3dps_t created = calloc(1,sizeof(Ius3DParametricSource));
     if( created == NULL ) return NULL;
 
-    created->pLocations = (struct Ius3DPosition *) calloc(numLocations, sizeof(struct Ius3DPosition));
+    created->pLocations = (struct Ius3DPosition *) calloc(numLocations, sizeof(Ius3DPosition));
     if( created->pLocations == NULL )
     {
         free(created);
@@ -81,8 +70,8 @@ int ius3DParametricSourceDelete
     int status = IUS_ERR_VALUE;
     if(ius3DParametricSource != NULL)
     {
-        free(ius3DParametricSource->pLocations);
         free(ius3DParametricSource);
+        ius3DParametricSource = NULL;
         status = IUS_E_OK;
     }
     return status;
@@ -256,9 +245,9 @@ static int ius3DParametricSourceSaveLocations
 	hid_t location_id;
     char path[IUS_MAX_HDF5_PATH];
     iu3dp_t sourceElement;
-
+	hid_t locationList_id = H5Gcreate(handle, IUS_INPUTFILE_PATH_SOURCE_LOCATIONLIST, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
     int i, size = pSource->locationCount;
-    int status = iusHdf5WriteInt(handle, IUS_INPUTFILE_PATH_SOURCE_LISTSIZE, &(size), 1);
+    int status = iusHdf5WriteInt(locationList_id, IUS_INPUTFILE_PATH_SOURCE_LISTSIZE, &(size), 1);
 
     // iterate over source list elements and save'em
     for (i=0;i < size;i++)
@@ -267,7 +256,7 @@ static int ius3DParametricSourceSaveLocations
         if(sourceElement == IU3DP_INVALID) 
 			continue;
         sprintf(path, IUS_INPUTFILE_PATH_SOURCE_LOCATION, i);
-		location_id = H5Gcreate(handle, path, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+		location_id = H5Gcreate(locationList_id, path, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
         status = ius3DPositionSave(sourceElement, location_id);
 		H5Gclose(location_id);
         if(status != IUS_E_OK) break;
@@ -285,12 +274,12 @@ static int ius3DParametricSourceLoadLocations
     int p, status = IUS_E_OK;
     char path[IUS_MAX_HDF5_PATH];
     iu3dp_t pos;
-
-    status = iusHdf5ReadInt(handle, IUS_INPUTFILE_PATH_SOURCE_LISTSIZE, &(source->locationCount));
+	hid_t locationList_id = H5Gopen(handle, IUS_INPUTFILE_PATH_SOURCE_LOCATIONLIST, H5P_DEFAULT);
+    status = iusHdf5ReadInt(locationList_id, IUS_INPUTFILE_PATH_SOURCE_LISTSIZE, &(source->locationCount));
     for (p = 0; p < source->locationCount; p++)
     {
         sprintf(path, IUS_INPUTFILE_PATH_SOURCE_LOCATION, p);
-		hid_t location_id = H5Gopen(handle, path, H5P_DEFAULT);
+		hid_t location_id = H5Gopen(locationList_id, path, H5P_DEFAULT);
         pos = ius3DPositionLoad(location_id);
         if (pos == IU3DP_INVALID)
         {
@@ -299,8 +288,8 @@ static int ius3DParametricSourceLoadLocations
         }
 		H5Gclose(location_id);
         ius3DParametricSourceSetPosition(source, pos, p);
-        ius3DPositionDelete(pos);
     }
+	H5Gclose(locationList_id);
     return status;
 }
 
@@ -349,11 +338,13 @@ iu3dps_t ius3DParametricSourceLoad
     status |= iusHdf5ReadFloat( handle, IUS_INPUTFILE_PATH_SOURCE_STARTANGLE, &(startAngle));
     status |= iusHdf5ReadFloat( handle, IUS_INPUTFILE_PATH_SOURCE_DELTAPHI, &(deltaPhi));
     status |= iusHdf5ReadFloat( handle, IUS_INPUTFILE_PATH_SOURCE_STARTPHI, &(startPhi));
-	status |= iusHdf5ReadInt(handle, IUS_INPUTFILE_PATH_SOURCE_LISTSIZE, &(locationCount));
+	hid_t locationList_id = H5Gopen(handle, IUS_INPUTFILE_PATH_SOURCE_LOCATIONLIST, H5P_DEFAULT);
+	status |= iusHdf5ReadInt(locationList_id, IUS_INPUTFILE_PATH_SOURCE_LISTSIZE, &(locationCount));
+	H5Gclose(locationList_id);
     if (status < 0)
         return NULL;
 
-    source = ius3DParametricSourceCreate(locationCount, fNumber, angularDelta, startAngle, deltaPhi, startPhi);
+    source = ius3DParametricSourceCreate(locationCount,fNumber,angularDelta,startAngle,deltaPhi,startPhi);
     status = ius3DParametricSourceLoadLocations(source, handle);
     if (status <-0)
         return NULL;

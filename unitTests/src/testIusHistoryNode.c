@@ -136,7 +136,6 @@ TEST(IusHistoryNode, testIusHistoryNodeSetGet)
 
 TEST(IusHistoryNode, testIusHistoryNodeSerialize)
 {
-    IUS_BOOL equal;
 
     // create and fill
     iuhn_t historyNode = dgGenerateHistoryNode();

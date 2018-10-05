@@ -76,7 +76,7 @@ static int iusPulseDictSourceInTarget
     for (iter = hashmap_iter(&source->map); iter; iter = hashmap_iter_next(&source->map, iter)) {
       iterElement = HashablePulse_hashmap_iter_get_data(iter);
       sourceElement=iterElement->pulse;
-      targetElement = iusPulseDictGet(target, iusPulseGetLabel(sourceElement));
+      targetElement = iusPulseDictGet(target, iterElement->key);
       if( targetElement == IUP_INVALID)
         return IUS_FALSE;
 

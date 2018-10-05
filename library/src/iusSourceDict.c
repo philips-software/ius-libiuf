@@ -26,7 +26,6 @@ typedef struct HashableSource HashableSource;
 struct IusSourceDict
 {
     struct hashmap map;
-    IUS_BOOL loadedFromFile;
 } ;
 
 /* Declare type-specific blob_hashmap_* functions with this handy macro */
@@ -42,7 +41,6 @@ iusd_t iusSourceDictCreate
     {
       hashmap_init(&list->map, hashmap_hash_string, hashmap_compare_string, 0);
     }
-    list->loadedFromFile = IUS_FALSE;
     return list;
 }
 
@@ -53,17 +51,6 @@ int iusSourceDictDelete
 {
     if(dict == NULL) return IUS_ERR_VALUE;
     /* Free all allocated resources associated with map and reset its state */
-    HashableSource *iterElement;
-    struct hashmap_iter *iter;
-    // iterate over source list elements using the hash double linked list
-    for (iter = hashmap_iter(&dict->map); iter; iter = hashmap_iter_next(&dict->map, iter)) {
-        iterElement = HashableSource_hashmap_iter_get_data(iter);
-        if (dict->loadedFromFile == IUS_TRUE)
-        {
-            iusSourceDelete(iterElement->source);
-        }
-        free(iterElement);
-    }
     hashmap_destroy(&dict->map);
     free(dict);
     return IUS_E_OK;
@@ -82,23 +69,21 @@ static int iusSourceDictSourceInTarget
 
     IUS_BOOL sourceInTarget = IUS_FALSE;
     struct hashmap_iter *iter;
-    char *key;
 
     // iterate over source list elements using the hash double linked list
     for (iter = hashmap_iter(&source->map); iter; iter = hashmap_iter_next(&source->map, iter)) {
-        iterElement = HashableSource_hashmap_iter_get_data(iter);
-        sourceElement=iterElement->source;
-        key = (char *) HashableSource_hashmap_iter_get_key(iter);
-        targetElement = iusSourceDictGet(target, key);
-        if( targetElement == IUS_INVALID)
-            return IUS_FALSE;
+      iterElement = HashableSource_hashmap_iter_get_data(iter);
+      sourceElement=iterElement->source;
+      targetElement = iusSourceDictGet(target, iterElement->key);
+      if( targetElement == IUS_INVALID)
+        return IUS_FALSE;
 
-        if( iusSourceCompare(sourceElement, targetElement) == IUS_FALSE )
-            return IUS_FALSE;
-        sourceInTarget = IUS_TRUE;
+      if( iusSourceCompare(sourceElement, targetElement) == IUS_FALSE )
+        return IUS_FALSE;
+      sourceInTarget = IUS_TRUE;
     }
 
-    return sourceInTarget;
+  return sourceInTarget;
 }
 
 // operations
@@ -178,24 +163,42 @@ int iusSourceDictSave
 
     int status=0;
     struct hashmap_iter *iter;
+	hid_t sources_id;
 
     if(dict == NULL)
         return IUS_ERR_VALUE;
     if(handle == H5I_INVALID_HID)
         return IUS_ERR_VALUE;
-
+	status = H5Gget_objinfo(handle, IUS_INPUTFILE_PATH_SOURCEDICT, 0, NULL); // todo centralize the path
+	if (status != 0) // the group does not exist yet
+	{
+		sources_id = H5Gcreate(handle, IUS_INPUTFILE_PATH_SOURCEDICT, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+	}
+	else
+	{
+		sources_id = H5Gopen(handle, IUS_INPUTFILE_PATH_SOURCEDICT, H5P_DEFAULT);
+	}
+	if (sources_id == H5I_INVALID_HID)
+		return IUS_ERR_VALUE;
+	status = 0;
     HashableSource *sourceElement;
 
     // iterate over source list elements and save'em
     for (iter = hashmap_iter(&dict->map); iter; iter = hashmap_iter_next(&dict->map, iter))
     {
         sourceElement = HashableSource_hashmap_iter_get_data(iter);
-        iusSourceSave(sourceElement->source, handle);
+		const char *sourceLabel = HashableSource_hashmap_iter_get_key(iter);
+		hid_t src_id = H5Gcreate(sources_id, sourceLabel, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+        iusSourceSave(sourceElement->source, src_id);
+		H5Gclose(src_id);
     }
+	H5Gclose(sources_id);
 
     return status;
 }
 
+
+#define MAX_NAME 1024
 
 iusd_t iusSourceDictLoad
 (
@@ -203,8 +206,8 @@ iusd_t iusSourceDictLoad
 )
 {
     int i;
-    int status;
-    char memb_name[IUS_MAX_HDF5_PATH];
+    int status = IUS_E_OK;
+    char memb_name[MAX_NAME];
 
 	hid_t grpid = H5Gopen(handle, IUS_INPUTFILE_PATH_SOURCEDICT, H5P_DEFAULT);
     if(handle == H5I_INVALID_HID)
@@ -216,7 +219,7 @@ iusd_t iusSourceDictLoad
     iusd_t dict = iusSourceDictCreate();
     for (i = 0; i < (int) nobj && status == IUS_E_OK; i++)
     {
-        H5Gget_objname_by_idx(grpid, (hsize_t) i, memb_name, (size_t) IUS_MAX_HDF5_PATH);
+        H5Gget_objname_by_idx(grpid, (hsize_t) i, memb_name, (size_t) MAX_NAME);
 		hid_t source_id = H5Gopen(grpid, memb_name, H5P_DEFAULT);
         ius_t source = iusSourceLoad(source_id);
 		status |= H5Gclose(source_id);
@@ -227,6 +230,5 @@ iusd_t iusSourceDictLoad
     {
         return NULL;
     }
-    dict->loadedFromFile = IUS_TRUE;
     return dict;
 }

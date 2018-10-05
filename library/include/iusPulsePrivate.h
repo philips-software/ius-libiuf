@@ -12,9 +12,7 @@
 struct IusPulse
 {
   IusPulseType type;
-  char *label;
-} ;
-
+};
 
 int iusPulseSave
 (
@@ -43,7 +41,5 @@ IUS_BOOL iusBasePulseCompare
     iup_t reference,
     iup_t actual
 );
-
-
 
 #endif //IUSLIBRARY_IUSHLPULSEIMP_H

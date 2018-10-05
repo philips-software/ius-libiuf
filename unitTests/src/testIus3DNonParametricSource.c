@@ -24,7 +24,6 @@ TEST_TEAR_DOWN(Ius3DNonParametricSource)
 
 TEST(Ius3DNonParametricSource, testIus3DNonParametricSourceCreate)
 {
-    char *pLabel = "label for 3d parametric source";
     int numLocations = 5 ;
 
     iu3dnps_t obj = ius3DNonParametricSourceCreate(numLocations);
@@ -43,7 +42,6 @@ TEST(Ius3DNonParametricSource, testIus3DNonParametricSourceCreate)
 
 TEST(Ius3DNonParametricSource, testIus3DNonParametricSourceDelete)
 {
-    char *pLabel = "label for 3d parametric source";
     int numLocations = 5;
 
     iu3dnps_t obj = ius3DNonParametricSourceCreate(numLocations);
@@ -61,13 +59,12 @@ TEST(Ius3DNonParametricSource, testIus3DNonParametricSourceDelete)
 TEST(Ius3DNonParametricSource, testIus3DNonParametricSourceCompare)
 {
     IUS_BOOL equal;
-    char *pLabel = "label for 3d parametric source";
     int numLocations = 5;
 
     iu3dnps_t obj = ius3DNonParametricSourceCreate(numLocations);
     iu3dnps_t notherObj = ius3DNonParametricSourceCreate(numLocations);
     iu3dnps_t differentObj =
-    ius3DNonParametricSourceCreate(numLocations + 1);
+    ius3DNonParametricSourceCreate(numLocations+1);
     TEST_ASSERT(obj != IU3DNPS_INVALID);
     TEST_ASSERT(notherObj != IU3DNPS_INVALID);
     equal = ius3DNonParametricSourceCompare(obj,obj);
@@ -100,8 +97,6 @@ TEST(Ius3DNonParametricSource, testIus3DNonParametricSourceCompare)
 
 TEST(Ius3DNonParametricSource, testIus3DNonParametricSourceSetGet)
 {
-    //IUS_BOOL equal;
-    char *pLabel = "label for 3d parametric source";
     int p,numLocations = 5;
 
     iu3dnps_t obj = ius3DNonParametricSourceCreate(numLocations);
@@ -125,10 +120,6 @@ TEST(Ius3DNonParametricSource, testIus3DNonParametricSourceSetGet)
 TEST(Ius3DNonParametricSource, testIus3DNonParametricSourceSerialization)
 {
     char *filename = "testIus3DNonParametricSourceSerialization.hdf5";
-    //char *sourcePath =  "/3DNonParametricSource"; not needed since "pulseSourceDict" is hard-coded
-
-    //IUS_BOOL equal;
-    char *pLabel = "label for 3d parametric source";
     int p, numLocations = 5, status;
 
 

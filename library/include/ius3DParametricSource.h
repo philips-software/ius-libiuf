@@ -11,12 +11,14 @@ typedef Ius3DParametricSource *iu3dps_t;
 #define  IU3DPS_INVALID (iu3dps_t) NULL
 
 iu3dps_t ius3DParametricSourceCreate
-(int numLocations,
-                                     float fNumber,
-                                     float deltaTheta,
-                                     float startTheta,
-                                     float deltaPhi,
-                                     float startPhi);
+(
+    int numLocations,
+    float fNumber,
+    float deltaTheta,
+    float startTheta,
+    float deltaPhi,
+    float startPhi
+);
 
 
 int ius3DParametricSourceDelete

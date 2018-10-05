@@ -18,8 +18,6 @@
 #include <hdf5.h>
 #include "include/iusSourcePrivate.h"
 
-
-
 TEST_GROUP(IusSource);
 
 TEST_SETUP(IusSource)
@@ -33,7 +31,6 @@ TEST_TEAR_DOWN(IusSource)
 
 TEST(IusSource, testIusSourceDelete)
 {
-    char *_3d_parametric_label = "label for 3d parametric source";
     int locationCount = 5;
 
     float angularDelta = 0.13f;
@@ -42,7 +39,7 @@ TEST(IusSource, testIusSourceDelete)
     float startPhi = startAngle;
     float deltaPhi = angularDelta;
     ius_t obj = (ius_t) ius3DParametricSourceCreate(locationCount, FNumber,
-                                                    angularDelta, startAngle, deltaPhi, startPhi);
+                                                              angularDelta, startAngle, deltaPhi, startPhi);
     TEST_ASSERT(obj != IUS_INVALID);
 
     int status = iusSourceDelete((ius_t)obj);
@@ -58,10 +55,6 @@ TEST(IusSource, testIusSourceDelete)
 TEST(IusSource, testIusSourceCompare)
 {
     IUS_BOOL equal;
-    char *_3d_non_parametric_label = "label for 3d non parametric source";
-    char *_3d_parametric_label = "label for 3d parametric source";
-    char *_2d_non_parametric_label = "label for 2d non parametric source";
-    char *_2d_parametric_label = "label for 2d parametric source";
     int locationCount = 5; /**< number of locations */
 
     // Happy flow
@@ -71,17 +64,17 @@ TEST(IusSource, testIusSourceCompare)
     float startPhi = startAngle;
     float deltaPhi = angularDelta;
     ius_t _3dps = (ius_t) ius3DParametricSourceCreate(locationCount, FNumber,
-                                                      angularDelta, startAngle, deltaPhi, startPhi);
+                                                        angularDelta, startAngle, deltaPhi, startPhi);
 
     TEST_ASSERT(_3dps != IUS_INVALID);
     ius_t _nother3dps = (ius_t) ius3DParametricSourceCreate(locationCount, FNumber,
-                                                            angularDelta, startAngle, deltaPhi, startPhi);
+                                                        angularDelta, startAngle, deltaPhi, startPhi);
 
     TEST_ASSERT(_3dps != IUS_INVALID);
     ius_t _3dnps = (ius_t) ius3DNonParametricSourceCreate(locationCount);
     TEST_ASSERT(_3dnps != IUS_INVALID);
     ius_t _2dps = (ius_t) ius2DParametricSourceCreate(locationCount, FNumber,
-                                                      angularDelta, startAngle);
+    angularDelta, startAngle);
     TEST_ASSERT(_2dps != IUS_INVALID);
 
 
@@ -113,14 +106,11 @@ TEST(IusSource, testIusSourceCompare)
 TEST(IusSource, testIusSourceGetSet)
 {
     int locationCount = 5;
-    char *_3d_non_parametric_label = "label for 3d non parametric source";
 
     // Happy flow
     ius_t obj = (ius_t) ius3DNonParametricSourceCreate(locationCount);
     TEST_ASSERT(obj != IUS_INVALID);
-
     TEST_ASSERT_EQUAL(IUS_3D_NON_PARAMETRIC_SOURCE,iusSourceGetType(obj));
-
 
     // invalid param
     TEST_ASSERT_EQUAL(IUS_INVALID_SOURCE_TYPE,iusSourceGetType(NULL));
@@ -132,7 +122,6 @@ TEST(IusSource, testIusSerialization)
     // create 4 types of object, save, load compare.
     char *filename = "testIusSourceSerialization.hdf5";
     char *sourcePath =  "/Source";
-    char *_3d_parametric_label = "label for 3d parametric source";
     int status, locationCount = 50; /**< number of locations */
 
     float angularDelta = 0.13f;
@@ -141,17 +130,16 @@ TEST(IusSource, testIusSerialization)
     float startPhi = startAngle;
     float deltaPhi = angularDelta;
     ius_t obj = (ius_t) ius3DParametricSourceCreate(locationCount, FNumber,
-                                                    angularDelta, startAngle, deltaPhi, startPhi);
+                                                        angularDelta, startAngle, deltaPhi, startPhi);
 
-    ius_t notherObj = (ius_t) ius3DParametricSourceCreate(locationCount + 1, FNumber,
-                                                          angularDelta, startAngle, deltaPhi, startPhi);
+    ius_t notherObj = (ius_t) ius3DParametricSourceCreate(locationCount+1, FNumber,
+                                                      angularDelta, startAngle, deltaPhi, startPhi);
     // fill
     int p;
     for (p = 0; p < locationCount; p++)
     {
         iu3dp_t pos = ius3DPositionCreate(p * 1.0f, p * 2.0f, p * 3.0f);
         ius3DParametricSourceSetPosition( (iu3dps_t) obj, pos, p);
-        ius3DPositionDelete(pos);
     }
 
     hid_t handle = H5Fcreate( filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT );
@@ -160,20 +148,20 @@ TEST(IusSource, testIusSerialization)
     H5Fclose(handle);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
-	/* can't be doen without knowing the label */
+	/* can't be done without knowing the label */
 	// todo fix this test
-    // read back
 #if 0
+    // read back
     handle = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT );
     ius_t savedObj = iusSourceLoad(handle);
     TEST_ASSERT_NOT_EQUAL(NULL, savedObj);
     H5Fclose(handle);
     TEST_ASSERT_EQUAL(IUS_TRUE, iusSourceCompare((ius_t)obj,savedObj));
     TEST_ASSERT_EQUAL(IUS_FALSE, iusSourceCompare((ius_t)notherObj,savedObj));
-    iusSourceDelete(savedObj);
 #endif
     iusSourceDelete(obj);
 	iusSourceDelete(notherObj);
+
 }
 
 

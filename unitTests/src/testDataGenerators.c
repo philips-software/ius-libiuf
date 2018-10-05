@@ -39,8 +39,8 @@ void
     int numTGCentries = 1;
     int status=0,i;
 
-    iurs_t obj = iusReceiveSettingsCreate(pObjLabel, sampleFrequency, numDelays, numSamplesPerLine, numTGCentries);
-    iurs_t notherObj = iusReceiveSettingsCreate(pNotherObjLabel, sampleFrequency, numDelays, numSamplesPerLine, numTGCentries);
+    iurs_t obj = iusReceiveSettingsCreate(sampleFrequency, numDelays, numSamplesPerLine, numTGCentries);
+    iurs_t notherObj = iusReceiveSettingsCreate(sampleFrequency, numDelays, numSamplesPerLine, numTGCentries);
 
     // Create
     iursd_t  dict = iusReceiveSettingsDictCreate();
@@ -225,8 +225,8 @@ iupd_t dgGeneratePulseDict
   // fill
   char *parametricLabel = "parametricPulseLabel";
   char *nonParametricLabel = "nonParametricPulseLabel";
-  iupp_t parametricPulse = iusParametricPulseCreate(parametricLabel, pulseFrequency, pulseAmplitude, pulseCount);
-  iunpp_t nonParametricPulse = iusNonParametricPulseCreate(nonParametricLabel,numPulseValues);
+  iupp_t parametricPulse = iusParametricPulseCreate(pulseFrequency, pulseAmplitude, pulseCount);
+  iunpp_t nonParametricPulse = iusNonParametricPulseCreate(numPulseValues);
   iusNonParametricPulseSetValue(nonParametricPulse,0,10.0f,10.0f);
   iusNonParametricPulseSetValue(nonParametricPulse,1,20.0f,10.0f);
   status = iusPulseDictSet(dict,nonParametricLabel, (iup_t) nonParametricPulse);
@@ -251,11 +251,11 @@ iusd_t dgGenerateSourceDict
     char *_3d_parametric_label = "label for 3d parametric source";
 
     iu3dps_t parametricSource = ius3DParametricSourceCreate(locationCount, FNumber,
-                                                            angularDelta, startAngle, deltaPhi, startPhi);
+                                                              angularDelta, startAngle, deltaPhi, startPhi);
 
     TEST_ASSERT(parametricSource != IU3DPS_INVALID);
     iu3dps_t _nother3dps = ius3DParametricSourceCreate(locationCount, FNumber,
-                                                       angularDelta, startAngle, deltaPhi, startPhi);
+                                                         angularDelta, startAngle, deltaPhi, startPhi);
 
     TEST_ASSERT(_nother3dps != IU3DPS_INVALID);
     iu3dnps_t nonParametricSource = ius3DNonParametricSourceCreate(locationCount);

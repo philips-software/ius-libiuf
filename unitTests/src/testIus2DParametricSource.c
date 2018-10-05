@@ -28,7 +28,6 @@ TEST(Ius2DParametricSource, testIus2DParametricSourceCreate)
     float angularDelta = 0.13f;
     float FNumber = -0.955f;
     float startAngle = 3.14f;
-    char *pLabel = "label for 2d parametric source";
     int numLocations = 5 ;
 
     iu2dps_t obj = ius2DParametricSourceCreate(numLocations, FNumber, angularDelta, startAngle);
@@ -50,7 +49,6 @@ TEST(Ius2DParametricSource, testIus2DParametricSourceDelete)
     float angularDelta = 0.13f;
     float FNumber = -0.955f;
     float startAngle = 3.14f;
-    char *pLabel = "label for 2d parametric source";
     int numLocations = 5;
 
     iu2dps_t obj = ius2DParametricSourceCreate(numLocations, FNumber, angularDelta, startAngle);
@@ -71,7 +69,6 @@ TEST(Ius2DParametricSource, testIus2DParametricSourceCompare)
     float angularDelta = 0.13f;
     float FNumber = -0.955f;
     float startAngle = 3.14f;
-    char *pLabel = "label for 2d parametric source";
     int numLocations = 5;
 
     iu2dps_t obj = ius2DParametricSourceCreate(numLocations, FNumber, angularDelta, startAngle);
@@ -114,7 +111,6 @@ TEST(Ius2DParametricSource, testIus2DParametricSourceSetGet)
     float angularDelta = 0.13f;
     float FNumber = -0.955f;
     float startAngle = 3.14f;
-    char *pLabel = "label for 2d parametric source";
     int p,numLocations = 5;
 
     iu2dps_t obj = ius2DParametricSourceCreate(numLocations, FNumber, angularDelta, startAngle);
@@ -153,7 +149,6 @@ TEST(Ius2DParametricSource, testIus2DParametricSourceSerialization)
     float angularDelta = 0.13f;
     float FNumber = -0.955f;
     float startAngle = 3.14f;
-    char *pLabel = "label for 2d parametric source";
     int p, numLocations = 5, status;
 
 

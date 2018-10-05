@@ -34,23 +34,19 @@ TEST(IusParametricPulse, testIusCreatePulse)
 
     // Parametric transmit pulse
     parametricPulse =
-    iusParametricPulseCreate("Created_in_testIusCreatePulse", pulseFrequency, pulseAmplitude, pulseCount);
+    iusParametricPulseCreate(pulseFrequency, pulseAmplitude, pulseCount);
     TEST_ASSERT(parametricPulse != IUPP_INVALID);
 
 
     // Invalid operation on nonparametric dta type
     TEST_ASSERT_EQUAL(NULL,
-                      iusParametricPulseCreate("Also_Created_in_testIusCreatePulse",
-                                                 pulseFrequency,
-                                                 pulseAmplitude,
-                                                 -1));
+                      iusParametricPulseCreate(pulseFrequency,
+                                               pulseAmplitude,
+                                               -1));
     TEST_ASSERT_EQUAL(NULL,
-                      iusParametricPulseCreate("Also_Created_in_testIusCreatePulse",
-                                                 -1.0f,
-                                                 pulseAmplitude,
-                                                 pulseCount));
-    TEST_ASSERT_EQUAL(NULL, iusParametricPulseCreate("", pulseFrequency, pulseAmplitude, pulseCount));
-    TEST_ASSERT_EQUAL(NULL, iusParametricPulseCreate(NULL, pulseFrequency, pulseAmplitude, pulseCount));
+                      iusParametricPulseCreate(-1.0f,
+                                               pulseAmplitude,
+                                               pulseCount));
 
     status = iusParametricPulseDelete(parametricPulse);
     TEST_ASSERT(status == IUS_E_OK);
@@ -68,12 +64,12 @@ TEST(IusParametricPulse, testIusDeletePulse)
     iunpp_t nonParametricPulse;
 
     // Parametric transmit pulse
-    parametricPulse = iusParametricPulseCreate("parametricPulse", pulseFrequency, pulseAmplitude, pulseCount);
+    parametricPulse = iusParametricPulseCreate(pulseFrequency, pulseAmplitude, pulseCount);
 
     // Non Parametric transmit pulse
     // alloc mem
     numPulseValues = 20;
-    nonParametricPulse = iusNonParametricPulseCreate("nonParametricPulse", numPulseValues);
+    nonParametricPulse = iusNonParametricPulseCreate(numPulseValues);
 
     // Invalid operation on nonparametric dta type
     status = iusNonParametricPulseDelete((iunpp_t) parametricPulse);
@@ -104,20 +100,18 @@ TEST(IusParametricPulse, testIusComparePulse)
 
 
     // Parametric transmit pulse
-    parametricPulse = iusParametricPulseCreate("parametricPulse", pulseFrequency, pulseAmplitude, pulseCount);
-    identicalPulse = iusParametricPulseCreate("parametricPulse", pulseFrequency, pulseAmplitude, pulseCount);
+    parametricPulse = iusParametricPulseCreate(pulseFrequency, pulseAmplitude, pulseCount);
+    identicalPulse = iusParametricPulseCreate(pulseFrequency, pulseAmplitude, pulseCount);
     notherParametricPulse =
-    iusParametricPulseCreate("notherParametricPulse", pulseFrequency, pulseAmplitude, pulseCount);
+    iusParametricPulseCreate(pulseFrequency, pulseAmplitude, pulseCount);
 
 
-    nonParametricPulse = iusNonParametricPulseCreate("nonParametricPulse", numPulseValues);
+    nonParametricPulse = iusNonParametricPulseCreate(numPulseValues);
 
     isEqual = iusParametricPulseCompare(parametricPulse, parametricPulse);
     TEST_ASSERT_EQUAL(IUS_TRUE,isEqual);
     isEqual = iusParametricPulseCompare(parametricPulse, identicalPulse);
     TEST_ASSERT_EQUAL(IUS_TRUE,isEqual);
-    isEqual = iusParametricPulseCompare(parametricPulse, notherParametricPulse);
-    TEST_ASSERT_EQUAL(IUS_FALSE,isEqual);
 
     // Invalid arguments
     isEqual = iusParametricPulseCompare(parametricPulse, (iupp_t) nonParametricPulse);
@@ -149,13 +143,13 @@ TEST(IusParametricPulse, testIusSetGetPulse)
 
 
     // Parametric transmit pulse
-    parametricPulse = iusParametricPulseCreate("parametricPulse", pulseFrequency, pulseAmplitude, pulseCount);
+    parametricPulse = iusParametricPulseCreate(pulseFrequency, pulseAmplitude, pulseCount);
     TEST_ASSERT_EQUAL_FLOAT( iusParametricPulseGetFrequency(parametricPulse), pulseFrequency);
     TEST_ASSERT_EQUAL_FLOAT( iusParametricPulseGetPulseAmplitude(parametricPulse), pulseAmplitude);
     TEST_ASSERT_EQUAL_FLOAT( iusParametricPulseGetCount(parametricPulse),pulseCount);
 
     // Invalid operation on nonparametric dta type
-    nonParametricPulse = iusNonParametricPulseCreate("nonParametricPulse", numPulseValues);
+    nonParametricPulse = iusNonParametricPulseCreate(numPulseValues);
     TEST_ASSERT_EQUAL_FLOAT(iusParametricPulseGetFrequency( (iupp_t) nonParametricPulse), NAN);
     TEST_ASSERT_EQUAL_FLOAT(iusParametricPulseGetPulseAmplitude( (iupp_t) nonParametricPulse), NAN);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, iusParametricPulseGetCount( (iupp_t) nonParametricPulse));
@@ -174,15 +168,15 @@ TEST(IusParametricPulse, testIusSerialization)
 {
     char *filename = "testIusParametricPulseSerialization.hdf5";
     //char *pulsePath =  "/ParametricPulse";
-    char *label = "label for IUS_PARAMETRIC_PULSETYPE";
+    
     float   pulseFrequency=8000000.0f;   /**< frequency that the pulse represents in Hz */
     float   pulseAmplitude=800.0f;       /**< (max) amplitude of the pulse in Volts */
     int     pulseCount=10;               /**< number of cycles that the pulse represents */
 
 
     // create and save
-    iupp_t parametricPulse = iusParametricPulseCreate(label, pulseFrequency, pulseAmplitude, pulseCount);
-    iupp_t notherParametricPulse = iusParametricPulseCreate("notherParametricPulse", pulseFrequency, pulseAmplitude, pulseCount);
+    iupp_t parametricPulse = iusParametricPulseCreate(pulseFrequency, pulseAmplitude, pulseCount);
+    iupp_t notherParametricPulse = iusParametricPulseCreate(pulseFrequency, pulseAmplitude, pulseCount);
 
     hid_t handle = H5Fcreate( filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT );
     TEST_ASSERT(handle > 0);
@@ -190,16 +184,11 @@ TEST(IusParametricPulse, testIusSerialization)
     H5Fclose(handle);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
-#if 0
-	// these tests can't be done like this... you need to know the label before readin a PP or NPP
-    // read back
     handle = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT );
-    iupp_t savedObj = iusParametricPulseLoad(handle, pulsePath, label);
+    iupp_t savedObj = iusParametricPulseLoad(handle);
     H5Fclose(handle);
 	TEST_ASSERT_EQUAL(IUS_TRUE, iusParametricPulseCompare(parametricPulse, savedObj));
-	TEST_ASSERT_EQUAL(IUS_FALSE, iusParametricPulseCompare(notherParametricPulse, savedObj));
 	iusParametricPulseDelete(savedObj);
-#endif
     
     iusParametricPulseDelete(parametricPulse);
     iusParametricPulseDelete(notherParametricPulse);

@@ -12,19 +12,11 @@ typedef  struct IusPulse IusPulse;
 typedef  IusPulse    * iup_t;
 #define  IUP_INVALID (iup_t) NULL
 
-
 typedef enum {
   IUS_INVALID_PULSETYPE = 0,
   IUS_PARAMETRIC_PULSETYPE,
   IUS_NON_PARAMETRIC_PULSETYPE
 } IusPulseType;
-
-
-//iup_t  iusPulseCreate
-//(
-//    IusPulseType type,
-//    const char *label
-//);
 
 int iusPulseDelete
 (
@@ -39,12 +31,6 @@ IUS_BOOL  iusPulseCompare
 
 // getters
 IusPulseType iusPulseGetType
-(
-    iup_t pulse
-);
-
-
-char* iusPulseGetLabel
 (
     iup_t pulse
 );

@@ -11,7 +11,12 @@ typedef Ius2DParametricSource *iu2dps_t;
 #define  IU2DPS_INVALID (iu2dps_t) NULL
 
 iu2dps_t ius2DParametricSourceCreate
-(int numLocations, float fNumber, float deltaTheta, float startTheta);
+(
+    int numLocations,
+    float fNumber,
+    float deltaTheta,
+    float startTheta
+);
 
 
 int ius2DParametricSourceDelete

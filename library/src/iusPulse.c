@@ -24,12 +24,10 @@
 
 iup_t  iusPulseCreate
 (
-    IusPulseType type,
-    const char *label
+    IusPulseType type
 )
 {
     iup_t transmitPulse = IUP_INVALID;
-    if( label == NULL ) return transmitPulse;
 
     if( type != IUS_PARAMETRIC_PULSETYPE &&
         type != IUS_NON_PARAMETRIC_PULSETYPE )
@@ -37,7 +35,6 @@ iup_t  iusPulseCreate
 
     transmitPulse = calloc(1, sizeof(struct IusPulse));
     transmitPulse->type = type;
-    transmitPulse->label = strdup(label);
     return transmitPulse;
 }
 
@@ -62,8 +59,6 @@ IUS_BOOL iusBasePulseCompare
     if( reference == NULL || actual == NULL )
         return IUS_FALSE;
     if( reference->type != actual->type )
-        return IUS_FALSE;
-    if( strcmp(reference->label,actual->label) != 0 )
         return IUS_FALSE;
     return IUS_TRUE;
 }
@@ -93,15 +88,6 @@ IusPulseType iusPulseGetType
 {
     if( pulse == NULL ) return  IUS_INVALID_PULSETYPE;
     return pulse->type;
-}
-
-char *iusPulseGetLabel
-(
-    iup_t pulse
-)
-{
-    if( pulse == NULL ) return  NULL;
-    return pulse->label;
 }
 
 static herr_t iusWritePulseType
@@ -162,7 +148,6 @@ int iusBasePulseSave
     int status=IUS_E_OK;
 
 	status |= iusWritePulseType(handle, IUS_INPUTFILE_PATH_PULSE_PULSETYPE, pulse->type);
-    status |= iusHdf5WriteString(handle, IUS_INPUTFILE_PATH_PULSE_PULSELABEL, pulse->label);
     return status;
 }
 
@@ -191,14 +176,12 @@ iup_t iusBasePulseLoad
 {
 	int status = IUS_E_OK;
 	IusPulseType type;
-	char label[IUS_MAX_HDF5_PATH];
 
 	status |= iusReadPulseType(handle, IUS_INPUTFILE_PATH_PULSE_PULSETYPE, &(type));
-	status |= iusHdf5ReadString(handle, IUS_INPUTFILE_PATH_PULSE_PULSELABEL, label);
 	if (status < 0)
 		return NULL;
 
-	return iusPulseCreate(type, label);
+	return iusPulseCreate(type);
 }
 
 iup_t iusPulseLoad

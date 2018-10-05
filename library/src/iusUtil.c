@@ -13,7 +13,6 @@ int iusDiagDisable()
     return iusHdf5DisableMessages();
 }
 
-
 int iusGetVersionMajor(void) {
     return IUS_VERSION_MAJOR;
 }
