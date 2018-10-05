@@ -8,20 +8,21 @@
 #include <iusError.h>
 #include <iusTypes.h>
 #include <iusUtil.h>
+#include <iusInputFileStructure.h>
 #include <iusPosition.h>
 #include <iusTransducerElement.h>
-#include <ius3DTransducerElementImp.h>
-#include <iusTransducerElementImp.h>
-#include <include/ius3DSizeImp.h>
+#include <ius3DTransducerElementPrivate.h>
+#include <iusTransducerElementPrivate.h>
+#include <include/ius3DSizePrivate.h>
 #include <include/iusHDF5.h>
-#include <include/iusPositionImp.h>
-#include <include/ius3DAngleImp.h>
+#include <include/iusPositionPrivate.h>
+#include <include/ius3DAnglePrivate.h>
 
 struct Ius3DTransducerElement
 {
-  iu3dp_t   position; /**< 3D Location of the element */
-  iu3da_t      angle;    /**< orientation of the elements */
-  iu3ds_t       size;     /**< size of the element */
+    iu3dp_t   position; /**< 3D Location of the element */
+    iu3da_t      angle;    /**< orientation of the elements */
+    iu3ds_t       size;     /**< size of the element */
 } ;
 
 // ADT
@@ -79,40 +80,26 @@ int ius3DTransducerElementCompare
     if( reference == actual ) return IUS_TRUE;
     if( reference == NULL || actual == NULL ) return IUS_FALSE;
     if( ius3DPositionCompare(reference->position, actual->position) != IUS_TRUE)
-      return IUS_FALSE;
+        return IUS_FALSE;
     if(ius3DSizeCompare(reference->size, actual->size) != IUS_TRUE)
-      return IUS_FALSE;
+        return IUS_FALSE;
     if(ius3DAngleCompare(reference->angle, actual->angle) != IUS_TRUE)
-      return IUS_FALSE;
+        return IUS_FALSE;
     return IUS_TRUE;
 }
-
-
-#define ELEMENTSIZEPATH "%s/Size"
-#define ELEMENTPOSITIONPATH  "%s/Position"
-#define ELEMENTANGLEPATH  "%s/Angle"
 
 int ius3DTransducerElementSave
 (
     iu3dte_t element,
-    const char *parentPath,
     hid_t handle
 )
 {
-    char path[IUS_MAX_HDF5_PATH];
-    if( element == IU3DTE_INVALID ) return IUS_ERR_VALUE;
+    if( element == IU3DTE_INVALID )
+        return IUS_ERR_VALUE;
 
-    hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-
-    sprintf(path, ELEMENTSIZEPATH, parentPath);
-    int status = ius3DSizeSave(element->size,path,group_id);
-
-    sprintf(path, ELEMENTPOSITIONPATH, parentPath);
-    status |= ius3DPositionSave(element->position,path,group_id);
-
-    sprintf(path, ELEMENTANGLEPATH, parentPath);
-    status |= ius3DAngleSave(element->angle,path,group_id);
-    status |= H5Gclose(group_id );
+    int status = ius3DSizeSave(element->size, handle);
+    status |= ius3DPositionSave(element->position, handle);
+    status |= ius3DAngleSave(element->angle, handle);
 
     return status;
 }
@@ -121,23 +108,21 @@ int ius3DTransducerElementSave
 
 iu3dte_t ius3DTransducerElementLoad
 (
-    hid_t handle,
-    const char *parentPath
+    hid_t handle
 )
 {
-    char path[IUS_MAX_HDF5_PATH];
     iu3dte_t element = IU3DTE_INVALID;
-    sprintf(path, ELEMENTPOSITIONPATH, parentPath);
-    iu3dp_t elemPos = ius3DPositionLoad(handle,path);
-    if (elemPos == IU3DP_INVALID) return element;
+    iu3dp_t elemPos = ius3DPositionLoad(handle);
+    if (elemPos == IU3DP_INVALID)
+        return element;
 
-    sprintf(path, ELEMENTSIZEPATH, parentPath);
-    iu3ds_t elemSize = ius3DSizeLoad(handle,path);
-    if (elemSize == IU3DS_INVALID) return element;
+    iu3ds_t elemSize = ius3DSizeLoad(handle);
+    if (elemSize == IU3DS_INVALID)
+        return element;
 
-    sprintf(path, ELEMENTANGLEPATH, parentPath);
-    iu3da_t elemAngle = ius3DAngleLoad(handle,path);
-    if (elemAngle == IU3DA_INVALID) return element;
+    iu3da_t elemAngle = ius3DAngleLoad(handle);
+    if (elemAngle == IU3DA_INVALID)
+        return element;
 
     element = ius3DTransducerElementCreate(elemPos, elemAngle, elemSize);
     return element;
@@ -145,28 +130,27 @@ iu3dte_t ius3DTransducerElementLoad
 
 
 
-
 // Getters
 iu3dp_t ius3DTransducerElementGetPosition
 (
-	iu3dte_t ius3DTransducerElement
+    iu3dte_t ius3DTransducerElement
 )
 {
-	return ius3DTransducerElement->position;
+    return ius3DTransducerElement->position;
 }
 
 iu3da_t ius3DTransducerElementGetAngle
 (
-	iu3dte_t ius3DTransducerElement
+    iu3dte_t ius3DTransducerElement
 )
 {
-	return ius3DTransducerElement->angle;
+    return ius3DTransducerElement->angle;
 }
 
 iu3ds_t ius3DTransducerElementGetSize
 (
-	iu3dte_t ius3DTransducerElement
+    iu3dte_t ius3DTransducerElement
 )
 {
-	return ius3DTransducerElement->size;
+    return ius3DTransducerElement->size;
 }

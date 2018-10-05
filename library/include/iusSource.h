@@ -37,10 +37,5 @@ IusSourceType iusSourceGetType
     ius_t iusSource
 );
 
-char * iusSourceGetLabel
-(
-    ius_t iusSource
-);
-
 
 #endif //IUSLIBRARY_IUSHLSOURCE_H

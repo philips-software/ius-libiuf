@@ -7,7 +7,7 @@
 
 #include <hdf5.h>
 #include <ius.h>
-#include <iusPulseDictImp.h>
+#include <iusPulseDictPrivate.h>
 #include <iusParametricPulse.h>
 #include <iusNonParametricPulse.h>
 
@@ -100,7 +100,7 @@ TEST(IusPulseDict, testIusSerialization)
     int     pulseCount=10;               /**< number of cycles that the pulse represents */
     int     status=10;
     char *filename = "testIusPulseDictSerialization.hdf5";
-    char *dictPath =  "/PulseDict";
+    //char *dictPath =  "/PulseDict"; fixed to /Pulses
 
     // create
     iupd_t dict = iusPulseDictCreate();
@@ -121,13 +121,13 @@ TEST(IusPulseDict, testIusSerialization)
     // save
     hid_t handle = H5Fcreate( filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT );
     TEST_ASSERT(handle > 0);
-    status = iusPulseDictSave(dict, dictPath, handle);
+    status = iusPulseDictSave(dict, handle);
     H5Fclose(handle);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
     // read back
     handle = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT );
-    iupd_t savedObj = iusPulseDictLoad(handle, dictPath);
+    iupd_t savedObj = iusPulseDictLoad(handle);
     TEST_ASSERT(savedObj != NULL);
     H5Fclose(handle);
 

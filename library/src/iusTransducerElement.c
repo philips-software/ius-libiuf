@@ -8,7 +8,7 @@
 #include <iusTypes.h>
 #include <iusUtil.h>
 #include <iusTransducerElement.h>
-#include <iusTransducerElementImp.h>
+#include <iusTransducerElementPrivate.h>
 
 // ADT
 iute_t iusTransducerElementCreate

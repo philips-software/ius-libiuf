@@ -7,8 +7,8 @@
 #include <include/ius.h>
 #include <include/iusError.h>
 #include <include/iusUtil.h>
-#include <include/iusHistoryNodeListImp.h>
-#include <include/iusHistoryNodeImp.h>
+#include <include/iusHistoryNodeListPrivate.h>
+#include <include/iusHistoryNodePrivate.h>
 #include <include/iusHDF5.h>
 
 // ADT

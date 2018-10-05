@@ -12,15 +12,15 @@
 #include <iusUtil.h>
 
 #include <iusTransducer.h>
-#include <iusTransducerImp.h>
+#include <iusTransducerPrivate.h>
 #include <ius2DTransducer.h>
 #include <ius2DTransducerElement.h>
 #include <ius2DTransducerElementList.h>
 #include <ius3DTransducer.h>
 #include <ius3DTransducerElement.h>
 #include <ius3DTransducerElementList.h>
-#include <iusPositionImp.h>
-#include <include/ius2DTransducerElementListImp.h>
+#include <iusPositionPrivate.h>
+#include <include/ius2DTransducerElementListPrivate.h>
 
 struct Ius2DTransducer
 {
@@ -63,16 +63,16 @@ int ius2DTransducerDelete
 )
 {
     if(ius2DTransducer == NULL) return IUS_ERR_VALUE;
-	if(ius2DTransducer->baseTransducer.loadedFromFile == IUS_TRUE)
-	{
-		ius2DTransducerElementListDeepDelete(ius2DTransducer->elements);
-	}
-	else
-	{
-		ius2DTransducerElementListDelete(ius2DTransducer->elements);
-	}
-	free(ius2DTransducer->baseTransducer.pTransducerName);
-	free(ius2DTransducer);
+    if(ius2DTransducer->baseTransducer.loadedFromFile == IUS_TRUE)
+    {
+        ius2DTransducerElementListDeepDelete(ius2DTransducer->elements);
+    }
+    else
+    {
+        ius2DTransducerElementListDelete(ius2DTransducer->elements);
+    }
+    free(ius2DTransducer->baseTransducer.pTransducerName);
+    free(ius2DTransducer);
     return IUS_E_OK;
 }
 
@@ -124,9 +124,10 @@ int ius2DTransducerSetElement
     return ius2DTransducerElementListSet(transducer->elements,element,elementIndex);
 }
 
-int ius2DTransducerWriteElementPositions(Ius2DTransducer *pTransducer, hid_t subgroup_id)
+#if 0
+int ius2DTransducerWriteElementPositions(Ius2DTransducer *pTransducer, hid_t subgroup_id, int verbose)
 {
-	herr_t        status = 0;
+	herr_t status = 0;
 	hid_t position_tid; // File datatype identifier for IusPosition
 	hid_t dataset, space;
 	hsize_t dims[1] = { 1 };
@@ -167,7 +168,7 @@ int ius2DTransducerWriteElementPositions(Ius2DTransducer *pTransducer, hid_t sub
 	return status;
 }
 
-int ius2DTransducerWriteElementSizes(Ius2DTransducer *pTransducer, hid_t subgroup_id)
+int ius2DTransducerWriteElementSizes(Ius2DTransducer *pTransducer, hid_t subgroup_id, int verbose)
 {
 	herr_t        status = 0;
 	hid_t size_tid; // File datatype identifier for IusPosition
@@ -207,16 +208,16 @@ int ius2DTransducerWriteElementSizes(Ius2DTransducer *pTransducer, hid_t subgrou
 	return status;
 }
 
-int ius2DTransducerWriteElementAngles(Ius2DTransducer *pTransducer, hid_t subgroup_id)
+int ius2DTransducerWriteElementAngles(Ius2DTransducer *pTransducer, hid_t subgroup_id, int verbose)
 {
 	herr_t        status = 0;
 	hid_t dataset, space;
 	float * pAngleArray;
-	int numElements = ius2DTransducerElementListGetSize(pTransducer->elements);
-	hsize_t dims[1] = { numElements };
+	const int numElements = ius2DTransducerElementListGetSize(pTransducer->elements);
+	hsize_t dims[1] = { numElements }; // TODO: fix warning C4204: nonstandard extension used: non-constant aggregate initialize 
 	int i; //iterator
 
-		   // Angles
+    // Angles
 	space = H5Screate_simple(1, dims, NULL);
 	// step a:  create H5 dataset
 	dataset = H5Dcreate(subgroup_id, "theta", H5T_NATIVE_FLOAT, space, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
@@ -238,42 +239,33 @@ int ius2DTransducerWriteElementAngles(Ius2DTransducer *pTransducer, hid_t subgro
 	status |= H5Dclose(dataset);
 	return status;
 }
-
-
-#define ELEMENTSFMT "%s/Elements"
+#endif
 
 herr_t ius2DTransducerSave
 (
     iu2dt_t transducer,
-    char *parentPath,
     hid_t handle
 )
 {
     herr_t status=0;
-    char path[IUS_MAX_HDF5_PATH];
-    status = iusBaseTransducerSave((iut_t)transducer,parentPath,handle);
+    status = iusBaseTransducerSave((iut_t)transducer, handle);
     if (status != 0)
         return status;
 
-
-    sprintf(path, ELEMENTSFMT, parentPath);
-    status = ius2DTransducerElementListSave(transducer->elements, path,handle);
+    status = ius2DTransducerElementListSave(transducer->elements, handle);
     return status;
 }
 
 
 iu2dt_t ius2DTransducerLoad
 (
-    hid_t handle,
-    char *parentPath
+    hid_t handle
 )
 {
-    char path[IUS_MAX_HDF5_PATH];
-
-    sprintf(path, ELEMENTSFMT, parentPath);
-    iut_t baseTransducer = iusBaseTransducerLoad(handle,parentPath);
+	iut_t baseTransducer = iusBaseTransducerLoad(handle);
     if (baseTransducer == IUT_INVALID) return IU2DT_INVALID;
-    iu2dtel_t elements = ius2DTransducerElementListLoad(handle,path);
+
+    iu2dtel_t elements = ius2DTransducerElementListLoad(handle);
 	if (elements == IU2DTEL_INVALID) return IU2DT_INVALID;
 	int numElements = ius2DTransducerElementListGetSize(elements);
     iu2dt_t transducer = ius2DTransducerCreate( baseTransducer->pTransducerName,

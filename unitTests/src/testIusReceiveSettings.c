@@ -11,7 +11,7 @@
 #include <include/iusError.h>
 #include <include/iusTypes.h>
 #include <include/iusTGC.h>
-#include "include/iusReceiveSettingsImp.h"
+#include "include/iusReceiveSettingsPrivate.h"
 
 TEST_GROUP(IusReceiveSettings);
 
@@ -160,7 +160,7 @@ TEST(IusReceiveSettings, testIusReceiveSettingsSetGet)
 TEST(IusReceiveSettings, testIusSerialization)
 {
     char *filename = "testIusReceiveSettings.hdf5";
-    char *receiveSettingsPath =  "/ReceiveSettings";
+    //char *receiveSettingsPath =  "/ReceiveSettings";
     char *pLabel = "Label for IusReceiveSettings, created in testIusSerialization";
     float sampleFrequency=4000;
     int numDelays=10;
@@ -194,13 +194,13 @@ TEST(IusReceiveSettings, testIusSerialization)
     // save
     hid_t handle = H5Fcreate( filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT );
     TEST_ASSERT(handle > 0);
-    status = iusReceiveSettingsSave(obj, receiveSettingsPath, handle);
+    status = iusReceiveSettingsSave(obj, handle);
     H5Fclose(handle);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
     // read back
     handle = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT );
-    iurs_t savedObj = iusReceiveSettingsLoad(handle, receiveSettingsPath, pLabel);
+    iurs_t savedObj = iusReceiveSettingsLoad(handle);
     TEST_ASSERT(savedObj != NULL);
     H5Fclose(handle);
 

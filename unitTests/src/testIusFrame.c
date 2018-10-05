@@ -8,7 +8,7 @@
 #include <ius.h>
 #include <iusError.h>
 #include <iusTypes.h>
-#include <iusFrameImp.h>
+#include <iusFramePrivate.h>
 
 TEST_GROUP(IusFrame);
 
@@ -99,7 +99,7 @@ TEST(IusFrame, testIusFrameSetGet)
 TEST(IusFrame, testIusSerialization)
 {
     char *filename = "testIusFrameSerialization.hdf5";
-    char *framePath =  "/Frame";
+    //char *framePath =  "/Frame";
 
     int patternListIndex=101;
     int dataIndex=202;
@@ -110,13 +110,13 @@ TEST(IusFrame, testIusSerialization)
 
     hid_t handle = H5Fcreate( filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT );
     TEST_ASSERT(handle > 0);
-    int status = iusFrameSave( obj, framePath, handle);
+    int status = iusFrameSave( obj, handle);
     H5Fclose(handle);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
     // read back
     handle = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT );
-    iuf_t savedObj = iusFrameLoad(handle, framePath);
+    iuf_t savedObj = iusFrameLoad(handle);
     TEST_ASSERT_NOT_EQUAL(NULL, savedObj);
     H5Fclose(handle);
 

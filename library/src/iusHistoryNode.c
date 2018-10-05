@@ -14,9 +14,9 @@
 #include <hdf5_hl.h>
 #include <iusHistoryNodeList.h>
 #include <iusHistoryNode.h>
-#include <include/iusHistoryNodeListImp.h>
-#include <include/iusParameterDictImp.h>
-#include <include/iusInputFileImp.h>
+#include <include/iusHistoryNodeListPrivate.h>
+#include <include/iusParameterDictPrivate.h>
+#include <include/iusInputFilePrivate.h>
 
 #define MAX_TYPE_LENGTH 40
 #define MAX_ID_LENGTH   40
@@ -257,8 +257,8 @@ iuhn_t iusHistoryNodeLoad
 )
 {
     herr_t status = 0;
-    char ID[256];
-    char type[256];
+    char ID[IUS_MAX_HDF5_PATH];
+    char type[IUS_MAX_HDF5_PATH];
     int numberOfParents=0;
     int numberOfParameters=0;
     if ( handle == H5I_INVALID_HID ) return IUHN_INVALID;

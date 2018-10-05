@@ -6,7 +6,7 @@
 #include <unity_internals.h>
 #include <unity_fixture.h>
 #include <include/iusPattern.h>
-#include <include/iusPatternListImp.h>
+#include <include/iusPatternListPrivate.h>
 #include <include/ius.h>
 
 static const char *pBmodePatternLabel = "bmode";
@@ -107,7 +107,7 @@ TEST(IusPatternList, testIusSerialization)
     int status;
     IUS_BOOL equal;
     char *pFilename = "testIusPatternListSerialization.hdf5";
-    char *pPatternListPath = "/PatternList";
+    //char *pPatternListPath = "/PatternList";
 
     // fill list
     iupal_t patternList = iusPatternListCreate(numPatterns);
@@ -136,14 +136,14 @@ TEST(IusPatternList, testIusSerialization)
     // save
     hid_t handle = H5Fcreate(pFilename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
     TEST_ASSERT(handle > 0);
-    status = iusPatternListSave(patternList, pPatternListPath, handle);
+    status = iusPatternListSave(patternList, handle);
     TEST_ASSERT_EQUAL(IUS_E_OK, status);
     status = H5Fclose(handle);
     TEST_ASSERT_EQUAL(IUS_E_OK, status);
 
     // read back
     handle = H5Fopen(pFilename, H5F_ACC_RDONLY, H5P_DEFAULT);
-    iupal_t savedPatternList = iusPatternListLoad(handle, pPatternListPath);
+    iupal_t savedPatternList = iusPatternListLoad(handle);
     TEST_ASSERT_NOT_EQUAL(IUPAL_INVALID, savedPatternList);
     status |= H5Fclose(handle);
     TEST_ASSERT_EQUAL(IUS_E_OK, status);

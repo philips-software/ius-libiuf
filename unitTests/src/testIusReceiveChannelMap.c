@@ -93,5 +93,5 @@ TEST_GROUP_RUNNER(IusReceiveChannelMap)
 	RUN_TEST_CASE(IusReceiveChannelMap, testIusReceiveChannelMapDelete);
 	RUN_TEST_CASE(IusReceiveChannelMap, testIusReceiveChannelMapCompare);
 	RUN_TEST_CASE(IusReceiveChannelMap, testIusReceiveChannelMapGet);
-	//RUN_TEST_CASE(IusReceiveChannelMap, testIusReceiveChannelMapSerialization);
+//	RUN_TEST_CASE(IusReceiveChannelMap, testIusReceiveChannelMapSerialization);
 }

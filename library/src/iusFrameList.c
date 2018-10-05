@@ -7,9 +7,11 @@
 #include <ius.h>
 #include <iusError.h>
 #include <iusUtil.h>
-#include <iusFrameListImp.h>
+#include <iusInputFileStructure.h>
+#include <iusFrameListPrivate.h>
 #include <include/iusHDF5.h>
-#include <include/iusFrameImp.h>
+#include <include/iusFramePrivate.h>
+
 
 // ADT
 struct IusFrameList
@@ -103,36 +105,38 @@ int iusFrameListSet
     return IUS_E_OK;
 }
 
-
-#define FRAMELISTFMT "%s/Frame[%d]"
-#define FRAMELISTSIZEFMT "%s/Size"
+//TODO: do we need "numframes" if we have framelist size?
 
 iufl_t iusFrameListLoad
 (
-    hid_t handle,
-    const char *parentPath
+    hid_t handle
 )
 {
     char path[IUS_MAX_HDF5_PATH];
-    int numPatterns,i;
-    sprintf(path, FRAMELISTSIZEFMT, parentPath);
-    int status = iusHdf5ReadInt(handle, path, &(numPatterns));
-    if(status!=0) return IUFL_INVALID;
+    int numFrames,i;
 
-    iufl_t frameList = iusFrameListCreate(numPatterns);
+	hid_t frameList_id = H5Gopen(handle, IUS_INPUTFILE_PATH_FRAMELIST, H5P_DEFAULT);
+    int status = iusHdf5ReadInt(frameList_id, IUS_INPUTFILE_PATH_FRAMELIST_SIZE, &(numFrames));
+    if(status!=0) return IUFL_INVALID;
+	
+    iufl_t frameList = iusFrameListCreate(numFrames);
     iuf_t sourceElement;
 
-    // Load patterns
-    for (i=0;i < numPatterns;i++)
+    // Load frames
+    for (i=0;i < numFrames; i++)
     {
-        sprintf(path, FRAMELISTFMT, parentPath, i);
-        sourceElement = iusFrameLoad(handle, path);
+        sprintf(path, IUS_INPUTFILE_PATH_FRAMELIST_FRAME, i);
+	
+		hid_t frame_id = H5Gopen(frameList_id, path, H5P_DEFAULT);
+        sourceElement = iusFrameLoad(frame_id);
         if(sourceElement == IUF_INVALID)
         {
             break;
         }
+		H5Gclose(frame_id);
         iusFrameListSet(frameList,sourceElement,i);
     }
+	H5Gclose(frameList_id);
     return frameList;
 }
 
@@ -158,38 +162,55 @@ IUS_BOOL iusFrameListFull
 int iusFrameListSave
 (
     iufl_t list,
-    const char *parentPath,
     hid_t handle
 )
 {
     int status=0;
     int i,size;
     char path[IUS_MAX_HDF5_PATH];
+	hid_t group_id;
 
     if(list == NULL)
         return IUS_ERR_VALUE;
-    if(parentPath == NULL || handle == H5I_INVALID_HID)
+    if(handle == H5I_INVALID_HID)
         return IUS_ERR_VALUE;
     if(iusFrameListFull(list) == IUS_FALSE)
         return IUS_ERR_VALUE;
 
-    hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-    iuf_t sourceElement;
+
+	status = H5Gget_objinfo(handle, IUS_INPUTFILE_PATH_FRAMELIST, 0, NULL); // todo centralize the path
+	if (status != 0) // the group does not exist yet
+	{
+		group_id = H5Gcreate(handle, IUS_INPUTFILE_PATH_FRAMELIST, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+	}
+	else
+	{
+		group_id = H5Gopen(handle, IUS_INPUTFILE_PATH_FRAMELIST, H5P_DEFAULT);
+	}
+	if (group_id == H5I_INVALID_HID)
+		return IUS_ERR_VALUE;
+
+	status = 0;
+	iuf_t sourceElement;
     size = iusFrameListGetSize(list);
-    sprintf(path, FRAMELISTSIZEFMT, parentPath);
-    status |= iusHdf5WriteInt(handle, path, &(size), 1);
+    status = iusHdf5WriteInt(group_id, IUS_INPUTFILE_PATH_FRAMELIST_SIZE, &(size), 1);
+	if (status != IUS_E_OK) return IUS_ERR_VALUE;
 
     // iterate over source list elements and save'em
-    for (i=0;i < size;i++)
+    for (i=0; i < size ;i++)
     {
         sourceElement = iusFrameListGet(list,i);
         if(sourceElement == IUF_INVALID) continue;
 
-        sprintf(path, FRAMELISTFMT, parentPath, i);
-        status = iusFrameSave(sourceElement,path,group_id);
-        if(status != IUS_E_OK) break;
+        sprintf(path, IUS_INPUTFILE_PATH_FRAMELIST_FRAME, i);
+		hid_t frame_id = H5Gcreate(group_id, path, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+		
+        status = iusFrameSave(sourceElement, frame_id);
+		H5Gclose(frame_id);
+		
+		if(status != IUS_E_OK) break;
     }
 
-    status |= H5Gclose(group_id );
+    status |= H5Gclose(group_id);
     return status;
 }

@@ -10,7 +10,7 @@
 #include <ius.h>
 #include <iusError.h>
 #include <iusUtil.h>
-#include <iusParameterDictImp.h>
+#include <iusParameterDictPrivate.h>
 #include <include/iusHDF5.h>
 
 // ADT
@@ -177,7 +177,6 @@ int iusParameterDictSave
     return returnValue;
 }
 
-#define MAX_NAME 1024
 
 iupad_t iusParameterDictLoad
 (
@@ -187,14 +186,14 @@ iupad_t iusParameterDictLoad
     hsize_t nobj;
     int i;
     int status = H5Gget_num_objs(handle, &nobj);
-    char memberName[MAX_NAME];
-    char memberValue[256];
+    char memberName[IUS_MAX_HDF5_PATH];
+    char memberValue[IUS_MAX_HDF5_PATH];
     if( handle == H5I_INVALID_HID ) return IUPAD_INVALID;
 
     iupad_t dict = iusParameterDictCreate();
     for (i = 0; i < (int) nobj && status == IUS_E_OK; i++)
     {
-        H5Gget_objname_by_idx(handle, i, memberName, (size_t)MAX_NAME);
+        H5Gget_objname_by_idx(handle, i, memberName, (size_t)IUS_MAX_HDF5_PATH);
         iusHdf5ReadString(handle,memberName, memberValue);
         status = iusParameterDictSet(dict, memberName, memberValue);
     }

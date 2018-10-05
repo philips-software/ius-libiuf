@@ -2,8 +2,8 @@
 #ifndef IUSLIBRARY_IUSHLTRANSMITAPODIZATIONDICT_H
 #define IUSLIBRARY_IUSHLTRANSMITAPODIZATIONDICT_H
 
+#include <stdio.h>
 #include <iusTransmitApodization.h>
-#include <iusTransmitApodizationImp.h>
 
 // ADT
 typedef struct IusTransmitApodizationDict IusTransmitApodizationDict;
@@ -44,18 +44,6 @@ int iusTransmitApodizationDictSet
 	iuta_t member
 );
 
-herr_t iusTransmitApodizationDictSave
-(
-	iutad_t dict,
-	char *parentPath,
-	hid_t handle
-);
-
-iutad_t iusTransmitApodizationDictLoad
-(
-	hid_t handle,
-	char *parentPath
-);
 
 #endif //IUSLIBRARY_IUSHLTRANSMITAPODIZATIONDICT_H
 

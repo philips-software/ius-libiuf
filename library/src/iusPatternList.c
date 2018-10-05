@@ -4,17 +4,13 @@
 //
 #include <stdlib.h>
 #include <math.h>
-#include <include/iusPatternListImp.h>
+#include <include/iusPatternListPrivate.h>
 #include <include/ius.h>
 #include <include/iusError.h>
 #include <include/iusUtil.h>
-#include <include/iusPatternImp.h>
+#include <iusInputFileStructure.h>
+#include <include/iusPatternPrivate.h>
 #include <include/iusHDF5.h>
-
-
-#define FRAMELISTFMT "%s/Pattern[%d]"
-#define FRAMELISTSIZEFMT "%s/Size"
-
 
 // ADT
 struct IusPatternList
@@ -111,29 +107,32 @@ int iusPatternListSet
 
 iupal_t iusPatternListLoad
 (
-    hid_t handle,
-    const char *parentPath
+    hid_t handle
 )
 {
     char path[IUS_MAX_HDF5_PATH];
     int numPatterns,i;
-    sprintf(path, FRAMELISTSIZEFMT, parentPath);
-    int status = iusHdf5ReadInt(handle, path, &(numPatterns));
-    if (status!=0) return IUPAL_INVALID;
+
+	hid_t frameListId = H5Gopen(handle, IUS_INPUTFILE_PATH_PATTERNLIST, H5P_DEFAULT);
+    
+	//sprintf(path, FRAMELISTSIZEFMT, parentPath);
+    int status = iusHdf5ReadInt(frameListId, IUS_INPUTFILE_PATH_PATTERNLIST_SIZE, &(numPatterns));
+    if(status!=0) return IUPAL_INVALID;
 
     iupal_t patternList = iusPatternListCreate(numPatterns);
-    iupa_t sourceElement;
+    iupa_t pattern;
 
     // Load patterns
     for (i=0;i < numPatterns;i++)
     {
-        sprintf(path, FRAMELISTFMT, parentPath, i);
-        sourceElement = iusPatternLoad(handle,path);
-        if(sourceElement==IUPA_INVALID)
+        sprintf(path, IUS_INPUTFILE_PATH_PATTERNLIST_PATTERN, i);
+		hid_t patternId = H5Gopen(frameListId, path, H5P_DEFAULT);
+        pattern = iusPatternLoad(patternId);
+        if(pattern==IUPA_INVALID)
         {
             break;
         }
-        iusPatternListSet(patternList,sourceElement,i);
+        iusPatternListSet(patternList,pattern,i);
     }
 
     return patternList;
@@ -160,8 +159,7 @@ IUS_BOOL iusPatternListFull
 int iusPatternListSave
 (
     iupal_t list,
-    const char *parentPath,
-    hid_t handle
+	hid_t handle
 )
 {
     int status=0;
@@ -170,29 +168,41 @@ int iusPatternListSave
 
     if(list == NULL)
         return IUS_ERR_VALUE;
-    if(parentPath == NULL || handle == H5I_INVALID_HID)
+    if(handle == H5I_INVALID_HID)
         return IUS_ERR_VALUE;
     if(iusPatternListFull(list) == IUS_FALSE)
         return IUS_ERR_VALUE;
-
-    hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-    iupa_t sourceElement;
+	
+	hid_t patternList_id;
+	status = H5Gget_objinfo(handle, IUS_INPUTFILE_PATH_PATTERNLIST, 0, NULL); // todo centralize the path "Sources"
+	if (status != 0) // the group does not exist yet
+	{
+		patternList_id = H5Gcreate(handle, IUS_INPUTFILE_PATH_PATTERNLIST, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+	}
+	else
+	{
+		patternList_id = H5Gopen(handle, IUS_INPUTFILE_PATH_PATTERNLIST, H5P_DEFAULT);
+	}
+    //hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+    iupa_t pattern;
     size = iusPatternListGetSize(list);
-    sprintf(path, FRAMELISTSIZEFMT, parentPath);
-    status |= iusHdf5WriteInt(handle, path, &(size), 1);
+    //sprintf(path, FRAMELISTSIZEFMT, parentPath);
+    status |= iusHdf5WriteInt(patternList_id, IUS_INPUTFILE_PATH_PATTERNLIST_SIZE, &(size), 1);
 
     // iterate over source list elements and save'em
     for (i=0;i < size;i++)
     {
-        sourceElement = iusPatternListGet(list,i);
-        if(sourceElement == IUPA_INVALID) continue;
-
-        sprintf(path, FRAMELISTFMT, parentPath, i);
-        status = iusPatternSave(sourceElement,path,group_id);
+		pattern = iusPatternListGet(list,i);
+        if(pattern == IUPA_INVALID) continue;
+		sprintf(path, IUS_INPUTFILE_PATH_PATTERNLIST_PATTERN, i);
+		hid_t pattern_id = H5Gcreate(patternList_id, path, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+        //sprintf(path, FRAMELISTFMT, parentPath, i);
+        status = iusPatternSave(pattern, pattern_id);
+		H5Gclose(pattern_id);
         if(status != IUS_E_OK) break;
     }
 
-    status |= H5Gclose(group_id );
+    status |= H5Gclose(patternList_id);
     return status;
 }
 

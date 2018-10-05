@@ -2,6 +2,7 @@
 // Created by nlv09165 on 25/04/2018.
 //
 #include <stdlib.h>
+#include <string.h>
 #include <memory.h>
 #include <math.h>
 
@@ -9,8 +10,9 @@
 #include <iusError.h>
 #include <iusTypes.h>
 #include <iusUtil.h>
-#include <iusReceiveSettingsImp.h>
-#include <iusTGCImp.h>
+#include <iusInputFileStructure.h>
+#include <iusReceiveSettingsPrivate.h>
+#include <iusTGCPrivate.h>
 #include <include/iusHDF5.h>
 
 struct IusReceiveSettings
@@ -22,13 +24,6 @@ struct IusReceiveSettings
     float   *startDelay;            /**< The start delay of RFlines, array length is the number of pulses per frame, values are in seconds */
     int      numSamplesPerLine;     /**< length of an acquisition line */
 } ;
-
-#define TGCFMT "%s/TGC"
-#define LABELFMT "%s/Label"
-#define SAMPLEFREQUENCYFMT "%s/sampleFrequency"
-#define NUMDELAYSFMT "%s/numDelays"
-#define STARTDELAYFMT "%s/startDelay"
-#define NUMSAMPLESPERLINE "%s/numSamplesPerLine"
 
 // ADT
 iurs_t iusReceiveSettingsCreate
@@ -47,8 +42,13 @@ iurs_t iusReceiveSettingsCreate
     if( numSamplesPerLine < 0 ) return IURS_INVALID;
     if( numTGCentries <= 0 ) return IURS_INVALID;
 
-    iurs_t created = calloc(1,sizeof(IusReceiveSettings));
-    created->pLabel = strdup(pLabel);
+	iurs_t created = calloc(1,sizeof(IusReceiveSettings));
+	created->pLabel = NULL;
+	created->pLabel = strdup(pLabel);
+	if (created->pLabel == NULL)
+	{
+		return NULL;
+	}
     created->sampleFrequency = sampleFrequency;
     created->startDelay = (float *) calloc(numDelays, sizeof(float));
     created->numSamplesPerLine = numSamplesPerLine;
@@ -180,35 +180,27 @@ int iusReceiveSettingsSetStartDelay
 int iusReceiveSettingsSave
 (
     iurs_t iusReceiveSettings,
-    char *parentPath,
     hid_t handle
 )
 {
-    int status=IUS_E_OK;
-    char path[IUS_MAX_HDF5_PATH];
+	int status = 0;
 
-    hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-    sprintf(path, LABELFMT, parentPath);
-    status |= iusHdf5WriteString(group_id, path, iusReceiveSettings->pLabel);
-    sprintf(path, SAMPLEFREQUENCYFMT, parentPath);
-    status |= iusHdf5WriteFloat( group_id, path, &(iusReceiveSettings->sampleFrequency), 1);
-    sprintf(path, NUMDELAYSFMT, parentPath);
-    status |= iusHdf5WriteInt( group_id, path, &(iusReceiveSettings->numDelays), 1);
-    sprintf(path, NUMSAMPLESPERLINE, parentPath);
-    status |= iusHdf5WriteInt( group_id, path, &(iusReceiveSettings->numSamplesPerLine), 1);
-    sprintf(path, STARTDELAYFMT, parentPath);
-    status |= iusHdf5WriteFloat( group_id, path, iusReceiveSettings->startDelay, iusReceiveSettings->numDelays);
-    sprintf(path, TGCFMT, parentPath);
-    status |= iusTGCSave( iusReceiveSettings->TGC, path, group_id );
-    status |= H5Gclose(group_id );
+    status |= iusHdf5WriteString(handle, IUS_INPUTFILE_PATH_RECEIVESETTINGS_LABEL, iusReceiveSettings->pLabel);
+    status |= iusHdf5WriteFloat(handle, IUS_INPUTFILE_PATH_RECEIVESETTINGS_SAMPLEFREQUENCY, &(iusReceiveSettings->sampleFrequency), 1);
+    status |= iusHdf5WriteInt(handle, IUS_INPUTFILE_PATH_RECEIVESETTINGS_NUMDELAYS, &(iusReceiveSettings->numDelays), 1);
+    status |= iusHdf5WriteInt(handle, IUS_INPUTFILE_PATH_RECEIVESETTINGS_NUMSAMPLESPERLINE, &(iusReceiveSettings->numSamplesPerLine), 1);
+    status |= iusHdf5WriteFloat(handle, IUS_INPUTFILE_PATH_RECEIVESETTINGS_STATRDELAY, iusReceiveSettings->startDelay, iusReceiveSettings->numDelays);
+	
+	hid_t tgc_id = H5Gcreate(handle, IUS_INPUTFILE_PATH_RECEIVESETTINGS_TGC, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+    status |= iusTGCSave( iusReceiveSettings->TGC, tgc_id);
+	H5Gclose(tgc_id);
+    
     return status;
 }
 
 iurs_t iusReceiveSettingsLoad
 (
-    hid_t handle,
-    char *parentPath,
-    char *label
+    hid_t handle
 )
 {
     float sampleFrequency;
@@ -216,32 +208,31 @@ iurs_t iusReceiveSettingsLoad
     int numSamplesPerLine;
     int numTGCentries;
     int status=0;
-    char path[IUS_MAX_HDF5_PATH];
-
+    char label[IUS_MAX_HDF5_PATH];
+	
     iutgc_t tgc;
     iurs_t iusReceiveSettings;
-
-    sprintf(path, SAMPLEFREQUENCYFMT, parentPath);
-    status |= iusHdf5ReadFloat( handle, path, &sampleFrequency);
-    sprintf(path, NUMDELAYSFMT, parentPath);
-    status |= iusHdf5ReadInt( handle, path, &numDelays);
-    sprintf(path, NUMSAMPLESPERLINE, parentPath);
-    status |= iusHdf5ReadInt( handle, path, &numSamplesPerLine);
+	
+    status |= iusHdf5ReadFloat(handle, IUS_INPUTFILE_PATH_RECEIVESETTINGS_SAMPLEFREQUENCY, &sampleFrequency);
+    status |= iusHdf5ReadInt(handle, IUS_INPUTFILE_PATH_RECEIVESETTINGS_NUMDELAYS, &numDelays);
+    status |= iusHdf5ReadInt(handle, IUS_INPUTFILE_PATH_RECEIVESETTINGS_NUMSAMPLESPERLINE, &numSamplesPerLine);
     if ( status != 0 ) return IURS_INVALID;
 
-    sprintf(path, TGCFMT, parentPath);
-    tgc = iusTGCLoad(handle, path);
+	status |= iusHdf5ReadString(handle, IUS_INPUTFILE_PATH_RECEIVESETTINGS_LABEL, label);
+	hid_t tgc_id = H5Gopen(handle, IUS_INPUTFILE_PATH_RECEIVESETTINGS_TGC, H5P_DEFAULT);
+    tgc = iusTGCLoad(tgc_id);
+	H5Gclose(tgc_id);
     if ( tgc == IUTGC_INVALID ) return IURS_INVALID;
-    numTGCentries = iusTGCGetNumValues(tgc);
 
+    numTGCentries = iusTGCGetNumValues(tgc);
     iusReceiveSettings = iusReceiveSettingsCreate(label,sampleFrequency,numDelays,numSamplesPerLine,numTGCentries);
 
-    sprintf(path, STARTDELAYFMT, parentPath);
-    status |= iusHdf5ReadFloat(handle,path,iusReceiveSettings->startDelay);
+    status |= iusHdf5ReadFloat(handle, IUS_INPUTFILE_PATH_RECEIVESETTINGS_STATRDELAY, iusReceiveSettings->startDelay); //todo: understand why startDelay is not in iusReceiveSettingsCreate
     if ( status != 0 )
     {
         iusReceiveSettingsDelete(iusReceiveSettings);
         iusReceiveSettings = IURS_INVALID;
     }
+
     return iusReceiveSettings;
 }

@@ -10,9 +10,9 @@
 #include <ius.h>
 #include <iusError.h>
 #include <iusTypes.h>
-#include <include/iusTransducerImp.h>
-#include <include/ius2DTransducerImp.h>
-#include <include/ius3DTransducerImp.h>
+#include <include/iusTransducerPrivate.h>
+#include <include/ius2DTransducerPrivate.h>
+#include <include/ius3DTransducerPrivate.h>
 
 TEST_GROUP(IusTransducer);
 
@@ -30,7 +30,6 @@ TEST(IusTransducer, testIusTransducerDelete)
     char *pTransducerName = "created in testIusTransducerDelete";   /**< descriptive name of the ultrasound probe */
     float centerFrequency = 8000000;   /**< operating frequency of the transducer */
     int numElements = 1;          /**< number of transducer Elements in the probe */
-    IusTransducerShape shape = IUS_PLANE;
     iut_t _3dTransducer;
     iut_t _2dTransducer;
 
@@ -52,7 +51,6 @@ TEST(IusTransducer, testIusTransducerCompare)
     char *pTransducerName = "created in testIusTransducerCompare";   /**< descriptive name of the ultrasound probe */
     float centerFrequency = 8000000;   /**< operating frequency of the transducer */
     int numElements = 1;          /**< number of transducer Elements in the probe */
-    IusTransducerShape shape = IUS_PLANE;
     iut_t _3dTransducer, _3dTransducerDuplicate;
     iut_t _2dTransducer
     ;
@@ -124,7 +122,6 @@ TEST(IusTransducer, testIusTransducerSerialization)
 {
 	int status = 0;
 	char *filename = "testIusTransducerSerialization.hdf5";
-	char *path = "/Transducer";
 	char *transducerName = "S5-1";
 	float centerfrequency = 2500000.0f;
 	const int numTransducerElements = 128;
@@ -146,13 +143,13 @@ TEST(IusTransducer, testIusTransducerSerialization)
 	// save
 	hid_t handle = H5Fcreate(filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
 	TEST_ASSERT(handle > 0);
-	status = iusTransducerSave(transducer, path, handle);
+	status = iusTransducerSave(transducer, handle);
 	H5Fclose(handle);
 	TEST_ASSERT_EQUAL(IUS_E_OK, status);
 
     // read back
     handle = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT );
-    iut_t savedObj = iusTransducerLoad(handle, path);
+    iut_t savedObj = iusTransducerLoad(handle);
     TEST_ASSERT_NOT_EQUAL(NULL, savedObj);
     H5Fclose(handle);
 

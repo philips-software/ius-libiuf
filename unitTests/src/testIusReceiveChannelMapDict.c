@@ -7,7 +7,7 @@
 
 #include <hdf5.h>
 #include <ius.h>
-#include <iusReceiveChannelMapDictImp.h>
+#include <iusReceiveChannelMapDictPrivate.h>
 
 TEST_GROUP(IusReceiveChannelMapDict);
 
@@ -73,7 +73,7 @@ TEST(IusReceiveChannelMapDict, testIusReceiveChannelMapDictCompare)
 TEST(IusReceiveChannelMapDict, testIusReceiveChannelMapDictSerialization)
 {
 	char *filename = "testIusReceiveChannelMapSerialization.hdf5";
-	char *ReceiveChannelMapDictPath = "/ReceiveChannelMap";
+	//char *ReceiveChannelMapDictPath = "/ReceiveChannelMap";
 
 	int numChannels = 8;
 	char *label = "one-to-one";
@@ -88,13 +88,13 @@ TEST(IusReceiveChannelMapDict, testIusReceiveChannelMapDictSerialization)
 
 	hid_t handle = H5Fcreate(filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
 	TEST_ASSERT(handle > 0);
-	status = iusReceiveChannelMapDictSave(receiveChannelMapDict, ReceiveChannelMapDictPath, handle);
+	status = iusReceiveChannelMapDictSave(receiveChannelMapDict, handle);
 	H5Fclose(handle);
 	TEST_ASSERT_EQUAL(IUS_E_OK, status);
 
 	// read back
 	handle = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT);
-	iurcmd_t savedDict = iusReceiveChannelMapDictLoad(handle, ReceiveChannelMapDictPath);
+	iurcmd_t savedDict = iusReceiveChannelMapDictLoad(handle);
 	TEST_ASSERT_NOT_EQUAL(NULL, savedDict);
 	H5Fclose(handle);
 

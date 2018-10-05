@@ -2,8 +2,8 @@
 #ifndef IUSLIBRARY_IUSHLRECEIVECHANNELMAPDICT_H
 #define IUSLIBRARY_IUSHLRECEIVECHANNELMAPDICT_H
 
+#include <stdio.h>
 #include <iusReceiveChannelMap.h>
-#include <iusReceiveChannelMapImp.h>
 
 // ADT
 typedef struct IusReceiveChannelMapDict IusReceiveChannelMapDict;

@@ -10,7 +10,7 @@
 #include <include/iusError.h>
 #include <include/iusTypes.h>
 #include <include/iusPosition.h>
-#include "include/ius2DParametricSourceImp.h"
+#include "include/ius2DParametricSourcePrivate.h"
 
 TEST_GROUP(Ius2DParametricSource);
 
@@ -31,17 +31,17 @@ TEST(Ius2DParametricSource, testIus2DParametricSourceCreate)
     char *pLabel = "label for 2d parametric source";
     int numLocations = 5 ;
 
-    iu2dps_t obj = ius2DParametricSourceCreate(pLabel, numLocations, FNumber, angularDelta, startAngle);
-    iu2dps_t notherObj = ius2DParametricSourceCreate(pLabel, numLocations, FNumber, angularDelta, startAngle);
+    iu2dps_t obj = ius2DParametricSourceCreate(numLocations, FNumber, angularDelta, startAngle);
+    iu2dps_t notherObj = ius2DParametricSourceCreate(numLocations, FNumber, angularDelta, startAngle);
     TEST_ASSERT(obj != IU2DPS_INVALID);
     TEST_ASSERT(notherObj != IU2DPS_INVALID);
     ius2DParametricSourceDelete(obj);
     ius2DParametricSourceDelete(notherObj);
 
     // invalid params
-    obj = ius2DParametricSourceCreate(NULL, 0, -1, 2.0f, 0);
+    obj = ius2DParametricSourceCreate(0, -1, 2.0f, 0);
     TEST_ASSERT(obj == IU2DPS_INVALID);
-    obj = ius2DParametricSourceCreate(NULL, 0, 1, -2.0f, 0);
+    obj = ius2DParametricSourceCreate(0, 1, -2.0f, 0);
     TEST_ASSERT(obj == IU2DPS_INVALID);
 }
 
@@ -53,7 +53,7 @@ TEST(Ius2DParametricSource, testIus2DParametricSourceDelete)
     char *pLabel = "label for 2d parametric source";
     int numLocations = 5;
 
-    iu2dps_t obj = ius2DParametricSourceCreate(pLabel, numLocations, FNumber, angularDelta, startAngle);
+    iu2dps_t obj = ius2DParametricSourceCreate(numLocations, FNumber, angularDelta, startAngle);
     TEST_ASSERT(obj != IU2DPS_INVALID);
     int status = ius2DParametricSourceDelete(obj);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
@@ -74,10 +74,10 @@ TEST(Ius2DParametricSource, testIus2DParametricSourceCompare)
     char *pLabel = "label for 2d parametric source";
     int numLocations = 5;
 
-    iu2dps_t obj = ius2DParametricSourceCreate(pLabel, numLocations, FNumber, angularDelta, startAngle);
-    iu2dps_t notherObj = ius2DParametricSourceCreate(pLabel, numLocations, FNumber, angularDelta, startAngle);
+    iu2dps_t obj = ius2DParametricSourceCreate(numLocations, FNumber, angularDelta, startAngle);
+    iu2dps_t notherObj = ius2DParametricSourceCreate(numLocations, FNumber, angularDelta, startAngle);
     iu2dps_t differentObj =
-    ius2DParametricSourceCreate(pLabel, numLocations, FNumber + 0.01f, angularDelta, startAngle);
+    ius2DParametricSourceCreate(numLocations, FNumber + 0.01f, angularDelta, startAngle);
     TEST_ASSERT(obj != IU2DPS_INVALID);
     TEST_ASSERT(notherObj != IU2DPS_INVALID);
     equal = ius2DParametricSourceCompare(obj,obj);
@@ -110,14 +110,14 @@ TEST(Ius2DParametricSource, testIus2DParametricSourceCompare)
 
 TEST(Ius2DParametricSource, testIus2DParametricSourceSetGet)
 {
-    IUS_BOOL equal;
+    //IUS_BOOL equal;
     float angularDelta = 0.13f;
     float FNumber = -0.955f;
     float startAngle = 3.14f;
     char *pLabel = "label for 2d parametric source";
     int p,numLocations = 5;
 
-    iu2dps_t obj = ius2DParametricSourceCreate(pLabel, numLocations, FNumber, angularDelta, startAngle);
+    iu2dps_t obj = ius2DParametricSourceCreate(numLocations, FNumber, angularDelta, startAngle);
 
     TEST_ASSERT_EQUAL_FLOAT(FNumber,ius2DParametricSourceGetFNumber(obj));
     TEST_ASSERT_EQUAL_FLOAT(angularDelta,ius2DParametricSourceGetAngularDelta(obj));
@@ -126,7 +126,7 @@ TEST(Ius2DParametricSource, testIus2DParametricSourceSetGet)
     // Set/Get location test
     for(p=0; p<numLocations; p++)
     {
-        iu2dp_t pos = ius2DPositionCreate(p*1.0,p*3.0);
+        iu2dp_t pos = ius2DPositionCreate(p*1.0f,p*3.0f);
         ius2DParametricSourceSetPosition(obj,pos,p);
         iu2dp_t get = ius2DParametricSourceGetPosition(obj,p);
         TEST_ASSERT_EQUAL(IUS_TRUE, ius2DPositionCompare(pos,get));
@@ -147,9 +147,9 @@ TEST(Ius2DParametricSource, testIus2DParametricSourceSetGet)
 TEST(Ius2DParametricSource, testIus2DParametricSourceSerialization)
 {
     char *filename = "testIus2DParametricSourceSerialization.hdf5";
-    char *sourcePath =  "/2DParametricSource";
+    //char *sourcePath =  "/2DParametricSource";
 
-    IUS_BOOL equal;
+    //IUS_BOOL equal;
     float angularDelta = 0.13f;
     float FNumber = -0.955f;
     float startAngle = 3.14f;
@@ -159,7 +159,7 @@ TEST(Ius2DParametricSource, testIus2DParametricSourceSerialization)
 
     // create
     iu2dps_t
-    obj = ius2DParametricSourceCreate(pLabel, numLocations, FNumber, angularDelta, startAngle);
+    obj = ius2DParametricSourceCreate(numLocations, FNumber, angularDelta, startAngle);
 
     // fill
     TEST_ASSERT_EQUAL_FLOAT(FNumber, ius2DParametricSourceGetFNumber(obj));
@@ -168,7 +168,7 @@ TEST(Ius2DParametricSource, testIus2DParametricSourceSerialization)
 
     for (p = 0; p < numLocations; p++)
     {
-        iu2dp_t pos = ius2DPositionCreate(p * 1.0, p * 3.0);
+        iu2dp_t pos = ius2DPositionCreate(p * 1.0f, p * 3.0f);
         ius2DParametricSourceSetPosition(obj, pos, p);
         iu2dp_t get = ius2DParametricSourceGetPosition(obj, p);
         TEST_ASSERT_EQUAL(IUS_TRUE, ius2DPositionCompare(pos, get));
@@ -177,13 +177,13 @@ TEST(Ius2DParametricSource, testIus2DParametricSourceSerialization)
     // save
     hid_t handle = H5Fcreate( filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT );
     TEST_ASSERT(handle > 0);
-    status = ius2DParametricSourceSave(obj, sourcePath, handle);
+    status = ius2DParametricSourceSave(obj, handle);
     H5Fclose(handle);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
     // read back
     handle = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT );
-    iu2dps_t savedObj = ius2DParametricSourceLoad(handle, sourcePath, pLabel);
+    iu2dps_t savedObj = ius2DParametricSourceLoad(handle);
     H5Fclose(handle);
 
     TEST_ASSERT_EQUAL(IUS_TRUE, ius2DParametricSourceCompare(obj,savedObj));

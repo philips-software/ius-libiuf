@@ -5,8 +5,8 @@
 // ADT
 typedef struct Ius3DAngle
 {
-	float theta; /**< rotation over z axis */
-	float phi;   /**< rotation over x axis */
+	float theta; /**< rotation around y axis */
+	float phi;   /**< rotation round x axis */
 } Ius3DAngle;
 
 typedef Ius3DAngle *iu3da_t;

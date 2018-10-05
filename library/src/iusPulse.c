@@ -12,15 +12,13 @@
 #include <iusHDF5.h>
 #include <iusUtil.h>
 #include <iusError.h>
+#include <iusInputFileStructure.h>
 #include <iusPulse.h>
-#include <iusPulseImp.h>
-#include <iusParametricPulseImp.h>
-#include <iusNonParametricPulseImp.h>
+#include <iusPulsePrivate.h>
+#include <iusParametricPulsePrivate.h>
+#include <iusNonParametricPulsePrivate.h>
 
 
-
-#define PULSETYPEFMT "%s/pulseType"
-#define LABELFMT "%s/pulseLabel"
 #define TOSTR(x)    #x
 
 
@@ -158,19 +156,13 @@ static int iusReadPulseType
 int iusBasePulseSave
 (
     iup_t pulse,
-    char *parentPath,
     hid_t handle
 )
 {
     int status=IUS_E_OK;
-    char path[IUS_MAX_HDF5_PATH];
 
-    hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-    sprintf(path, PULSETYPEFMT, parentPath);
-    status |= iusWritePulseType(group_id, path, pulse->type);
-    sprintf(path, LABELFMT, parentPath);
-    status |= iusHdf5WriteString(group_id, path, pulse->label);
-    status |= H5Gclose(group_id );
+	status |= iusWritePulseType(handle, IUS_INPUTFILE_PATH_PULSE_PULSETYPE, pulse->type);
+    status |= iusHdf5WriteString(handle, IUS_INPUTFILE_PATH_PULSE_PULSELABEL, pulse->label);
     return status;
 }
 
@@ -178,55 +170,51 @@ int iusBasePulseSave
 int iusPulseSave
 (
     iup_t pulse,
-    char *parentPath,
     hid_t handle
 )
 {
     int status=IUS_ERR_VALUE;
 
-    // Make dataset for Experiment
     if( pulse->type == IUS_PARAMETRIC_PULSETYPE )
-        status = iusParametricPulseSave((iupp_t)pulse, parentPath, handle);
+        status = iusParametricPulseSave((iupp_t)pulse, handle);
 
     if( pulse->type == IUS_NON_PARAMETRIC_PULSETYPE )
-        status = iusNonParametricPulseSave((iunpp_t)pulse, parentPath, handle);
+        status = iusNonParametricPulseSave((iunpp_t)pulse, handle);
 
     return status;
 }
 
 iup_t iusBasePulseLoad
 (
-    hid_t handle,
-    char *parentPath
+	hid_t handle
 )
 {
-    int status = 0;
-    IusPulseType type;
-    char label[256];
-    char path[IUS_MAX_HDF5_PATH];
+	int status = IUS_E_OK;
+	IusPulseType type;
+	char label[IUS_MAX_HDF5_PATH];
 
-    sprintf(path, PULSETYPEFMT, parentPath);
-    status |= iusReadPulseType( handle, path, &(type));
-    sprintf(path, LABELFMT, parentPath);
-    status |= iusHdf5ReadString( handle, path, label);
-    if( status < 0 )
-        return NULL;
+	status |= iusReadPulseType(handle, IUS_INPUTFILE_PATH_PULSE_PULSETYPE, &(type));
+	status |= iusHdf5ReadString(handle, IUS_INPUTFILE_PATH_PULSE_PULSELABEL, label);
+	if (status < 0)
+		return NULL;
 
-    return iusPulseCreate(type, label);
+	return iusPulseCreate(type, label);
 }
 
 iup_t iusPulseLoad
 (
-    hid_t handle,
-    char *parentPath
+	hid_t handle
 )
 {
-    iup_t pulse=NULL;
+	iup_t pulse = NULL;
+	pulse = iusBasePulseLoad(handle);
+	if (pulse == NULL) return IUP_INVALID;
+	//todo free pulse here to prevent memory loss?
 
-    pulse = iusBasePulseLoad(handle,parentPath);
     if( pulse->type == IUS_PARAMETRIC_PULSETYPE )
-          pulse = (iup_t) iusParametricPulseLoad(handle, parentPath, pulse->label);
+        pulse = (iup_t) iusParametricPulseLoad(handle);
     if( pulse->type == IUS_NON_PARAMETRIC_PULSETYPE )
-          pulse = (iup_t) iusNonParametricPulseLoad(handle, parentPath, pulse->label);
-    return pulse;
+        pulse = (iup_t) iusNonParametricPulseLoad(handle);
+
+	return pulse;
 }

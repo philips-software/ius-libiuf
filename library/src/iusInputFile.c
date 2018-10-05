@@ -12,34 +12,23 @@
 #include <iusError.h>
 #include <iusTypes.h>
 #include <iusUtil.h>
-#include <include/iusExperimentImp.h>
-#include <include/iusInputFileImp.h>
-#include <include/iusPatternListImp.h>
-#include <include/iusPulseDictImp.h>
-#include <include/iusReceiveChannelMapDictImp.h>
+#include <include/iusExperimentPrivate.h>
+#include <include/iusInputFilePrivate.h>
+#include <include/iusPatternListPrivate.h>
+#include <include/iusPulseDictPrivate.h>
+#include <include/iusReceiveChannelMapDictPrivate.h>
 #include <include/iusFrameList.h>
 #include <include/iusSourceDict.h>
 #include <include/iusReceiveSettings.h>
 #include <include/iusTransducer.h>
-#include <include/iusFrameListImp.h>
-#include <include/iusSourceDictImp.h>
-#include <include/iusReceiveSettingsDictImp.h>
-#include <include/iusTransducerImp.h>
+#include <include/iusFrameListPrivate.h>
+#include <include/iusSourceDictPrivate.h>
+#include <include/iusReceiveSettingsDictPrivate.h>
+#include <include/iusTransducerPrivate.h>
 #include <include/iusHistoryNode.h>
-#include <include/iusHistoryNodeImp.h>
-
-static char *const FRAME_LIST_PATH = "/Frames";
-static char *const PATTERN_LIST_PATH="/Patterns";
-static char *const PULSE_DICT_PATH="/Pulses";
-static char *const PULSE_SOURCE_DICT_PATH="/PulseSources";
-static char *const RECEIVE_CHANNEL_MAP_PATH="/ReceiveChannelMaps";
-static char *const TRANSMIT_APODIZATION_DICT_PATH="/TransmitApodizations";
-static char *const RECEIVE_SETTINGS_DICT_PATH="/ReceiveSettings";
-static char *const TRANSDUCER_PATH="/Transducer";
-static char *const EXPERIMENT_PATH="/Experiment";
-static char *const NUMFRAMES_PATH="/NumFrames";
-static char *const IUSVERSION_PATH="/IusVersion";
-
+#include <include/iusHistoryNodePrivate.h>
+#include <include/iusTransmitApodizationDictPrivate.h>
+#include <include/iusInputFileStructure.h>
 
 
 struct IusInputFileInstance
@@ -60,6 +49,10 @@ struct IusInputFileInstance
     //  state variables
     hid_t               handle;                         /**< file handle */
     const char          *pFilename;
+    hid_t fileChunkConfig;                /**< file chunck handle */
+    hid_t rfDataset;                      /**< dataset handle */
+    int currentFrame;                     /**< current frame number */
+    int currentPulse;                     /**< current pulse number */
 }  ;
 
 
@@ -148,7 +141,7 @@ static iuifi_t inputFileInstanceLoad
 {
     if (instance == NULL) return IUIFI_INVALID;
 
-    instance->frameList = iusFrameListLoad(instance->handle, FRAME_LIST_PATH);
+    instance->frameList = iusFrameListLoad(instance->handle);
     if (instance->frameList == IUFL_INVALID)
     {
         fprintf(stderr, "Warning from iusInputFileLoad: could not load framelist");
@@ -156,7 +149,7 @@ static iuifi_t inputFileInstanceLoad
     }
 
     // Todo: create group @here instead of in Load, see experiment
-    instance->patternList = iusPatternListLoad(instance->handle, PATTERN_LIST_PATH);
+    instance->patternList = iusPatternListLoad(instance->handle);
     if (instance->patternList == IUPAL_INVALID)
     {
         fprintf(stderr, "Warning from iusInputFileLoad: could not load patterns: %s\n", instance->pFilename );
@@ -165,7 +158,7 @@ static iuifi_t inputFileInstanceLoad
 
     // Load instance data
     // Todo: create group @here instead of in Load, see experiment
-    instance->pulseDict = iusPulseDictLoad(instance->handle, PULSE_DICT_PATH);
+    instance->pulseDict = iusPulseDictLoad(instance->handle);
     if (instance->pulseDict == IUPD_INVALID)
     {
         fprintf( stderr, "Warning from iusInputFileLoad: could not load pulses: %s\n", instance->pFilename );
@@ -174,7 +167,7 @@ static iuifi_t inputFileInstanceLoad
 
     // Load instance data
     // Todo: create group @here instead of in Load, see experiment
-    instance->pulseSourceDict = iusSourceDictLoad(instance->handle, PULSE_SOURCE_DICT_PATH);
+    instance->pulseSourceDict = iusSourceDictLoad(instance->handle);
     if (instance->pulseSourceDict == IUSD_INVALID)
     {
         fprintf( stderr, "Warning from iusInputFileLoad: could not load pulse sources: %s\n", instance->pFilename );
@@ -183,7 +176,7 @@ static iuifi_t inputFileInstanceLoad
 
     // Load instance data
     // Todo: create group @here instead of in Load, see experiment
-    instance->receiveChannelMapDict = iusReceiveChannelMapDictLoad(instance->handle, RECEIVE_CHANNEL_MAP_PATH);
+    instance->receiveChannelMapDict = iusReceiveChannelMapDictLoad(instance->handle);
     if (instance->receiveChannelMapDict == IURCMD_INVALID)
     {
         fprintf(stderr, "Warning from iusInputFileLoad: could not load receiveChannelMap: %s\n", instance->pFilename);
@@ -192,7 +185,7 @@ static iuifi_t inputFileInstanceLoad
 
     // Load instance data
     // Todo: create group @here instead of in Load, see experiment
-    instance->transmitApodizationDict = iusTransmitApodizationDictLoad(instance->handle, TRANSMIT_APODIZATION_DICT_PATH);
+    instance->transmitApodizationDict = iusTransmitApodizationDictLoad(instance->handle);
     if (instance->transmitApodizationDict == IUTAD_INVALID)
     {
         fprintf(stderr, "Warning from iusInputFileLoad: could not load transmitApodizationDict: %s\n", instance->pFilename);
@@ -201,16 +194,15 @@ static iuifi_t inputFileInstanceLoad
 
     // Load instance data
     // Todo: create group @here instead of in Load, see experiment
-    instance->receiveSettingsDict = iusReceiveSettingsDictLoad(instance->handle, RECEIVE_SETTINGS_DICT_PATH);
+    instance->receiveSettingsDict = iusReceiveSettingsDictLoad(instance->handle);
     if (instance->receiveSettingsDict == IURSD_INVALID)
     {
         fprintf(stderr, "Warning from iusInputFileLoad: could not load receiveSettingsDict: %s\n", instance->pFilename);
         return IUIFI_INVALID;
     }
 
-    hid_t group_id = H5Gopen(instance->handle, EXPERIMENT_PATH, H5P_DEFAULT);
-    instance->experiment = iusExperimentLoad(group_id);
-    H5Gclose(group_id);
+
+    instance->experiment = iusExperimentLoad(instance->handle);
     if (instance->experiment == IUE_INVALID)
     {
         fprintf(stderr, "Warning from iusInputFileLoad: could not load experiment: %s\n", instance->pFilename);
@@ -219,26 +211,27 @@ static iuifi_t inputFileInstanceLoad
 
     // Load instance data
     // Todo: create group @here instead of in Load, see experiment
-    instance->transducer = iusTransducerLoad(instance->handle, TRANSDUCER_PATH);
+    instance->transducer = iusTransducerLoad(instance->handle);
     if (instance->transducer == IUT_INVALID)
     {
         fprintf(stderr, "Warning from iusInputFileLoad: could not load transducer: %s\n", instance->pFilename);
         return IUIFI_INVALID;
     }
 
-    int status = iusHdf5ReadInt( instance->handle, IUSVERSION_PATH, &(instance->IusVersion));
+    int status = iusHdf5ReadInt( instance->handle, IUS_INPUTFILE_PATH_IUSVERSION, &(instance->IusVersion));
     if( status != IUS_E_OK )
     {
         fprintf(stderr, "Warning from iusInputFileLoad: could not load IusVersion: %s\n", instance->pFilename);
         return IUIFI_INVALID;
     }
 
-    status = iusHdf5ReadInt( instance->handle, NUMFRAMES_PATH, &(instance->numFrames));
+    status = iusHdf5ReadInt( instance->handle, IUS_INPUTFILE_PATH_NUMFRAMES, &(instance->numFrames));
     if( status != IUS_E_OK )
     {
         fprintf(stderr, "Warning from iusInputFileLoad: could not load numFrames: %s\n", instance->pFilename);
         return IUIFI_INVALID;
     }
+
 
     return instance;
 }
@@ -302,20 +295,18 @@ int iusInputFileSaveInstance
 )
 {
     herr_t status=0;
-    status |= iusFrameListSave(instanceData->frameList, FRAME_LIST_PATH, handle);
-    status |= iusPatternListSave(instanceData->patternList, PATTERN_LIST_PATH, handle);
-    status |= iusPulseDictSave(instanceData->pulseDict, PULSE_DICT_PATH, handle);
-    status |= iusSourceDictSave(instanceData->pulseSourceDict, PULSE_SOURCE_DICT_PATH, handle);
-    status |= iusReceiveChannelMapDictSave(instanceData->receiveChannelMapDict, RECEIVE_CHANNEL_MAP_PATH, handle);
-    status |= iusTransmitApodizationDictSave(instanceData->transmitApodizationDict, TRANSMIT_APODIZATION_DICT_PATH, handle);
-    status |= iusReceiveSettingsDictSave(instanceData->receiveSettingsDict, RECEIVE_SETTINGS_DICT_PATH, handle);
+    status |= iusFrameListSave(instanceData->frameList, handle);
+    status |= iusPatternListSave(instanceData->patternList, handle);
+    status |= iusPulseDictSave(instanceData->pulseDict, handle);
+    status |= iusSourceDictSave(instanceData->pulseSourceDict, handle);
+    status |= iusReceiveChannelMapDictSave(instanceData->receiveChannelMapDict, handle);
+    status |= iusTransmitApodizationDictSave(instanceData->transmitApodizationDict, handle);
+    status |= iusReceiveSettingsDictSave(instanceData->receiveSettingsDict, handle);
 
-    hid_t group_id = H5Gcreate(instanceData->handle, EXPERIMENT_PATH, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-    status |= iusExperimentSave(instanceData->experiment, group_id);
-    status |= H5Gclose(group_id);
-    status |= iusTransducerSave(instanceData->transducer, TRANSDUCER_PATH, instanceData->handle);
-    status |= iusHdf5WriteInt( instanceData->handle, IUSVERSION_PATH, &(instanceData->IusVersion), 1);
-    status |= iusHdf5WriteInt( instanceData->handle, NUMFRAMES_PATH, &(instanceData->numFrames), 1);
+    status |= iusExperimentSave(instanceData->experiment, handle);
+    status |= iusTransducerSave(instanceData->transducer, instanceData->handle);
+    status |= iusHdf5WriteInt( instanceData->handle, IUS_INPUTFILE_PATH_IUSVERSION, &(instanceData->IusVersion), 1);
+    status |= iusHdf5WriteInt( instanceData->handle, IUS_INPUTFILE_PATH_NUMFRAMES, &(instanceData->numFrames), 1);
     return status;
 }
 

@@ -10,7 +10,8 @@
 #include <ius.h>
 #include <iusError.h>
 #include <iusUtil.h>
-#include <iusReceiveSettingsImp.h>
+#include <iusInputFileStructure.h>
+#include <iusReceiveSettingsPrivate.h>
 #include <iusReceiveSettingsDict.h>
 
 // ADT
@@ -153,40 +154,43 @@ int iusReceiveSettingsDictSet
 
 
 // serialization
-#define NUMPULSEVALUESFMT  "%s/numReceiveSettingsValues"
-#define PULSEAMPLITUDESFMT "%s/rawReceiveSettingsAmplitudes"
-#define PULSETIMESFMT      "%s/rawReceiveSettingsTimes"
 
-
-#define LABELPATH          "%s/%s"
 int iusReceiveSettingsDictSave
 (
     iursd_t dict,
-    char *parentPath,
     hid_t handle
 )
 {
     int status=0;
-    char path[IUS_MAX_HDF5_PATH];
     struct hashmap_iter *iter;
+	hid_t group_id;
 
     if(dict == NULL)
         return IUS_ERR_VALUE;
-    if(parentPath == NULL || handle == H5I_INVALID_HID)
+    if(handle == H5I_INVALID_HID)
         return IUS_ERR_VALUE;
 
+	status = H5Gget_objinfo(handle, IUS_INPUTFILE_PATH_RECEIVESETTINGSDICT, 0, NULL); // todo centralize the path
+	if (status != 0) // the group does not exist yet
+	{
+		group_id = H5Gcreate(handle, IUS_INPUTFILE_PATH_RECEIVESETTINGSDICT, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+	}
+	else
+	{
+		group_id = H5Gopen(handle, IUS_INPUTFILE_PATH_RECEIVESETTINGSDICT, H5P_DEFAULT);
+	}
+	if (group_id == H5I_INVALID_HID)
+		return IUS_ERR_VALUE;
+	status = 0;
+    HashableReceiveSettings *receiveSettingsDictItem;
 
-
-    hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-    HashableReceiveSettings *sourceElement;
-    char *label;
     // iterate over source list elements and save'em
-    for (iter = hashmap_iter(&dict->map); iter; iter = hashmap_iter_next(&dict->map, iter))
+    for (iter = hashmap_iter(&dict->map); iter && status == 0; iter = hashmap_iter_next(&dict->map, iter))
     {
-        sourceElement = HashableReceiveSettings_hashmap_iter_get_data(iter);
-        label = iusReceiveSettingsGetLabel(sourceElement->receiveSettings);
-        sprintf(path, LABELPATH, parentPath, label);
-        iusReceiveSettingsSave(sourceElement->receiveSettings,path,handle);
+		receiveSettingsDictItem = HashableReceiveSettings_hashmap_iter_get_data(iter);
+		hid_t subgroup_id = H5Gcreate(group_id, receiveSettingsDictItem->key, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+        status = iusReceiveSettingsSave(receiveSettingsDictItem->receiveSettings, subgroup_id);
+		status |= H5Gclose(subgroup_id);
     }
 
     status |= H5Gclose(group_id );
@@ -198,18 +202,15 @@ int iusReceiveSettingsDictSave
 
 iursd_t iusReceiveSettingsDictLoad
 (
-    hid_t handle,
-    const char *parentPath
+    hid_t handle
 )
 {
     int i;
     int status = 0;
-    char path[IUS_MAX_HDF5_PATH];
     char memb_name[MAX_NAME];
 
-
-    hid_t grpid = H5Gopen(handle, parentPath, H5P_DEFAULT);
-    if(parentPath == NULL || handle == H5I_INVALID_HID || grpid == H5I_INVALID_HID)
+    hid_t grpid = H5Gopen(handle, IUS_INPUTFILE_PATH_RECEIVESETTINGSDICT, H5P_DEFAULT);
+    if (handle == H5I_INVALID_HID)
         return NULL;
 
     hsize_t nobj;
@@ -218,15 +219,16 @@ iursd_t iusReceiveSettingsDictLoad
     iursd_t dict = iusReceiveSettingsDictCreate();
     for (i = 0; i < (int) nobj; i++)
     {
-        H5Gget_objname_by_idx(grpid, (hsize_t) i,
-                                    memb_name, (size_t) MAX_NAME);
-        sprintf(path,"%s/%s", parentPath,memb_name);
-        iurs_t receiveSettings = iusReceiveSettingsLoad(handle,path,memb_name);
+        H5Gget_objname_by_idx(grpid, (hsize_t) i, memb_name, (size_t) MAX_NAME);
+     
+		hid_t settings_id = H5Gopen(grpid, memb_name, H5P_DEFAULT);
+        iurs_t receiveSettings = iusReceiveSettingsLoad(settings_id);
         status = iusReceiveSettingsDictSet(dict, memb_name, receiveSettings);
+		H5Gclose(settings_id);
     }
-
-    H5Gclose(handle);
-    if( status != IUS_E_OK )
+    H5Gclose(grpid);
+    
+	if (status != IUS_E_OK)
     {
         return NULL;
     }

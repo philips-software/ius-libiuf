@@ -7,7 +7,7 @@
 
 #include <hdf5.h>
 #include <ius.h>
-#include <iusSourceDictImp.h>
+#include <iusSourceDictPrivate.h>
 #include <include/ius3DParametricSource.h>
 #include <include/ius3DNonParametricSource.h>
 
@@ -47,15 +47,15 @@ TEST(IusSourceDict, testIusCompareSourceDict)
     float startAngle = 3.14f;
     float startPhi = startAngle;
     float deltaPhi = angularDelta;
-    iu3dps_t parametricSource = ius3DParametricSourceCreate(_3d_parametric_label, locationCount, FNumber,
-                                                        angularDelta, startAngle, deltaPhi, startPhi);
+    iu3dps_t parametricSource = ius3DParametricSourceCreate(locationCount, FNumber,
+                                                            angularDelta, startAngle, deltaPhi, startPhi);
 
     TEST_ASSERT(parametricSource != IU3DPS_INVALID);
-    iu3dps_t _nother3dps = ius3DParametricSourceCreate(_3d_parametric_label, locationCount, FNumber,
-                                                              angularDelta, startAngle, deltaPhi, startPhi);
+    iu3dps_t _nother3dps = ius3DParametricSourceCreate(locationCount, FNumber,
+                                                       angularDelta, startAngle, deltaPhi, startPhi);
 
     TEST_ASSERT(_nother3dps != IU3DPS_INVALID);
-    iu3dnps_t nonParametricSource = ius3DNonParametricSourceCreate(_3d_non_parametric_label, locationCount);
+    iu3dnps_t nonParametricSource = ius3DNonParametricSourceCreate(locationCount);
     TEST_ASSERT(nonParametricSource != IU3DNPS_INVALID);
 
     // Same empty lists...
@@ -103,11 +103,13 @@ TEST(IusSourceDict, testIusCompareSourceDict)
 
 TEST(IusSourceDict, testIusSerialization)
 {
+//    IUS_BOOL equal;
+
     char *_3d_non_parametric_label = "label for 3d non parametric source";
     char *_3d_parametric_label = "label for 3d parametric source";
     int locationCount = 5; /**< number of locations */
     char *filename = "testIusSourceDictSerialization.hdf5";
-    char *dictPath =  "/SourceDict";
+    //char *dictPath =  "/SourceDict";
 
     // Happy flow
     float angularDelta = 0.13f;
@@ -115,15 +117,15 @@ TEST(IusSourceDict, testIusSerialization)
     float startAngle = 3.14f;
     float startPhi = startAngle;
     float deltaPhi = angularDelta;
-    iu3dps_t parametricSource = ius3DParametricSourceCreate(_3d_parametric_label, locationCount, FNumber,
-                                                              angularDelta, startAngle, deltaPhi, startPhi);
+    iu3dps_t parametricSource = ius3DParametricSourceCreate(locationCount, FNumber,
+                                                            angularDelta, startAngle, deltaPhi, startPhi);
 
     TEST_ASSERT(parametricSource != IU3DPS_INVALID);
-    iu3dps_t _nother3dps = ius3DParametricSourceCreate(_3d_parametric_label, locationCount, FNumber,
-                                                         angularDelta, startAngle, deltaPhi, startPhi);
+    iu3dps_t _nother3dps = ius3DParametricSourceCreate(locationCount, FNumber,
+                                                       angularDelta, startAngle, deltaPhi, startPhi);
 
     TEST_ASSERT(_nother3dps != IU3DPS_INVALID);
-    iu3dnps_t nonParametricSource = ius3DNonParametricSourceCreate(_3d_non_parametric_label, locationCount);
+    iu3dnps_t nonParametricSource = ius3DNonParametricSourceCreate(locationCount);
     TEST_ASSERT(nonParametricSource != IU3DNPS_INVALID);
 
     // create
@@ -139,13 +141,13 @@ TEST(IusSourceDict, testIusSerialization)
     // save
     hid_t handle = H5Fcreate( filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT );
     TEST_ASSERT(handle > 0);
-    status = iusSourceDictSave(dict, dictPath, handle);
+    status = iusSourceDictSave(dict, handle);
     H5Fclose(handle);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
     // read back
     handle = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT );
-    iusd_t savedObj = iusSourceDictLoad(handle, dictPath);
+    iusd_t savedObj = iusSourceDictLoad(handle);
     TEST_ASSERT(savedObj != NULL);
     H5Fclose(handle);
 

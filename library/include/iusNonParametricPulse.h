@@ -12,8 +12,8 @@ typedef  IusNonParametricPulse    * iunpp_t;
 // operations
 iunpp_t iusNonParametricPulseCreate
 (
-    char *label,
-    int numPulseValues                /**< number of points to describe waveform, 0 implies a parametric description only */
+    char *label,                      /**< The name of this pulse */
+    int numPulseValues                /**< number of points to describe waveform */
 );
 
 

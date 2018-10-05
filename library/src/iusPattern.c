@@ -12,19 +12,9 @@
 #include <math.h>
 #include <string.h>
 #include <include/iusHDF5.h>
-
+#include <iusInputFileStructure.h>
 #include "include/iusPulse.h"
-#include "include/iusPatternImp.h"
-
-
-#define PULSELABELFMT "%s/PulseLabel"
-#define PATTERNLABELFMT "%s/PatternLabel"
-#define SOURCELABELFMT "%s/SourceLabel"
-#define CHANNELMAPLABELFMT "%s/ChannelMapLabel"
-#define APODIZATIONLABELFMT "%s/ApodizationLabel"
-#define RECEIVESETTNGSLABELFMT "%s/ReceiveSettingsLabel"
-#define TIMEINFRAMEFMT "%s/TimeInFrame"
-#define TOSTR(x)    #x
+#include "include/iusPatternPrivate.h"
 
 struct IusPattern
 {
@@ -35,14 +25,9 @@ struct IusPattern
     const char* pChannelMapLabel;
     const char* pApodizationLabel;
     const char* pReceiveSettingsLabel;
-
-    // state variables
-    hid_t fileChunkConfig;                /**< file chunck handle */
-    hid_t rfDataset;                      /**< dataset handle */
 } ;
 
 // ADT
-
 iupa_t iusPatternCreate
 (
     const char *pLabel,
@@ -72,8 +57,9 @@ iupa_t iusPatternCreate
 
     if( timeInFrame <= 0.0f ) return IUPA_INVALID;
     iupa_t created = calloc(1, sizeof(IusPattern));
-    created->pLabel = strdup(pLabel);
+    created->pLabel = pLabel;
     created->timeInFrame = timeInFrame;
+    created->pLabel = strdup(pLabel);
     created->pPulseLabel = strdup(pPulseLabel);
     created->pSourceLabel = strdup(pSourceLabel);
     created->pChannelMapLabel = strdup(pChannelMapLabel);
@@ -120,91 +106,61 @@ int iusPatternCompare
     return IUS_TRUE;
 }
 
-// TODO: Make close function
-//if( instance->fileChunkConfig != H5I_INVALID_HID )
-//{
-//status |= H5Pclose(instance->fileChunkConfig);
-//}
-//
-//if( instance->rfDataset != H5I_INVALID_HID )
-//{
-//status |= H5Dclose(instance->rfDataset);
-//}
 
 
 int iusPatternSave
 (
     iupa_t pattern,
-    char *parentPath,
     hid_t handle
 )
 {
   int status=IUS_E_OK;
-  char path[IUS_MAX_HDF5_PATH];
+  //char path[IUS_MAX_HDF5_PATH];
 
-  hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-  sprintf(path, PATTERNLABELFMT, parentPath);
-  status |= iusHdf5WriteString(group_id, path, pattern->pLabel);
-  sprintf(path, PULSELABELFMT, parentPath);
-  status |= iusHdf5WriteString(group_id, path, pattern->pPulseLabel);
-  sprintf(path, SOURCELABELFMT, parentPath);
-  status |= iusHdf5WriteString(group_id, path, pattern->pSourceLabel);
-  sprintf(path, CHANNELMAPLABELFMT, parentPath);
-  status |= iusHdf5WriteString(group_id, path, pattern->pChannelMapLabel);
-  sprintf(path, APODIZATIONLABELFMT, parentPath);
-  status |= iusHdf5WriteString(group_id, path, pattern->pApodizationLabel);
-  sprintf(path, RECEIVESETTNGSLABELFMT, parentPath);
-  status |= iusHdf5WriteString(group_id, path, pattern->pReceiveSettingsLabel);
-  sprintf(path, TIMEINFRAMEFMT, parentPath);
-  status |= iusHdf5WriteFloat(handle, path, &(pattern->timeInFrame), 1);
-  status |= H5Gclose(group_id );
+  status |= iusHdf5WriteString(handle, IUS_INPUTFILE_PATH_PATTERNLIST_PATTERN_PATTERNLABEL, pattern->pLabel);
+  status |= iusHdf5WriteString(handle, IUS_INPUTFILE_PATH_PATTERNLIST_PATTERN_PULSELABEL, pattern->pPulseLabel);
+  status |= iusHdf5WriteString(handle, IUS_INPUTFILE_PATH_PATTERNLIST_PATTERN_SOURCELABEL, pattern->pSourceLabel);
+  status |= iusHdf5WriteString(handle, IUS_INPUTFILE_PATH_PATTERNLIST_PATTERN_CHANNELMAPLABEL, pattern->pChannelMapLabel);
+  status |= iusHdf5WriteString(handle, IUS_INPUTFILE_PATH_PATTERNLIST_PATTERN_APODIZATIONLABEL, pattern->pApodizationLabel);
+  status |= iusHdf5WriteString(handle, IUS_INPUTFILE_PATH_PATTERNLIST_PATTERN_RECEIVESETTINGSLABEL, pattern->pReceiveSettingsLabel);
+  status |= iusHdf5WriteFloat(handle,  IUS_INPUTFILE_PATH_PATTERNLIST_PATTERN_TIMEINFRAME, &(pattern->timeInFrame), 1);
   return status;
 }
 
 
 iupa_t iusPatternLoad
 (
-  hid_t handle,
-  char *parentPath
+  hid_t handle
 )
 {
   int status = 0;
-  char pLabel[256];
-  float timeInFrame;
-  char pPulseLabel[256];
-  char pSourceLabel[256];
-  char pChannelMapLabel[256];
-  char pApodizationLabel[256];
-  char pReceiveSettingsLabel[256];
-  char path[IUS_MAX_HDF5_PATH];
 
-  sprintf(path, PATTERNLABELFMT, parentPath);
-  status |= iusHdf5ReadString(handle, path, pLabel);
-  sprintf(path, PULSELABELFMT, parentPath);
-  status |= iusHdf5ReadString(handle, path, pPulseLabel);
-  sprintf(path, SOURCELABELFMT, parentPath);
-  status |= iusHdf5ReadString(handle, path, pSourceLabel);
-  sprintf(path, CHANNELMAPLABELFMT, parentPath);
-  status |= iusHdf5ReadString(handle, path, pChannelMapLabel);
-  sprintf(path, APODIZATIONLABELFMT, parentPath);
-  status |= iusHdf5ReadString(handle, path, pApodizationLabel);
-  sprintf(path, RECEIVESETTNGSLABELFMT, parentPath);
-  status |= iusHdf5ReadString(handle, path, pReceiveSettingsLabel);
-  sprintf(path, TIMEINFRAMEFMT, parentPath);
-  status |= iusHdf5ReadFloat( handle, path, &(timeInFrame));
+  float timeInFrame;
+  char label[IUS_MAX_HDF5_PATH];
+  char pulseLabel[IUS_MAX_HDF5_PATH];
+  char sourceLabel[IUS_MAX_HDF5_PATH];
+  char channelMapLabel[IUS_MAX_HDF5_PATH];
+  char apodizationLabel[IUS_MAX_HDF5_PATH];
+  char receiveSettingsLabel[IUS_MAX_HDF5_PATH];
+
+  status |= iusHdf5ReadString(handle, IUS_INPUTFILE_PATH_PATTERNLIST_PATTERN_PATTERNLABEL, label);
+  status |= iusHdf5ReadString(handle, IUS_INPUTFILE_PATH_PATTERNLIST_PATTERN_PULSELABEL, pulseLabel);
+  status |= iusHdf5ReadString(handle, IUS_INPUTFILE_PATH_PATTERNLIST_PATTERN_SOURCELABEL, sourceLabel);
+  status |= iusHdf5ReadString(handle, IUS_INPUTFILE_PATH_PATTERNLIST_PATTERN_CHANNELMAPLABEL, channelMapLabel);
+  status |= iusHdf5ReadString(handle, IUS_INPUTFILE_PATH_PATTERNLIST_PATTERN_APODIZATIONLABEL, apodizationLabel);
+  status |= iusHdf5ReadString(handle, IUS_INPUTFILE_PATH_PATTERNLIST_PATTERN_RECEIVESETTINGSLABEL, receiveSettingsLabel);
+  status |= iusHdf5ReadFloat( handle, IUS_INPUTFILE_PATH_PATTERNLIST_PATTERN_TIMEINFRAME, &(timeInFrame));
 
   if( status < 0 )
     return NULL;
 
-  return iusPatternCreate(pLabel,timeInFrame,
-                            pPulseLabel,
-                            pSourceLabel,
-                            pChannelMapLabel,
-                            pApodizationLabel,
-                            pReceiveSettingsLabel);
+  return iusPatternCreate(label,timeInFrame,
+                            pulseLabel,
+                            sourceLabel,
+                            channelMapLabel,
+                            apodizationLabel,
+                            receiveSettingsLabel);
 }
-
-
 
 // Getters
 const char * iusPatternGetLabel
