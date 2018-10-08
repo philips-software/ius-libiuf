@@ -70,7 +70,7 @@ add_library(ius STATIC
 		include/iusPatternList.h
 		include/iusPatternListPrivate.h
 		include/iusPatternListDict.h
-		include/iusPatternListPrivateDict.h
+		include/iusPatternListDictPrivate.h
 		include/iusPosition.h
 		include/iusPulse.h
 		include/iusPulseDict.h
