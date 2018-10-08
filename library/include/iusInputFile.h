@@ -3,7 +3,7 @@
 #define IUSLIBRARY_IUSHLINPUTFILE_H
 
 #include <iusExperiment.h>
-#include <iusPatternList.h>
+#include <iusPatternListDict.h>
 #include <iusPulseDict.h>
 #include <iusReceiveChannelMapDict.h>
 #include <iusTransmitApodizationDict.h>
@@ -57,7 +57,7 @@ iufl_t iusInputFileGetFrameList
 	iuif_t fileHandle
 );
 
-iupal_t iusInputFileGetPatternList
+iupald_t iusInputFileGetPatternListDict
 (
 	iuif_t fileHandle
 );
@@ -104,10 +104,10 @@ int iusInputFileSetFrameList
 	iufl_t frameList
 );
 
-int iusInputFileSetPatternList
+int iusInputFileSetPatternListDict
 (
 	iuif_t inputFile,
-	iupal_t patternList
+	iupald_t patternListDict
 );
 
 int iusInputFileSetPulseDict

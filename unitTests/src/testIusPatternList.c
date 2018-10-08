@@ -55,21 +55,19 @@ TEST(IusPatternList, testIusComparePatternList)
     equal = iusPatternListCompare(patternList, notherPatternList);
     TEST_ASSERT_EQUAL(IUS_TRUE, equal);
 
-    iupa_t bmodePattern = iusPatternCreate(pBmodePatternLabel,
-                                             0.01f,
+    iupa_t bmodePattern = iusPatternCreate(0.01f,
+                                           pPulseLabel,
+                                           pSourceLabel,
+                                           pChannelMapLabel,
+                                           pApodizationLabel,
+                                           pReceivesettingsLabel);
+
+    iupa_t dopplerPattern = iusPatternCreate(0.01f,
                                              pPulseLabel,
                                              pSourceLabel,
                                              pChannelMapLabel,
                                              pApodizationLabel,
                                              pReceivesettingsLabel);
-
-    iupa_t dopplerPattern = iusPatternCreate(pDopplerPatternLabel,
-                                               0.01f,
-                                               pPulseLabel,
-                                               pSourceLabel,
-                                               pChannelMapLabel,
-                                               pApodizationLabel,
-                                               pReceivesettingsLabel);
 
     // Change one list..add bmode
     status = iusPatternListSet(patternList, bmodePattern, 0);
@@ -113,21 +111,19 @@ TEST(IusPatternList, testIusSerialization)
     iupal_t patternList = iusPatternListCreate(numPatterns);
     TEST_ASSERT_NOT_EQUAL(IUPAL_INVALID, patternList);
 
-    iupa_t bmodePattern = iusPatternCreate(pBmodePatternLabel,
-                                             0.01f,
+    iupa_t bmodePattern = iusPatternCreate(0.01f,
+                                           pPulseLabel,
+                                           pSourceLabel,
+                                           pChannelMapLabel,
+                                           pApodizationLabel,
+                                           pReceivesettingsLabel);
+
+    iupa_t dopplerPattern = iusPatternCreate(0.02f,
                                              pPulseLabel,
                                              pSourceLabel,
                                              pChannelMapLabel,
                                              pApodizationLabel,
                                              pReceivesettingsLabel);
-
-    iupa_t dopplerPattern = iusPatternCreate(pDopplerPatternLabel,
-                                               0.02f,
-                                               pPulseLabel,
-                                               pSourceLabel,
-                                               pChannelMapLabel,
-                                               pApodizationLabel,
-                                               pReceivesettingsLabel);
     status = iusPatternListSet(patternList, bmodePattern, 0);
     TEST_ASSERT_EQUAL(IUS_E_OK, status);
     status = iusPatternListSet(patternList, dopplerPattern, 1);

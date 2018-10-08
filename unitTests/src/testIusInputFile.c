@@ -136,16 +136,16 @@ TEST(IusInputFile, iusInputFileSetGetPatternList)
 {
     IUS_BOOL equal;
     int status;
-    iupal_t patternList = dgGeneratePatternList();
+    iupald_t patternListDict = dgGeneratePatternListDict();
     iuif_t obj = iusInputFileCreate(pFilename);
 
-    status = iusInputFileSetPatternList(obj,patternList);
+    status = iusInputFileSetPatternListDict(obj, patternListDict);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
-    iupal_t gotMeAPatternList = iusInputFileGetPatternList(obj);
-    TEST_ASSERT_NOT_EQUAL(IUPAL_INVALID, gotMeAPatternList);
+    iupald_t gotMeAPatternListDict = iusInputFileGetPatternListDict(obj);
+    TEST_ASSERT_NOT_EQUAL(IUPALD_INVALID, gotMeAPatternListDict);
 
-    equal = iusPatternListCompare(patternList,gotMeAPatternList);
+    equal = iusPatternListDictCompare(patternListDict,gotMeAPatternListDict);
     TEST_ASSERT_EQUAL(IUS_TRUE, equal);
 
     status = iusInputFileClose(obj);

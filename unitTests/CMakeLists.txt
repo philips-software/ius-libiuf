@@ -30,6 +30,7 @@ add_executable(unitTests
         src/testIusParametricPulse.c
         src/testIusPattern.c
         src/testIusPatternList.c
+        src/testIusPatternListDict.c
         src/testIusPulseDict.c
         src/testIusPulse.c
         src/testIusReceiveSettings.c

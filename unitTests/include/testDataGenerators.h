@@ -38,7 +38,7 @@ iufl_t dgGenerateFrameList
 	void
 );
 
-iupal_t dgGeneratePatternList
+iupald_t dgGeneratePatternListDict
 (
   	void
 );

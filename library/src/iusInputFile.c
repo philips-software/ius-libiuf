@@ -14,7 +14,7 @@
 #include <iusUtil.h>
 #include <include/iusExperimentPrivate.h>
 #include <include/iusInputFilePrivate.h>
-#include <include/iusPatternListPrivate.h>
+#include <include/iusPatternListDictPrivate.h>
 #include <include/iusPulseDictPrivate.h>
 #include <include/iusReceiveChannelMapDictPrivate.h>
 #include <include/iusFrameList.h>
@@ -34,23 +34,23 @@
 struct IusInputFileInstance
 {
     iufl_t frameList;
-	iupal_t patternList;
-    iupd_t pulseDict;                    /**< a dictionary of pulses */
-    iusd_t pulseSourceDict;
-	iurcmd_t receiveChannelMapDict;      /**< a dictionary of receiveChannelMaps */
-	iutad_t transmitApodizationDict;     /**< a dictionary of transmitApodizations */
-	iursd_t receiveSettingsDict;
-	iut_t transducer;
-	iue_t experiment;
-    int numFrames;        /**< The number of frames in the data */
-    int IusVersion;       /**< version of input file format */
+	iupald_t patternListDict;            /**< a dictionary of pattern lists              */
+    iupd_t pulseDict;                    /**< a dictionary of pulses                      */
+    iusd_t pulseSourceDict;              /**< a dictionary of sources                     */
+	iurcmd_t receiveChannelMapDict;      /**< a dictionary of receiveChannelMaps          */
+	iutad_t transmitApodizationDict;     /**< a dictionary of transmitApodizations        */
+	iursd_t receiveSettingsDict;         /**< a dictionary of receiveSettings             */
+	iut_t transducer;                    /**< The transducer description                  */
+	iue_t experiment;                    /**< The description of the performed experiment */
+    int numFrames;                       /**< The number of frames in the data */
+    int IusVersion;                      /**< The version of input file format */
 
 
     //  state variables
-    hid_t               handle;                         /**< file handle */
-    const char          *pFilename;
-    hid_t fileChunkConfig;                /**< file chunck handle */
-    hid_t rfDataset;                      /**< dataset handle */
+    hid_t               handle;           /**< HDF5 file handle     */
+    const char          *pFilename;       /**< the filename         */
+    hid_t fileChunkConfig;                /**< file chunck handle   */
+    hid_t rfDataset;                      /**< dataset handle       */
     int currentFrame;                     /**< current frame number */
     int currentPulse;                     /**< current pulse number */
 }  ;
@@ -79,7 +79,7 @@ iuifi_t iusInputFileInstanceCreate
 	instanceData->rfDataset = H5I_INVALID_HID;
 	instanceData->fileChunkConfig = H5I_INVALID_HID;
 	instanceData->frameList = IUFL_INVALID;
-	instanceData->patternList = IUPAL_INVALID;
+	instanceData->patternListDict = IUPALD_INVALID;
 	instanceData->pulseDict = IUPD_INVALID;
     instanceData->pulseSourceDict = IUSD_INVALID;
 	instanceData->receiveChannelMapDict = IURCMD_INVALID;
@@ -150,16 +150,14 @@ static iuifi_t inputFileInstanceLoad
         return IUIFI_INVALID;
     }
 
-    // Todo: create group @here instead of in Load, see experiment
-    instance->patternList = iusPatternListLoad(instance->handle);
-    if (instance->patternList == IUPAL_INVALID)
+    instance->patternListDict = iusPatternListDictLoad(instance->handle);
+    if (instance->patternListDict == IUPALD_INVALID)
     {
-        fprintf(stderr, "Warning from iusInputFileLoad: could not load patterns: %s\n", instance->pFilename );
+        fprintf(stderr, "Warning from iusInputFileLoad: could not load patternlists  %s\n", instance->pFilename );
         return IUIFI_INVALID;
     }
 
     // Load instance data
-    // Todo: create group @here instead of in Load, see experiment
     instance->pulseDict = iusPulseDictLoad(instance->handle);
     if (instance->pulseDict == IUPD_INVALID)
     {
@@ -298,7 +296,7 @@ int iusInputFileSaveInstance
 {
     herr_t status=0;
     status |= iusFrameListSave(instanceData->frameList, handle);
-    status |= iusPatternListSave(instanceData->patternList, handle);
+    status |= iusPatternListDictSave(instanceData->patternListDict, handle);
     status |= iusPulseDictSave(instanceData->pulseDict, handle);
     status |= iusSourceDictSave(instanceData->pulseSourceDict, handle);
     status |= iusReceiveChannelMapDictSave(instanceData->receiveChannelMapDict, handle);
@@ -367,7 +365,7 @@ static int iusInputFileCompareInstance
     if ( reference->numFrames != actual->numFrames ) return IUS_FALSE;
     if ( strcmp(reference->pFilename, actual->pFilename) != 0 ) return IUS_FALSE;
     if ( iusFrameListCompare(reference->frameList, actual->frameList)  == IUS_FALSE ) return IUS_FALSE;
-    if ( iusPatternListCompare(reference->patternList, actual->patternList)  == IUS_FALSE ) return IUS_FALSE;
+    if ( iusPatternListDictCompare(reference->patternListDict, actual->patternListDict)  == IUS_FALSE ) return IUS_FALSE;
     if ( iusPulseDictCompare(reference->pulseDict, actual->pulseDict)  == IUS_FALSE ) return IUS_FALSE;
     if ( iusSourceDictCompare(reference->pulseSourceDict, actual->pulseSourceDict)  == IUS_FALSE ) return IUS_FALSE;
     if ( iusReceiveChannelMapDictCompare(reference->receiveChannelMapDict, actual->receiveChannelMapDict) == IUS_FALSE) return IUS_FALSE;
@@ -407,7 +405,7 @@ iufl_t iusInputFileGetFrameList
     return IUFL_INVALID;
 }
 
-iupal_t iusInputFileGetPatternList
+iupald_t iusInputFileGetPatternListDict
 (
     iuif_t iusInputFile
 )
@@ -415,7 +413,7 @@ iupal_t iusInputFileGetPatternList
     if ( iusInputFile != NULL )
     {
         iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)iusInputFile);
-        return instance->patternList;
+        return instance->patternListDict;
     }
     return NULL;
 }
@@ -533,10 +531,10 @@ int iusInputFileSetFrameList
     return status;
 }
 
-int iusInputFileSetPatternList
+int iusInputFileSetPatternListDict
 (
     iuif_t inputFile,
-    iupal_t paternList
+    iupald_t patternListDict
 )
 {
     int status = IUS_ERR_VALUE;
@@ -544,7 +542,7 @@ int iusInputFileSetPatternList
     if(inputFile != NULL)
     {
         iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
-        instance->patternList = paternList;
+        instance->patternListDict = patternListDict;
         status = IUS_E_OK;
     }
     return status;
