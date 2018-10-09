@@ -32,6 +32,45 @@ TEST(IusPatternListDict, testIusCreatePatternListDict)
 }
 
 
+TEST(IusPatternListDict, testIusPatternListDictSetGet)
+{
+	int status;
+	char *labelDual = "patternList of size 2 for testIusComparePulseDict";
+	iupa_t pattern1 = iusPatternCreate(0.01f, "pulseLabel test 1",
+									   "sourceLabel test 1",
+									   "channelMapLabel test 1",
+									   "apodizationLabel test 1",
+									   "receiveSetingsLabel test 1");
+	iupa_t pattern2 = iusPatternCreate(0.02f, "pulseLabel test 2",
+									   "sourceLabel test 2",
+									   "channelMapLabel test 2",
+									   "apodizationLabel test 2",
+									   "receiveSetingsLabel test 2");
+	iupald_t dict = iusPatternListDictCreate();
+	TEST_ASSERT_NOT_EQUAL(IUPALD_INVALID, dict);
+
+	// CreatNFill PatternList
+	iupal_t obj = iusPatternListCreate(2);
+	iusPatternListSet(obj, pattern1, 0);
+	iusPatternListSet(obj, pattern2, 1);
+
+	status = iusPatternListDictSet(dict, labelDual, obj);
+    TEST_ASSERT_EQUAL(IUS_E_OK,status);
+    iupal_t retrievedObj = iusPatternListDictGet(dict, labelDual);
+    TEST_ASSERT_EQUAL(IUS_TRUE, iusPatternListCompare(obj,retrievedObj));
+
+    // invalid params
+    TEST_ASSERT_EQUAL(IUPAL_INVALID, iusPatternListDictGet(NULL, labelDual));
+    TEST_ASSERT_EQUAL(IUPAL_INVALID, iusPatternListDictGet(dict, NULL));
+    TEST_ASSERT_EQUAL(IUPAL_INVALID, iusPatternListDictGet(dict, "unknownLabe"));
+
+    iusPatternDelete(pattern1);
+    iusPatternDelete(pattern2);
+    iusPatternListDelete(obj);
+	iusPatternListDictDelete(dict);
+}
+
+
 TEST(IusPatternListDict, testIusComparePatternListDict)
 {
 	IUS_BOOL equal;
@@ -155,5 +194,6 @@ TEST_GROUP_RUNNER(IusPatternListDict)
 {
 	RUN_TEST_CASE(IusPatternListDict, testIusCreatePatternListDict);
 	RUN_TEST_CASE(IusPatternListDict, testIusComparePatternListDict);
+    RUN_TEST_CASE(IusPatternListDict, testIusPatternListDictSetGet);
 	RUN_TEST_CASE(IusPatternListDict, testIusSerialization);
 }

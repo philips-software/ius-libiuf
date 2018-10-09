@@ -123,9 +123,10 @@ iupal_t iusPatternListDictGet
 	char * key
 )
 {
+	if (dict == NULL || key == NULL) return IUPAL_INVALID;
 	HashablePatternList * search;
 	search = HashablePatternList_hashmap_get(&dict->map, key);
-	if (dict == NULL)
+	if (search == NULL)
 		return IUPAL_INVALID;
 	return search->patternList;
 }
