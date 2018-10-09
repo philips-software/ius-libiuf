@@ -123,9 +123,10 @@ ius_t iusSourceDictGet
     char * key
 )
 {
+    if (dict == NULL || key == NULL) return IUS_INVALID;
     HashableSource * search;
     search = HashableSource_hashmap_get(&dict->map, key);
-    if( dict == NULL )
+    if( search == NULL )
         return IUS_INVALID;
     return search->source;
 }

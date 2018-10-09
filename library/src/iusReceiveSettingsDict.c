@@ -46,10 +46,10 @@ iursd_t iusReceiveSettingsDictCreate
 
 int iusReceiveSettingsDictDelete
 (
-  iursd_t dict
+    iursd_t dict
 )
 {
-    if(dict == NULL) return IUS_ERR_VALUE;
+    if (dict == NULL) return IUS_ERR_VALUE;
     /* Free all allocated resources associated with map and reset its state */
     hashmap_destroy(&dict->map);
     free(dict);
@@ -112,7 +112,7 @@ int iusReceiveSettingsDictGetSize
     iursd_t dict
 )
 {
-    if( dict == NULL )
+    if (dict == NULL)
         return -1;
     return (int) hashmap_size(&dict->map);
 }
@@ -123,9 +123,10 @@ iurs_t iusReceiveSettingsDictGet
     char * key
 )
 {
+    if (dict == NULL || key == NULL) return IURS_INVALID;
     HashableReceiveSettings * search;
     search = HashableReceiveSettings_hashmap_get(&dict->map, key);
-    if( dict == NULL )
+    if( search == NULL )
         return IURS_INVALID;
     return search->receiveSettings;
 }
@@ -137,9 +138,7 @@ int iusReceiveSettingsDictSet
     iurs_t member
 )
 {
-    if( dict == NULL ) return IUS_ERR_VALUE;
-    if( key == NULL ) return IUS_ERR_VALUE;
-
+    if (dict == NULL || key == NULL) return IUS_ERR_VALUE;
     HashableReceiveSettings *newMember = calloc(1, sizeof(HashableReceiveSettings));
     newMember->receiveSettings = member;
     strcpy(newMember->key,key);
@@ -154,7 +153,6 @@ int iusReceiveSettingsDictSet
 
 
 // serialization
-
 int iusReceiveSettingsDictSave
 (
     iursd_t dict,
@@ -198,8 +196,6 @@ int iusReceiveSettingsDictSave
 }
 
 
-#define MAX_NAME 1024
-
 iursd_t iusReceiveSettingsDictLoad
 (
     hid_t handle
@@ -207,7 +203,7 @@ iursd_t iusReceiveSettingsDictLoad
 {
     int i;
     int status = 0;
-    char memb_name[MAX_NAME];
+    char member_name[IUS_MAX_HDF5_PATH];
 
     hid_t grpid = H5Gopen(handle, IUS_INPUTFILE_PATH_RECEIVESETTINGSDICT, H5P_DEFAULT);
     if (handle == H5I_INVALID_HID)
@@ -219,11 +215,11 @@ iursd_t iusReceiveSettingsDictLoad
     iursd_t dict = iusReceiveSettingsDictCreate();
     for (i = 0; i < (int) nobj; i++)
     {
-        H5Gget_objname_by_idx(grpid, (hsize_t) i, memb_name, (size_t) MAX_NAME);
+        H5Gget_objname_by_idx(grpid, (hsize_t) i, member_name, (size_t) IUS_MAX_HDF5_PATH);
      
-		hid_t settings_id = H5Gopen(grpid, memb_name, H5P_DEFAULT);
+		hid_t settings_id = H5Gopen(grpid, member_name, H5P_DEFAULT);
         iurs_t receiveSettings = iusReceiveSettingsLoad(settings_id);
-        status = iusReceiveSettingsDictSet(dict, memb_name, receiveSettings);
+        status = iusReceiveSettingsDictSet(dict, member_name, receiveSettings);
 		H5Gclose(settings_id);
     }
     H5Gclose(grpid);

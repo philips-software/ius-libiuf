@@ -11,6 +11,8 @@
 #include "iusSourceDict.h"
 #include "iusReceiveSettingsDict.h"
 #include "iusTransducer.h"
+#include "iusData.h"
+#include "iusOffset.h"
 
 // ADT
 typedef struct IusHistoryNode IusInputFile;
@@ -21,7 +23,14 @@ typedef IusInputFile *iuif_t;
 
 iuif_t iusInputFileCreate
 (
-    const char *filename
+    const char *filename,
+    int numFrames
+);
+
+iud_t iusInputFileFrameCreate
+(
+    iuif_t iusInputFile,
+    char *label
 );
 
 int iusInputFileDelete
@@ -97,6 +106,11 @@ iut_t iusInputFileGetTransducer
 	iuif_t fileHandle
 );
 
+int iusInputFileGetNumFrames
+(
+    iuif_t inputFile
+);
+
 // Setters
 int iusInputFileSetFrameList
 (
@@ -153,11 +167,18 @@ int iusInputFileSetTransducer
 );
 
 
-int iusInputFileSaveChannel
+int iusInputFileSetNumFrames
 (
     iuif_t inputFile,
-    char *label,
-    const float *samples
+    int  numFrames
+);
+
+int iusInputFileFrameSave
+(
+	iuif_t inputFile,
+	char *label,
+	iud_t frame,
+	iuo_t offset
 );
 
 

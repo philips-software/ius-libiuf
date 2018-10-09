@@ -31,6 +31,31 @@ TEST(IusReceiveChannelMapDict, testIusReceiveChannelMapDictCreate)
 	iusReceiveChannelMapDictDelete(notherObj);
 }
 
+TEST(IusReceiveChannelMapDict, testIusReceiveChannelMapDictSetGet)
+{
+	const int numChannels = 10;
+	int oneToOneMap[10] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+	int     status;
+	char *pObjLabel = "one-to-one";
+
+	iurcm_t obj = iusReceiveChannelMapCreate(numChannels);
+	iurcmd_t dict = iusReceiveChannelMapDictCreate();
+	status = iusReceiveChannelMapSetMap(obj, oneToOneMap);
+	status |= iusReceiveChannelMapDictSet(dict, pObjLabel, obj);
+	TEST_ASSERT(status == IUS_E_OK);
+
+	iurcm_t retrievedObj = iusReceiveChannelMapDictGet(dict, pObjLabel);
+	TEST_ASSERT_EQUAL(IUS_TRUE, iusReceiveChannelMapCompare(obj,retrievedObj));
+
+	// Invalid params
+	TEST_ASSERT_EQUAL(IURCM_INVALID, iusReceiveChannelMapDictGet(dict,NULL));
+	TEST_ASSERT_EQUAL(IURCM_INVALID, iusReceiveChannelMapDictGet(NULL,pObjLabel));
+	TEST_ASSERT_EQUAL(IURCM_INVALID, iusReceiveChannelMapDictGet(dict,"unknownLabel"));
+	iusReceiveChannelMapDelete(obj);
+	iusReceiveChannelMapDictDelete(dict);
+
+}
+
 
 TEST(IusReceiveChannelMapDict, testIusReceiveChannelMapDictCompare)
 {
@@ -157,6 +182,7 @@ TEST(IusReceiveChannelMapDict, testIusReceiveChannelMapSerialization)
 TEST_GROUP_RUNNER(IusReceiveChannelMapDict)
 {
 	RUN_TEST_CASE(IusReceiveChannelMapDict, testIusReceiveChannelMapDictCreate);
+	RUN_TEST_CASE(IusReceiveChannelMapDict, testIusReceiveChannelMapDictSetGet);
 	RUN_TEST_CASE(IusReceiveChannelMapDict, testIusReceiveChannelMapDictCompare);
 	RUN_TEST_CASE(IusReceiveChannelMapDict, testIusReceiveChannelMapDictSerialization);
 }

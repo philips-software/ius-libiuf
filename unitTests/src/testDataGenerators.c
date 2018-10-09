@@ -28,7 +28,7 @@ static const char *pReceivesettingsLabel = "receivesettingsLabel";
 
 iursd_t dgGenerateReceiveSettingsDict
 (
-void
+    char *label
 )
 {
     char *pObjLabel = "Label for IusReceiveSettingsDict, created in testIusCompareSourceDict";
@@ -58,6 +58,7 @@ void
 
     status |= iusReceiveSettingsDictSet(dict,pObjLabel,obj);
     status |= iusReceiveSettingsDictSet(dict,pNotherObjLabel,notherObj);
+    status |= iusReceiveSettingsDictSet(dict,label,notherObj);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
     return dict;
 }
@@ -104,11 +105,13 @@ iupad_t dgGenerateParameterDict
 iuif_t dgGenerateInputFile
 (
     char *ptestFileName,
-    char *transducerName
+    char *transducerName,
+    char *label,
+    int numFrames
 )
 {
     // create
-    iuif_t inputFile = iusInputFileCreate(ptestFileName);
+    iuif_t inputFile = iusInputFileCreate(ptestFileName, numFrames);
     TEST_ASSERT(inputFile != IUIF_INVALID);
 
     // fill
@@ -128,15 +131,15 @@ iuif_t dgGenerateInputFile
     status = iusInputFileSetSourceDict(inputFile, sourceDict);
     TEST_ASSERT(status == IUS_E_OK);
 
-    iurcmd_t receiveChannelMapDict = dgGenerateReceiveChannelMapDict();
+    iurcmd_t receiveChannelMapDict = dgGenerateReceiveChannelMapDict(label);
     status = iusInputFileSetReceiveChannelMapDict(inputFile, receiveChannelMapDict);
     TEST_ASSERT(status == IUS_E_OK);
 
-    iutad_t transmitApodizationDict = dgGenerateTransmitApodizationDict();
+    iutad_t transmitApodizationDict = dgGenerateTransmitApodizationDict(label);
     status = iusInputFileSetTransmitApodizationDict(inputFile, transmitApodizationDict);
     TEST_ASSERT(status == IUS_E_OK);
 
-    iursd_t receiveSettingsDict = dgGenerateReceiveSettingsDict();
+    iursd_t receiveSettingsDict = dgGenerateReceiveSettingsDict(label);
     status = iusInputFileSetReceiveSettingsDict(inputFile, receiveSettingsDict);
     TEST_ASSERT_EQUAL(IUS_E_OK, status);
 
@@ -209,10 +212,10 @@ iupal_t dgGeneratePatternList
 
 iupd_t dgGeneratePulseDict
 (
-  void
+    void
 )
 {
-  int numPulseValues=10;
+  int     numPulseValues=10;
   float   pulseFrequency=8000000.0f;   /**< frequency that the pulse represents in Hz */
   float   pulseAmplitude=800.0f;       /**< (max) amplitude of the pulse in Volts */
   int     pulseCount=10;               /**< number of cycles that the pulse represents */
@@ -276,13 +279,12 @@ iusd_t dgGenerateSourceDict
 
 iurcmd_t dgGenerateReceiveChannelMapDict
 (
-	void
+    char *label
 )
 {
     int status;
     int numChannels = 8;
     int channelMap[8] = {0, 1, 2, 3, 4, 5, 6, 7};
-    char *label = "one-to-one";
 
     iurcmd_t dict = iusReceiveChannelMapDictCreate();
     TEST_ASSERT(dict != IURCMD_INVALID);
@@ -344,13 +346,12 @@ iut_t dgGenerateTransducer
 
 iutad_t dgGenerateTransmitApodizationDict
 (
-    void
+    char *label
 )
 {
 	int status;
 	int numElements = 8;
 	float apodizaton[8] = { 0.5f, 1.0f, 1.0f, 1.0f, .0f, 1.0f, .0f, 0.5f };
-	char *label = "rolloff";
 
 	iutad_t dict = iusTransmitApodizationDictCreate();
 	TEST_ASSERT(dict != IUTAD_INVALID);

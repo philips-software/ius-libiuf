@@ -32,6 +32,39 @@ TEST(IusSourceDict, testIusCreateSourceDict)
     iusSourceDictDelete(notherObj);
 }
 
+TEST(IusSourceDict, testIusSourceDictSetGet)
+{
+    IUS_BOOL equal;
+
+    char *pObjLabel = "label for 3d parametric source";
+    int locationCount = 5; /**< number of locations */
+
+    // Happy flow
+    float angularDelta = 0.13f;
+    float FNumber = -0.955f;
+    float startAngle = 3.14f;
+    float startPhi = startAngle;
+    float deltaPhi = angularDelta;
+    iu3dps_t obj = ius3DParametricSourceCreate(locationCount, FNumber,
+                                                            angularDelta, startAngle, deltaPhi, startPhi);
+
+    TEST_ASSERT(obj != IU3DPS_INVALID);
+
+    iusd_t dict = iusSourceDictCreate();
+    int status = iusSourceDictSet(dict, pObjLabel,(ius_t) obj);
+    TEST_ASSERT_EQUAL(IUS_E_OK,status);
+
+    ius_t retrievedObj = iusSourceDictGet(dict, pObjLabel);
+    TEST_ASSERT_EQUAL(IUS_TRUE, ius3DParametricSourceCompare(obj, (iu3dps_t) retrievedObj));
+
+    // Invalid params
+    TEST_ASSERT_EQUAL(IUS_INVALID, iusSourceDictGet(dict,NULL));
+    TEST_ASSERT_EQUAL(IUS_INVALID, iusSourceDictGet(NULL,pObjLabel));
+    TEST_ASSERT_EQUAL(IUS_INVALID, iusSourceDictGet(dict,"unknownLabel"));
+    ius3DParametricSourceDelete(obj);
+    iusSourceDictDelete(dict);
+
+}
 
 TEST(IusSourceDict, testIusCompareSourceDict)
 {
@@ -159,6 +192,7 @@ TEST(IusSourceDict, testIusSerialization)
 TEST_GROUP_RUNNER(IusSourceDict)
 {
     RUN_TEST_CASE(IusSourceDict, testIusCreateSourceDict);
+    RUN_TEST_CASE(IusSourceDict, testIusSourceDictSetGet);
     RUN_TEST_CASE(IusSourceDict, testIusCompareSourceDict);
     RUN_TEST_CASE(IusSourceDict, testIusSerialization);
 }

@@ -32,7 +32,7 @@ TEST(IusFile, testIusInputFileHistoryScenario)
     char *pFilename = "testIusInputFileHistoryScenario.hdf5";
 
     // Create Input file.
-    iuif_t iusInputFile = dgGenerateInputFile(pFilename,"S5-1");
+    iuif_t iusInputFile = dgGenerateInputFile(pFilename, "S5-1", "bmode", 10);
     iusInputFileSave(iusInputFile);
     iusInputFileClose(iusInputFile);
 
@@ -64,7 +64,7 @@ TEST(IusFile, testIusCWCFileHistoryScenario)
 
     // --- Generate and Save Input file type
     // Create Input file.
-    iuif_t iusInputFile = dgGenerateInputFile(pFilename2,"S5-1-1");
+    iuif_t iusInputFile = dgGenerateInputFile(pFilename2, "S5-1-1", "bmode", 10);
     iusInputFileSave(iusInputFile);
     iusInputFileClose(iusInputFile);
 
@@ -86,7 +86,7 @@ TEST(IusFile, testIusCWCFileHistoryScenario)
     iuif_t nodeToInputFile = (iuif_t) rootNode;
     iusInputFile = (iuif_t) rootNode;
 
-    iuif_t iusInputFile2 = dgGenerateInputFile(pFilename,"S5-1-0");
+    iuif_t iusInputFile2 = dgGenerateInputFile(pFilename, "S5-1-0", "bmode", 10);
     iuhn_t cwcParents = iusHistoryNodeCreate(pNodeType,1);
     iuhnl_t parents = iusHistoryNodeGetParents(cwcParents);
     iusHistoryNodeListSet(parents,rootNode,0);

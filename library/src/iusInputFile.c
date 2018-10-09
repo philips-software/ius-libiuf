@@ -85,15 +85,20 @@ iuifi_t iusInputFileInstanceCreate
     instanceData->receiveSettingsDict = IURSD_INVALID;
     instanceData->transducer = IUT_INVALID;
 	instanceData->experiment = IUE_INVALID;
+	instanceData->rfDataset = H5I_INVALID_HID;
     return instanceData;
 }
 
 // ADT
 iuif_t iusInputFileCreate
 (
-    const char *pFilename
+    const char *pFilename,
+    int numFrames
 )
 {
+    if (numFrames <= 0)
+        return IUIF_INVALID;
+
 	if (pFilename == NULL)
 	{
 		fprintf(stderr, "iusInputFileAlloc: Input arguments can not be NULL \n");
@@ -109,6 +114,7 @@ iuif_t iusInputFileCreate
 
     instanceData->handle = H5Fcreate(pFilename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
 	instanceData->pFilename = strdup(pFilename);
+	instanceData->numFrames = numFrames;
 	if (instanceData->handle == H5I_INVALID_HID)
 	{
 		free((void *)instanceData);
@@ -117,6 +123,91 @@ iuif_t iusInputFileCreate
 	iuhn_t node = iusHistoryNodeCreate(IUS_INPUT_TYPE,0);
 	iusHistoryNodeSetInstanceData(node,(void *)instanceData);
 	return (iuif_t)node;
+}
+
+int iusInputFileGetNumChannels
+(
+    iuif_t iusInputFile,
+    char *label
+)
+{
+    if (iusInputFile == NULL) return -1;
+    iurcmd_t receiveChannelMapDict = iusInputFileGetReceiveChannelMapDict(iusInputFile);
+    if (receiveChannelMapDict == IURCMD_INVALID) return -1;
+    iurcm_t receiveChannelMap = iusReceiveChannelMapDictGet(receiveChannelMapDict,label);
+    if (receiveChannelMap == IURCM_INVALID) return -1;
+    return iusReceiveChannelMapGetNumChannels(receiveChannelMap);
+}
+
+int iusInputFileGetNumFrames
+(
+    iuif_t inputFile
+)
+{
+    if (inputFile == NULL) return -1;
+    iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
+    return instance->numFrames;
+}
+
+
+int iusInputFileSetNumFrames
+(
+    iuif_t inputFile,
+    int numFrames
+)
+{
+    if (inputFile == NULL) return -1;
+    iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
+    instance->numFrames = numFrames;
+    return IUS_E_OK;
+}
+
+
+int iusInputFileGetSamplesPerLine
+(
+    iuif_t iusInputFile,
+    char *label
+)
+{
+    if (iusInputFile == NULL) return -1;
+    iursd_t receiveSettingsDict = iusInputFileGetReceiveSettingsDict(iusInputFile);
+    if (receiveSettingsDict == IURSD_INVALID) return -1;
+    iurs_t receiveSettings = iusReceiveSettingsDictGet(receiveSettingsDict,label);
+    if (receiveSettings == IURS_INVALID) return -1;
+    return iusReceiveSettingsGetNumSamplesPerLine(receiveSettings);
+}
+
+int iusInputFileGetNumResponses
+(
+    iuif_t iusInputFile,
+    char *label
+)
+{
+    if (iusInputFile == NULL) return -1;
+    IUS_UNUSED(label);
+    // TODO: numResponses (size patternList for label)
+    // iupald_t listDict = iusInputFileGetPatternListDict(iusInputFile);
+    // if (listDict == IUPALD_INVALID) return -1;
+    // iupal_t patternList = iusInputFilePatternListDictGet(listDict,label);
+    // if (patternList == IUPAL_INVALID) return -1;
+    iupal_t patternList = iusInputFileGetPatternList(iusInputFile);
+    return iusPatternListGetSize(patternList);
+}
+
+iud_t iusInputFileFrameCreate
+(
+    iuif_t iusInputFile,
+    char *label
+)
+{
+    if(iusInputFile == NULL) return IUD_INVALID;
+    // calculate frame size:
+    // numchannels * numresponses * numsamples = [x*y*z]
+    int numChannels = iusInputFileGetNumChannels(iusInputFile,label);
+    int numResponses = iusInputFileGetNumResponses(iusInputFile,label);
+    int numSamples = iusInputFileGetSamplesPerLine(iusInputFile,label);
+    int frameSize = numChannels * numSamples * numResponses;
+    return iusDataCreate(frameSize);
 }
 
 int iusInputFileDelete
@@ -324,6 +415,7 @@ int iusInputFileSave
 	return status;
 }
 
+
 int iusInputFileClose
 (
     iuif_t fileHandle
@@ -337,9 +429,19 @@ int iusInputFileClose
 
 
     // Terminate access to the file.
-    if( instance->handle )
+    if( instance->handle != H5I_INVALID_HID )
     {
         status |= H5Fclose(instance->handle);
+    }
+
+    if ( instance->fileChunkConfig != H5I_INVALID_HID )
+    {
+        status |= H5Pclose(instance->fileChunkConfig);
+    }
+
+    if ( instance->rfDataset != H5I_INVALID_HID )
+    {
+        status |= H5Dclose(instance->rfDataset);
     }
 
     return status;
@@ -664,83 +766,156 @@ int iusInputFileSetTransducer
     return status;
 }
 
+#if 0
+int iusInputWriteNextPulse(IUSInputFileInstance * pInst, const float *pFrame)
+{
+  hid_t memspace;
+  hid_t dataspace;
+  hsize_t offset[4];
+  hsize_t count[4];
+  hsize_t memdim[2];
+  herr_t  status;
 
-int iusInputFileSaveChannel
+  memdim[0] = pInst->pTransducer->numElements;
+  memdim[1] = pInst->pDrivingScheme->numSamplesPerLine;
+  memspace = H5Screate_simple(2, memdim, NULL);
+
+  if (pInst->numFrames == 1)
+  {
+    offset[0] = 0;
+    offset[1] = 0;
+    offset[2] = pInst->currentPulse;
+
+    count[0] = pInst->pTransducer->numElements;
+    count[1] = pInst->pDrivingScheme->numSamplesPerLine;
+    count[2] = 1;
+  }
+  else
+  {
+    offset[0] = 0;
+    offset[1] = 0;
+    offset[2] = pInst->currentPulse;
+    offset[3] = pInst->currentFrame;
+
+    count[0] = memdim[0];
+    count[1] = memdim[1];
+    count[2] = 1;
+    count[3] = 1;
+  }
+  dataspace = H5Dget_space(pInst->rfDataset);
+  status = H5Sselect_hyperslab(dataspace, H5S_SELECT_SET, offset, NULL, count, NULL);
+
+  /*
+   *   Write the data to the dataset.
+   */
+  status |= H5Dwrite(pInst->rfDataset, H5T_NATIVE_FLOAT, memspace, dataspace, H5P_DEFAULT, pFrame);
+  /*
+   *   Close and release memspace but not (file)dataspace
+   */
+  status |= H5Sclose(memspace);
+  status |= H5Sclose(dataspace);
+
+  /*------------------------------------------------------------------------*/
+  /* increment file read pointers                                           */
+  /*------------------------------------------------------------------------*/
+  pInst->currentPulse++;
+  if (pInst->currentPulse == pInst->pDrivingScheme->numTransmitPulses)
+  {
+    pInst->currentPulse = 0;
+    pInst->currentFrame++;
+  }
+
+  return status;
+}
+#endif
+
+
+
+
+hid_t iusInputFileGetSpace
+(
+    iuif_t inputFile,
+    char *label
+)
+{
+    hsize_t rfDataDims[4];
+    hsize_t chunkDims[4];
+    hid_t space, dataChunkConfig;
+
+    iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
+    if (instance->rfDataset == H5I_INVALID_HID)
+    {
+
+        rfDataDims[0] = iusInputFileGetNumChannels(inputFile,label);    // colums in memory
+        rfDataDims[1] = iusInputFileGetSamplesPerLine(inputFile,label); // rows in memory
+        rfDataDims[2] = iusInputFileGetNumResponses(inputFile,label);
+        rfDataDims[3] = iusInputFileGetNumFrames(inputFile);
+
+        chunkDims[0] = iusInputFileGetNumChannels(inputFile,label);
+        chunkDims[1] = iusInputFileGetSamplesPerLine(inputFile,label);
+        chunkDims[2] = iusInputFileGetNumResponses(inputFile,label);
+        chunkDims[3] = 1;
+
+        dataChunkConfig = H5Pcreate(H5P_DATASET_CREATE);
+        H5Pset_chunk(dataChunkConfig, 4, chunkDims);
+        instance->fileChunkConfig = dataChunkConfig;
+
+        space = H5Screate_simple(4, rfDataDims, NULL);
+        instance->rfDataset = H5Dcreate(instance->handle, label, H5T_NATIVE_FLOAT, space, H5P_DEFAULT, dataChunkConfig, H5P_DEFAULT);
+        H5Sclose(space);
+
+    }
+    return H5Dget_space(instance->rfDataset);
+}
+
+int iusInputFileFrameSave
 (
     iuif_t inputFile,
     char *label,
-    const float *samples
+    iud_t frame,
+    iuo_t frame_offset
 )
 {
-//    hid_t memspace;
-//    hid_t dataspace;
-//    hsize_t offset[4];
-//    hsize_t count[4];
-//    hsize_t memdim[2];
-//    herr_t  status;
-    IUS_UNUSED(samples);
-    IUS_UNUSED(inputFile);
-    IUS_UNUSED(label);
-    // get number of channels
-//    iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
-//    iurcm_t channelMap = iusReceiveChannelMapDictGet(instance->receiveChannelMapDict,label);
-//    int numChannels = iusReceiveChannelMapGetNumChannels(channelMap);
-//
-//    iurs_t receiveSettings = iusReceiveSettingsDictGet(instance->receiveSettingsDict,label)
-//    memdim[0] = numChannels;
-//    memdim[1] = pInst->pDrivingScheme->numSamplesPerLine;
+    hid_t memspace;
+    hid_t dataspace;
+    hsize_t offset[4];
+    hsize_t count[4];
+    hsize_t memdim[3];
+    herr_t  status;
 
-#if 0
-    memdim[0] = pInst->pTransducer->numElements;
-    memdim[1] = pInst->pDrivingScheme->numSamplesPerLine;
-    memspace = H5Screate_simple(2, memdim, NULL);
+    memdim[0] = iusInputFileGetNumChannels(inputFile,label);
+    memdim[1] = iusInputFileGetSamplesPerLine(inputFile,label);
+    memdim[2] = iusInputFileGetNumResponses(inputFile,label);
+    memspace = H5Screate_simple(3, memdim, NULL);
 
-    if (pInst->numFrames == 1)
-    {
-        offset[0] = 0;
-        offset[1] = 0;
-        offset[2] = pInst->currentPulse;
+    offset[0] = frame_offset->x;
+    offset[1] = frame_offset->z;
+    offset[2] = frame_offset->y;
+    offset[3] = frame_offset->t;
 
-        count[0] = pInst->pTransducer->numElements;
-        count[1] = pInst->pDrivingScheme->numSamplesPerLine;
-        count[2] = 1;
-    }
-    else
-    {
-        offset[0] = 0;
-        offset[1] = 0;
-        offset[2] = pInst->currentPulse;
-        offset[3] = pInst->currentFrame;
+    count[0] = memdim[0];
+    count[1] = memdim[1];
+    count[2] = memdim[2];
+    count[3] = 1;
 
-        count[0] = memdim[0];
-        count[1] = memdim[1];
-        count[2] = 1;
-        count[3] = 1;
-    }
-    dataspace = H5Dget_space(pInst->rfDataset);
+    iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
+    dataspace = iusInputFileGetSpace(inputFile, label);
     status = H5Sselect_hyperslab(dataspace, H5S_SELECT_SET, offset, NULL, count, NULL);
+
+    float *pFrame = iusDataGetPointer(frame);
 
     /*
      *   Write the data to the dataset.
      */
-    status |= H5Dwrite(pInst->rfDataset, H5T_NATIVE_FLOAT, memspace, dataspace, H5P_DEFAULT, pFrame);
+    status |= H5Dwrite(instance->rfDataset, H5T_NATIVE_FLOAT, memspace, dataspace, H5P_DEFAULT, pFrame);
+
     /*
      *   Close and release memspace but not (file)dataspace
      */
     status |= H5Sclose(memspace);
     status |= H5Sclose(dataspace);
 
-    /*------------------------------------------------------------------------*/
-    /* increment file read pointers                                           */
-    /*------------------------------------------------------------------------*/
-    pInst->currentPulse++;
-    if (pInst->currentPulse == pInst->pDrivingScheme->numTransmitPulses)
-    {
-        pInst->currentPulse = 0;
-        pInst->currentFrame++;
-    }
-#endif
-    return IUS_E_OK;
+    return status;
 }
 
 #if 0

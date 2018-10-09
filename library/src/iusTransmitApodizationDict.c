@@ -119,11 +119,10 @@ iuta_t iusTransmitApodizationDictGet
 	char * key
 )
 {
+	if (dict == NULL || key == NULL) return NULL;
 	HashableTransmitApodization *search;
-	if (dict == NULL) return NULL;
 
 	search = HashableTransmitApodization_hashmap_get(&dict->map, key);
-
 	if (search == NULL) return NULL;
 	return search->transmitApodization;
 }

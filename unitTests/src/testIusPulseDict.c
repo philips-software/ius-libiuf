@@ -22,7 +22,7 @@ TEST_TEAR_DOWN(IusPulseDict)
 }
 
 
-TEST(IusPulseDict, testIusCreatePulseDict)
+TEST(IusPulseDict, testIusPulseDictCreate)
 {
     iupd_t obj = iusPulseDictCreate();
     iupd_t notherObj = iusPulseDictCreate();
@@ -32,8 +32,36 @@ TEST(IusPulseDict, testIusCreatePulseDict)
     iusPulseDictDelete(notherObj);
 }
 
+TEST(IusPulseDict, testIusPulseDictSetGet)
+{
+    IUS_BOOL equal;
+    int numPulses = 10;
+    int numPulseValues=10;
+    float   pulseFrequency=8000000.0f;   /**< frequency that the pulse represents in Hz */
+    float   pulseAmplitude=800.0f;       /**< (max) amplitude of the pulse in Volts */
+    int     pulseCount=10;               /**< number of cycles that the pulse represents */
+    int     status;
 
-TEST(IusPulseDict, testIusComparePulseDict)
+    iupd_t dict = iusPulseDictCreate();
+    TEST_ASSERT(dict != IUPD_INVALID);
+
+    iupp_t obj = iusParametricPulseCreate(pulseFrequency, pulseAmplitude, pulseCount);
+    char *pObjLabel = "Parametric pulse for testIusPulseDictCompare";
+    status = iusPulseDictSet(dict,pObjLabel,(iup_t) obj);
+    TEST_ASSERT_EQUAL(IUS_E_OK,status);
+
+    iup_t retrievedObj = iusPulseDictGet(dict, pObjLabel);
+    TEST_ASSERT_EQUAL(IUS_TRUE, iusPulseCompare((iup_t)obj, retrievedObj));
+
+    // Invalid params
+    TEST_ASSERT_EQUAL(IUP_INVALID, iusPulseDictGet(dict,NULL));
+    TEST_ASSERT_EQUAL(IUP_INVALID, iusPulseDictGet(NULL,pObjLabel));
+    TEST_ASSERT_EQUAL(IUP_INVALID, iusPulseDictGet(dict,"unknownLabel"));
+    iusParametricPulseDelete(obj);
+    iusPulseDictDelete(dict);
+}
+
+TEST(IusPulseDict, testIusPulseDictCompare)
 {
     IUS_BOOL equal;
     int numPulses = 10;
@@ -59,7 +87,7 @@ TEST(IusPulseDict, testIusComparePulseDict)
     parametricPulse = iusParametricPulseCreate(pulseFrequency, pulseAmplitude, pulseCount);
     nonParametricPulse = iusNonParametricPulseCreate(numPulseValues);
 
-    char *label = "Parametric pulse for testIusComparePulseDict";
+    char *label = "Parametric pulse for testIusPulseDictCompare";
     status = iusPulseDictSet(dict,label,(iup_t) parametricPulse);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
     equal = iusPulseDictCompare(dict, notherDict);
@@ -69,7 +97,7 @@ TEST(IusPulseDict, testIusComparePulseDict)
     equal = iusPulseDictCompare(dict, notherDict);
     TEST_ASSERT_EQUAL(IUS_TRUE,equal);
 
-    char *label2 = "NON Parametric pulse for testIusComparePulseDict";
+    char *label2 = "NON Parametric pulse for testIusPulseDictCompare";
     status = iusPulseDictSet(dict,label2,(iup_t) nonParametricPulse);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
     equal = iusPulseDictCompare(dict, notherDict);
@@ -139,7 +167,8 @@ TEST(IusPulseDict, testIusSerialization)
 
 TEST_GROUP_RUNNER(IusPulseDict)
 {
-    RUN_TEST_CASE(IusPulseDict, testIusCreatePulseDict);
-    RUN_TEST_CASE(IusPulseDict, testIusComparePulseDict);
+    RUN_TEST_CASE(IusPulseDict, testIusPulseDictCreate);
+    RUN_TEST_CASE(IusPulseDict, testIusPulseDictCompare);
+//    RUN_TEST_CASE(IusPulseDict, testIusPulseDictSetGet);
     RUN_TEST_CASE(IusPulseDict, testIusSerialization);
 }

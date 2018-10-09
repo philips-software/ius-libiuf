@@ -20,7 +20,7 @@ TEST_TEAR_DOWN(IusParameterDict)
 }
 
 
-TEST(IusParameterDict, testIusCreateParameterDict)
+TEST(IusParameterDict, testIusParameterDictCreate)
 {
     iupad_t obj = iusParameterDictCreate();
     iupad_t notherObj = iusParameterDictCreate();
@@ -31,7 +31,24 @@ TEST(IusParameterDict, testIusCreateParameterDict)
 }
 
 
-TEST(IusParameterDict, testIusCompareParameterDict)
+TEST(IusParameterDict, testIusParameterDictSetGet)
+{
+    char *key = "testKey";
+    char *value = "testValue";
+    iupad_t dict = iusParameterDictCreate();
+    TEST_ASSERT_EQUAL(IUS_E_OK, iusParameterDictSet(dict, key, value));
+    TEST_ASSERT_EQUAL_STRING(value, iusParameterDictGet(dict, key));
+
+    // invalid args
+    TEST_ASSERT_EQUAL(IUS_ERR_VALUE, iusParameterDictSet(NULL, key, value));
+    TEST_ASSERT_EQUAL(IUS_ERR_VALUE, iusParameterDictSet(dict, NULL, value));
+    TEST_ASSERT_EQUAL(IUS_ERR_VALUE, iusParameterDictSet(dict, key, NULL));
+
+    TEST_ASSERT_EQUAL(NULL, iusParameterDictGet(dict, NULL));
+    TEST_ASSERT_EQUAL(NULL, iusParameterDictGet(dict, "unknownKey"));
+}
+
+TEST(IusParameterDict, testIusParameterDictCompare)
 {
     int elementID,status;
 
@@ -158,8 +175,9 @@ TEST(IusParameterDict, testIusSerializationErrorFlow)
 
 TEST_GROUP_RUNNER(IusParameterDict)
 {
-    RUN_TEST_CASE(IusParameterDict, testIusCreateParameterDict);
-    RUN_TEST_CASE(IusParameterDict, testIusCompareParameterDict);
+    RUN_TEST_CASE(IusParameterDict, testIusParameterDictCreate);
+    RUN_TEST_CASE(IusParameterDict, testIusParameterDictCompare);
+    RUN_TEST_CASE(IusParameterDict, testIusParameterDictSetGet);
     RUN_TEST_CASE(IusParameterDict, testIusSerialization);
     RUN_TEST_CASE(IusParameterDict, testIusSerializationErrorFlow);
 }

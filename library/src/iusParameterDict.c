@@ -123,11 +123,10 @@ char * iusParameterDictGet
 )
 {
     HashableParameter * search;
-    if( dict == NULL ) return NULL;
-    if( key == NULL ) return NULL;
+    if (dict == NULL || key == NULL) return NULL;
 
     search = HashableParameter_hashmap_get(&dict->map, key);
-    if( dict == NULL )
+    if( search == NULL )
         return NULL;
     return search->value;
 }
@@ -141,6 +140,7 @@ int iusParameterDictSet
 {
     if( dict == NULL ) return IUS_ERR_VALUE;
     if( key == NULL ) return IUS_ERR_VALUE;
+    if( value == NULL ) return IUS_ERR_VALUE;
 
     HashableParameter *newMember = calloc(1, sizeof(HashableParameter));
     newMember->key = strdup(key);

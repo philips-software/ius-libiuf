@@ -21,7 +21,7 @@ TEST_TEAR_DOWN(IusReceiveSettingsDict)
 }
 
 
-TEST(IusReceiveSettingsDict, testIusCreateSourceDict)
+TEST(IusReceiveSettingsDict, testIusCreateDict)
 {
     iursd_t obj = iusReceiveSettingsDictCreate();
     iursd_t notherObj = iusReceiveSettingsDictCreate();
@@ -33,7 +33,36 @@ TEST(IusReceiveSettingsDict, testIusCreateSourceDict)
 }
 
 
-TEST(IusReceiveSettingsDict, testIusCompareSourceDict)
+TEST(IusReceiveSettingsDict, testIusSetGetDict)
+{
+    char *pObjLabel = "bmode";
+    float sampleFrequency=4000;
+    int numDelays=10;
+    int numSamplesPerLine=10;
+    int numTGCentries = 1;
+    int status;
+
+    iurs_t obj = iusReceiveSettingsCreate(sampleFrequency, numDelays, numSamplesPerLine, numTGCentries);
+
+
+    // Create
+    iursd_t  dict = iusReceiveSettingsDictCreate();
+
+    // Fill
+    status = iusReceiveSettingsDictSet(dict,pObjLabel,obj);
+    TEST_ASSERT_EQUAL(IUS_E_OK,status);
+    iurs_t retrievedObj = iusReceiveSettingsDictGet(dict,pObjLabel);
+    TEST_ASSERT_EQUAL(IUS_TRUE, iusReceiveSettingsCompare(obj,retrievedObj));
+
+    // Invalid params
+    TEST_ASSERT_EQUAL(IURS_INVALID, iusReceiveSettingsDictGet(dict,NULL));
+    TEST_ASSERT_EQUAL(IURS_INVALID, iusReceiveSettingsDictGet(NULL,pObjLabel));
+    TEST_ASSERT_EQUAL(IURS_INVALID, iusReceiveSettingsDictGet(dict,"unknownLabel"));
+    iusReceiveSettingsDelete(obj);
+    iusReceiveSettingsDictDelete(dict);
+}
+
+TEST(IusReceiveSettingsDict, testIusCompareDict)
 {
     IUS_BOOL equal;
     char *pObjLabel = "Label for IusReceiveSettingsDict, created in testIusCompareSourceDict";
@@ -95,7 +124,7 @@ TEST(IusReceiveSettingsDict, testIusSerialization)
     //char *ReceiveChannelMapDictPath = "/ReceiveSettingsDict";
 
     // Create and fill
-    iursd_t  dict = dgGenerateReceiveSettingsDict();
+    iursd_t  dict = dgGenerateReceiveSettingsDict("bmode");
 
     // Save
     hid_t handle = H5Fcreate(filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
@@ -118,7 +147,8 @@ TEST(IusReceiveSettingsDict, testIusSerialization)
 
 TEST_GROUP_RUNNER(IusReceiveSettingsDict)
 {
-    RUN_TEST_CASE(IusReceiveSettingsDict, testIusCreateSourceDict);
-    RUN_TEST_CASE(IusReceiveSettingsDict, testIusCompareSourceDict);
+    RUN_TEST_CASE(IusReceiveSettingsDict, testIusCreateDict);
+    RUN_TEST_CASE(IusReceiveSettingsDict, testIusSetGetDict);
+    RUN_TEST_CASE(IusReceiveSettingsDict, testIusCompareDict);
     RUN_TEST_CASE(IusReceiveSettingsDict, testIusSerialization);
 }

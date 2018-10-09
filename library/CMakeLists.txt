@@ -47,6 +47,7 @@ add_library(ius STATIC
 		include/ius3DTransducerElementPrivate.h
 		include/ius3DTransducerElementList.h
         include/ius3DTransducerElementListPrivate.h
+        include/iusData.h
         include/iusExperiment.h
         include/iusExperimentPrivate.h
 		include/iusFile.h
@@ -62,6 +63,7 @@ add_library(ius STATIC
 		include/iusInputFilePrivate.h
 		include/iusNonParametricPulse.h
 		include/iusNonParametricPulsePrivate.h
+		include/iusOffset.h
 		include/iusParameterDict.h
 		include/iusParametricPulse.h
 		include/iusParametricPulsePrivate.h
@@ -110,6 +112,7 @@ add_library(ius STATIC
 		src/ius3DTransducer.c
 		src/ius3DTransducerElement.c
 		src/ius3DTransducerElementList.c
+        src/iusData.c
 		src/iusExperiment.c
 		src/iusFile.c
 		src/iusFrame.c
@@ -118,6 +121,7 @@ add_library(ius STATIC
 		src/iusHistoryNode.c
 		src/iusHistoryNodeList.c
 		src/iusNonParametricPulse.c
+		src/iusOffset.c
 		src/iusParameterDict.c
 		src/iusParametricPulse.c
 		src/iusPattern.c

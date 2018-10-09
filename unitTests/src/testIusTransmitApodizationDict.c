@@ -32,6 +32,31 @@ TEST(IusTransmitApodizationDict, testIusTransmitApodizationDictCreate)
 	iusTransmitApodizationDictDelete(notherObj);
 }
 
+TEST(IusTransmitApodizationDict, testIusTransmitApodizationDictSetGet)
+{
+	IUS_BOOL equal;
+	const int numElements = 8;
+	float ones[8] = {1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f};
+	int status;
+	char *pObjLabel = "ones";
+	iuta_t obj = iusTransmitApodizationCreate(numElements);
+
+	iutad_t dict = iusTransmitApodizationDictCreate();
+	status = iusTransmitApodizationSetApodization(obj, ones);
+	status |= iusTransmitApodizationDictSet(dict, pObjLabel, obj);
+	TEST_ASSERT(status == IUS_E_OK);
+
+
+	iuta_t retrievedObj = iusTransmitApodizationDictGet(dict, pObjLabel);
+	TEST_ASSERT_EQUAL(IUS_TRUE, iusTransmitApodizationCompare(obj, retrievedObj));
+
+	// Invalid params
+	TEST_ASSERT_EQUAL(IUTA_INVALID, iusTransmitApodizationDictGet(dict,NULL));
+	TEST_ASSERT_EQUAL(IUTA_INVALID, iusTransmitApodizationDictGet(NULL,pObjLabel));
+	TEST_ASSERT_EQUAL(IUTA_INVALID, iusTransmitApodizationDictGet(dict,"unknownLabel"));
+	iusTransmitApodizationDelete(obj);
+	iusTransmitApodizationDictDelete(dict);
+}
 
 TEST(IusTransmitApodizationDict, testIusTransmitApodizationDictCompare)
 {
@@ -117,6 +142,7 @@ TEST(IusTransmitApodizationDict, testIusTransmitApodizationDictSerialization)
 TEST_GROUP_RUNNER(IusTransmitApodizationDict)
 {
 	RUN_TEST_CASE(IusTransmitApodizationDict, testIusTransmitApodizationDictCreate);
+	RUN_TEST_CASE(IusTransmitApodizationDict, testIusTransmitApodizationDictSetGet);
 	RUN_TEST_CASE(IusTransmitApodizationDict, testIusTransmitApodizationDictCompare);
 	RUN_TEST_CASE(IusTransmitApodizationDict, testIusTransmitApodizationDictSerialization);
 }

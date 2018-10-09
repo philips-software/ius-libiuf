@@ -119,9 +119,8 @@ iurcm_t iusReceiveChannelMapDictGet
 	char * key
 )
 {
+	if (dict == NULL || key == NULL) return IURCM_INVALID;
 	HashableReceiveChannelMap *search;
-	if (dict == NULL) return IURCM_INVALID;
-
 	search = HashableReceiveChannelMap_hashmap_get(&dict->map, key);
 	if (search == NULL) return IURCM_INVALID;
 

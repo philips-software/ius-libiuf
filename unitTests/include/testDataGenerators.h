@@ -30,7 +30,9 @@ iupad_t dgGenerateParameterDict
 iuif_t dgGenerateInputFile
 (
 	char *ptestFileName,
-	char *transducerName
+	char *transducerName,
+	char *label,
+    int numFrames
 );
 
 iufl_t dgGenerateFrameList
@@ -45,27 +47,27 @@ iupal_t dgGeneratePatternList
 
 iupd_t dgGeneratePulseDict
 (
-	void
+    void
 );
 
 iusd_t dgGenerateSourceDict
 (
-	void
+    void
 );
 
 iurcmd_t dgGenerateReceiveChannelMapDict
 (
-  void
+    char *label
 );
 
 iutad_t dgGenerateTransmitApodizationDict
 (
-	void
+	char *label
 );
 
 iursd_t dgGenerateReceiveSettingsDict
 (
-	void
+    char *label
 );
 
 iue_t dgGenerateExperiment
