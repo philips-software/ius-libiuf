@@ -17,6 +17,13 @@
 #include <include/iusParameterDict.h>
 #include <include/iusHistoryNode.h>
 
+
+void dgGenerateFrame
+(
+	iud_t frame,
+	float value
+);
+
 iuhn_t dgGenerateHistoryNode
 (
 
@@ -40,7 +47,7 @@ iufl_t dgGenerateFrameList
 	void
 );
 
-iupal_t dgGeneratePatternList
+iupald_t dgGeneratePatternListDict
 (
   	void
 );

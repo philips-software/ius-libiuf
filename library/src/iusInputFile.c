@@ -14,7 +14,7 @@
 #include <iusUtil.h>
 #include <include/iusExperimentPrivate.h>
 #include <include/iusInputFilePrivate.h>
-#include <include/iusPatternListPrivate.h>
+#include <include/iusPatternListDictPrivate.h>
 #include <include/iusPulseDictPrivate.h>
 #include <include/iusReceiveChannelMapDictPrivate.h>
 #include <include/iusFrameList.h>
@@ -34,25 +34,23 @@
 struct IusInputFileInstance
 {
     iufl_t frameList;
-	iupal_t patternList;
-    iupd_t pulseDict;                    /**< a dictionary of pulses */
-    iusd_t pulseSourceDict;
-	iurcmd_t receiveChannelMapDict;      /**< a dictionary of receiveChannelMaps */
-	iutad_t transmitApodizationDict;     /**< a dictionary of transmitApodizations */
-	iursd_t receiveSettingsDict;
-	iut_t transducer;
-	iue_t experiment;
-    int numFrames;        /**< The number of frames in the data */
-    int IusVersion;       /**< version of input file format */
+	iupald_t patternListDict;            /**< a dictionary of pattern lists              */
+    iupd_t pulseDict;                    /**< a dictionary of pulses                      */
+    iusd_t pulseSourceDict;              /**< a dictionary of sources                     */
+	iurcmd_t receiveChannelMapDict;      /**< a dictionary of receiveChannelMaps          */
+	iutad_t transmitApodizationDict;     /**< a dictionary of transmitApodizations        */
+	iursd_t receiveSettingsDict;         /**< a dictionary of receiveSettings             */
+	iut_t transducer;                    /**< The transducer description                  */
+	iue_t experiment;                    /**< The description of the performed experiment */
+    int numFrames;                       /**< The number of frames in the data */
+    int IusVersion;                      /**< The version of input file format */
 
 
     //  state variables
-    hid_t               handle;                         /**< file handle */
-    const char          *pFilename;
-    hid_t fileChunkConfig;                /**< file chunck handle */
-    hid_t rfDataset;                      /**< dataset handle */
-    int currentFrame;                     /**< current frame number */
-    int currentPulse;                     /**< current pulse number */
+    hid_t               handle;           /**< HDF5 file handle     */
+    const char          *pFilename;       /**< the filename         */
+    hid_t fileChunkConfig;                /**< file chunck handle   */
+    hid_t rfDataset;                      /**< dataset handle       */
 }  ;
 
 
@@ -77,7 +75,7 @@ iuifi_t iusInputFileInstanceCreate
 	instanceData->IusVersion = iusGetVersionMajor();
 	instanceData->pFilename = "";
 	instanceData->frameList = IUFL_INVALID;
-	instanceData->patternList = IUPAL_INVALID;
+	instanceData->patternListDict = IUPALD_INVALID;
 	instanceData->pulseDict = IUPD_INVALID;
     instanceData->pulseSourceDict = IUSD_INVALID;
 	instanceData->receiveChannelMapDict = IURCMD_INVALID;
@@ -184,13 +182,10 @@ int iusInputFileGetNumResponses
 )
 {
     if (iusInputFile == NULL) return -1;
-    IUS_UNUSED(label);
-    // TODO: numResponses (size patternList for label)
-    // iupald_t listDict = iusInputFileGetPatternListDict(iusInputFile);
-    // if (listDict == IUPALD_INVALID) return -1;
-    // iupal_t patternList = iusInputFilePatternListDictGet(listDict,label);
-    // if (patternList == IUPAL_INVALID) return -1;
-    iupal_t patternList = iusInputFileGetPatternList(iusInputFile);
+    iupald_t listDict = iusInputFileGetPatternListDict(iusInputFile);
+    if (listDict == IUPALD_INVALID) return -1;
+    iupal_t patternList = iusPatternListDictGet(listDict,label);
+    if (patternList == IUPAL_INVALID) return -1;
     return iusPatternListGetSize(patternList);
 }
 
@@ -239,16 +234,14 @@ static iuifi_t inputFileInstanceLoad
         return IUIFI_INVALID;
     }
 
-    // Todo: create group @here instead of in Load, see experiment
-    instance->patternList = iusPatternListLoad(instance->handle);
-    if (instance->patternList == IUPAL_INVALID)
+    instance->patternListDict = iusPatternListDictLoad(instance->handle);
+    if (instance->patternListDict == IUPALD_INVALID)
     {
-        fprintf(stderr, "Warning from iusInputFileLoad: could not load patterns: %s\n", instance->pFilename );
+        fprintf(stderr, "Warning from iusInputFileLoad: could not load patternlists  %s\n", instance->pFilename );
         return IUIFI_INVALID;
     }
 
     // Load instance data
-    // Todo: create group @here instead of in Load, see experiment
     instance->pulseDict = iusPulseDictLoad(instance->handle);
     if (instance->pulseDict == IUPD_INVALID)
     {
@@ -387,7 +380,7 @@ int iusInputFileSaveInstance
 {
     herr_t status=0;
     status |= iusFrameListSave(instanceData->frameList, handle);
-    status |= iusPatternListSave(instanceData->patternList, handle);
+    status |= iusPatternListDictSave(instanceData->patternListDict, handle);
     status |= iusPulseDictSave(instanceData->pulseDict, handle);
     status |= iusSourceDictSave(instanceData->pulseSourceDict, handle);
     status |= iusReceiveChannelMapDictSave(instanceData->receiveChannelMapDict, handle);
@@ -459,7 +452,7 @@ static int iusInputFileCompareInstance
     if ( reference->numFrames != actual->numFrames ) return IUS_FALSE;
     if ( strcmp(reference->pFilename, actual->pFilename) != 0 ) return IUS_FALSE;
     if ( iusFrameListCompare(reference->frameList, actual->frameList)  == IUS_FALSE ) return IUS_FALSE;
-    if ( iusPatternListCompare(reference->patternList, actual->patternList)  == IUS_FALSE ) return IUS_FALSE;
+    if ( iusPatternListDictCompare(reference->patternListDict, actual->patternListDict)  == IUS_FALSE ) return IUS_FALSE;
     if ( iusPulseDictCompare(reference->pulseDict, actual->pulseDict)  == IUS_FALSE ) return IUS_FALSE;
     if ( iusSourceDictCompare(reference->pulseSourceDict, actual->pulseSourceDict)  == IUS_FALSE ) return IUS_FALSE;
     if ( iusReceiveChannelMapDictCompare(reference->receiveChannelMapDict, actual->receiveChannelMapDict) == IUS_FALSE) return IUS_FALSE;
@@ -480,9 +473,14 @@ int iusInputFileCompare
     if ( reference == NULL || actual == NULL ) return IUS_FALSE;
     if ( iusHistoryNodeCompareWithId(reference, actual)  == IUS_FALSE ) return IUS_FALSE;
 
+    // Compare instance data
     iuifi_t refInstance = iusHistoryNodeGetInstanceData((iuhn_t)reference);
     iuifi_t actInstance = iusHistoryNodeGetInstanceData((iuhn_t)actual);
-    return iusInputFileCompareInstance(refInstance,actInstance);
+    IUS_BOOL equal = iusInputFileCompareInstance(refInstance,actInstance);
+    if (equal == IUS_FALSE) return IUS_FALSE;
+
+
+    return equal;
 }
 
 // Getters
@@ -499,7 +497,7 @@ iufl_t iusInputFileGetFrameList
     return IUFL_INVALID;
 }
 
-iupal_t iusInputFileGetPatternList
+iupald_t iusInputFileGetPatternListDict
 (
     iuif_t iusInputFile
 )
@@ -507,7 +505,7 @@ iupal_t iusInputFileGetPatternList
     if ( iusInputFile != NULL )
     {
         iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)iusInputFile);
-        return instance->patternList;
+        return instance->patternListDict;
     }
     return NULL;
 }
@@ -625,10 +623,10 @@ int iusInputFileSetFrameList
     return status;
 }
 
-int iusInputFileSetPatternList
+int iusInputFileSetPatternListDict
 (
     iuif_t inputFile,
-    iupal_t paternList
+    iupald_t patternListDict
 )
 {
     int status = IUS_ERR_VALUE;
@@ -636,7 +634,7 @@ int iusInputFileSetPatternList
     if(inputFile != NULL)
     {
         iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
-        instance->patternList = paternList;
+        instance->patternListDict = patternListDict;
         status = IUS_E_OK;
     }
     return status;
@@ -766,73 +764,9 @@ int iusInputFileSetTransducer
     return status;
 }
 
-#if 0
-int iusInputWriteNextPulse(IUSInputFileInstance * pInst, const float *pFrame)
-{
-  hid_t memspace;
-  hid_t dataspace;
-  hsize_t offset[4];
-  hsize_t count[4];
-  hsize_t memdim[2];
-  herr_t  status;
-
-  memdim[0] = pInst->pTransducer->numElements;
-  memdim[1] = pInst->pDrivingScheme->numSamplesPerLine;
-  memspace = H5Screate_simple(2, memdim, NULL);
-
-  if (pInst->numFrames == 1)
-  {
-    offset[0] = 0;
-    offset[1] = 0;
-    offset[2] = pInst->currentPulse;
-
-    count[0] = pInst->pTransducer->numElements;
-    count[1] = pInst->pDrivingScheme->numSamplesPerLine;
-    count[2] = 1;
-  }
-  else
-  {
-    offset[0] = 0;
-    offset[1] = 0;
-    offset[2] = pInst->currentPulse;
-    offset[3] = pInst->currentFrame;
-
-    count[0] = memdim[0];
-    count[1] = memdim[1];
-    count[2] = 1;
-    count[3] = 1;
-  }
-  dataspace = H5Dget_space(pInst->rfDataset);
-  status = H5Sselect_hyperslab(dataspace, H5S_SELECT_SET, offset, NULL, count, NULL);
-
-  /*
-   *   Write the data to the dataset.
-   */
-  status |= H5Dwrite(pInst->rfDataset, H5T_NATIVE_FLOAT, memspace, dataspace, H5P_DEFAULT, pFrame);
-  /*
-   *   Close and release memspace but not (file)dataspace
-   */
-  status |= H5Sclose(memspace);
-  status |= H5Sclose(dataspace);
-
-  /*------------------------------------------------------------------------*/
-  /* increment file read pointers                                           */
-  /*------------------------------------------------------------------------*/
-  pInst->currentPulse++;
-  if (pInst->currentPulse == pInst->pDrivingScheme->numTransmitPulses)
-  {
-    pInst->currentPulse = 0;
-    pInst->currentFrame++;
-  }
-
-  return status;
-}
-#endif
 
 
-
-
-hid_t iusInputFileGetSpace
+hid_t iusInputFileGetWriteSpace
 (
     iuif_t inputFile,
     char *label
@@ -868,6 +802,22 @@ hid_t iusInputFileGetSpace
     return H5Dget_space(instance->rfDataset);
 }
 
+
+hid_t iusInputFileGetReadSpace
+(
+    iuif_t inputFile,
+    char *label
+)
+{
+    iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
+    if (instance->rfDataset == H5I_INVALID_HID)
+    {
+        instance->rfDataset = H5Dopen(instance->handle, label, H5P_DEFAULT);
+    }
+    return H5Dget_space(instance->rfDataset);
+}
+
+
 int iusInputFileFrameSave
 (
     iuif_t inputFile,
@@ -883,15 +833,15 @@ int iusInputFileFrameSave
     hsize_t memdim[3];
     herr_t  status;
 
-    memdim[0] = iusInputFileGetNumChannels(inputFile,label);
-    memdim[1] = iusInputFileGetSamplesPerLine(inputFile,label);
-    memdim[2] = iusInputFileGetNumResponses(inputFile,label);
+    memdim[0] = (hsize_t) iusInputFileGetNumChannels(inputFile,label);
+    memdim[1] = (hsize_t) iusInputFileGetSamplesPerLine(inputFile,label);
+    memdim[2] = (hsize_t) iusInputFileGetNumResponses(inputFile,label);
     memspace = H5Screate_simple(3, memdim, NULL);
 
-    offset[0] = frame_offset->x;
-    offset[1] = frame_offset->z;
-    offset[2] = frame_offset->y;
-    offset[3] = frame_offset->t;
+    offset[0] = (hsize_t) frame_offset->x;
+    offset[1] = (hsize_t) frame_offset->z;
+    offset[2] = (hsize_t) frame_offset->y;
+    offset[3] = (hsize_t) frame_offset->t;
 
     count[0] = memdim[0];
     count[1] = memdim[1];
@@ -899,293 +849,64 @@ int iusInputFileFrameSave
     count[3] = 1;
 
     iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
-    dataspace = iusInputFileGetSpace(inputFile, label);
+    dataspace = iusInputFileGetWriteSpace(inputFile, label);
     status = H5Sselect_hyperslab(dataspace, H5S_SELECT_SET, offset, NULL, count, NULL);
 
     float *pFrame = iusDataGetPointer(frame);
 
-    /*
-     *   Write the data to the dataset.
-     */
+    // Save frame
     status |= H5Dwrite(instance->rfDataset, H5T_NATIVE_FLOAT, memspace, dataspace, H5P_DEFAULT, pFrame);
 
-    /*
-     *   Close and release memspace but not (file)dataspace
-     */
+    // Close and release memspace but not (file)dataspace
     status |= H5Sclose(memspace);
     status |= H5Sclose(dataspace);
 
     return status;
 }
 
-#if 0
-int iusInputFileReadNextPulse
+int iusInputFileFrameLoad
 (
-    iuif_t file,
-    float *const *const pRFout
-)
-{
-    hsize_t i, j;
-    hsize_t offset[4];
-    hsize_t count[4];
-    hid_t   memspace;
-    hid_t   dataspace;
-    hsize_t memdim[2];
-    herr_t  status;
-
-    if (file == NULL || pRFout == NULL)
-    {
-        fprintf(stderr, "iusInputRedNextPulse: input arguments can not be NULL\n");
-        return -1;
-    }
-    iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)file);
-    // TODO: parametrize label "bmode"
-    iurs_t receiveSettings = iusReceiveSettingsDictGet(instance->receiveSettingsDict,"bmode");
-    int numSamplesPerLine = iusReceiveSettingsGetNumSamplesPerLine(receiveSettings);
-    int numElements = iusTransducerGetNumElements(instance->transducer);
-    float *pPage = (float *)calloc(numSamplesPerLine * numElements, sizeof(float)) ;
-    if (pPage == NULL)
-    {
-        fprintf(stderr, "iusInputRedNextPulse: Memory allocation error\n");
-        return -1;
-    }
-
-    offset[0] = 0;
-    offset[1] = 0;
-    offset[2] = instance->currentPulse;
-    offset[3] = instance->currentFrame;
-
-    count[1] = numSamplesPerLine;
-    count[0] = numElements;
-    count[2] = 1;
-    count[3] = 1;
-
-    memdim[0] = numElements;
-    memdim[1] = numSamplesPerLine;
-    memspace = H5Screate_simple(2, memdim, NULL);
-    dataspace = H5Dget_space(instance->rfDataset);
-    status = H5Sselect_hyperslab(dataspace, H5S_SELECT_SET, offset, NULL, count, NULL);
-
-    status |= H5Dread(instance->rfDataset, H5T_NATIVE_FLOAT, memspace, dataspace, H5P_DEFAULT, pPage);
-    /* read an 1D buffer, copy that to 2D array -- might not be needed anymore */
-    for (i=0; i<memdim[0] ; i++) // numElements (# of rows rows)
-    {
-        for (j=0; j<memdim[1]; j++) // numSamples (on each row)
-        {
-            pRFout[i][j] = pPage[j+i*memdim[1]];
-        }
-    }
-    free(pPage);
-
-    instance->currentPulse++;
-    if (instance->currentPulse == instance->pIusInput->pDrivingScheme->numTransmitPulses)
-    {
-        instance->currentPulse = 0;
-        instance->currentFrame++;
-    }
-    status |= H5Sclose(memspace);
-    status |= H5Sclose(dataspace);
-
-    return (int)status;
-
-}
-
-
-int iusInputFileReadNextFrame
-(
-    iuif_t file,
-    float *const *const *const pRFout
-)
-{
-    int i;
-    iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)file);
-    int numTransmitPulses = iusPulseDictGetSize(instance->pulseDict);
-    for (i=0; i<numTransmitPulses; i++)
-    {
-        iusInputFileReadNextPulse(file, pRFout[i]);
-    }
-    return 0;
-}
-
-
-//
-// TODO: Add label support?
-// Frame should be read from specifix datapath right
-int iusInputFileReadFrame
-(
-    iuif_t file,
-    float *const *const *const pRFout,
-    int frameNum
-)
-{
-    iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)file);
-    instance->currentFrame=frameNum;
-    return iusInputFileReadNextFrame(instance, pRFout);
-}
-
-
-int iusInputFileWriteNextPulse
-(
-IusInputFileInstance * pInst,
-const float *pFrame
+    iuif_t inputFile,
+    char *label,
+    iud_t frame,
+    iuo_t frame_offset
 )
 {
     hid_t memspace;
     hid_t dataspace;
     hsize_t offset[4];
     hsize_t count[4];
-    hsize_t memdim[2];
+    hsize_t memdim[3];
     herr_t  status;
 
-    memdim[0] = pInst->pIusInput->pTransducer->numElements;
-    memdim[1] = pInst->pIusInput->pDrivingScheme->numSamplesPerLine;
-    memspace = H5Screate_simple(2, memdim, NULL);
+    memdim[0] = (hsize_t) iusInputFileGetNumChannels(inputFile,label);
+    memdim[1] = (hsize_t) iusInputFileGetSamplesPerLine(inputFile,label);
+    memdim[2] = (hsize_t) iusInputFileGetNumResponses(inputFile,label);
+    memspace = H5Screate_simple(3, memdim, NULL);
 
-    if (pInst->pIusInput->numFrames == 1)
-    {
-        offset[0] = 0;
-        offset[1] = 0;
-        offset[2] = pInst->currentPulse;
+    offset[0] = (hsize_t) frame_offset->x;
+    offset[1] = (hsize_t) frame_offset->z;
+    offset[2] = (hsize_t) frame_offset->y;
+    offset[3] = (hsize_t) frame_offset->t;
 
-        count[0] = pInst->pIusInput->pTransducer->numElements;
-        count[1] = pInst->pIusInput->pDrivingScheme->numSamplesPerLine;
-        count[2] = 1;
-    }
-    else
-    {
-        offset[0] = 0;
-        offset[1] = 0;
-        offset[2] = pInst->currentPulse;
-        offset[3] = pInst->currentFrame;
-
-        count[0] = memdim[0];
-        count[1] = memdim[1];
-        count[2] = 1;
-        count[3] = 1;
-    }
-    dataspace = H5Dget_space(pInst->rfDataset);
-    status = H5Sselect_hyperslab(dataspace, H5S_SELECT_SET, offset, NULL, count, NULL);
-
-    /*
-     *   Write the data to the dataset.
-    */
-    status |= H5Dwrite(pInst->rfDataset, H5T_NATIVE_FLOAT, memspace, dataspace, H5P_DEFAULT, pFrame);
-    /*
-     *   Close and release memspace but not (file)dataspace
-    */
-    status |= H5Sclose(memspace);
-    status |= H5Sclose(dataspace);
-
-    /*------------------------------------------------------------------------*/
-    /* increment file read pointers                                           */
-    /*------------------------------------------------------------------------*/
-    pInst->currentPulse++;
-    if (pInst->currentPulse == pInst->pIusInput->pDrivingScheme->numTransmitPulses)
-    {
-        pInst->currentPulse = 0;
-        pInst->currentFrame++;
-    }
-
-    return status;
-
-}
-
-int iusInputFileReadFrameDepthRange
-(
-IusInputFileInstance * pInst,
-const IusRange *const pDepthRange,
-float *const *const *const pPage,
-int frameNum
-)
-{
-    pInst->currentFrame = frameNum;
-    return iusInputFileReadNextFrameDepthRange(pInst, pDepthRange, pPage);
-
-}
-
-int iusInputFileReadNextFrameDepthRange
-(
-IusInputFileInstance * pInst,
-const IusRange *const pDepthRange,
-float *const *const *const pPage
-)
-{
-    int i;
-    //IusPage wave;
-    for (i = 0; i<pInst->pIusInput->pDrivingScheme->numTransmitPulses; i++)
-    {
-        iusInputFileReadNextPulseDepthRange(pInst, pDepthRange, pPage[i]);
-    }
-    return 0;
-}
-
-int iusInputFileReadNextPulseDepthRange
-(
-IusInputFileInstance * pInst,
-const IusRange *const pDepthRange,
-float *const *const ppPageOut
-)
-{
-    hsize_t i, j;
-    hsize_t offset[4];
-    hsize_t count[4];
-
-    hid_t   memspace;
-    hid_t   dataspace;
-    hsize_t memdim[2];
-    herr_t  status;
-
-    if (pInst == NULL || ppPageOut == NULL)
-    {
-        fprintf(stderr, "iusInputRedNextPulse: input arguments can not be NULL\n");
-        return -1;
-    }
-    float *pPage = (float *)calloc(pInst->pIusInput->pDrivingScheme->numSamplesPerLine *
-    pInst->pIusInput->pTransducer->numElements, sizeof(float));
-    if (pPage == NULL)
-    {
-        fprintf(stderr, "iusInputRedNextPulse: Memory allocation error\n");
-        return -1;
-    }
-
-    offset[0] = 0;
-    offset[1] = pDepthRange->startIndex;
-    offset[2] = pInst->currentPulse;
-    offset[3] = pInst->currentFrame;
-
-    count[0] = pInst->pIusInput->pTransducer->numElements;
-    count[1] = pDepthRange->numSamples;
-    count[2] = 1;
+    count[0] = memdim[0];
+    count[1] = memdim[1];
+    count[2] = memdim[2];
     count[3] = 1;
 
-    memdim[0] = pInst->pIusInput->pTransducer->numElements;
-    memdim[1] = pDepthRange->numSamples;
-    memspace = H5Screate_simple(2, memdim, NULL);
-    dataspace = H5Dget_space(pInst->rfDataset);
+    iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
+    dataspace = iusInputFileGetReadSpace(inputFile, label);
     status = H5Sselect_hyperslab(dataspace, H5S_SELECT_SET, offset, NULL, count, NULL);
 
-    status |= H5Dread(pInst->rfDataset, H5T_NATIVE_FLOAT, memspace, dataspace, H5P_DEFAULT, pPage);
+    float *pFrame = iusDataGetPointer(frame);
 
-    /* read an 1D buffer, copy that to 2D array -- might not be needed anymore */
-    for (i = 0; i<memdim[0]; i++) // numElements (# of rows rows)
-    {
-        for (j = 0; j<memdim[1]; j++) // numSamples (on each row)
-        {
-            ppPageOut[i][j+offset[1]] = pPage[j + i*memdim[1]];
-        }
-    }
-    free(pPage);
+    // Save frame
+    status |= H5Dread(instance->rfDataset, H5T_NATIVE_FLOAT, memspace, dataspace, H5P_DEFAULT, pFrame);
 
-    pInst->currentPulse++;
-    if (pInst->currentPulse == pInst->pIusInput->pDrivingScheme->numTransmitPulses)
-    {
-        pInst->currentPulse = 0;
-        pInst->currentFrame++;
-    }
+    // Close and release memspace but not (file)dataspace
     status |= H5Sclose(memspace);
     status |= H5Sclose(dataspace);
 
     return status;
-}
-#endif
 
+}

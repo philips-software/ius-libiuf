@@ -129,9 +129,9 @@ long int *   pValue
 //------------------------------------------------------------------------------
 herr_t iusHdf5ReadString
 (
-hid_t        handle,
-const char * pVariableString,
-char * ppReturnString
+    hid_t        handle,
+    const char * pVariableString,
+    char * ppReturnString
 )
 {
     herr_t status = -1;

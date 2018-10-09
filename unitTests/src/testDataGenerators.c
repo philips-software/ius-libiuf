@@ -8,6 +8,7 @@
 #include <include/iusNonParametricPulse.h>
 #include <include/iusParametricPulse.h>
 #include <include/iusPulseDict.h>
+#include <include/iusPatternListDict.h>
 #include <include/iusReceiveChannelMapDict.h>
 #include <include/iusTransmitApodizationDict.h>
 
@@ -17,14 +18,30 @@
 #include <include/ius3DNonParametricSource.h>
 #include <include/ius3DTransducer.h>
 
-static const char *pBmodePatternLabel = "bmode";
-static const char *pDopplerPatternLabel = "doppler";
+static char *pBmodePatternLabel = "bmode";
+static char *pDopplerPatternLabel = "doppler";
 static const char *pPulseLabel = "pulseLabel";
 static const char *pSourceLabel = "sourceLabel";
 static const char *pChannelMapLabel = "channelMapLabel";
 static const char *pApodizationLabel = "apodizationLabel";
 static const char *pReceivesettingsLabel = "receivesettingsLabel";
 
+
+void dgGenerateFrame
+(
+    iud_t frame,
+    float value
+)
+{
+    int i;
+    float *data = iusDataGetPointer(frame);
+    int numSamples = iusDataGetSize(frame);
+
+    for (i=0; i<numSamples; i++)
+    {
+        data[i] = value;
+    }
+}
 
 iursd_t dgGenerateReceiveSettingsDict
 (
@@ -119,8 +136,8 @@ iuif_t dgGenerateInputFile
     int status = iusInputFileSetFrameList(inputFile,frameList);
     TEST_ASSERT(status == IUS_E_OK);
 
-    iupal_t patternList = dgGeneratePatternList();
-    status = iusInputFileSetPatternList(inputFile,patternList);
+    iupald_t patternListDict = dgGeneratePatternListDict();
+    status = iusInputFileSetPatternListDict(inputFile,patternListDict);
     TEST_ASSERT(status == IUS_E_OK);
 
     iupd_t pulseDict = dgGeneratePulseDict();
@@ -176,38 +193,47 @@ iufl_t dgGenerateFrameList
 }
 
 
-iupal_t dgGeneratePatternList
+iupald_t dgGeneratePatternListDict
 (
   void
 )
 {
-  int numPatterns = 2;
   int status;
 
   // fill list
-  iupal_t patternList = iusPatternListCreate(numPatterns);
-  TEST_ASSERT_NOT_EQUAL(IUPAL_INVALID, patternList);
+  iupald_t patternListDict = iusPatternListDictCreate();
+  
+  iupal_t bmodePatternList = iusPatternListCreate(1);
+  iupal_t dopplerPatternList = iusPatternListCreate(2);
+  TEST_ASSERT_NOT_EQUAL(IUPAL_INVALID, bmodePatternList);
+  TEST_ASSERT_NOT_EQUAL(IUPAL_INVALID, dopplerPatternList);
 
-  iupa_t bmodePattern = iusPatternCreate(pBmodePatternLabel,
-                                           0.01f,
+  iupa_t intensityPattern = iusPatternCreate(0.01f,
+                                         pPulseLabel,
+                                         pSourceLabel,
+                                         pChannelMapLabel,
+                                         pApodizationLabel,
+                                         pReceivesettingsLabel);
+  
+  iupa_t velocityPattern = iusPatternCreate(0.02f,
                                            pPulseLabel,
                                            pSourceLabel,
                                            pChannelMapLabel,
                                            pApodizationLabel,
                                            pReceivesettingsLabel);
+  status = iusPatternListSet(bmodePatternList, intensityPattern, 0);
+  TEST_ASSERT_EQUAL(IUS_E_OK, status);
+  status = iusPatternListSet(dopplerPatternList, intensityPattern, 0);
+  TEST_ASSERT_EQUAL(IUS_E_OK, status);
+  status = iusPatternListSet(dopplerPatternList, velocityPattern, 1);
+  TEST_ASSERT_EQUAL(IUS_E_OK, status);
+  
+  status = iusPatternListDictSet(patternListDict, pBmodePatternLabel, bmodePatternList);
+  TEST_ASSERT_EQUAL(IUS_E_OK, status);
+  status = iusPatternListDictSet(patternListDict, pDopplerPatternLabel, dopplerPatternList);
+  TEST_ASSERT_EQUAL(IUS_E_OK, status);
 
-  iupa_t dopplerPattern = iusPatternCreate(pDopplerPatternLabel,
-                                             0.02f,
-                                             pPulseLabel,
-                                             pSourceLabel,
-                                             pChannelMapLabel,
-                                             pApodizationLabel,
-                                             pReceivesettingsLabel);
-  status = iusPatternListSet(patternList, bmodePattern, 0);
-  TEST_ASSERT_EQUAL(IUS_E_OK, status);
-  status = iusPatternListSet(patternList, dopplerPattern, 1);
-  TEST_ASSERT_EQUAL(IUS_E_OK, status);
-  return patternList;
+  return patternListDict;
 }
 
 iupd_t dgGeneratePulseDict

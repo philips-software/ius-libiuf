@@ -71,6 +71,8 @@ add_library(ius STATIC
 		include/iusPatternPrivate.h
 		include/iusPatternList.h
 		include/iusPatternListPrivate.h
+		include/iusPatternListDict.h
+		include/iusPatternListDictPrivate.h
 		include/iusPosition.h
 		include/iusPulse.h
 		include/iusPulseDict.h
@@ -126,6 +128,7 @@ add_library(ius STATIC
 		src/iusParametricPulse.c
 		src/iusPattern.c
 		src/iusPatternList.c
+		src/iusPatternListDict.c
 		src/iusPosition.c
 		src/iusPulse.c
 		src/iusPulseDict.c
