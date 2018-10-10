@@ -34,6 +34,13 @@ iupad_t dgGenerateParameterDict
 	int numElements
 );
 
+
+int dgInputFileAddGeneratedData
+(
+iuif_t inputFile,
+char *label
+);
+
 iuif_t dgGenerateInputFile
 (
 	char *ptestFileName,
@@ -47,9 +54,15 @@ iufl_t dgGenerateFrameList
 	void
 );
 
+iupal_t dgGeneratePatternList
+(
+	int numPatterns,
+	float timeInterval
+);
+
 iupald_t dgGeneratePatternListDict
 (
-  	void
+	char *label
 );
 
 iupd_t dgGeneratePulseDict
@@ -67,9 +80,17 @@ iurcmd_t dgGenerateReceiveChannelMapDict
     char *label
 );
 
+iurcm_t dgGenerateReceiveChannelMap
+();
+
 iutad_t dgGenerateTransmitApodizationDict
 (
 	char *label
+);
+
+iurs_t dgGenerateReceiveSettings
+(
+	void
 );
 
 iursd_t dgGenerateReceiveSettingsDict

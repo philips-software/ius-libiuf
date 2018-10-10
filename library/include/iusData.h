@@ -33,7 +33,7 @@ int iusDataGetSize
 
 float *iusDataGetPointer
 (
-iud_t iusData
+    iud_t iusData
 );
 
 #endif //IUSLIBRARY_IUSDATA_H

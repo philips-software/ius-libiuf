@@ -29,7 +29,7 @@
 #include <include/iusHistoryNodePrivate.h>
 #include <include/iusTransmitApodizationDictPrivate.h>
 #include <include/iusInputFileStructure.h>
-
+#include <include/iusDataStreamDictPrivate.h>
 
 struct IusInputFileInstance
 {
@@ -49,8 +49,7 @@ struct IusInputFileInstance
     //  state variables
     hid_t               handle;           /**< HDF5 file handle     */
     const char          *pFilename;       /**< the filename         */
-    hid_t fileChunkConfig;                /**< file chunck handle   */
-    hid_t rfDataset;                      /**< dataset handle       */
+    iudsd_t             dataStreamDict;   /**< Contains dataset administration */
 }  ;
 
 
@@ -83,7 +82,7 @@ iuifi_t iusInputFileInstanceCreate
     instanceData->receiveSettingsDict = IURSD_INVALID;
     instanceData->transducer = IUT_INVALID;
 	instanceData->experiment = IUE_INVALID;
-	instanceData->rfDataset = H5I_INVALID_HID;
+	instanceData->dataStreamDict = iusDataStreamDictCreate();
     return instanceData;
 }
 
@@ -213,6 +212,8 @@ int iusInputFileDelete
     int status = IUS_ERR_VALUE;
     if(iusInputFile != NULL)
     {
+        iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)iusInputFile);
+        iusDataStreamDictDelete(instance->dataStreamDict);
         free(iusInputFile);
         status = IUS_E_OK;
     }
@@ -425,16 +426,6 @@ int iusInputFileClose
     if( instance->handle != H5I_INVALID_HID )
     {
         status |= H5Fclose(instance->handle);
-    }
-
-    if ( instance->fileChunkConfig != H5I_INVALID_HID )
-    {
-        status |= H5Pclose(instance->fileChunkConfig);
-    }
-
-    if ( instance->rfDataset != H5I_INVALID_HID )
-    {
-        status |= H5Dclose(instance->rfDataset);
     }
 
     return status;
@@ -728,7 +719,6 @@ int iusInputFileSetReceiveSettingsDict
 }
 
 
-
 int iusInputFileSetExperiment
 (
 	iuif_t inputFile,
@@ -777,29 +767,31 @@ hid_t iusInputFileGetWriteSpace
     hid_t space, dataChunkConfig;
 
     iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
-    if (instance->rfDataset == H5I_INVALID_HID)
+    iuds_t dataStream = iusDataStreamDictGet(instance->dataStreamDict,label);
+    if ( dataStream == IUDS_INVALID)
     {
+        // Entry does not exist, create
+        rfDataDims[0] = (hsize_t) iusInputFileGetNumChannels(inputFile,label);    // colums in memory
+        rfDataDims[1] = (hsize_t) iusInputFileGetSamplesPerLine(inputFile,label); // rows in memory
+        rfDataDims[2] = (hsize_t) iusInputFileGetNumResponses(inputFile,label);
+        rfDataDims[3] = (hsize_t) iusInputFileGetNumFrames(inputFile);
 
-        rfDataDims[0] = iusInputFileGetNumChannels(inputFile,label);    // colums in memory
-        rfDataDims[1] = iusInputFileGetSamplesPerLine(inputFile,label); // rows in memory
-        rfDataDims[2] = iusInputFileGetNumResponses(inputFile,label);
-        rfDataDims[3] = iusInputFileGetNumFrames(inputFile);
-
-        chunkDims[0] = iusInputFileGetNumChannels(inputFile,label);
-        chunkDims[1] = iusInputFileGetSamplesPerLine(inputFile,label);
-        chunkDims[2] = iusInputFileGetNumResponses(inputFile,label);
+        chunkDims[0] = (hsize_t) iusInputFileGetNumChannels(inputFile,label);
+        chunkDims[1] = (hsize_t) iusInputFileGetSamplesPerLine(inputFile,label);
+        chunkDims[2] = (hsize_t) iusInputFileGetNumResponses(inputFile,label);
         chunkDims[3] = 1;
 
+        dataStream = iusDataStreamCreate();
         dataChunkConfig = H5Pcreate(H5P_DATASET_CREATE);
         H5Pset_chunk(dataChunkConfig, 4, chunkDims);
-        instance->fileChunkConfig = dataChunkConfig;
+        dataStream->fileChunkConfig = dataChunkConfig;
 
         space = H5Screate_simple(4, rfDataDims, NULL);
-        instance->rfDataset = H5Dcreate(instance->handle, label, H5T_NATIVE_FLOAT, space, H5P_DEFAULT, dataChunkConfig, H5P_DEFAULT);
+        dataStream->rfDataset = H5Dcreate(instance->handle, label, H5T_NATIVE_FLOAT, space, H5P_DEFAULT, dataChunkConfig, H5P_DEFAULT);
         H5Sclose(space);
-
+        iusDataStreamDictSet(instance->dataStreamDict,label,dataStream);
     }
-    return H5Dget_space(instance->rfDataset);
+    return H5Dget_space(dataStream->rfDataset);
 }
 
 
@@ -810,11 +802,14 @@ hid_t iusInputFileGetReadSpace
 )
 {
     iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
-    if (instance->rfDataset == H5I_INVALID_HID)
+    iuds_t dataStream = iusDataStreamDictGet(instance->dataStreamDict,label);
+    if ( dataStream == IUDS_INVALID)
     {
-        instance->rfDataset = H5Dopen(instance->handle, label, H5P_DEFAULT);
+        dataStream = iusDataStreamCreate();
+        dataStream->rfDataset = H5Dopen(instance->handle, label, H5P_DEFAULT);
+        iusDataStreamDictSet(instance->dataStreamDict,label,dataStream);
     }
-    return H5Dget_space(instance->rfDataset);
+    return H5Dget_space(dataStream->rfDataset);
 }
 
 
@@ -855,7 +850,8 @@ int iusInputFileFrameSave
     float *pFrame = iusDataGetPointer(frame);
 
     // Save frame
-    status |= H5Dwrite(instance->rfDataset, H5T_NATIVE_FLOAT, memspace, dataspace, H5P_DEFAULT, pFrame);
+    iuds_t dataStream = iusDataStreamDictGet(instance->dataStreamDict,label);
+    status |= H5Dwrite(dataStream->rfDataset, H5T_NATIVE_FLOAT, memspace, dataspace, H5P_DEFAULT, pFrame);
 
     // Close and release memspace but not (file)dataspace
     status |= H5Sclose(memspace);
@@ -900,8 +896,9 @@ int iusInputFileFrameLoad
 
     float *pFrame = iusDataGetPointer(frame);
 
-    // Save frame
-    status |= H5Dread(instance->rfDataset, H5T_NATIVE_FLOAT, memspace, dataspace, H5P_DEFAULT, pFrame);
+    // Load frame
+    iuds_t dataStream = iusDataStreamDictGet(instance->dataStreamDict,label);
+    status |= H5Dread(dataStream->rfDataset, H5T_NATIVE_FLOAT, memspace, dataspace, H5P_DEFAULT, pFrame);
 
     // Close and release memspace but not (file)dataspace
     status |= H5Sclose(memspace);

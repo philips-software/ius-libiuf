@@ -48,6 +48,8 @@ add_library(ius STATIC
 		include/ius3DTransducerElementList.h
         include/ius3DTransducerElementListPrivate.h
         include/iusData.h
+		include/iusDataStream.h
+		include/iusDataStreamDictPrivate.h
         include/iusExperiment.h
         include/iusExperimentPrivate.h
 		include/iusFile.h
@@ -115,6 +117,8 @@ add_library(ius STATIC
 		src/ius3DTransducerElement.c
 		src/ius3DTransducerElementList.c
         src/iusData.c
+		src/iusDataStream.c
+		src/iusDataStreamDict.c
 		src/iusExperiment.c
 		src/iusFile.c
 		src/iusFrame.c

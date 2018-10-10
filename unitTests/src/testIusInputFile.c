@@ -143,12 +143,12 @@ TEST(IusInputFile, iusInputFileSetGetFrameList)
     iusInputFileDelete(obj);
 }
 
-TEST(IusInputFile, iusInputFileSetGetPatternList)
+TEST(IusInputFile, iusInputFileSetGetPatternListDict)
 {
     IUS_BOOL equal;
     int numFrames = 10;
     int status;
-    iupald_t patternListDict = dgGeneratePatternListDict();
+    iupald_t patternListDict = dgGeneratePatternListDict("mylabel");
     iuif_t obj = iusInputFileCreate(pFilename,numFrames);
 
     status = iusInputFileSetPatternListDict(obj, patternListDict);
@@ -440,17 +440,20 @@ IUS_BOOL validateFrames
     return equal;
 }
 
-
 TEST(IusInputFile, testIusInputFileDataIOSaveFrame)
 {
     char *ptestFileName = "testIusInputFileDataIOSaveFrame.hdf5";
-    char *label = "doppler";
-    int i;
-    int status = 0;
+    char *pDopplerLabel = "doppler";
     int numFrames = 10;
+    char *pBmodeLabel = "bmode";
+    int status = 0;
 
     // create
-    iuif_t inputFile = dgGenerateInputFile(ptestFileName, "S5-1", label, numFrames);
+    iuif_t inputFile = dgGenerateInputFile(ptestFileName, "S5-1", pDopplerLabel, numFrames);
+    status = dgInputFileAddGeneratedData(inputFile, pBmodeLabel);
+    TEST_ASSERT_EQUAL(status, IUS_E_OK);
+
+
     //    iusInputFileSaveChannel(inputFile,"bmode", float *, intnumfloats);
 //    iusInputFileSaveResponse(inputFile,"bmode", float *, intnumfloats);
 //    iusInputFileSaveFrame
@@ -459,7 +462,8 @@ TEST(IusInputFile, testIusInputFileDataIOSaveFrame)
     // SaveFrames
     status = iusInputFileSave(inputFile);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
-    status = saveFrames(inputFile,label,numFrames);
+    status = saveFrames(inputFile,pDopplerLabel,numFrames);
+    status |= saveFrames(inputFile,pBmodeLabel,numFrames);
     TEST_ASSERT_EQUAL(status, IUS_E_OK);
     status = iusInputFileClose(inputFile);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
@@ -468,7 +472,8 @@ TEST(IusInputFile, testIusInputFileDataIOSaveFrame)
     iuif_t savedObj = iusInputFileLoad(ptestFileName);
     TEST_ASSERT(savedObj != NULL);
     TEST_ASSERT_EQUAL(IUS_TRUE, iusInputFileCompare(inputFile,savedObj));
-    TEST_ASSERT_EQUAL(IUS_TRUE, validateFrames(savedObj,label,numFrames));
+    TEST_ASSERT_EQUAL(IUS_TRUE, validateFrames(savedObj,pDopplerLabel,numFrames));
+    TEST_ASSERT_EQUAL(IUS_TRUE, validateFrames(savedObj,pBmodeLabel,numFrames));
 
 
     // create channel
@@ -483,7 +488,7 @@ TEST_GROUP_RUNNER(IusInputFile)
     RUN_TEST_CASE(IusInputFile, testIusInputFileDelete);
     RUN_TEST_CASE(IusInputFile, testIusInputFileCompare);
     RUN_TEST_CASE(IusInputFile, iusInputFileSetGetFrameList);
-    RUN_TEST_CASE(IusInputFile, iusInputFileSetGetPatternList);
+    RUN_TEST_CASE(IusInputFile, iusInputFileSetGetPatternListDict);
     RUN_TEST_CASE(IusInputFile, iusInputFileSetGetPulseDict);
     RUN_TEST_CASE(IusInputFile, iusInputFileSetGetSourceDict);
     RUN_TEST_CASE(IusInputFile, iusInputFileSetGetReceiveChannelMapDict);

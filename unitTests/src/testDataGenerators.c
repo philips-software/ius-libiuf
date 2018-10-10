@@ -43,13 +43,11 @@ void dgGenerateFrame
     }
 }
 
-iursd_t dgGenerateReceiveSettingsDict
+iurs_t dgGenerateReceiveSettings
 (
-    char *label
+    void
 )
 {
-    char *pObjLabel = "Label for IusReceiveSettingsDict, created in testIusCompareSourceDict";
-    char *pNotherObjLabel = "Another Label for IusReceiveSettingsDict, created in testIusCompareSourceDict";
     float sampleFrequency=4000;
     int numDelays=10;
     int numSamplesPerLine=10;
@@ -57,25 +55,31 @@ iursd_t dgGenerateReceiveSettingsDict
     int status=0,i;
 
     iurs_t obj = iusReceiveSettingsCreate(sampleFrequency, numDelays, numSamplesPerLine, numTGCentries);
-    iurs_t notherObj = iusReceiveSettingsCreate(sampleFrequency, numDelays, numSamplesPerLine, numTGCentries);
-
-    // Create
-    iursd_t  dict = iusReceiveSettingsDictCreate();
-
-    // Fill
 
     // Delays
     for(i=0;i<numDelays;i++)
     {
         float delay = i*2.0f;
         status |= iusReceiveSettingsSetStartDelay(obj, i, delay);
-        status |= iusReceiveSettingsSetStartDelay(notherObj, i, delay*3.14f);
         TEST_ASSERT(status == IUS_E_OK);
     }
 
-    status |= iusReceiveSettingsDictSet(dict,pObjLabel,obj);
-    status |= iusReceiveSettingsDictSet(dict,pNotherObjLabel,notherObj);
-    status |= iusReceiveSettingsDictSet(dict,label,notherObj);
+    return obj;
+}
+
+iursd_t dgGenerateReceiveSettingsDict
+(
+    char *label
+)
+{
+    int status=0;
+
+    // Create
+    iursd_t  dict = iusReceiveSettingsDictCreate();
+
+    // Fill
+    iurs_t obj = dgGenerateReceiveSettings();
+    status |= iusReceiveSettingsDictSet(dict,label,obj);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
     return dict;
 }
@@ -136,7 +140,7 @@ iuif_t dgGenerateInputFile
     int status = iusInputFileSetFrameList(inputFile,frameList);
     TEST_ASSERT(status == IUS_E_OK);
 
-    iupald_t patternListDict = dgGeneratePatternListDict();
+    iupald_t patternListDict = dgGeneratePatternListDict(label);
     status = iusInputFileSetPatternListDict(inputFile,patternListDict);
     TEST_ASSERT(status == IUS_E_OK);
 
@@ -173,6 +177,40 @@ iuif_t dgGenerateInputFile
     return inputFile;
 }
 
+
+
+int dgInputFileAddGeneratedData
+(
+    iuif_t inputFile,
+    char *label
+)
+{
+    // fill
+    iufl_t frameList = dgGenerateFrameList();
+    int status = iusInputFileSetFrameList(inputFile,frameList);
+    TEST_ASSERT(status == IUS_E_OK);
+
+    iupald_t patternListDict = iusInputFileGetPatternListDict(inputFile);
+    iupal_t patternList = dgGeneratePatternList(8,0.08f);
+    iusPatternListDictSet(patternListDict,label,patternList);
+    status = iusInputFileSetPatternListDict(inputFile,patternListDict);
+    TEST_ASSERT(status == IUS_E_OK);
+
+    iurcmd_t receiveChannelMapDict = iusInputFileGetReceiveChannelMapDict(inputFile);
+    iurcm_t receiveChannelMap = dgGenerateReceiveChannelMap();
+    iusReceiveChannelMapDictSet(receiveChannelMapDict,label,receiveChannelMap);
+    status = iusInputFileSetReceiveChannelMapDict(inputFile, receiveChannelMapDict);
+    TEST_ASSERT(status == IUS_E_OK);
+
+    iursd_t receiveSettingsDict = iusInputFileGetReceiveSettingsDict(inputFile);
+    iurs_t receiveSettings = dgGenerateReceiveSettings();
+    iusReceiveSettingsDictSet(receiveSettingsDict,label,receiveSettings);
+    status = iusInputFileSetReceiveSettingsDict(inputFile, receiveSettingsDict);
+    TEST_ASSERT_EQUAL(IUS_E_OK, status);
+
+    return status;
+}
+
 iufl_t dgGenerateFrameList
 (
     void
@@ -192,47 +230,43 @@ iufl_t dgGenerateFrameList
     return frameList;
 }
 
+iupal_t dgGeneratePatternList
+(
+    int numPatterns,
+    float timeInterval
+)
+{
+    int i,status;
+    iupal_t patternList = iusPatternListCreate(numPatterns);
+    TEST_ASSERT_NOT_EQUAL(IUPAL_INVALID, patternList);
+
+    for (i=0;i<numPatterns;i++)
+    {
+        iupa_t pattern = iusPatternCreate((i + 1) * timeInterval,
+                                          pPulseLabel,
+                                          pSourceLabel,
+                                          pChannelMapLabel,
+                                          pApodizationLabel,
+                                          pReceivesettingsLabel);
+        status = iusPatternListSet(patternList, pattern, i);
+        TEST_ASSERT_EQUAL(IUS_E_OK, status);
+    }
+
+    return patternList;
+}
 
 iupald_t dgGeneratePatternListDict
 (
-  void
+    char *label
 )
 {
   int status;
 
   // fill list
   iupald_t patternListDict = iusPatternListDictCreate();
-  
-  iupal_t bmodePatternList = iusPatternListCreate(1);
-  iupal_t dopplerPatternList = iusPatternListCreate(2);
-  TEST_ASSERT_NOT_EQUAL(IUPAL_INVALID, bmodePatternList);
-  TEST_ASSERT_NOT_EQUAL(IUPAL_INVALID, dopplerPatternList);
-
-  iupa_t intensityPattern = iusPatternCreate(0.01f,
-                                         pPulseLabel,
-                                         pSourceLabel,
-                                         pChannelMapLabel,
-                                         pApodizationLabel,
-                                         pReceivesettingsLabel);
-  
-  iupa_t velocityPattern = iusPatternCreate(0.02f,
-                                           pPulseLabel,
-                                           pSourceLabel,
-                                           pChannelMapLabel,
-                                           pApodizationLabel,
-                                           pReceivesettingsLabel);
-  status = iusPatternListSet(bmodePatternList, intensityPattern, 0);
+  iupal_t bmodePatternList = dgGeneratePatternList(1,0.01f);
+  status = iusPatternListDictSet(patternListDict, label, bmodePatternList);
   TEST_ASSERT_EQUAL(IUS_E_OK, status);
-  status = iusPatternListSet(dopplerPatternList, intensityPattern, 0);
-  TEST_ASSERT_EQUAL(IUS_E_OK, status);
-  status = iusPatternListSet(dopplerPatternList, velocityPattern, 1);
-  TEST_ASSERT_EQUAL(IUS_E_OK, status);
-  
-  status = iusPatternListDictSet(patternListDict, pBmodePatternLabel, bmodePatternList);
-  TEST_ASSERT_EQUAL(IUS_E_OK, status);
-  status = iusPatternListDictSet(patternListDict, pDopplerPatternLabel, dopplerPatternList);
-  TEST_ASSERT_EQUAL(IUS_E_OK, status);
-
   return patternListDict;
 }
 
@@ -303,17 +337,14 @@ iusd_t dgGenerateSourceDict
 }
 
 
-iurcmd_t dgGenerateReceiveChannelMapDict
+iurcm_t dgGenerateReceiveChannelMap
 (
-    char *label
+    void
 )
 {
     int status;
     int numChannels = 8;
     int channelMap[8] = {0, 1, 2, 3, 4, 5, 6, 7};
-
-    iurcmd_t dict = iusReceiveChannelMapDictCreate();
-    TEST_ASSERT(dict != IURCMD_INVALID);
 
     // fill
     iurcm_t receiveChannelMap = iusReceiveChannelMapCreate(numChannels);
@@ -323,11 +354,24 @@ iurcmd_t dgGenerateReceiveChannelMapDict
     TEST_ASSERT(status == IUS_E_OK);
 
     status = iusReceiveChannelMapSetMap(receiveChannelMap, channelMap);
-	TEST_ASSERT(status == IUS_E_OK);
-
-    status = iusReceiveChannelMapDictSet(dict, label, receiveChannelMap);
     TEST_ASSERT(status == IUS_E_OK);
 
+    return receiveChannelMap;
+}
+
+iurcmd_t dgGenerateReceiveChannelMapDict
+(
+    char *label
+)
+{
+    int status;
+    iurcmd_t dict = iusReceiveChannelMapDictCreate();
+    TEST_ASSERT(dict != IURCMD_INVALID);
+
+    // fill
+    iurcm_t receiveChannelMap = dgGenerateReceiveChannelMap();
+    status = iusReceiveChannelMapDictSet(dict, label, receiveChannelMap);
+    TEST_ASSERT(status == IUS_E_OK);
     return dict;
 }
 
