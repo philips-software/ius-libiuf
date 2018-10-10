@@ -18,10 +18,10 @@
 #include <include/iusHistoryNode.h>
 
 
-void dgGenerateFrame
+void dgFillData
 (
-	iud_t frame,
-	float value
+iud_t data,
+float value
 );
 
 iuhn_t dgGenerateHistoryNode

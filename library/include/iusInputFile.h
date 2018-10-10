@@ -33,6 +33,12 @@ iud_t iusInputFileFrameCreate
     char *label
 );
 
+iud_t iusInputFileResponseCreate
+(
+    iuif_t iusInputFile,
+    char *label
+);
+
 int iusInputFileDelete
 (
     iuif_t iusInputFile
@@ -111,6 +117,12 @@ int iusInputFileGetNumFrames
     iuif_t inputFile
 );
 
+int iusInputFileGetNumResponses
+(
+	iuif_t inputFile,
+	char *label
+);
+
 // Setters
 int iusInputFileSetFrameList
 (
@@ -173,6 +185,22 @@ int iusInputFileSetNumFrames
     int  numFrames
 );
 
+int iusInputFileResponseSave
+(
+	iuif_t inputFile,
+	char *label,
+	iud_t response,
+	iuo_t response_offset
+);
+
+int iusInputFileResponseLoad
+(
+    iuif_t inputFile,
+    char *label,
+    iud_t response,
+    iuo_t response_offset
+);
+
 int iusInputFileFrameSave
 (
 	iuif_t inputFile,
@@ -188,5 +216,7 @@ int iusInputFileFrameLoad
 	iud_t frame,
 	iuo_t frame_offset
 );
+
+
 
 #endif //IUSLIBRARY_IUSHLINPUTFILE_H

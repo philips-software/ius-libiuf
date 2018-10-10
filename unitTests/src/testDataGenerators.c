@@ -18,8 +18,7 @@
 #include <include/ius3DNonParametricSource.h>
 #include <include/ius3DTransducer.h>
 
-static char *pBmodePatternLabel = "bmode";
-static char *pDopplerPatternLabel = "doppler";
+
 static const char *pPulseLabel = "pulseLabel";
 static const char *pSourceLabel = "sourceLabel";
 static const char *pChannelMapLabel = "channelMapLabel";
@@ -27,19 +26,19 @@ static const char *pApodizationLabel = "apodizationLabel";
 static const char *pReceivesettingsLabel = "receivesettingsLabel";
 
 
-void dgGenerateFrame
+void dgFillData
 (
-    iud_t frame,
+    iud_t data,
     float value
 )
 {
     int i;
-    float *data = iusDataGetPointer(frame);
-    int numSamples = iusDataGetSize(frame);
+    float *pData = iusDataGetPointer(data);
+    int numSamples = iusDataGetSize(data);
 
     for (i=0; i<numSamples; i++)
     {
-        data[i] = value;
+        pData[i] = value;
     }
 }
 

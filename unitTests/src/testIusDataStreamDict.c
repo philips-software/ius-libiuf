@@ -66,11 +66,6 @@ TEST(IusDataStreamDict, testIusDataStreamDictCompare)
 
     char generatedKey[1024];
     iuds_t generatedValue;
-    // TODO:
-    // elementID=1000 (iterations) take a second
-    // elementID=10000 (iterations) takes more than 10 times
-    // which is non linear.
-    // Fix.
     for (elementID=0;elementID<1000;elementID++)
     {
         sprintf(generatedKey,"key_%d", elementID);
