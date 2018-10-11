@@ -2,5 +2,7 @@
 set BuildFolder=C_v3\build\WindowsX64
 echo === Building ius in %BuildFolder%
 mkdir %BuildFolder% & pushd %BuildFolder%
+cmake --config Release ..\..
+cmake --build .
 ctest --verbose
 popd
