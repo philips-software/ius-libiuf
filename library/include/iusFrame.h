@@ -14,7 +14,7 @@ typedef IusFrame *iuf_t;
 
 iuf_t iusFrameCreate
 (
-    int patternListIndex,
+    char *patternListLabel,
     int dataIndex,
     float time
 );
@@ -37,7 +37,7 @@ float iusFrameGetTime
     iuf_t iusFrame
 );
 
-int iusFrameGetPatternListIndex
+char *iusFrameGetPatternListLabel
 (
     iuf_t iusFrame
 );
