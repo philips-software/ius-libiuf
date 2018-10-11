@@ -222,7 +222,7 @@ iufl_t dgGenerateFrameList
 
     for (i=0;i<numFrames;i++)
     {
-        obj = iusFrameCreate(i+1,i+2,i*0.01f);
+        obj = iusFrameCreate("test",i+2,i*0.01f);
         status = iusFrameListSet(frameList, obj, i);
         TEST_ASSERT_EQUAL(IUS_E_OK, status);
     }
