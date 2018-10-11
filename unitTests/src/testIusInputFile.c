@@ -684,6 +684,8 @@ TEST(IusInputFile, testIusInputFileDataIOSaveChannel)
     iuif_t savedObj = iusInputFileLoad(ptestFileName);
     TEST_ASSERT(savedObj != NULL);
     TEST_ASSERT_EQUAL(IUS_TRUE, iusInputFileCompare(inputFile,savedObj));
+    // Todo:
+    // Fix Errors in va;idateChannels:
 //    TEST_ASSERT_EQUAL(IUS_TRUE, validateChannels(savedObj,pDopplerLabel,numFrames));
 //    TEST_ASSERT_EQUAL(IUS_TRUE, validateChannels(savedObj,pBmodeLabel,numFrames));
 
