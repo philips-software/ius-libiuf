@@ -52,6 +52,7 @@ iu2dt_t ius2DTransducerCreate
     created->baseTransducer.pTransducerName = strdup(name);
     created->baseTransducer.shape = shape;
     created->baseTransducer.centerFrequency = centerFrequency;
+    created->baseTransducer.loadedFromFile = IUS_FALSE;
     return created;
 }
 
@@ -61,13 +62,18 @@ int ius2DTransducerDelete
 	iu2dt_t ius2DTransducer
 )
 {
-    int status = IUS_ERR_VALUE;
-    if(ius2DTransducer != NULL)
+    if(ius2DTransducer == NULL) return IUS_ERR_VALUE;
+    if(ius2DTransducer->baseTransducer.loadedFromFile == IUS_TRUE)
     {
-        free(ius2DTransducer);
-        status = IUS_E_OK;
+        ius2DTransducerElementListDeepDelete(ius2DTransducer->elements);
     }
-    return status;
+    else
+    {
+        ius2DTransducerElementListDelete(ius2DTransducer->elements);
+    }
+    free(ius2DTransducer->baseTransducer.pTransducerName);
+    free(ius2DTransducer);
+    return IUS_E_OK;
 }
 
 // operations
@@ -267,7 +273,9 @@ iu2dt_t ius2DTransducerLoad
                                                   baseTransducer->centerFrequency,
                                                   numElements);
 	if (transducer == IU2DT_INVALID) return IU2DT_INVALID;
+    ius2DTransducerElementListDeepDelete(transducer->elements);
 	transducer->elements = elements;
+    iusBaseTransducerDelete(baseTransducer);
     return transducer;
 }
 

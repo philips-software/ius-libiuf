@@ -47,6 +47,7 @@ iu3dt_t ius3DTransducerCreate
     created->baseTransducer.shape = shape;
     created->baseTransducer.centerFrequency = centerFrequency;
     created->baseTransducer.type = IUS_3D_SHAPE;
+    created->baseTransducer.loadedFromFile = IUS_FALSE;
 
     return created;
 }
@@ -54,18 +55,23 @@ iu3dt_t ius3DTransducerCreate
 
 int ius3DTransducerDelete
 (
-iu3dt_t ius3DTransducer
+    iu3dt_t ius3DTransducer
 )
 {
-  int status = IUS_ERR_VALUE;
-  if(ius3DTransducer != NULL)
-  {
+    if (ius3DTransducer == NULL) return IUS_ERR_VALUE;
+    if(ius3DTransducer->baseTransducer.loadedFromFile == IUS_TRUE)
+    {
+      ius3DTransducerElementListDeepDelete(ius3DTransducer->elements);
+    }
+    else
+    {
+      ius3DTransducerElementListDelete(ius3DTransducer->elements);
+    }
+    free(ius3DTransducer->baseTransducer.pTransducerName);
     free(ius3DTransducer);
-    ius3DTransducer = NULL;
-    status = IUS_E_OK;
-  }
-  return status;
+    return IUS_E_OK;
 }
+
 
 
 // operations

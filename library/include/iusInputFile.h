@@ -3,7 +3,7 @@
 #define IUSLIBRARY_IUSHLINPUTFILE_H
 
 #include <iusExperiment.h>
-#include <iusPatternList.h>
+#include <iusPatternListDict.h>
 #include <iusPulseDict.h>
 #include <iusReceiveChannelMapDict.h>
 #include <iusTransmitApodizationDict.h>
@@ -11,6 +11,8 @@
 #include "iusSourceDict.h"
 #include "iusReceiveSettingsDict.h"
 #include "iusTransducer.h"
+#include "iusData.h"
+#include "iusOffset.h"
 
 // ADT
 typedef struct IusHistoryNode IusInputFile;
@@ -21,7 +23,26 @@ typedef IusInputFile *iuif_t;
 
 iuif_t iusInputFileCreate
 (
-    const char *filename
+    const char *filename,
+    int numFrames
+);
+
+iud_t iusInputFileFrameCreate
+(
+    iuif_t iusInputFile,
+    char *label
+);
+
+iud_t iusInputFileResponseCreate
+(
+    iuif_t iusInputFile,
+    char *label
+);
+
+iud_t iusInputFileChannelCreate
+(
+    iuif_t iusInputFile,
+    char *label
 );
 
 int iusInputFileDelete
@@ -57,7 +78,7 @@ iufl_t iusInputFileGetFrameList
 	iuif_t fileHandle
 );
 
-iupal_t iusInputFileGetPatternList
+iupald_t iusInputFileGetPatternListDict
 (
 	iuif_t fileHandle
 );
@@ -97,6 +118,23 @@ iut_t iusInputFileGetTransducer
 	iuif_t fileHandle
 );
 
+int iusInputFileGetNumFrames
+(
+    iuif_t inputFile
+);
+
+int iusInputFileGetNumResponses
+(
+	iuif_t inputFile,
+	char *label
+);
+
+int iusInputFileGetNumChannels
+(
+    iuif_t iusInputFile,
+    char *label
+);
+
 // Setters
 int iusInputFileSetFrameList
 (
@@ -104,10 +142,10 @@ int iusInputFileSetFrameList
 	iufl_t frameList
 );
 
-int iusInputFileSetPatternList
+int iusInputFileSetPatternListDict
 (
 	iuif_t inputFile,
-	iupal_t patternList
+	iupald_t patternListDict
 );
 
 int iusInputFileSetPulseDict
@@ -151,4 +189,62 @@ int iusInputFileSetTransducer
 	iuif_t inputFile,
 	iut_t  transducer
 );
+
+
+int iusInputFileSetNumFrames
+(
+    iuif_t inputFile,
+    int  numFrames
+);
+
+int iusInputFileChannelSave
+(
+    iuif_t inputFile,
+    char *label,
+    iud_t channel,
+    iuo_t channel_offset
+);
+
+int iusInputFileChannelLoad
+(
+    iuif_t inputFile,
+    char *label,
+    iud_t channel,
+    iuo_t channel_offset
+);
+
+int iusInputFileResponseSave
+(
+	iuif_t inputFile,
+	char *label,
+	iud_t response,
+	iuo_t response_offset
+);
+
+int iusInputFileResponseLoad
+(
+    iuif_t inputFile,
+    char *label,
+    iud_t response,
+    iuo_t response_offset
+);
+
+int iusInputFileFrameSave
+(
+	iuif_t inputFile,
+	char *label,
+	iud_t frame,
+	iuo_t offset
+);
+
+int iusInputFileFrameLoad
+(
+	iuif_t inputFile,
+	char *label,
+	iud_t frame,
+	iuo_t frame_offset
+);
+
+
+
 #endif //IUSLIBRARY_IUSHLINPUTFILE_H

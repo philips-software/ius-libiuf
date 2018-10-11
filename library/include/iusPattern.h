@@ -10,7 +10,6 @@ typedef IusPattern *iupa_t;
 
 iupa_t iusPatternCreate
 (
-    const char *pLabel,
     float timeInFrame,
     const char *pPulseLabel,
     const char *pSourceLabel,
@@ -33,11 +32,6 @@ int iusPatternCompare
 );
 
 // Getters
-const char * iusPatternGetLabel
-(
-    iupa_t iusPattern
-);
-
 const char * iusPatternGetPulseLabel
 (
     iupa_t iusPattern

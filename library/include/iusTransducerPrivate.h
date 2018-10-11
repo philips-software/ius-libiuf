@@ -14,7 +14,13 @@ struct IusTransducer
     char *                 pTransducerName;   /**< descriptive name of the ultrasound probe */
     float                  centerFrequency;   /**< operating frequency of the transducer */
     IusTransducerShape     shape;
+    IUS_BOOL               loadedFromFile;
 } ;
+
+int iusBaseTransducerDelete
+(
+	iut_t iusTransducer
+);
 
 int iusBaseTransducerCompare
 (

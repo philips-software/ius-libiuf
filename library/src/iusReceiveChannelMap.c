@@ -69,6 +69,16 @@ IUS_BOOL iusReceiveChannelMapCompare
 	return IUS_TRUE;
 }
 
+
+int iusReceiveChannelMapGetNumChannels
+(
+	iurcm_t receiveChannelMap
+)
+{
+	if (receiveChannelMap == NULL) return  -1;
+	return receiveChannelMap->numChannels;
+}
+
 int iusReceiveChannelMapGetChannel
 (
 	iurcm_t receiveChannelMap,

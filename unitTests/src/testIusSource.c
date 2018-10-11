@@ -121,7 +121,6 @@ TEST(IusSource, testIusSerialization)
 {
     // create 4 types of object, save, load compare.
     char *filename = "testIusSourceSerialization.hdf5";
-    char *sourcePath =  "/Source";
     int status, locationCount = 50; /**< number of locations */
 
     float angularDelta = 0.13f;

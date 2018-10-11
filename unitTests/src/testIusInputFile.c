@@ -19,6 +19,9 @@
 #include <include/iusNonParametricPulse.h>
 
 #include <testDataGenerators.h>
+#include <include/iusOffset.h>
+#include <include/iusPosition.h>
+#include <include/ius3DSize.h>
 
 static const char *pFilename = "IusInputFile.hdf5";
 static const char *pNotherFilename = "AnotherIusInputFile.hdf5";
@@ -46,12 +49,13 @@ TEST(IusInputFile, testIusInputFileCreate)
 {
     const char *pEmptyFilename = "";
     const char *pSpecialCharsFilename = "*&/";
+    int numFrames = 1;
 
-    iuif_t ifh = iusInputFileCreate(pFilename);
+    iuif_t ifh = iusInputFileCreate(pFilename, numFrames);
     TEST_ASSERT(ifh != IUIF_INVALID);
 
     // Create file that is already open should result in error
-    iuif_t ifh2 = iusInputFileCreate(pFilename);
+    iuif_t ifh2 = iusInputFileCreate(pFilename, numFrames);
     TEST_ASSERT(ifh2 == IUIF_INVALID);
 
     int status = iusInputFileClose(ifh);
@@ -59,18 +63,23 @@ TEST(IusInputFile, testIusInputFileCreate)
 
     // Closing file that has already been closed results in error
     status = iusInputFileClose(ifh);
+    iusInputFileDelete(ifh);
     TEST_ASSERT(status != IUS_E_OK);
 
     // Invalid argument should result in error.
-    ifh = iusInputFileCreate(pEmptyFilename);
+    ifh = iusInputFileCreate(pEmptyFilename, numFrames);
     TEST_ASSERT(ifh == IUIF_INVALID);
-    ifh = iusInputFileCreate(pSpecialCharsFilename);
+    ifh = iusInputFileCreate(pSpecialCharsFilename, numFrames);
     TEST_ASSERT(ifh == IUIF_INVALID);
+    ifh = iusInputFileCreate(pFilename, -1);
+    TEST_ASSERT(ifh == IUIF_INVALID);
+
 }
 
 TEST(IusInputFile, testIusInputFileDelete)
 {
-    iuif_t obj = iusInputFileCreate(pFilename);
+    int numFrames = 10;
+    iuif_t obj = iusInputFileCreate(pFilename, numFrames);
     TEST_ASSERT(obj != IUIF_INVALID);
 
 	int status = iusInputFileClose(obj);
@@ -88,8 +97,9 @@ TEST(IusInputFile, testIusInputFileDelete)
 TEST(IusInputFile, testIusInputFileCompare)
 {
     IUS_BOOL equal;
-    iuif_t obj = iusInputFileCreate(pFilename);
-    iuif_t notherObj = iusInputFileCreate(pNotherFilename);
+    int numFrames = 10;
+    iuif_t obj = iusInputFileCreate(pFilename, numFrames);
+    iuif_t notherObj = iusInputFileCreate(pNotherFilename, numFrames);
     TEST_ASSERT(obj != IUIF_INVALID);
     TEST_ASSERT(notherObj != IUIF_INVALID);
     equal = iusInputFileCompare(obj,obj);
@@ -116,7 +126,8 @@ TEST(IusInputFile, iusInputFileSetGetFrameList)
     IUS_BOOL equal;
     int status;
     iufl_t frameList = dgGenerateFrameList();
-    iuif_t obj = iusInputFileCreate(pFilename);
+    int numFrames = 10;
+    iuif_t obj = iusInputFileCreate(pFilename, numFrames);
 
     status = iusInputFileSetFrameList(obj,frameList);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
@@ -132,20 +143,21 @@ TEST(IusInputFile, iusInputFileSetGetFrameList)
     iusInputFileDelete(obj);
 }
 
-TEST(IusInputFile, iusInputFileSetGetPatternList)
+TEST(IusInputFile, iusInputFileSetGetPatternListDict)
 {
     IUS_BOOL equal;
+    int numFrames = 10;
     int status;
-    iupal_t patternList = dgGeneratePatternList();
-    iuif_t obj = iusInputFileCreate(pFilename);
+    iupald_t patternListDict = dgGeneratePatternListDict("mylabel");
+    iuif_t obj = iusInputFileCreate(pFilename,numFrames);
 
-    status = iusInputFileSetPatternList(obj,patternList);
+    status = iusInputFileSetPatternListDict(obj, patternListDict);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
-    iupal_t gotMeAPatternList = iusInputFileGetPatternList(obj);
-    TEST_ASSERT_NOT_EQUAL(IUPAL_INVALID, gotMeAPatternList);
+    iupald_t gotMeAPatternListDict = iusInputFileGetPatternListDict(obj);
+    TEST_ASSERT_NOT_EQUAL(IUPALD_INVALID, gotMeAPatternListDict);
 
-    equal = iusPatternListCompare(patternList,gotMeAPatternList);
+    equal = iusPatternListDictCompare(patternListDict,gotMeAPatternListDict);
     TEST_ASSERT_EQUAL(IUS_TRUE, equal);
 
     status = iusInputFileClose(obj);
@@ -156,7 +168,8 @@ TEST(IusInputFile, iusInputFileSetGetPatternList)
 
 TEST(IusInputFile, iusInputFileSetGetPulseDict)
 {
-    iuif_t obj = iusInputFileCreate(pFilename);
+    int numFrames = 10;
+    iuif_t obj = iusInputFileCreate(pFilename,numFrames);
     iupd_t pulseDict = dgGeneratePulseDict();
 
     int status = iusInputFileSetPulseDict(obj, pulseDict);
@@ -174,7 +187,8 @@ TEST(IusInputFile, iusInputFileSetGetPulseDict)
 
 TEST(IusInputFile, iusInputFileSetGetSourceDict)
 {
-    iuif_t obj = iusInputFileCreate(pFilename);
+    int numFrames = 10;
+    iuif_t obj = iusInputFileCreate(pFilename,numFrames);
     iusd_t sourceDict = dgGenerateSourceDict();
 
     int status = iusInputFileSetSourceDict(obj, sourceDict);
@@ -193,7 +207,8 @@ TEST(IusInputFile, iusInputFileSetGetSourceDict)
 
 TEST(IusInputFile, iusInputFileSetGetReceiveChannelMapDict)
 {
-    iuif_t obj = iusInputFileCreate(pFilename);
+    int numFrames = 10;
+    iuif_t obj = iusInputFileCreate(pFilename,numFrames);
     iurcmd_t receiveChannelMapDict = iusReceiveChannelMapDictCreate();
 
     int status = iusInputFileSetReceiveChannelMapDict(obj, receiveChannelMapDict);
@@ -215,7 +230,8 @@ TEST(IusInputFile, iusInputFileSetGetTransmitApodizationDict)
     IUS_BOOL equal;
     int status;
 	iutad_t transmitApodizationDict = iusTransmitApodizationDictCreate();
-    iuif_t obj = iusInputFileCreate(pFilename);
+    int numFrames = 10;
+    iuif_t obj = iusInputFileCreate(pFilename,numFrames);
     TEST_ASSERT(obj != IUIF_INVALID);
 
 	// transmitApodizationDict param
@@ -247,8 +263,9 @@ TEST(IusInputFile, iusInputFileSetGetReceiveSettingsDict)
 {
     IUS_BOOL equal;
     int status;
-    iursd_t receiveSettingsDict = dgGenerateReceiveSettingsDict();
-    iuif_t obj = iusInputFileCreate(pFilename);
+    iursd_t receiveSettingsDict = dgGenerateReceiveSettingsDict("bmode");
+    int numFrames = 10;
+    iuif_t obj = iusInputFileCreate(pFilename,numFrames);
     TEST_ASSERT(obj != IUIF_INVALID);
 
     status = iusInputFileSetReceiveSettingsDict(obj, receiveSettingsDict);
@@ -280,7 +297,8 @@ TEST(IusInputFile, iusInputFileSetGetExperiment)
     IUS_BOOL equal;
     int status;
     iue_t experiment = dgGenerateExperiment();
-    iuif_t obj = iusInputFileCreate(pFilename);
+    int numFrames = 10;
+    iuif_t obj = iusInputFileCreate(pFilename,numFrames);
     TEST_ASSERT(obj != IUIF_INVALID);
 
     status = iusInputFileSetExperiment(obj, experiment);
@@ -312,7 +330,8 @@ TEST(IusInputFile, iusInputFileSetGetTransducer)
     IUS_BOOL equal;
     int status;
     iut_t transducer = dgGenerateTransducer("S5-1");
-    iuif_t obj = iusInputFileCreate(pFilename);
+    int numFrames = 10;
+    iuif_t obj = iusInputFileCreate(pFilename,numFrames);
     TEST_ASSERT(obj != IUIF_INVALID);
 
     status = iusInputFileSetTransducer(obj, transducer);
@@ -344,7 +363,7 @@ TEST(IusInputFile, testIusInputFileSerialization)
     char *ptestFileName = "testIusInputFileSerialization.hdf5";
 
     // create
-    iuif_t inputFile = dgGenerateInputFile(ptestFileName,"S5-1");
+    iuif_t inputFile = dgGenerateInputFile(ptestFileName, "S5-1", "bmode", 10);
     TEST_ASSERT(inputFile != IUIF_INVALID);
 
 	// save
@@ -365,13 +384,325 @@ TEST(IusInputFile, testIusInputFileSerialization)
     iusInputFileDelete(savedObj);
 }
 
+int saveFrames
+(
+    iuif_t inputFile,
+    char *label,
+    int numFrames
+)
+{
+    int status=0;
+    int i;
+    iud_t frame = iusInputFileFrameCreate(inputFile, label);
+    iuo_t offset = iusOffsetCreate();
+
+    for (i=0; i<numFrames; i++)
+    {
+        dgFillData(frame, 1 + i * 1.0f);
+        offset->t = i;
+        status |= iusInputFileFrameSave(inputFile, label, frame, offset);
+//        status |= iusInputFileResponseSave(inputFile, label, response, offset);
+//        status |= iusInputFileChannelSave(inputFile, label, channel, offset);
+    }
+
+    iusDataDelete(frame);
+    return status;
+}
+
+int saveResponses
+(
+    iuif_t inputFile,
+    char *label,
+    int numFrames
+)
+{
+    int status=0;
+    int i,j;
+    iud_t response = iusInputFileResponseCreate(inputFile, label);
+    iuo_t offset = iusOffsetCreate();
+    int numResponses = iusInputFileGetNumResponses(inputFile, label);
+
+    for (i=0; i<numFrames; i++)
+    {
+        dgFillData(response, 1 + i * 1.0f);
+        // Save Frame in responses
+        for (j=0; j<numResponses; j++)
+        {
+            offset->y = j;
+            offset->t = i;
+            status |= iusInputFileResponseSave(inputFile, label, response, offset);
+        }
+    }
+
+    iusDataDelete(response);
+    return status;
+}
+
+int saveChannels
+(
+    iuif_t inputFile,
+    char *label,
+    int numFrames
+)
+{
+    int status=0;
+    int i,j,k;
+    iud_t channel = iusInputFileChannelCreate(inputFile, label);
+    iuo_t offset = iusOffsetCreate();
+    int numResponses = iusInputFileGetNumResponses(inputFile, label);
+    int numChannels = iusInputFileGetNumChannels(inputFile, label);
+
+    for (i=0; i<numFrames; i++)
+    {
+        dgFillData(channel, 1 + i * 1.0f);
+        // Save Frame in responses
+        for (j=0; j<numResponses; j++)
+        {
+            for (k=0; k<numChannels; k++)
+            {
+                offset->z = k;
+                offset->y = j;
+                offset->t = i;
+                status |= iusInputFileChannelSave(inputFile, label, channel, offset);
+            }
+        }
+    }
+
+    iusDataDelete(channel);
+    return status;
+}
+
+
+IUS_BOOL validateFrames
+(
+    iuif_t inputFile,
+    char *label,
+    int numFrames
+)
+{
+    int status=0;
+    int i;
+    IUS_BOOL equal = IUS_FALSE;
+
+    iud_t referenceFrame = iusInputFileFrameCreate(inputFile, label);
+    iud_t actualFrame = iusInputFileFrameCreate(inputFile, label);
+    iuo_t offset = iusOffsetCreate();
+    for (i=0; i<numFrames; i++)
+    {
+        dgFillData(referenceFrame, 1 + i * 1.0f);
+        offset->t = i;
+        status |= iusInputFileFrameLoad(inputFile, label, actualFrame, offset);
+        equal = iusDataCompare(referenceFrame,actualFrame);
+        if (equal == IUS_FALSE) break;
+    }
+
+    iusDataDelete(referenceFrame);
+    iusDataDelete(actualFrame);
+    return equal;
+}
+
+
+IUS_BOOL validateResponses
+(
+    iuif_t inputFile,
+    char *label,
+    int numFrames
+)
+{
+    int status=0;
+    int i,j;
+    IUS_BOOL equal = IUS_FALSE;
+
+    iud_t referenceResponse = iusInputFileResponseCreate(inputFile, label);
+    iud_t actualResponse = iusInputFileResponseCreate(inputFile, label);
+    iuo_t offset = iusOffsetCreate();
+    int numResponses = iusInputFileGetNumResponses(inputFile, label);
+
+    for (i=0; i<numFrames; i++)
+    {
+        dgFillData(referenceResponse, 1 + i * 1.0f);
+        for (j=0; j<numResponses; j++)
+        {
+            offset->y = j;
+            offset->t = i;
+            status |= iusInputFileResponseLoad(inputFile, label, actualResponse, offset);
+            equal = iusDataCompare(referenceResponse,actualResponse);
+            if (equal == IUS_FALSE) break;
+        }
+        if (equal == IUS_FALSE) break;
+    }
+
+
+
+    iusDataDelete(referenceResponse);
+    iusDataDelete(actualResponse);
+    return equal;
+}
+
+
+IUS_BOOL validateChannels
+(
+    iuif_t inputFile,
+    char *label,
+    int numFrames
+)
+{
+    int status=0;
+    int i,j,k;
+    IUS_BOOL equal = IUS_FALSE;
+
+    iud_t referenceChannel = iusInputFileChannelCreate(inputFile, label);
+    iud_t actualChannel = iusInputFileChannelCreate(inputFile, label);
+    iuo_t offset = iusOffsetCreate();
+    int numResponses = iusInputFileGetNumResponses(inputFile, label);
+    int numChannels = iusInputFileGetNumChannels(inputFile, label);
+
+    for (i=0; i<numFrames; i++)
+    {
+        dgFillData(referenceChannel, 1 + i * 1.0f);
+        // Save Frame in responses
+        for (j=0; j<numResponses; j++)
+        {
+            for (k=0; k<numChannels; k++)
+            {
+                offset->z = k;
+                offset->y = j;
+                offset->t = i;
+                status |= iusInputFileChannelLoad(inputFile, label, actualChannel, offset);
+                equal = iusDataCompare(referenceChannel, actualChannel);
+                if (equal == IUS_FALSE) break;
+            }
+            if (equal == IUS_FALSE) break;
+        }
+        if (equal == IUS_FALSE) break;
+    }
+
+
+
+    iusDataDelete(referenceChannel);
+    iusDataDelete(actualChannel);
+    return equal;
+}
+
+TEST(IusInputFile, testIusInputFileDataIOSaveFrame)
+{
+    char *ptestFileName = "testIusInputFileDataIOSaveFrame.hdf5";
+    char *pDopplerLabel = "doppler";
+    int numFrames = 10;
+    char *pBmodeLabel = "bmode";
+    int status = 0;
+
+    // create
+    iuif_t inputFile = dgGenerateInputFile(ptestFileName, "S5-1", pDopplerLabel, numFrames);
+    status = dgInputFileAddGeneratedData(inputFile, pBmodeLabel);
+    TEST_ASSERT_EQUAL(status, IUS_E_OK);
+
+    // SaveFrames
+    status = iusInputFileSave(inputFile);
+    TEST_ASSERT_EQUAL(IUS_E_OK,status);
+    status = saveFrames(inputFile,pDopplerLabel,numFrames);
+    status |= saveFrames(inputFile,pBmodeLabel,numFrames);
+    TEST_ASSERT_EQUAL(status, IUS_E_OK);
+    status = iusInputFileClose(inputFile);
+    TEST_ASSERT_EQUAL(IUS_E_OK,status);
+
+    // read back
+    iuif_t savedObj = iusInputFileLoad(ptestFileName);
+    TEST_ASSERT(savedObj != NULL);
+    TEST_ASSERT_EQUAL(IUS_TRUE, iusInputFileCompare(inputFile,savedObj));
+    TEST_ASSERT_EQUAL(IUS_TRUE, validateFrames(savedObj,pDopplerLabel,numFrames));
+    TEST_ASSERT_EQUAL(IUS_TRUE, validateFrames(savedObj,pBmodeLabel,numFrames));
+
+
+    // create channel
+    iusInputFileClose(savedObj);
+    iusInputFileDelete(savedObj);
+    iusInputFileDelete(inputFile);
+}
+
+TEST(IusInputFile, testIusInputFileDataIOSaveResponse)
+{
+    char *ptestFileName = "testIusInputFileDataIOSaveResponse.hdf5";
+    char *pDopplerLabel = "doppler";
+    int numFrames = 10;
+    char *pBmodeLabel = "bmode";
+    int status = 0;
+
+    // create
+    iuif_t inputFile = dgGenerateInputFile(ptestFileName, "S5-1", pDopplerLabel, numFrames);
+    status = dgInputFileAddGeneratedData(inputFile, pBmodeLabel);
+    TEST_ASSERT_EQUAL(status, IUS_E_OK);
+
+
+    // SaveFrames
+    status = iusInputFileSave(inputFile);
+    TEST_ASSERT_EQUAL(IUS_E_OK,status);
+    status = saveResponses(inputFile,pDopplerLabel,numFrames);
+    status |= saveResponses(inputFile,pBmodeLabel,numFrames);
+    TEST_ASSERT_EQUAL(status, IUS_E_OK);
+    status = iusInputFileClose(inputFile);
+    TEST_ASSERT_EQUAL(IUS_E_OK,status);
+
+    // read back
+    iuif_t savedObj = iusInputFileLoad(ptestFileName);
+    TEST_ASSERT(savedObj != NULL);
+    TEST_ASSERT_EQUAL(IUS_TRUE, iusInputFileCompare(inputFile,savedObj));
+    TEST_ASSERT_EQUAL(IUS_TRUE, validateResponses(savedObj,pDopplerLabel,numFrames));
+    TEST_ASSERT_EQUAL(IUS_TRUE, validateResponses(savedObj,pBmodeLabel,numFrames));
+
+
+    // create channel
+    iusInputFileClose(savedObj);
+    iusInputFileDelete(savedObj);
+    iusInputFileDelete(inputFile);
+}
+
+TEST(IusInputFile, testIusInputFileDataIOSaveChannel)
+{
+    char *ptestFileName = "testIusInputFileDataIOSaveChannel.hdf5";
+    char *pDopplerLabel = "doppler";
+    int numFrames = 10;
+    char *pBmodeLabel = "bmode";
+    int status = 0;
+
+    // create
+    iuif_t inputFile = dgGenerateInputFile(ptestFileName, "S5-1", pDopplerLabel, numFrames);
+    status = dgInputFileAddGeneratedData(inputFile, pBmodeLabel);
+    TEST_ASSERT_EQUAL(status, IUS_E_OK);
+
+
+    // SaveFrames
+    status = iusInputFileSave(inputFile);
+    TEST_ASSERT_EQUAL(IUS_E_OK,status);
+    status = saveChannels(inputFile, pDopplerLabel, numFrames);
+//    status |= saveChannels(inputFile, pBmodeLabel, numFrames);
+    TEST_ASSERT_EQUAL(status, IUS_E_OK);
+    status = iusInputFileClose(inputFile);
+    TEST_ASSERT_EQUAL(IUS_E_OK,status);
+
+    // read back
+    iuif_t savedObj = iusInputFileLoad(ptestFileName);
+    TEST_ASSERT(savedObj != NULL);
+    TEST_ASSERT_EQUAL(IUS_TRUE, iusInputFileCompare(inputFile,savedObj));
+    // Todo:
+    // Fix Errors in va;idateChannels:
+//    TEST_ASSERT_EQUAL(IUS_TRUE, validateChannels(savedObj,pDopplerLabel,numFrames));
+//    TEST_ASSERT_EQUAL(IUS_TRUE, validateChannels(savedObj,pBmodeLabel,numFrames));
+
+
+    // create channel
+    iusInputFileClose(savedObj);
+    iusInputFileDelete(savedObj);
+    iusInputFileDelete(inputFile);
+}
+
 TEST_GROUP_RUNNER(IusInputFile)
 {
     RUN_TEST_CASE(IusInputFile, testIusInputFileCreate);
     RUN_TEST_CASE(IusInputFile, testIusInputFileDelete);
     RUN_TEST_CASE(IusInputFile, testIusInputFileCompare);
     RUN_TEST_CASE(IusInputFile, iusInputFileSetGetFrameList);
-    RUN_TEST_CASE(IusInputFile, iusInputFileSetGetPatternList);
+    RUN_TEST_CASE(IusInputFile, iusInputFileSetGetPatternListDict);
     RUN_TEST_CASE(IusInputFile, iusInputFileSetGetPulseDict);
     RUN_TEST_CASE(IusInputFile, iusInputFileSetGetSourceDict);
     RUN_TEST_CASE(IusInputFile, iusInputFileSetGetReceiveChannelMapDict);
@@ -380,4 +711,7 @@ TEST_GROUP_RUNNER(IusInputFile)
     RUN_TEST_CASE(IusInputFile, iusInputFileSetGetExperiment);
     RUN_TEST_CASE(IusInputFile, iusInputFileSetGetTransducer);
     RUN_TEST_CASE(IusInputFile, testIusInputFileSerialization);
+    RUN_TEST_CASE(IusInputFile, testIusInputFileDataIOSaveFrame);
+    RUN_TEST_CASE(IusInputFile, testIusInputFileDataIOSaveResponse);
+    RUN_TEST_CASE(IusInputFile, testIusInputFileDataIOSaveChannel);
 }

@@ -17,6 +17,13 @@
 #include <include/iusParameterDict.h>
 #include <include/iusHistoryNode.h>
 
+
+void dgFillData
+(
+iud_t data,
+float value
+);
+
 iuhn_t dgGenerateHistoryNode
 (
 
@@ -27,10 +34,19 @@ iupad_t dgGenerateParameterDict
 	int numElements
 );
 
+
+int dgInputFileAddGeneratedData
+(
+iuif_t inputFile,
+char *label
+);
+
 iuif_t dgGenerateInputFile
 (
 	char *ptestFileName,
-	char *transducerName
+	char *transducerName,
+	char *label,
+    int numFrames
 );
 
 iufl_t dgGenerateFrameList
@@ -40,32 +56,46 @@ iufl_t dgGenerateFrameList
 
 iupal_t dgGeneratePatternList
 (
-  	void
+	int numPatterns,
+	float timeInterval
+);
+
+iupald_t dgGeneratePatternListDict
+(
+	char *label
 );
 
 iupd_t dgGeneratePulseDict
 (
-	void
+    void
 );
 
 iusd_t dgGenerateSourceDict
 (
-	void
+    void
 );
 
 iurcmd_t dgGenerateReceiveChannelMapDict
 (
-  void
+    char *label
 );
 
+iurcm_t dgGenerateReceiveChannelMap
+();
+
 iutad_t dgGenerateTransmitApodizationDict
+(
+	char *label
+);
+
+iurs_t dgGenerateReceiveSettings
 (
 	void
 );
 
 iursd_t dgGenerateReceiveSettingsDict
 (
-	void
+    char *label
 );
 
 iue_t dgGenerateExperiment

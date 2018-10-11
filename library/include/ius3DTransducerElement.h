@@ -18,6 +18,12 @@ iu3dte_t ius3DTransducerElementCreate
     iu3ds_t siz
 );
 
+
+int ius3DTransducerElementDeepDelete
+(
+	iu3dte_t ius3DTransducerElement
+);
+
 int ius3DTransducerElementDelete
 (
     iu3dte_t ius3DTransducerElement

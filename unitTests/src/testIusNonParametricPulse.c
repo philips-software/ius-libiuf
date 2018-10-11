@@ -98,6 +98,8 @@ TEST(IusNonParametricPulse, testIusCompareNonParametricPulse)
 
     isEqual = iusNonParametricPulseCompare(nonParametricPulse, nonParametricPulse);
     TEST_ASSERT_EQUAL(IUS_TRUE,isEqual);
+    isEqual = iusNonParametricPulseCompare(nonParametricPulse, notherNonParametricPulse);
+    TEST_ASSERT_EQUAL(IUS_TRUE,isEqual);
 
     // Invalid arguments
     isEqual = iusNonParametricPulseCompare((iunpp_t) parametricPulse, nonParametricPulse);

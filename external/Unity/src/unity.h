@@ -25,7 +25,7 @@ void tearDown(void);
 
 /* These functions are intended to be called at the beginning and end of an
  * entire test suite.  suiteTearDown() is passed the number of tests that
- * failed, and its return value becomes the exit code of main(). */
+ * failed, and its return value becomes the exit code of examples(). */
 void suiteSetUp(void);
 int suiteTearDown(int num_failures);
 

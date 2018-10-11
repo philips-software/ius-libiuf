@@ -15,6 +15,11 @@ iu2dtel_t ius2DTransducerElementListCreate
     int num2DTransducerElement
 );
 
+int ius2DTransducerElementListDeepDelete
+(
+    iu2dtel_t list
+);
+
 int ius2DTransducerElementListDelete
 (
     iu2dtel_t list

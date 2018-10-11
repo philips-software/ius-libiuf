@@ -3,6 +3,11 @@ FIND_PACKAGE(HDF5 COMPONENTS C HL)
 
 include_directories(include)
 include_directories(${HDF5_INCLUDE_DIR})
+include_directories(${CMAKE_SOURCE_DIR})
+include_directories(${CMAKE_SOURCE_DIR}/include)
+include_directories(${CMAKE_CURRENT_LIST_DIR})
+include_directories(${CMAKE_CURRENT_LIST_DIR}/include)
+link_directories(${CMAKE_SOURCE_DIR}/lib)
 
 add_executable(unitTests
         include/testDataGenerators.h
@@ -18,6 +23,8 @@ add_executable(unitTests
         src/testIus3DTransducer.c
         src/testIus3DTransducerElement.c
         src/testIus3DTransducerElementList.c
+        src/testIusDataStream.c
+        src/testIusDataStreamDict.c
         src/testIusExperiment.c
         src/testIusFile.c
         src/testIusFrame.c
@@ -30,6 +37,7 @@ add_executable(unitTests
         src/testIusParametricPulse.c
         src/testIusPattern.c
         src/testIusPatternList.c
+        src/testIusPatternListDict.c
         src/testIusPulseDict.c
         src/testIusPulse.c
         src/testIusReceiveSettings.c
@@ -45,12 +53,25 @@ add_executable(unitTests
         src/util.c
         )
 
+if(MSVC)
+    target_compile_options(unitTests PRIVATE /W4 /WX)
+else()
+    set(UUID_LIBRARIES -luuid)
+    target_compile_options(unitTests PRIVATE -Wall -Wextra -pedantic -Werror)
+    if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
+        target_compile_options(unitTests PRIVATE -Wall -Wextra -pedantic -Werror)
+    endif()
+endif()
+
 target_link_libraries(unitTests
         ius
         Unity
         ${HDF5_LIBRARIES}
         ${HDF5_HL_LIBRARIES}
+        ${UUID_LIBRARIES}
         )
+
+set_property(TARGET unitTests PROPERTY C_STANDARD 99)
 
 add_test(suite_1_test unitTests)
 
@@ -61,3 +82,4 @@ if(CMAKE_COMPILER_IS_GNUCC)
         DEPENDENCIES unitTests         # Dependencies to build first
     )
 endif()
+

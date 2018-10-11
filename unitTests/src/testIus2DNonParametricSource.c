@@ -120,10 +120,6 @@ TEST(Ius2DNonParametricSource, testIus2DNonParametricSourceSetGet)
 TEST(Ius2DNonParametricSource, testIus2DNonParametricSourceSerialization)
 {
     char *filename = "testIus2DNonParametricSourceSerialization.hdf5";
-
-    float angularDelta = 0.13f;
-    float FNumber = -0.955f;
-    float startAngle = 3.14f;
     int p, numLocations = 5, status;
 
 

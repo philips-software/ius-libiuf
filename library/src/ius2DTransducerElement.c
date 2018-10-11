@@ -44,19 +44,25 @@ iu2dte_t ius2DTransducerElementCreate
     return created;
 }
 
+int ius2DTransducerElementDeepDelete
+(
+    iu2dte_t ius2DTransducerElement
+)
+{
+    if (ius2DTransducerElement == NULL) return IUS_ERR_VALUE;
+    ius2DPositionDelete(ius2DTransducerElementGetPosition(ius2DTransducerElement));
+    ius2DSizeDelete(ius2DTransducerElementGetSize(ius2DTransducerElement));
+    return ius2DTransducerElementDelete(ius2DTransducerElement);
+}
+
 int ius2DTransducerElementDelete
 (
     iu2dte_t ius2DTransducerElement
 )
 {
-    int status = IUS_ERR_VALUE;
-    if(ius2DTransducerElement != NULL)
-    {
-        free(ius2DTransducerElement);
-        ius2DTransducerElement = NULL;
-        status = IUS_E_OK;
-    }
-    return status;
+    if (ius2DTransducerElement == NULL) return IUS_ERR_VALUE;
+    free(ius2DTransducerElement);
+    return IUS_E_OK;
 }
 
 

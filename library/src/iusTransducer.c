@@ -42,6 +42,7 @@ iut_t iusTransducerCreate
     created->pTransducerName = strdup(name);
     created->shape = shape;
     created->centerFrequency = centerFrequency;
+    created->loadedFromFile = IUS_FALSE;
     return created;
 }
 
@@ -51,13 +52,24 @@ int iusTransducerDelete
 )
 {
     int status = IUS_ERR_VALUE;
-    if(iusTransducer != NULL)
-    {
-        free(iusTransducer->pTransducerName);
-        free(iusTransducer);
-        status = IUS_E_OK;
-    }
+    if (iusTransducer == NULL) return status;
+    if( iusTransducer->type == IUS_2D_SHAPE )
+        return ius2DTransducerDelete((iu2dt_t) iusTransducer);
+    if( iusTransducer->type == IUS_3D_SHAPE )
+        return ius3DTransducerDelete((iu3dt_t) iusTransducer);
     return status;
+}
+
+
+int iusBaseTransducerDelete
+(
+    iut_t iusTransducer
+)
+{
+    if (iusTransducer == NULL) return IUS_ERR_VALUE;
+    free(iusTransducer->pTransducerName);
+    free(iusTransducer);
+    return IUS_E_OK;
 }
 
 
@@ -270,11 +282,11 @@ iut_t iusBaseTransducerLoad
 {
     int status = 0;
 
-    const char *name;
+    char name[IUS_MAX_HDF5_PATH];
     IusTransducerShape shape;
     float centerFrequency;
 
-    status |= iusHdf5ReadString(handle, IUS_INPUTFILE_PATH_TRANSDUCER_NAME, &name);
+    status |= iusHdf5ReadString(handle, IUS_INPUTFILE_PATH_TRANSDUCER_NAME, name);
     status |= iusHdf5ReadFloat(handle, IUS_INPUTFILE_PATH_TRANSDUCER_CENTERFREQUENCY, &(centerFrequency));
     status |= iusTransducerLoadShape( handle, IUS_INPUTFILE_PATH_TRANSDUCER_SHAPE, &(shape));
     if( status < 0 )
@@ -289,17 +301,22 @@ iut_t iusTransducerLoad
 {
 	int status = 0;
 	IusTransducerShape shape;
-    //iut_t transducer = iusBaseTransducerLoad(handle);
+    iut_t transducer=IUT_INVALID;
 	hid_t group_id = H5Gopen(handle, IUS_INPUTFILE_PATH_TRANSDUCER, H5P_DEFAULT);
+
 	status |= iusTransducerLoadShape(group_id, IUS_INPUTFILE_PATH_TRANSDUCER_SHAPE, &(shape));
 	if (status < 0)
 		return IUT_INVALID;
 
     if( shape == IUS_LINE || shape == IUS_CIRCLE )
-        return (iut_t) ius2DTransducerLoad(group_id);
+        transducer = (iut_t) ius2DTransducerLoad(group_id);
     if( shape == IUS_PLANE || shape == IUS_CYLINDER || shape == IUS_SPHERE)
-        return (iut_t) ius3DTransducerLoad(group_id);
-
+        transducer = (iut_t) ius3DTransducerLoad(group_id);
 	H5Gclose(group_id);
-    return IUT_INVALID;
+
+	if( transducer != IUT_INVALID )
+    {
+        transducer->loadedFromFile = IUS_TRUE;
+    }
+    return transducer;
 }

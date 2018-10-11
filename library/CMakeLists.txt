@@ -47,6 +47,9 @@ add_library(ius STATIC
 		include/ius3DTransducerElementPrivate.h
 		include/ius3DTransducerElementList.h
         include/ius3DTransducerElementListPrivate.h
+        include/iusData.h
+		include/iusDataStream.h
+		include/iusDataStreamDictPrivate.h
         include/iusExperiment.h
         include/iusExperimentPrivate.h
 		include/iusFile.h
@@ -62,6 +65,7 @@ add_library(ius STATIC
 		include/iusInputFilePrivate.h
 		include/iusNonParametricPulse.h
 		include/iusNonParametricPulsePrivate.h
+		include/iusOffset.h
 		include/iusParameterDict.h
 		include/iusParametricPulse.h
 		include/iusParametricPulsePrivate.h
@@ -69,6 +73,8 @@ add_library(ius STATIC
 		include/iusPatternPrivate.h
 		include/iusPatternList.h
 		include/iusPatternListPrivate.h
+		include/iusPatternListDict.h
+		include/iusPatternListDictPrivate.h
 		include/iusPosition.h
 		include/iusPulse.h
 		include/iusPulseDict.h
@@ -110,6 +116,9 @@ add_library(ius STATIC
 		src/ius3DTransducer.c
 		src/ius3DTransducerElement.c
 		src/ius3DTransducerElementList.c
+        src/iusData.c
+		src/iusDataStream.c
+		src/iusDataStreamDict.c
 		src/iusExperiment.c
 		src/iusFile.c
 		src/iusFrame.c
@@ -118,10 +127,12 @@ add_library(ius STATIC
 		src/iusHistoryNode.c
 		src/iusHistoryNodeList.c
 		src/iusNonParametricPulse.c
+		src/iusOffset.c
 		src/iusParameterDict.c
 		src/iusParametricPulse.c
 		src/iusPattern.c
 		src/iusPatternList.c
+		src/iusPatternListDict.c
 		src/iusPosition.c
 		src/iusPulse.c
 		src/iusPulseDict.c
@@ -138,6 +149,7 @@ add_library(ius STATIC
 		src/iusTransmitApodizationDict.c
 		src/iusUuid.c
 		src/iusUtil.c
+		${HASHMAP_SOURCES}
 		)
 
 target_include_directories(ius PUBLIC
@@ -158,12 +170,18 @@ endif()
 
 target_link_libraries(
 		ius
-		hashmap
+#		hashmap
 		${HDF5_LIBRARIES}
 		${HDF5_HL_LIBRARIES}
 		${UUID_LIBRARIES}
 )
 
+set_property(TARGET ius PROPERTY C_STANDARD 99)
+
+install(TARGETS ius
+		LIBRARY DESTINATION ${PROJECT_BINARY_DIR}/dist/lib
+		ARCHIVE DESTINATION ${PROJECT_BINARY_DIR}/dist/lib
+		)
 # the option is here so that we can plug it into other
 #find_package(HDF5)
 #if(HDF5_FOUND)

@@ -88,6 +88,7 @@ TEST(IusTGC, testIusTGCCompare)
     TEST_ASSERT_EQUAL(IUS_FALSE,equal);
     
     iusTGCDelete(obj);
+    iusTGCDelete(sameObj);
     iusTGCDelete(notherObj);
 }
 
@@ -117,9 +118,6 @@ TEST(IusTGC, testIusTGCSetGet)
 TEST(IusTGC, testIusSerialization)
 {
     char *filename = "testIusTGCSerialization.hdf5";
-    //char *pulsePath =  "/TGC";
-    char *label = "Created_in_testIusSerialization";
-
     int numTGCValues = 20;
 
     // create

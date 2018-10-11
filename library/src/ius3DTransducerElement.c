@@ -41,6 +41,19 @@ iu3dte_t ius3DTransducerElementCreate
     return created;
 }
 
+
+int ius3DTransducerElementDeepDelete
+(
+    iu3dte_t ius3DTransducerElement
+)
+{
+    if (ius3DTransducerElement == NULL) return IUS_ERR_VALUE;
+    ius3DPositionDelete(ius3DTransducerElementGetPosition(ius3DTransducerElement));
+    ius3DSizeDelete(ius3DTransducerElementGetSize(ius3DTransducerElement));
+    ius3DAngleDelete(ius3DTransducerElementGetAngle(ius3DTransducerElement));
+    return ius3DTransducerElementDelete(ius3DTransducerElement);
+}
+
 int ius3DTransducerElementDelete
 (
     iu3dte_t ius3DTransducerElement

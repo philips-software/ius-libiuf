@@ -164,18 +164,18 @@ iue_t iusExperimentLoad
     int status = 0;
     float speedOfSound;
     int date;
-    const char *pDescription;
+    char description[IUS_MAX_HDF5_PATH];
     iue_t experiment;
 
 	hid_t experiment_id = H5Gopen(handle, IUS_INPUTFILE_PATH_EXPERIMENT, H5P_DEFAULT); // todo move "Experiment" to central place
     status |= iusHdf5ReadFloat(experiment_id, IUS_INPUTFILE_PATH_EXPERIMENT_SPEEDOFSOUND, &(speedOfSound));
     status |= iusHdf5ReadInt(experiment_id, IUS_INPUTFILE_PATH_EXPERIMENT_DATE, &(date));
-    status |= iusHdf5ReadString(experiment_id, IUS_INPUTFILE_PATH_EXPERIMENT_DESCRIPTION, &(pDescription));
+    status |= iusHdf5ReadString(experiment_id, IUS_INPUTFILE_PATH_EXPERIMENT_DESCRIPTION, description);
 	
 	H5Gclose(experiment_id);
     if( status < 0 )
         return NULL;
-    experiment = iusExperimentCreate(speedOfSound,date,pDescription);
+    experiment = iusExperimentCreate(speedOfSound,date,description);
     return experiment;
 }
 
