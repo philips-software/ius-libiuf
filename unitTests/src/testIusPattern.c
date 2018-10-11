@@ -115,19 +115,19 @@ int createAndCompare
 (
     iupa_t reference,
     float timeInFrame,
-    const char *pPulseLabel,
-    const char *pSourceLabel,
-    const char *pChannelMapLabel,
-    const char *pApodizationLabel,
-    const char *pReceiveSettingsLabel
+    const char *pPulseLbl,
+    const char *pSourceLbl,
+    const char *pChannelMapLbl,
+    const char *pApodizationLbl,
+    const char *pReceiveSettingsLbl
 )
 {
   iupa_t actual = iusPatternCreate( timeInFrame,
-                                    pPulseLabel,
-                                    pSourceLabel,
-                                    pChannelMapLabel,
-                                    pApodizationLabel,
-                                    pReceiveSettingsLabel);
+                                    pPulseLbl,
+                                    pSourceLbl,
+                                    pChannelMapLbl,
+                                    pApodizationLbl,
+                                    pReceiveSettingsLbl);
   if(actual == IUPA_INVALID) return IUS_ERR_VALUE;
   int equal = iusPatternCompare(reference,actual);
   iusPatternDelete(actual);

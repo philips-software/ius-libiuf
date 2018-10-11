@@ -4,5 +4,5 @@ echo === Building ius in %BuildFolder%
 mkdir %BuildFolder% & pushd %BuildFolder%
 :: cmake -G "Visual Studio 15 2017 Win64" --config Release ..\..
 cmake --config Release ..\..
-cmake --build .
+cmake --build . --target install
 popd

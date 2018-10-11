@@ -16,4 +16,4 @@ echo === Building ius in $BuildFolder
 mkdir -p $BuildFolder
 cd $BuildFolder
 $CMAKE -DCMAKE_BUILD_TYPE=Debug ../..
-exec make
+exec $CMAKE --build .
