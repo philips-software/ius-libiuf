@@ -34,9 +34,6 @@ TEST(IusPulseDict, testIusPulseDictCreate)
 
 TEST(IusPulseDict, testIusPulseDictSetGet)
 {
-    IUS_BOOL equal;
-    int numPulses = 10;
-    int numPulseValues=10;
     float   pulseFrequency=8000000.0f;   /**< frequency that the pulse represents in Hz */
     float   pulseAmplitude=800.0f;       /**< (max) amplitude of the pulse in Volts */
     int     pulseCount=10;               /**< number of cycles that the pulse represents */
@@ -64,7 +61,6 @@ TEST(IusPulseDict, testIusPulseDictSetGet)
 TEST(IusPulseDict, testIusPulseDictCompare)
 {
     IUS_BOOL equal;
-    int numPulses = 10;
     int numPulseValues=10;
     float   pulseFrequency=8000000.0f;   /**< frequency that the pulse represents in Hz */
     float   pulseAmplitude=800.0f;       /**< (max) amplitude of the pulse in Volts */
@@ -121,7 +117,6 @@ TEST(IusPulseDict, testIusPulseDictCompare)
 TEST(IusPulseDict, testIusSerialization)
 
 {
-    int numPulses = 10;
     int numPulseValues=10;
     float   pulseFrequency=8000000.0f;   /**< frequency that the pulse represents in Hz */
     float   pulseAmplitude=800.0f;       /**< (max) amplitude of the pulse in Volts */

@@ -34,7 +34,6 @@ TEST(IusTransmitApodizationDict, testIusTransmitApodizationDictCreate)
 
 TEST(IusTransmitApodizationDict, testIusTransmitApodizationDictSetGet)
 {
-	IUS_BOOL equal;
 	const int numElements = 8;
 	float ones[8] = {1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f};
 	int status;

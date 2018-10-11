@@ -39,6 +39,12 @@ iud_t iusInputFileResponseCreate
     char *label
 );
 
+iud_t iusInputFileChannelCreate
+(
+    iuif_t iusInputFile,
+    char *label
+);
+
 int iusInputFileDelete
 (
     iuif_t iusInputFile
@@ -123,6 +129,12 @@ int iusInputFileGetNumResponses
 	char *label
 );
 
+int iusInputFileGetNumChannels
+(
+    iuif_t iusInputFile,
+    char *label
+);
+
 // Setters
 int iusInputFileSetFrameList
 (
@@ -183,6 +195,22 @@ int iusInputFileSetNumFrames
 (
     iuif_t inputFile,
     int  numFrames
+);
+
+int iusInputFileChannelSave
+(
+    iuif_t inputFile,
+    char *label,
+    iud_t channel,
+    iuo_t channel_offset
+);
+
+int iusInputFileChannelLoad
+(
+    iuif_t inputFile,
+    char *label,
+    iud_t channel,
+    iuo_t channel_offset
 );
 
 int iusInputFileResponseSave

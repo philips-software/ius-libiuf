@@ -131,6 +131,8 @@ TEST(IusHistoryNode, testIusHistoryNodeSetGet)
     iusHistoryNodeSetParameters(node, parameterDict);
     iupad_t otherPd = iusHistoryNodeGetParameters(node);
     IUS_BOOL equal = iusParameterDictCompare(parameterDict,otherPd);
+    TEST_ASSERT_EQUAL(IUS_TRUE, equal);
+
 }
 
 
@@ -140,7 +142,6 @@ TEST(IusHistoryNode, testIusHistoryNodeSerialize)
     // create and fill
     iuhn_t historyNode = dgGenerateHistoryNode();
     char *filename = "testIusHistoryNodeSerialization.hdf5";
-    char *histPath =  "/";
 
     // save
     hid_t handle = H5Fcreate( filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT );

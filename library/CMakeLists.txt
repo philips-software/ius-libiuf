@@ -149,6 +149,7 @@ add_library(ius STATIC
 		src/iusTransmitApodizationDict.c
 		src/iusUuid.c
 		src/iusUtil.c
+		${HASHMAP_SOURCES}
 		)
 
 target_include_directories(ius PUBLIC
@@ -169,12 +170,18 @@ endif()
 
 target_link_libraries(
 		ius
-		hashmap
+#		hashmap
 		${HDF5_LIBRARIES}
 		${HDF5_HL_LIBRARIES}
 		${UUID_LIBRARIES}
 )
 
+set_property(TARGET ius PROPERTY C_STANDARD 99)
+
+install(TARGETS ius
+		LIBRARY DESTINATION ${PROJECT_BINARY_DIR}/dist/lib
+		ARCHIVE DESTINATION ${PROJECT_BINARY_DIR}/dist/lib
+		)
 # the option is here so that we can plug it into other
 #find_package(HDF5)
 #if(HDF5_FOUND)

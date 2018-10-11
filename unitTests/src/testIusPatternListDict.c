@@ -154,8 +154,6 @@ TEST(IusPatternListDict, testIusSerialization)
 	TEST_ASSERT(dict != IUPALD_INVALID);
 
 	// fill
-	char *list1 = "BMode pattern";
-	char *list2 = "Doppler pattern";
 	iupal_t bModePatternList = iusPatternListCreate(2);
 	iupal_t dopplerPatternList = iusPatternListCreate(1);
 	

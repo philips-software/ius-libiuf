@@ -28,7 +28,6 @@ TEST(IusFile, testIusInputFileHistoryScenario)
 // As a developer I want to be able get the data history of an ius file.
 // The data history  is organised as a DataHistory Tree.
     int numParents = 0;
-    char pNodeType[] = IUS_INPUT_TYPE;
     char *pFilename = "testIusInputFileHistoryScenario.hdf5";
 
     // Create Input file.
@@ -82,10 +81,6 @@ TEST(IusFile, testIusCWCFileHistoryScenario)
     // root node type should be equal to file type
     TEST_ASSERT_EQUAL_STRING(iusFileGetType(iusFile),iusHistoryNodeGetType(rootNode));
 
-    iufi_t nodeToFile = (iufi_t) rootNode;
-    iuif_t nodeToInputFile = (iuif_t) rootNode;
-    iusInputFile = (iuif_t) rootNode;
-
     iuif_t iusInputFile2 = dgGenerateInputFile(pFilename, "S5-1-0", "bmode", 10);
     iuhn_t cwcParents = iusHistoryNodeCreate(pNodeType,1);
     iuhnl_t parents = iusHistoryNodeGetParents(cwcParents);
@@ -105,7 +100,8 @@ TEST(IusFile, testIusCWCFileHistoryScenario)
     // get file history
     iuhn_t cwcRootNode = iusFileGetHistoryTree(iusCWCFile);
     // Input file history should be empty
-    numParents = iusHistoryNodeGetNumParents(rootNode);
+    numParents = iusHistoryNodeGetNumParents(cwcRootNode);
+    TEST_ASSERT(numParents == 0);
 
 }
 

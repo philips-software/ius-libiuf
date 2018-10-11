@@ -34,8 +34,6 @@ TEST(IusSourceDict, testIusCreateSourceDict)
 
 TEST(IusSourceDict, testIusSourceDictSetGet)
 {
-    IUS_BOOL equal;
-
     char *pObjLabel = "label for 3d parametric source";
     int locationCount = 5; /**< number of locations */
 

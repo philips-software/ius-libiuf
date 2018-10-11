@@ -23,7 +23,6 @@ TEST_TEAR_DOWN(IusDataStream)
 
 TEST(IusDataStream, testIusDataStreamCreate)
 {
-    IUS_BOOL equal;
     iuds_t obj = iusDataStreamCreate();
     iuds_t notherObj = iusDataStreamCreate();
     TEST_ASSERT(obj != IUDS_INVALID);

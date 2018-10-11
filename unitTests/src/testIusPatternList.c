@@ -9,8 +9,6 @@
 #include <include/iusPatternListPrivate.h>
 #include <include/ius.h>
 
-static const char *pBmodePatternLabel = "bmode";
-static const char *pDopplerPatternLabel = "doppler";
 static const char *pPulseLabel = "pulseLabel";
 static const char *pSourceLabel = "sourceLabel";
 static const char *pChannelMapLabel = "channelMapLabel";

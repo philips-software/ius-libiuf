@@ -15,13 +15,15 @@ else()
     set(CMAKE_CXX_CPPCHECK "cppcheck")
 endif()
 
-#set (UTHASH_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/external/uthash/include")
 set (HASHMAP_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/external/hashmap/src")
+set (HASHMAP_SOURCES "${PROJECT_SOURCE_DIR}/external/hashmap/src/hashmap.c")
+
 set (TARGET_GROUP test CACHE STRING "Group to build")
 if(TARGET_GROUP STREQUAL production)
-    add_subdirectory(main)
+    add_subdirectory(examples)
 elseif(TARGET_GROUP STREQUAL test)
     include(CTest)
+    add_subdirectory(examples)
     add_subdirectory(external)
     enable_testing ()
     add_subdirectory(unitTests)
@@ -30,3 +32,17 @@ else()
 endif()
 
 add_subdirectory(library)
+
+# Distribution stuff
+install(DIRECTORY library/include DESTINATION ${PROJECT_BINARY_DIR}/dist
+        PATTERN "library/include/*[pP]rivate*.h" EXCLUDE
+        )
+install(DIRECTORY examples DESTINATION ${PROJECT_BINARY_DIR}/dist)
+install(DIRECTORY unitTests DESTINATION ${PROJECT_BINARY_DIR}/dist)
+file(GLOB_RECURSE PRIVATE_HEADERS
+        "${PROJECT_SOURCE_DIR}/library/include/*[pP]rivate.h"
+        )
+install(FILES ${PRIVATE_HEADERS}  DESTINATION ${PROJECT_BINARY_DIR}/dist/unitTests/include)
+install(FILES package/CMakeLists.txt package/PreLoad.cmake  DESTINATION ${PROJECT_BINARY_DIR}/dist)
+install(DIRECTORY examples DESTINATION ${PROJECT_BINARY_DIR}/dist)
+install(DIRECTORY external DESTINATION ${PROJECT_BINARY_DIR}/dist)

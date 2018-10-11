@@ -94,7 +94,7 @@ TEST(IusParametricPulse, testIusComparePulse)
     float   pulseAmplitude=800.0f;       /**< (max) amplitude of the pulse in Volts */
     int     pulseCount=10;               /**< number of cycles that the pulse represents */
     int     numPulseValues=20;              /**< number of points to describe waveform, 0 implies a parametric description only */
-    iupp_t  parametricPulse,notherParametricPulse,identicalPulse;
+    iupp_t  parametricPulse,identicalPulse;
     iunpp_t nonParametricPulse;
     IUS_BOOL isEqual;
 
@@ -102,10 +102,6 @@ TEST(IusParametricPulse, testIusComparePulse)
     // Parametric transmit pulse
     parametricPulse = iusParametricPulseCreate(pulseFrequency, pulseAmplitude, pulseCount);
     identicalPulse = iusParametricPulseCreate(pulseFrequency, pulseAmplitude, pulseCount);
-    notherParametricPulse =
-    iusParametricPulseCreate(pulseFrequency, pulseAmplitude, pulseCount);
-
-
     nonParametricPulse = iusNonParametricPulseCreate(numPulseValues);
 
     isEqual = iusParametricPulseCompare(parametricPulse, parametricPulse);

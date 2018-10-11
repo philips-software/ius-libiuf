@@ -59,7 +59,7 @@ int UnityMain(int argc, const char* argv[], void (*runAllTests)(void));
     void TEST_##group##_GROUP_RUNNER(void);\
     void TEST_##group##_GROUP_RUNNER(void)
 
-/* Call this from main */
+/* Call this from examples */
 #define RUN_TEST_GROUP(group)\
     { void TEST_##group##_GROUP_RUNNER(void);\
       TEST_##group##_GROUP_RUNNER(); }

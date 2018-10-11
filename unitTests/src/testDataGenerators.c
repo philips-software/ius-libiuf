@@ -111,7 +111,7 @@ iupad_t dgGenerateParameterDict
 
     char generatedKey[1024];
     char generatedValue[1024];
-    for (elementID=0;elementID<1000;elementID++)
+    for (elementID=0;elementID<numElements;elementID++)
     {
         sprintf(generatedKey,"key_%d", elementID);
         sprintf(generatedValue,"value_%d", elementID);
@@ -392,7 +392,6 @@ iut_t dgGenerateTransducer
     char *transducerName
 )
 {
-    int status = 0;
     const int numTransducerElements = 128;
     int i = 0;
 

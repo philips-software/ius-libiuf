@@ -86,7 +86,6 @@ TEST(IusHistoryNodeList, testIusSerialization)
   int status;
   IUS_BOOL equal;
   char *pFilename = "testIusHistoryNodeListSerialization.hdf5";
-  char *pHistoryNodeListPath = "/HistoryNodeList";
 
   // fill list
   iuhnl_t nodeList = iusHistoryNodeListCreate(numHistoryNodes);
