@@ -201,11 +201,11 @@ iu2dnps_t ius2DNonParametricSourceLoad
     int status = iusHdf5ReadInt(locationList_id, IUS_INPUTFILE_PATH_SOURCE_LISTSIZE, &(locationCount));
 	H5Gclose(locationList_id);
     if (status < 0)
-        return NULL;
+        return IU2DNPS_INVALID;
 
     source = ius2DNonParametricSourceCreate(locationCount);
     status = ius2DNonParametricSourceLoadLocations(source, handle);
     if (status <-0)
-        return NULL;
+        return IU2DNPS_INVALID;
     return source;
 }

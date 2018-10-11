@@ -8,6 +8,53 @@
 //
 //=============================================================================
 
+/**  \mainpage  IUS file IO library V3
+ *
+ * \section Overview
+ *
+ * The IUS library provides an API to read and write Ultrasound data to HDF5 files on one hand
+ * and write algorithms that handle ultrasound data on he other hand.
+ * 
+ * Conceptually, Ultrasound data is processed in a algorithm chain starting with beamforming, followed by 
+ * property extraction such as signal intensity or velocity, and imaging steps such as compression and clutter 
+ * reduction, and or analysis steps such as tissue characterization.
+ *
+ * This library facilitates such processing chains by providing abstract datatypes and functions for file IO.
+ * HDF5 file format is used and acquisition properties are stored that contain the parameters during acquisition 
+ * and the parameters of the processing history.
+ *
+ * \section iusInputFile
+ * The image below shows the schematic structure of an #IusInputFile
+ * \image html Slide1.png
+ * The header contains a #IusFrameList where each #IusFrame consists of a reference to a #IusPatternList and a timestamp. 
+ * The #IusPatternList is a list of #IusPattern. Which each contain references to 5 additional dictionaries: #IusSource,
+ * #IusReceiveSettings, #IusReceiveChannelMap, #IusTransmitApodization and #IusPulse. Together these 5 objects from each 
+ * dictionary describe the pattern. See the subsections blow.
+ *
+ * In addition, an #IusInputFile contains a transducer description #IusTransducer and experiment description #IusExperiment.
+ * 
+ * The data is stored in a 4D block of floats for each #IusPatternList with dimensions: 
+ * numChannels x numSamplesPerLine x numPulses x numFrames. 
+ *
+ * \subsection IusSourceDict
+ * \subsection IusReceiveSettings
+ * \subsection IusReceiveChannelMap
+ * \subsection IusPulse
+ * \subsection IusTransmitApodization
+ *
+ * \section iusCWCFile
+ *
+ * \section iusBModeFile
+ *
+ * \section iusColorDopplerFile
+ *
+ * etc...
+ * /
+ *
+ *
+ */
+
+
 /** \file
  * \brief  various types for ius functions
  */
