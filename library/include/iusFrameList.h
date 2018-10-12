@@ -30,7 +30,7 @@ int iusFrameListGetSize
     iufl_t list
 );
 
-iuf_t iusFrameListGet
+iufr_t iusFrameListGet
 (
     iufl_t list,
     int index
@@ -39,7 +39,7 @@ iuf_t iusFrameListGet
 int iusFrameListSet
 (
     iufl_t list,
-    iuf_t member,
+    iufr_t member,
     int index
 );
 

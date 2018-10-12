@@ -215,7 +215,7 @@ iufl_t dgGenerateFrameList
     void
 )
 {
-    iuf_t obj;
+    iufr_t obj;
     int status,i,numFrames=100;
     iufl_t frameList = iusFrameListCreate(numFrames);
     TEST_ASSERT_NOT_EQUAL(IUFL_INVALID, frameList);

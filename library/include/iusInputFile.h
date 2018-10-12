@@ -51,14 +51,14 @@ int iusInputFileDelete
 );
 
 // operations
-iuif_t iusInputFileLoad
+iuif_t iusInputFileNodeLoad
 (
-    const char *filename
+	const char *filename
 );
 
-int iusInputFileSave
+int iusInputFileNodeSave
 (
-    iuif_t fileHandle
+	iuif_t fileHandle
 );
 
 int iusInputFileClose

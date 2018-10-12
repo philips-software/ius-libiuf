@@ -230,7 +230,7 @@ int iusHistoryNodeSetInstanceData
 //iuif_t pFileInst = iusInputFileAlloc(pFilename);
 //memcpy(pFileInst,file,sizeof(IusFile));
 //pFileInst = iusInputFileSpecificsLoad(pFileInst);
-//file = (iufi_t) pFileInst;
+//file = (iuf_t) pFileInst;
 //}
 
 void *iusHistoryNodeLoadInstance

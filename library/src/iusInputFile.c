@@ -258,89 +258,77 @@ static iuifi_t inputFileInstanceLoad
     instance->frameList = iusFrameListLoad(instance->handle);
     if (instance->frameList == IUFL_INVALID)
     {
-        fprintf(stderr, "Warning from iusInputFileLoad: could not load framelist");
+        fprintf(stderr, "Warning from iusInputFileNodeLoad: could not load framelist");
         return IUIFI_INVALID;
     }
 
     instance->patternListDict = iusPatternListDictLoad(instance->handle);
     if (instance->patternListDict == IUPALD_INVALID)
     {
-        fprintf(stderr, "Warning from iusInputFileLoad: could not load patternlists  %s\n", instance->pFilename );
+        fprintf(stderr, "Warning from iusInputFileNodeLoad: could not load patternlists  %s\n", instance->pFilename );
         return IUIFI_INVALID;
     }
 
-    // Load instance data
     instance->pulseDict = iusPulseDictLoad(instance->handle);
     if (instance->pulseDict == IUPD_INVALID)
     {
-        fprintf( stderr, "Warning from iusInputFileLoad: could not load pulses: %s\n", instance->pFilename );
+        fprintf( stderr, "Warning from iusInputFileNodeLoad: could not load pulses: %s\n", instance->pFilename );
         return IUIFI_INVALID;
     }
 
-    // Load instance data
-    // Todo: create group @here instead of in Load, see experiment
     instance->pulseSourceDict = iusSourceDictLoad(instance->handle);
     if (instance->pulseSourceDict == IUSD_INVALID)
     {
-        fprintf( stderr, "Warning from iusInputFileLoad: could not load pulse sources: %s\n", instance->pFilename );
+        fprintf( stderr, "Warning from iusInputFileNodeLoad: could not load pulse sources: %s\n", instance->pFilename );
         return IUIFI_INVALID;
     }
 
-    // Load instance data
-    // Todo: create group @here instead of in Load, see experiment
     instance->receiveChannelMapDict = iusReceiveChannelMapDictLoad(instance->handle);
     if (instance->receiveChannelMapDict == IURCMD_INVALID)
     {
-        fprintf(stderr, "Warning from iusInputFileLoad: could not load receiveChannelMap: %s\n", instance->pFilename);
+        fprintf(stderr, "Warning from iusInputFileNodeLoad: could not load receiveChannelMap: %s\n", instance->pFilename);
         return IUIFI_INVALID;
     }
 
-    // Load instance data
-    // Todo: create group @here instead of in Load, see experiment
     instance->transmitApodizationDict = iusTransmitApodizationDictLoad(instance->handle);
     if (instance->transmitApodizationDict == IUTAD_INVALID)
     {
-        fprintf(stderr, "Warning from iusInputFileLoad: could not load transmitApodizationDict: %s\n", instance->pFilename);
+        fprintf(stderr, "Warning from iusInputFileNodeLoad: could not load transmitApodizationDict: %s\n", instance->pFilename);
         return IUIFI_INVALID;
     }
 
-    // Load instance data
-    // Todo: create group @here instead of in Load, see experiment
     instance->receiveSettingsDict = iusReceiveSettingsDictLoad(instance->handle);
     if (instance->receiveSettingsDict == IURSD_INVALID)
     {
-        fprintf(stderr, "Warning from iusInputFileLoad: could not load receiveSettingsDict: %s\n", instance->pFilename);
+        fprintf(stderr, "Warning from iusInputFileNodeLoad: could not load receiveSettingsDict: %s\n", instance->pFilename);
         return IUIFI_INVALID;
     }
-
 
     instance->experiment = iusExperimentLoad(instance->handle);
     if (instance->experiment == IUE_INVALID)
     {
-        fprintf(stderr, "Warning from iusInputFileLoad: could not load experiment: %s\n", instance->pFilename);
+        fprintf(stderr, "Warning from iusInputFileNodeLoad: could not load experiment: %s\n", instance->pFilename);
         return IUIFI_INVALID;
     }
 
-    // Load instance data
-    // Todo: create group @here instead of in Load, see experiment
     instance->transducer = iusTransducerLoad(instance->handle);
     if (instance->transducer == IUT_INVALID)
     {
-        fprintf(stderr, "Warning from iusInputFileLoad: could not load transducer: %s\n", instance->pFilename);
+        fprintf(stderr, "Warning from iusInputFileNodeLoad: could not load transducer: %s\n", instance->pFilename);
         return IUIFI_INVALID;
     }
 
     int status = iusHdf5ReadInt( instance->handle, IUS_INPUTFILE_PATH_IUSVERSION, &(instance->IusVersion));
     if( status != IUS_E_OK )
     {
-        fprintf(stderr, "Warning from iusInputFileLoad: could not load IusVersion: %s\n", instance->pFilename);
+        fprintf(stderr, "Warning from iusInputFileNodeLoad: could not load IusVersion: %s\n", instance->pFilename);
         return IUIFI_INVALID;
     }
 
     status = iusHdf5ReadInt( instance->handle, IUS_INPUTFILE_PATH_NUMFRAMES, &(instance->numFrames));
     if( status != IUS_E_OK )
     {
-        fprintf(stderr, "Warning from iusInputFileLoad: could not load numFrames: %s\n", instance->pFilename);
+        fprintf(stderr, "Warning from iusInputFileNodeLoad: could not load numFrames: %s\n", instance->pFilename);
         return IUIFI_INVALID;
     }
 
@@ -373,7 +361,7 @@ iuhn_t iusInputFileLoadNode
     return node;
 }
 
-iuif_t iusInputFileLoad
+iuif_t iusInputFileNodeLoad
 (
     const char *pFilename
 )
@@ -388,12 +376,10 @@ iuif_t iusInputFileLoad
     hid_t handle = H5Fopen( pFilename, H5F_ACC_RDONLY, H5P_DEFAULT );
     if (handle <=0)
     {
-        fprintf( stderr, "iusInputFileLoad: could not create file: %s\n", pFilename );
+        fprintf( stderr, "iusInputFileNodeLoad: could not create file: %s\n", pFilename );
         return IUIF_INVALID;
     }
 
-    // Load instance data
-    // Todo: create group @here instead of in Load, see experiment
     iuif_t inputFile = (iuif_t) iusHistoryNodeLoad(handle);
     iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
     instance->pFilename = strdup(pFilename);
@@ -423,9 +409,9 @@ int iusInputFileSaveInstance
 }
 
 
-int iusInputFileSave
+int iusInputFileNodeSave
 (
-    iuif_t fileHandle
+iuif_t fileHandle
 )
 {
     herr_t status=0;
@@ -454,7 +440,6 @@ int iusInputFileClose
     {
         status |= H5Fclose(instance->handle);
     }
-
     return status;
 }
 

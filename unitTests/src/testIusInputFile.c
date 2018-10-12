@@ -367,13 +367,13 @@ TEST(IusInputFile, testIusInputFileSerialization)
     TEST_ASSERT(inputFile != IUIF_INVALID);
 
 	// save
-    int status = iusInputFileSave(inputFile);
+    int status = iusInputFileNodeSave(inputFile);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
     status = iusInputFileClose(inputFile);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
     // read back
-    iuif_t savedObj = iusInputFileLoad(ptestFileName);
+    iuif_t savedObj = iusInputFileNodeLoad(ptestFileName);
     TEST_ASSERT(savedObj != NULL);
     TEST_ASSERT_EQUAL(IUS_TRUE, iusInputFileCompare(inputFile,savedObj));
 
@@ -598,7 +598,7 @@ TEST(IusInputFile, testIusInputFileDataIOSaveFrame)
     TEST_ASSERT_EQUAL(status, IUS_E_OK);
 
     // SaveFrames
-    status = iusInputFileSave(inputFile);
+    status = iusInputFileNodeSave(inputFile);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
     status = saveFrames(inputFile,pDopplerLabel,numFrames);
     status |= saveFrames(inputFile,pBmodeLabel,numFrames);
@@ -607,7 +607,7 @@ TEST(IusInputFile, testIusInputFileDataIOSaveFrame)
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
     // read back
-    iuif_t savedObj = iusInputFileLoad(ptestFileName);
+    iuif_t savedObj = iusInputFileNodeLoad(ptestFileName);
     TEST_ASSERT(savedObj != NULL);
     TEST_ASSERT_EQUAL(IUS_TRUE, iusInputFileCompare(inputFile,savedObj));
     TEST_ASSERT_EQUAL(IUS_TRUE, validateFrames(savedObj,pDopplerLabel,numFrames));
@@ -635,7 +635,7 @@ TEST(IusInputFile, testIusInputFileDataIOSaveResponse)
 
 
     // SaveFrames
-    status = iusInputFileSave(inputFile);
+    status = iusInputFileNodeSave(inputFile);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
     status = saveResponses(inputFile,pDopplerLabel,numFrames);
     status |= saveResponses(inputFile,pBmodeLabel,numFrames);
@@ -644,7 +644,7 @@ TEST(IusInputFile, testIusInputFileDataIOSaveResponse)
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
     // read back
-    iuif_t savedObj = iusInputFileLoad(ptestFileName);
+    iuif_t savedObj = iusInputFileNodeLoad(ptestFileName);
     TEST_ASSERT(savedObj != NULL);
     TEST_ASSERT_EQUAL(IUS_TRUE, iusInputFileCompare(inputFile,savedObj));
     TEST_ASSERT_EQUAL(IUS_TRUE, validateResponses(savedObj,pDopplerLabel,numFrames));
@@ -672,7 +672,7 @@ TEST(IusInputFile, testIusInputFileDataIOSaveChannel)
 
 
     // SaveFrames
-    status = iusInputFileSave(inputFile);
+    status = iusInputFileNodeSave(inputFile);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
     status = saveChannels(inputFile, pDopplerLabel, numFrames);
 //    status |= saveChannels(inputFile, pBmodeLabel, numFrames);
@@ -681,7 +681,7 @@ TEST(IusInputFile, testIusInputFileDataIOSaveChannel)
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
     // read back
-    iuif_t savedObj = iusInputFileLoad(ptestFileName);
+    iuif_t savedObj = iusInputFileNodeLoad(ptestFileName);
     TEST_ASSERT(savedObj != NULL);
     TEST_ASSERT_EQUAL(IUS_TRUE, iusInputFileCompare(inputFile,savedObj));
     // Todo:

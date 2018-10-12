@@ -26,7 +26,7 @@ struct IusFile
 // ADT
 int iusFileDelete
 (
-    iufi_t iusFile
+    iuf_t iusFile
 )
 {
     int status = IUS_ERR_VALUE;
@@ -43,8 +43,8 @@ int iusFileDelete
 // operations
 int iusFileCompare
 (
-    iufi_t reference,
-    iufi_t actual
+    iuf_t reference,
+    iuf_t actual
 )
 {
     if( reference == actual ) return IUS_TRUE;
@@ -52,7 +52,7 @@ int iusFileCompare
     return IUS_TRUE;
 }
 
-iufi_t iusFileLoad
+iuf_t iusFileLoad
 (
     char *pFilename
 )
@@ -63,7 +63,7 @@ iufi_t iusFileLoad
         return IUFI_INVALID;
     }
 
-    iufi_t file = calloc(1,sizeof(IusFile));
+    iuf_t file = calloc(1,sizeof(IusFile));
 
     // check calloc
     if (file == IUFI_INVALID)
@@ -89,7 +89,7 @@ iufi_t iusFileLoad
 // Getters
 iuhn_t iusFileGetHistoryTree
 (
-    iufi_t iusFile
+    iuf_t iusFile
 )
 {
     if (iusFile == NULL) return IUHN_INVALID;
@@ -98,7 +98,7 @@ iuhn_t iusFileGetHistoryTree
 
 const char *iusFileGetType
 (
-    iufi_t iusFile
+    iuf_t iusFile
 )
 {
     if (iusFile == NULL) return NULL;
@@ -108,7 +108,7 @@ const char *iusFileGetType
 // Setters
 int iusFileSetHistoryTree
 (
-    iufi_t iusFile,
+    iuf_t iusFile,
     iuhn_t history
 )
 {

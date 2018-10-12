@@ -17,7 +17,7 @@
 struct IusFrameList
 {
     int count;
-    iuf_t *   pFrames ;
+    iufr_t *   pFrames ;
 } ;
 
 // ADT
@@ -31,7 +31,7 @@ iufl_t iusFrameListCreate
     if(list!=NULL)
     {
         list->count = numFrames;
-        list->pFrames = (iuf_t *) calloc((size_t)numFrames, sizeof(iuf_t));
+        list->pFrames = (iufr_t *) calloc((size_t)numFrames, sizeof(iufr_t));
         if( list->pFrames == NULL )
         {
             free(list);
@@ -81,7 +81,7 @@ int iusFrameListGetSize
     return list->count;
 }
 
-iuf_t iusFrameListGet
+iufr_t iusFrameListGet
 (
     iufl_t list,
     int index
@@ -95,7 +95,7 @@ iuf_t iusFrameListGet
 int iusFrameListSet
 (
     iufl_t list,
-    iuf_t member,
+    iufr_t member,
     int index
 )
 {
@@ -120,7 +120,7 @@ iufl_t iusFrameListLoad
     if(status!=0) return IUFL_INVALID;
 	
     iufl_t frameList = iusFrameListCreate(numFrames);
-    iuf_t sourceElement;
+    iufr_t sourceElement;
 
     // Load frames
     for (i=0;i < numFrames; i++)
@@ -191,7 +191,7 @@ int iusFrameListSave
 		return IUS_ERR_VALUE;
 
 	status = 0;
-	iuf_t sourceElement;
+	iufr_t sourceElement;
     size = iusFrameListGetSize(list);
     status = iusHdf5WriteInt(group_id, IUS_INPUTFILE_PATH_FRAMELIST_SIZE, &(size), 1);
 	if (status != IUS_E_OK) return IUS_ERR_VALUE;

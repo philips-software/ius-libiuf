@@ -21,7 +21,7 @@ struct IusFrame
 } ;
 
 // ADT
-iuf_t iusFrameCreate
+iufr_t iusFrameCreate
 (
     char *patternListLabel,
     int dataIndex,
@@ -30,7 +30,7 @@ iuf_t iusFrameCreate
 {
     if( patternListLabel == NULL || dataIndex < 0) return IUF_INVALID;
 	if (strlen(patternListLabel) ==  0) return IUF_INVALID;
-    iuf_t created = calloc(1,sizeof(IusFrame));
+    iufr_t created = calloc(1,sizeof(IusFrame));
     created->patternListLabel = strdup(patternListLabel);
     created->dataIndex = dataIndex;
     created->time = time;
@@ -39,7 +39,7 @@ iuf_t iusFrameCreate
 
 int iusFrameDelete
 (
-    iuf_t iusFrame
+    iufr_t iusFrame
 )
 {
     int status = IUS_ERR_VALUE;
@@ -55,8 +55,8 @@ int iusFrameDelete
 // operations
 int iusFrameCompare
 (
-    iuf_t reference,
-    iuf_t actual
+    iufr_t reference,
+    iufr_t actual
 )
 {
     if( reference == actual ) return IUS_TRUE;
@@ -70,7 +70,7 @@ int iusFrameCompare
 // Getters
 float iusFrameGetTime
 (
-    iuf_t iusFrame
+    iufr_t iusFrame
 )
 {
     if( iusFrame == NULL ) return -1;
@@ -79,7 +79,7 @@ float iusFrameGetTime
 
 char *iusFrameGetPatternListLabel
 (
-    iuf_t iusFrame
+    iufr_t iusFrame
 )
 {
     if( iusFrame == NULL ) return NULL;
@@ -88,7 +88,7 @@ char *iusFrameGetPatternListLabel
 
 int iusFrameGetDataIndex
 (
-    iuf_t iusFrame
+    iufr_t iusFrame
 )
 {
     if( iusFrame == NULL ) return -1;
@@ -98,7 +98,7 @@ int iusFrameGetDataIndex
 
 int iusFrameSave
 (
-    iuf_t frame,
+    iufr_t frame,
     hid_t handle
 )
 {
@@ -110,7 +110,7 @@ int iusFrameSave
     return status;
 }
 
-iuf_t iusFrameLoad
+iufr_t iusFrameLoad
 (
     hid_t handle
 )

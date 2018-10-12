@@ -7,42 +7,42 @@
 
 // ADT
 typedef struct IusFile IusFile;
-typedef IusFile *iufi_t;
-#define  IUFI_INVALID (iufi_t) NULL
+typedef IusFile *iuf_t;
+#define  IUFI_INVALID (iuf_t) NULL
 
-iufi_t iusFileLoad
+iuf_t iusFileLoad
 (
     char *pFilename
 );
 
 int iusFileDelete
 (
-    iufi_t iusFile
+    iuf_t iusFile
 );
 
 
 // operations
 int iusFileCompare
 (
-    iufi_t reference,
-    iufi_t actual
+    iuf_t reference,
+    iuf_t actual
 );
 
 // Getters
 iuhn_t iusFileGetHistoryTree
 (
-    iufi_t iusFile
+    iuf_t iusFile
 );
 
 const char *iusFileGetType
 (
-    iufi_t iusFile
+    iuf_t iusFile
 );
 
 // Setters
 int iusFileSetHistoryTree
 (
-    iufi_t iusFile,
+    iuf_t iusFile,
     iuhn_t history
 );
 #endif //IUSLIBRARY_IUSFILE_H

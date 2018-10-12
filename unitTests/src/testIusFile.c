@@ -32,11 +32,11 @@ TEST(IusFile, testIusInputFileHistoryScenario)
 
     // Create Input file.
     iuif_t iusInputFile = dgGenerateInputFile(pFilename, "S5-1", "bmode", 10);
-    iusInputFileSave(iusInputFile);
+    iusInputFileNodeSave(iusInputFile);
     iusInputFileClose(iusInputFile);
 
     // Open file
-    iufi_t iusFile = iusFileLoad(pFilename);
+    iuf_t iusFile = iusFileLoad(pFilename);
     TEST_ASSERT_NOT_EQUAL(IUFI_INVALID,iusFile);
 
     // get file history
@@ -64,12 +64,12 @@ TEST(IusFile, testIusCWCFileHistoryScenario)
     // --- Generate and Save Input file type
     // Create Input file.
     iuif_t iusInputFile = dgGenerateInputFile(pFilename2, "S5-1-1", "bmode", 10);
-    iusInputFileSave(iusInputFile);
+    iusInputFileNodeSave(iusInputFile);
     iusInputFileClose(iusInputFile);
 
     // --- Generate and Save CWC file type, including Input file history
     // Open file
-    iufi_t iusFile = iusFileLoad(pFilename2);
+    iuf_t iusFile = iusFileLoad(pFilename2);
     TEST_ASSERT_NOT_EQUAL(IUFI_INVALID,iusFile);
 
     // get file history
@@ -86,15 +86,15 @@ TEST(IusFile, testIusCWCFileHistoryScenario)
     iuhnl_t parents = iusHistoryNodeGetParents(cwcParents);
     iusHistoryNodeListSet(parents,rootNode,0);
     iusHistoryNodeSetParents(cwcParents,parents);
-    iusFileSetHistoryTree((iufi_t) iusInputFile2, cwcParents);
+    iusFileSetHistoryTree((iuf_t) iusInputFile2, cwcParents);
 
 
     // --- Validate History
-    iusInputFileSave(iusInputFile2);
+    iusInputFileNodeSave(iusInputFile2);
     iusInputFileClose(iusInputFile2);
 
     // Open file
-    iufi_t iusCWCFile = iusFileLoad(pFilename);
+    iuf_t iusCWCFile = iusFileLoad(pFilename);
     TEST_ASSERT_NOT_EQUAL(IUFI_INVALID,iusCWCFile);
 
     // get file history
@@ -106,7 +106,7 @@ TEST(IusFile, testIusCWCFileHistoryScenario)
 }
 
 //// How to get the Input file header structure
-//iuf_t file = iusFileLoad(“existing_cwc.hdf5”);
+//iufr_t file = iusFileLoad(“existing_cwc.hdf5”);
 //iuhn_t history = iusFileGetNodeHistory(file);
 //iuhn_t inputNode = iusHistoryNodeGetParent(history,0); (parent0 is INPUT_FILE_V3);
 //iuif_t inputFile  = (iuif_t) inputNode;
@@ -125,10 +125,10 @@ TEST(IusFile, testIusCWCFileHistoryScenario)
 //
 //    // Create Input file.
 //    iuif_t iusInputFile = dgGenerateInputFile(fileName);
-//    iusInputFileSave(iusInputFile);
+//    iusInputFileNodeSave(iusInputFile);
 //    iusInputFileClose(iusInputFile);
 //
-//    iuf_t iusFile = iusFileLoad(fileName);
+//    iufr_t iusFile = iusFileLoad(fileName);
 //
 //    // get file history
 //    iuhtn_t inputHistoryNode = iusFileGetHistoryTree(iusFile);
@@ -220,13 +220,13 @@ TEST(IusFile, testIusCWCFileHistoryScenario)
 //    // Test scenario
 //    // create cwc file, based on input file
 //    // validate  history tree contains inputfile.
-//    iuf_t if = iuFileOpen("inputFile");
+//    iufr_t if = iuFileOpen("inputFile");
 //    iucwcf_t  cwcFile  = iuCWCFileCreate("cwcFile");
 //    iusHistoryTreeSetParent(cwcFile, if);
 //    iusCWCFileSave(cwcFile);
 //    iusCWCFileClose(cwcFile);
 //
-//    iuf_t if = iuFileOpen("cwcFile");
+//    iufr_t if = iuFileOpen("cwcFile");
 //    iuhtn_t rootNode = iusFileGetHistoryTree(iusFile);
 //    int numParents = iusHistoryTreeGetNumParents(rootNode);
 //    TEST_ASSERT_EQUAL(1,numParents);
@@ -244,11 +244,11 @@ TEST(IusFile, testIusCWCFileHistoryScenario)
 //
 //iuif_t inputFile = iusInputFileOpen(“test”);
 //iuapd_t algoParams ;
-//iuf_t cwcFile = iusFileCreate(“cw1”, “c:\autoexec.bat”, file, algoParams );
+//iufr_t cwcFile = iusFileCreate(“cw1”, “c:\autoexec.bat”, file, algoParams );
 //
 //
 //
-//iuf_t iusFile = iusFileLoad( “c:\autoexec.bat” );
+//iufr_t iusFile = iusFileLoad( “c:\autoexec.bat” );
 //type = iusFileGetType( iusFile );
 //// cwc file
 //iucf_t cwcFile = (iucf_t)iusFile;
@@ -259,7 +259,7 @@ TEST(IusFile, testIusCWCFileHistoryScenario)
 //iupl_t parents = iusFileGetParents(iusFile);
 //for( i = 0 ; i < iusParentsSize(parents); i++)
 //{
-//iuf_t parent = iusParentsGet(i);
+//iufr_t parent = iusParentsGet(i);
 //type = iusFileGetType(parent); 
 //}
 

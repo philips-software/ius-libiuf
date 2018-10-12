@@ -71,3 +71,8 @@ the distributable SDK:
     ```
     c:\proj> C_v3\bin\ut.bat
     ```
+- Build a dist folder contining the distributable SDK:
+
+    ```
+    c:\proj> C_v3\bin\dist.bat
+    ```

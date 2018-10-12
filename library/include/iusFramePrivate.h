@@ -11,11 +11,11 @@
 // ADT
 int iusFrameSave
 (
-    iuf_t frame,
+    iufr_t frame,
     hid_t handle
 );
 
-iuf_t iusFrameLoad
+iufr_t iusFrameLoad
 (
     hid_t handle
 );

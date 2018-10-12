@@ -22,8 +22,8 @@ TEST_TEAR_DOWN(IusFrame)
 
 TEST(IusFrame, testIusFrameCreate)
 {
-    iuf_t obj = iusFrameCreate("bmode", 1, 1.0f);
-    iuf_t notherObj = iusFrameCreate("doppler", 8, 2.0f);
+    iufr_t obj = iusFrameCreate("bmode", 1, 1.0f);
+    iufr_t notherObj = iusFrameCreate("doppler", 8, 2.0f);
     TEST_ASSERT(obj != IUF_INVALID);
     TEST_ASSERT(notherObj != IUF_INVALID);
     iusFrameDelete(obj);
@@ -40,7 +40,7 @@ TEST(IusFrame, testIusFrameCreate)
 
 TEST(IusFrame, testIusFrameDelete)
 {
-    iuf_t obj = iusFrameCreate("test",2,1.0f);
+    iufr_t obj = iusFrameCreate("test",2,1.0f);
     TEST_ASSERT(obj != IUF_INVALID);
     int status = iusFrameDelete(obj);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
@@ -53,9 +53,9 @@ TEST(IusFrame, testIusFrameDelete)
 TEST(IusFrame, testIusFrameCompare)
 {
     IUS_BOOL equal;
-    iuf_t obj = iusFrameCreate("test",2,0.01f);
-    iuf_t notherObj = iusFrameCreate("test",2,0.01f);
-    iuf_t differentObj = iusFrameCreate("test",4,0.11f);
+    iufr_t obj = iusFrameCreate("test",2,0.01f);
+    iufr_t notherObj = iusFrameCreate("test",2,0.01f);
+    iufr_t differentObj = iusFrameCreate("test",4,0.11f);
     TEST_ASSERT(obj != IUF_INVALID);
     TEST_ASSERT(notherObj != IUF_INVALID);
     equal = iusFrameCompare(obj,obj);
@@ -78,9 +78,9 @@ TEST(IusFrame, testIusFrameCompare)
 
 TEST(IusFrame, testIusFrameSetGet)
 {
-    iuf_t obj = iusFrameCreate("test",2,0.01f);
+    iufr_t obj = iusFrameCreate("test",2,0.01f);
     TEST_ASSERT(obj != IUF_INVALID);
-    iuf_t notherObj = iusFrameCreate("bmode",202,0.03f);
+    iufr_t notherObj = iusFrameCreate("bmode",202,0.03f);
     TEST_ASSERT(notherObj != IUF_INVALID);
 
     // int param
@@ -108,7 +108,7 @@ TEST(IusFrame, testIusSerialization)
     float time=0.1f;
 
     // create and save
-    iuf_t obj = iusFrameCreate(patternListLabel, dataIndex, time);
+    iufr_t obj = iusFrameCreate(patternListLabel, dataIndex, time);
 
     hid_t handle = H5Fcreate( filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT );
     TEST_ASSERT(handle > 0);
@@ -118,7 +118,7 @@ TEST(IusFrame, testIusSerialization)
 
     // read back
     handle = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT );
-    iuf_t savedObj = iusFrameLoad(handle);
+    iufr_t savedObj = iusFrameLoad(handle);
     TEST_ASSERT_NOT_EQUAL(NULL, savedObj);
     H5Fclose(handle);
 
