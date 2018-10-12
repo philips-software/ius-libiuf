@@ -42,7 +42,7 @@ struct IusInputFileInstance
 	iursd_t receiveSettingsDict;         /**< a dictionary of receiveSettings             */
 	iut_t transducer;                    /**< The transducer description                  */
 	iue_t experiment;                    /**< The description of the performed experiment */
-    int numFrames;                       /**< The number of frames in the data */
+//    int numFrames;                       /**< The number of frames in the data */
     int IusVersion;                      /**< The version of input file format */
 
 
@@ -70,7 +70,7 @@ iuifi_t iusInputFileInstanceCreate
 		return IUIFI_INVALID;
 	}
 
-	instanceData->numFrames = IUS_DEFAULT_NUM_FRAMES;
+//	instanceData->numFrames = IUS_DEFAULT_NUM_FRAMES;
 	instanceData->IusVersion = iusGetVersionMajor();
 	instanceData->pFilename = "";
 	instanceData->frameList = IUFL_INVALID;
@@ -89,13 +89,9 @@ iuifi_t iusInputFileInstanceCreate
 // ADT
 iuif_t iusInputFileCreate
 (
-    const char *pFilename,
-    int numFrames
+    const char *pFilename
 )
 {
-    if (numFrames <= 0)
-        return IUIF_INVALID;
-
 	if (pFilename == NULL)
 	{
 		fprintf(stderr, "iusInputFileAlloc: Input arguments can not be NULL \n");
@@ -111,7 +107,7 @@ iuif_t iusInputFileCreate
 
     instanceData->handle = H5Fcreate(pFilename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
 	instanceData->pFilename = strdup(pFilename);
-	instanceData->numFrames = numFrames;
+//	instanceData->numFrames = numFrames;
 	if (instanceData->handle == H5I_INVALID_HID)
 	{
 		free((void *)instanceData);
@@ -143,20 +139,8 @@ int iusInputFileGetNumFrames
 {
     if (inputFile == NULL) return -1;
     iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
-    return instance->numFrames;
-}
-
-
-int iusInputFileSetNumFrames
-(
-    iuif_t inputFile,
-    int numFrames
-)
-{
-    if (inputFile == NULL) return -1;
-    iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
-    instance->numFrames = numFrames;
-    return IUS_E_OK;
+    if (instance->frameList == IUFL_INVALID) return 0;
+    return iusFrameListGetSize(instance->frameList);
 }
 
 
@@ -325,14 +309,6 @@ static iuifi_t inputFileInstanceLoad
         return IUIFI_INVALID;
     }
 
-    status = iusHdf5ReadInt( instance->handle, IUS_INPUTFILE_PATH_NUMFRAMES, &(instance->numFrames));
-    if( status != IUS_E_OK )
-    {
-        fprintf(stderr, "Warning from iusInputFileNodeLoad: could not load numFrames: %s\n", instance->pFilename);
-        return IUIFI_INVALID;
-    }
-
-
     return instance;
 }
 
@@ -404,7 +380,7 @@ int iusInputFileSaveInstance
     status |= iusExperimentSave(instanceData->experiment, handle);
     status |= iusTransducerSave(instanceData->transducer, instanceData->handle);
     status |= iusHdf5WriteInt( instanceData->handle, IUS_INPUTFILE_PATH_IUSVERSION, &(instanceData->IusVersion), 1);
-    status |= iusHdf5WriteInt( instanceData->handle, IUS_INPUTFILE_PATH_NUMFRAMES, &(instanceData->numFrames), 1);
+//    status |= iusHdf5WriteInt( instanceData->handle, IUS_INPUTFILE_PATH_NUMFRAMES, &(instanceData->numFrames), 1);
     return status;
 }
 
@@ -452,7 +428,7 @@ static int iusInputFileCompareInstance
     if ( reference == actual ) return IUS_TRUE;
     if ( reference == NULL || actual == NULL ) return IUS_FALSE;
     if ( reference->IusVersion != actual->IusVersion ) return IUS_FALSE;
-    if ( reference->numFrames != actual->numFrames ) return IUS_FALSE;
+//    if ( reference->numFrames != actual->numFrames ) return IUS_FALSE;
     if ( strcmp(reference->pFilename, actual->pFilename) != 0 ) return IUS_FALSE;
     if ( iusFrameListCompare(reference->frameList, actual->frameList)  == IUS_FALSE ) return IUS_FALSE;
     if ( iusPatternListDictCompare(reference->patternListDict, actual->patternListDict)  == IUS_FALSE ) return IUS_FALSE;

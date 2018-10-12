@@ -49,13 +49,12 @@ TEST(IusInputFile, testIusInputFileCreate)
 {
     const char *pEmptyFilename = "";
     const char *pSpecialCharsFilename = "*&/";
-    int numFrames = 1;
 
-    iuif_t ifh = iusInputFileCreate(pFilename, numFrames);
+    iuif_t ifh = iusInputFileCreate(pFilename);
     TEST_ASSERT(ifh != IUIF_INVALID);
 
     // Create file that is already open should result in error
-    iuif_t ifh2 = iusInputFileCreate(pFilename, numFrames);
+    iuif_t ifh2 = iusInputFileCreate(pFilename);
     TEST_ASSERT(ifh2 == IUIF_INVALID);
 
     int status = iusInputFileClose(ifh);
@@ -67,19 +66,15 @@ TEST(IusInputFile, testIusInputFileCreate)
     TEST_ASSERT(status != IUS_E_OK);
 
     // Invalid argument should result in error.
-    ifh = iusInputFileCreate(pEmptyFilename, numFrames);
+    ifh = iusInputFileCreate(pEmptyFilename);
     TEST_ASSERT(ifh == IUIF_INVALID);
-    ifh = iusInputFileCreate(pSpecialCharsFilename, numFrames);
+    ifh = iusInputFileCreate(pSpecialCharsFilename);
     TEST_ASSERT(ifh == IUIF_INVALID);
-    ifh = iusInputFileCreate(pFilename, -1);
-    TEST_ASSERT(ifh == IUIF_INVALID);
-
 }
 
 TEST(IusInputFile, testIusInputFileDelete)
 {
-    int numFrames = 10;
-    iuif_t obj = iusInputFileCreate(pFilename, numFrames);
+    iuif_t obj = iusInputFileCreate(pFilename);
     TEST_ASSERT(obj != IUIF_INVALID);
 
 	int status = iusInputFileClose(obj);
@@ -97,9 +92,8 @@ TEST(IusInputFile, testIusInputFileDelete)
 TEST(IusInputFile, testIusInputFileCompare)
 {
     IUS_BOOL equal;
-    int numFrames = 10;
-    iuif_t obj = iusInputFileCreate(pFilename, numFrames);
-    iuif_t notherObj = iusInputFileCreate(pNotherFilename, numFrames);
+    iuif_t obj = iusInputFileCreate(pFilename);
+    iuif_t notherObj = iusInputFileCreate(pNotherFilename);
     TEST_ASSERT(obj != IUIF_INVALID);
     TEST_ASSERT(notherObj != IUIF_INVALID);
     equal = iusInputFileCompare(obj,obj);
@@ -125,9 +119,8 @@ TEST(IusInputFile, iusInputFileSetGetFrameList)
 {
     IUS_BOOL equal;
     int status;
-    iufl_t frameList = dgGenerateFrameList();
-    int numFrames = 10;
-    iuif_t obj = iusInputFileCreate(pFilename, numFrames);
+    iufl_t frameList = dgGenerateFrameList(10);
+    iuif_t obj = iusInputFileCreate(pFilename);
 
     status = iusInputFileSetFrameList(obj,frameList);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
@@ -146,10 +139,9 @@ TEST(IusInputFile, iusInputFileSetGetFrameList)
 TEST(IusInputFile, iusInputFileSetGetPatternListDict)
 {
     IUS_BOOL equal;
-    int numFrames = 10;
     int status;
     iupald_t patternListDict = dgGeneratePatternListDict("mylabel");
-    iuif_t obj = iusInputFileCreate(pFilename,numFrames);
+    iuif_t obj = iusInputFileCreate(pFilename);
 
     status = iusInputFileSetPatternListDict(obj, patternListDict);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
@@ -168,8 +160,7 @@ TEST(IusInputFile, iusInputFileSetGetPatternListDict)
 
 TEST(IusInputFile, iusInputFileSetGetPulseDict)
 {
-    int numFrames = 10;
-    iuif_t obj = iusInputFileCreate(pFilename,numFrames);
+    iuif_t obj = iusInputFileCreate(pFilename);
     iupd_t pulseDict = dgGeneratePulseDict();
 
     int status = iusInputFileSetPulseDict(obj, pulseDict);
@@ -187,8 +178,7 @@ TEST(IusInputFile, iusInputFileSetGetPulseDict)
 
 TEST(IusInputFile, iusInputFileSetGetSourceDict)
 {
-    int numFrames = 10;
-    iuif_t obj = iusInputFileCreate(pFilename,numFrames);
+    iuif_t obj = iusInputFileCreate(pFilename);
     iusd_t sourceDict = dgGenerateSourceDict();
 
     int status = iusInputFileSetSourceDict(obj, sourceDict);
@@ -207,8 +197,7 @@ TEST(IusInputFile, iusInputFileSetGetSourceDict)
 
 TEST(IusInputFile, iusInputFileSetGetReceiveChannelMapDict)
 {
-    int numFrames = 10;
-    iuif_t obj = iusInputFileCreate(pFilename,numFrames);
+    iuif_t obj = iusInputFileCreate(pFilename);
     iurcmd_t receiveChannelMapDict = iusReceiveChannelMapDictCreate();
 
     int status = iusInputFileSetReceiveChannelMapDict(obj, receiveChannelMapDict);
@@ -230,8 +219,7 @@ TEST(IusInputFile, iusInputFileSetGetTransmitApodizationDict)
     IUS_BOOL equal;
     int status;
 	iutad_t transmitApodizationDict = iusTransmitApodizationDictCreate();
-    int numFrames = 10;
-    iuif_t obj = iusInputFileCreate(pFilename,numFrames);
+    iuif_t obj = iusInputFileCreate(pFilename);
     TEST_ASSERT(obj != IUIF_INVALID);
 
 	// transmitApodizationDict param
@@ -264,8 +252,7 @@ TEST(IusInputFile, iusInputFileSetGetReceiveSettingsDict)
     IUS_BOOL equal;
     int status;
     iursd_t receiveSettingsDict = dgGenerateReceiveSettingsDict("bmode");
-    int numFrames = 10;
-    iuif_t obj = iusInputFileCreate(pFilename,numFrames);
+    iuif_t obj = iusInputFileCreate(pFilename);
     TEST_ASSERT(obj != IUIF_INVALID);
 
     status = iusInputFileSetReceiveSettingsDict(obj, receiveSettingsDict);
@@ -297,8 +284,7 @@ TEST(IusInputFile, iusInputFileSetGetExperiment)
     IUS_BOOL equal;
     int status;
     iue_t experiment = dgGenerateExperiment();
-    int numFrames = 10;
-    iuif_t obj = iusInputFileCreate(pFilename,numFrames);
+    iuif_t obj = iusInputFileCreate(pFilename);
     TEST_ASSERT(obj != IUIF_INVALID);
 
     status = iusInputFileSetExperiment(obj, experiment);
@@ -330,8 +316,7 @@ TEST(IusInputFile, iusInputFileSetGetTransducer)
     IUS_BOOL equal;
     int status;
     iut_t transducer = dgGenerateTransducer("S5-1");
-    int numFrames = 10;
-    iuif_t obj = iusInputFileCreate(pFilename,numFrames);
+    iuif_t obj = iusInputFileCreate(pFilename);
     TEST_ASSERT(obj != IUIF_INVALID);
 
     status = iusInputFileSetTransducer(obj, transducer);

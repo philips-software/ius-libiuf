@@ -43,15 +43,15 @@ char *label
 
 iuif_t dgGenerateInputFile
 (
-	char *ptestFileName,
-	char *transducerName,
-	char *label,
-    int numFrames
+char *ptestFileName,
+char *transducerName,
+char *label,
+int numFrames
 );
 
 iufl_t dgGenerateFrameList
 (
-	void
+	int numFrames
 );
 
 iupal_t dgGeneratePatternList

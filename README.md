@@ -9,7 +9,20 @@ The ius C_v3 library consists of 3 folders:
 
 #### Build requirements
 - Install cmake
+  - tested with 3.10.3 on windows (7/10 pro)
+  - tested with 3.12.1 on Linux (centos:7.4.1708)
+  - tested with 3.10.2 on MacOs (Sierra 10.12.6)
+  
 - Install hdf5 library
+  - tested with 1.8.20 on windows (7/10 pro)
+  - tested with 1.8.12 on Linux (centos:7.4.1708)
+  - tested with 1.8.20 on MacOs (Sierra 10.12.6)
+
+#### Generate API documentation
+```
+    $ cd ius/dox
+    $ doxygen
+```
 
 #### Build instructions for Mac/Linux
 

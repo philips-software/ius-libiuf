@@ -131,11 +131,11 @@ iuif_t dgGenerateInputFile
 )
 {
     // create
-    iuif_t inputFile = iusInputFileCreate(ptestFileName, numFrames);
+    iuif_t inputFile = iusInputFileCreate(ptestFileName);
     TEST_ASSERT(inputFile != IUIF_INVALID);
 
     // fill
-    iufl_t frameList = dgGenerateFrameList();
+    iufl_t frameList = dgGenerateFrameList(numFrames);
     int status = iusInputFileSetFrameList(inputFile,frameList);
     TEST_ASSERT(status == IUS_E_OK);
 
@@ -185,14 +185,10 @@ int dgInputFileAddGeneratedData
 )
 {
     // fill
-    iufl_t frameList = dgGenerateFrameList();
-    int status = iusInputFileSetFrameList(inputFile,frameList);
-    TEST_ASSERT(status == IUS_E_OK);
-
     iupald_t patternListDict = iusInputFileGetPatternListDict(inputFile);
     iupal_t patternList = dgGeneratePatternList(8,0.08f);
     iusPatternListDictSet(patternListDict,label,patternList);
-    status = iusInputFileSetPatternListDict(inputFile,patternListDict);
+    int status = iusInputFileSetPatternListDict(inputFile,patternListDict);
     TEST_ASSERT(status == IUS_E_OK);
 
     iurcmd_t receiveChannelMapDict = iusInputFileGetReceiveChannelMapDict(inputFile);
@@ -212,11 +208,11 @@ int dgInputFileAddGeneratedData
 
 iufl_t dgGenerateFrameList
 (
-    void
+    int numFrames
 )
 {
     iufr_t obj;
-    int status,i,numFrames=100;
+    int status,i;
     iufl_t frameList = iusFrameListCreate(numFrames);
     TEST_ASSERT_NOT_EQUAL(IUFL_INVALID, frameList);
 
