@@ -4,15 +4,15 @@
 
 
 // ADT
-// TODO: rename iuf_t => iufr_t
+// TODO: rename iufr_t => iufr_t
+// iufr_t => iufr_t
 // iuf_t => iufr_t
-// iufi_t => iuf_t
 //
 typedef struct IusFrame IusFrame;
-typedef IusFrame *iuf_t;
-#define  IUF_INVALID (iuf_t) NULL
+typedef IusFrame *iufr_t;
+#define  IUF_INVALID (iufr_t) NULL
 
-iuf_t iusFrameCreate
+iufr_t iusFrameCreate
 (
     char *patternListLabel,
     int dataIndex,
@@ -21,29 +21,29 @@ iuf_t iusFrameCreate
 
 int iusFrameDelete
 (
-    iuf_t iusFrame
+    iufr_t iusFrame
 );
 
 // operations
 int iusFrameCompare
 (
-    iuf_t reference,
-    iuf_t actual
+    iufr_t reference,
+    iufr_t actual
 );
 
 // Getters
 float iusFrameGetTime
 (
-    iuf_t iusFrame
+    iufr_t iusFrame
 );
 
 char *iusFrameGetPatternListLabel
 (
-    iuf_t iusFrame
+    iufr_t iusFrame
 );
 
 int iusFrameGetDataIndex
 (
-    iuf_t iusFrame
+    iufr_t iusFrame
 );
 #endif //IUSLIBRARY_IUSHLFRAME_H

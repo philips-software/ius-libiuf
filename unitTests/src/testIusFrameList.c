@@ -47,8 +47,8 @@ TEST(IusFrameList, testIusCompareFrameList)
   equal = iusFrameListCompare(frameList, notherFrameList);
   TEST_ASSERT_EQUAL(IUS_TRUE, equal);
 
-  iuf_t obj = iusFrameCreate("test",2,0.01f);
-  iuf_t notherObj = iusFrameCreate("test",4,0.11f);
+  iufr_t obj = iusFrameCreate("test",2,0.01f);
+  iufr_t notherObj = iusFrameCreate("test",4,0.11f);
 
 
   // Change one list..add bmode
@@ -93,8 +93,8 @@ TEST(IusFrameList, testIusSerialization)
   iufl_t frameList = iusFrameListCreate(numFrames);
   TEST_ASSERT_NOT_EQUAL(IUFL_INVALID, frameList);
 
-  iuf_t obj = iusFrameCreate("test",2,0.01f);
-  iuf_t notherObj = iusFrameCreate("test",4,0.11f);
+  iufr_t obj = iusFrameCreate("test",2,0.01f);
+  iufr_t notherObj = iusFrameCreate("test",4,0.11f);
 
 
   // Change one list..add bmode

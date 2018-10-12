@@ -4,6 +4,7 @@ include_directories(${HDF5_INCLUDE_DIR})
 link_directories(${CMAKE_SOURCE_DIR}/lib)
 add_executable(examples
         src/main.c
+        src/nodeConfig.c
         )
 
 target_link_libraries(examples

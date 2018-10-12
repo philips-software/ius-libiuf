@@ -54,6 +54,13 @@ add_executable(unitTests
         )
 
 if(MSVC)
+    # disable the security warnings for sprintf() in bee2.c
+    add_definitions(/D _CRT_SECURE_NO_WARNINGS /D _CRT_NONSTDC_NO_DEPRECATE)
+else()
+    set(CMAKE_CXX_CPPCHECK "cppcheck")
+endif()
+
+if(MSVC)
     target_compile_options(unitTests PRIVATE /W4 /WX)
 else()
     set(UUID_LIBRARIES -luuid)

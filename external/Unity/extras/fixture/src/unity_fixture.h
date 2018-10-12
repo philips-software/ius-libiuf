@@ -15,6 +15,9 @@
 
 int UnityMain(int argc, const char* argv[], void (*runAllTests)(void));
 
+#ifdef _WIN32
+#pragma warning(disable: 4210)
+#endif
 
 #define TEST_GROUP(group)\
     static const char* TEST_GROUP_##group = #group
@@ -24,7 +27,6 @@ int UnityMain(int argc, const char* argv[], void (*runAllTests)(void));
 
 #define TEST_TEAR_DOWN(group) void TEST_##group##_TEAR_DOWN(void);\
     void TEST_##group##_TEAR_DOWN(void)
-
 
 #define TEST(group, name) \
     void TEST_##group##_##name##_(void);\

@@ -23,8 +23,7 @@ typedef IusInputFile *iuif_t;
 
 iuif_t iusInputFileCreate
 (
-    const char *filename,
-    int numFrames
+    const char *filename
 );
 
 iud_t iusInputFileFrameCreate
@@ -51,14 +50,14 @@ int iusInputFileDelete
 );
 
 // operations
-iuif_t iusInputFileLoad
+iuif_t iusInputFileNodeLoad
 (
-    const char *filename
+	const char *filename
 );
 
-int iusInputFileSave
+int iusInputFileNodeSave
 (
-    iuif_t fileHandle
+	iuif_t fileHandle
 );
 
 int iusInputFileClose
@@ -190,12 +189,6 @@ int iusInputFileSetTransducer
 	iut_t  transducer
 );
 
-
-int iusInputFileSetNumFrames
-(
-    iuif_t inputFile,
-    int  numFrames
-);
 
 int iusInputFileChannelSave
 (

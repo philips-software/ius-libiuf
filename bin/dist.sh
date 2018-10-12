@@ -12,7 +12,8 @@ else
 fi
 
 BuildFolder=C_v3/build/$(uname)
-echo === UnitTests
+echo === Building ius in $BuildFolder
+mkdir -p $BuildFolder
 cd $BuildFolder
-$CTEST --verbose
-
+$CMAKE -DCMAKE_BUILD_TYPE=Debug ../..
+exec $CMAKE --build . --target install

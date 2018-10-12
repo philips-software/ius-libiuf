@@ -42,7 +42,7 @@ struct IusInputFileInstance
 	iursd_t receiveSettingsDict;         /**< a dictionary of receiveSettings             */
 	iut_t transducer;                    /**< The transducer description                  */
 	iue_t experiment;                    /**< The description of the performed experiment */
-    int numFrames;                       /**< The number of frames in the data */
+//    int numFrames;                       /**< The number of frames in the data */
     int IusVersion;                      /**< The version of input file format */
 
 
@@ -70,7 +70,7 @@ iuifi_t iusInputFileInstanceCreate
 		return IUIFI_INVALID;
 	}
 
-	instanceData->numFrames = IUS_DEFAULT_NUM_FRAMES;
+//	instanceData->numFrames = IUS_DEFAULT_NUM_FRAMES;
 	instanceData->IusVersion = iusGetVersionMajor();
 	instanceData->pFilename = "";
 	instanceData->frameList = IUFL_INVALID;
@@ -89,13 +89,9 @@ iuifi_t iusInputFileInstanceCreate
 // ADT
 iuif_t iusInputFileCreate
 (
-    const char *pFilename,
-    int numFrames
+    const char *pFilename
 )
 {
-    if (numFrames <= 0)
-        return IUIF_INVALID;
-
 	if (pFilename == NULL)
 	{
 		fprintf(stderr, "iusInputFileAlloc: Input arguments can not be NULL \n");
@@ -111,7 +107,7 @@ iuif_t iusInputFileCreate
 
     instanceData->handle = H5Fcreate(pFilename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
 	instanceData->pFilename = strdup(pFilename);
-	instanceData->numFrames = numFrames;
+//	instanceData->numFrames = numFrames;
 	if (instanceData->handle == H5I_INVALID_HID)
 	{
 		free((void *)instanceData);
@@ -143,20 +139,8 @@ int iusInputFileGetNumFrames
 {
     if (inputFile == NULL) return -1;
     iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
-    return instance->numFrames;
-}
-
-
-int iusInputFileSetNumFrames
-(
-    iuif_t inputFile,
-    int numFrames
-)
-{
-    if (inputFile == NULL) return -1;
-    iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
-    instance->numFrames = numFrames;
-    return IUS_E_OK;
+    if (instance->frameList == IUFL_INVALID) return 0;
+    return iusFrameListGetSize(instance->frameList);
 }
 
 
@@ -258,92 +242,72 @@ static iuifi_t inputFileInstanceLoad
     instance->frameList = iusFrameListLoad(instance->handle);
     if (instance->frameList == IUFL_INVALID)
     {
-        fprintf(stderr, "Warning from iusInputFileLoad: could not load framelist");
+        fprintf(stderr, "Warning from iusInputFileNodeLoad: could not load framelist");
         return IUIFI_INVALID;
     }
 
     instance->patternListDict = iusPatternListDictLoad(instance->handle);
     if (instance->patternListDict == IUPALD_INVALID)
     {
-        fprintf(stderr, "Warning from iusInputFileLoad: could not load patternlists  %s\n", instance->pFilename );
+        fprintf(stderr, "Warning from iusInputFileNodeLoad: could not load patternlists  %s\n", instance->pFilename );
         return IUIFI_INVALID;
     }
 
-    // Load instance data
     instance->pulseDict = iusPulseDictLoad(instance->handle);
     if (instance->pulseDict == IUPD_INVALID)
     {
-        fprintf( stderr, "Warning from iusInputFileLoad: could not load pulses: %s\n", instance->pFilename );
+        fprintf( stderr, "Warning from iusInputFileNodeLoad: could not load pulses: %s\n", instance->pFilename );
         return IUIFI_INVALID;
     }
 
-    // Load instance data
-    // Todo: create group @here instead of in Load, see experiment
     instance->pulseSourceDict = iusSourceDictLoad(instance->handle);
     if (instance->pulseSourceDict == IUSD_INVALID)
     {
-        fprintf( stderr, "Warning from iusInputFileLoad: could not load pulse sources: %s\n", instance->pFilename );
+        fprintf( stderr, "Warning from iusInputFileNodeLoad: could not load pulse sources: %s\n", instance->pFilename );
         return IUIFI_INVALID;
     }
 
-    // Load instance data
-    // Todo: create group @here instead of in Load, see experiment
     instance->receiveChannelMapDict = iusReceiveChannelMapDictLoad(instance->handle);
     if (instance->receiveChannelMapDict == IURCMD_INVALID)
     {
-        fprintf(stderr, "Warning from iusInputFileLoad: could not load receiveChannelMap: %s\n", instance->pFilename);
+        fprintf(stderr, "Warning from iusInputFileNodeLoad: could not load receiveChannelMap: %s\n", instance->pFilename);
         return IUIFI_INVALID;
     }
 
-    // Load instance data
-    // Todo: create group @here instead of in Load, see experiment
     instance->transmitApodizationDict = iusTransmitApodizationDictLoad(instance->handle);
     if (instance->transmitApodizationDict == IUTAD_INVALID)
     {
-        fprintf(stderr, "Warning from iusInputFileLoad: could not load transmitApodizationDict: %s\n", instance->pFilename);
+        fprintf(stderr, "Warning from iusInputFileNodeLoad: could not load transmitApodizationDict: %s\n", instance->pFilename);
         return IUIFI_INVALID;
     }
 
-    // Load instance data
-    // Todo: create group @here instead of in Load, see experiment
     instance->receiveSettingsDict = iusReceiveSettingsDictLoad(instance->handle);
     if (instance->receiveSettingsDict == IURSD_INVALID)
     {
-        fprintf(stderr, "Warning from iusInputFileLoad: could not load receiveSettingsDict: %s\n", instance->pFilename);
+        fprintf(stderr, "Warning from iusInputFileNodeLoad: could not load receiveSettingsDict: %s\n", instance->pFilename);
         return IUIFI_INVALID;
     }
-
 
     instance->experiment = iusExperimentLoad(instance->handle);
     if (instance->experiment == IUE_INVALID)
     {
-        fprintf(stderr, "Warning from iusInputFileLoad: could not load experiment: %s\n", instance->pFilename);
+        fprintf(stderr, "Warning from iusInputFileNodeLoad: could not load experiment: %s\n", instance->pFilename);
         return IUIFI_INVALID;
     }
 
-    // Load instance data
-    // Todo: create group @here instead of in Load, see experiment
     instance->transducer = iusTransducerLoad(instance->handle);
     if (instance->transducer == IUT_INVALID)
     {
-        fprintf(stderr, "Warning from iusInputFileLoad: could not load transducer: %s\n", instance->pFilename);
+        fprintf(stderr, "Warning from iusInputFileNodeLoad: could not load transducer: %s\n", instance->pFilename);
         return IUIFI_INVALID;
     }
 
     int status = iusHdf5ReadInt( instance->handle, IUS_INPUTFILE_PATH_IUSVERSION, &(instance->IusVersion));
     if( status != IUS_E_OK )
     {
-        fprintf(stderr, "Warning from iusInputFileLoad: could not load IusVersion: %s\n", instance->pFilename);
+        fprintf(stderr, "Warning from iusInputFileNodeLoad: could not load IusVersion: %s\n", instance->pFilename);
         return IUIFI_INVALID;
     }
-
-    status = iusHdf5ReadInt( instance->handle, IUS_INPUTFILE_PATH_NUMFRAMES, &(instance->numFrames));
-    if( status != IUS_E_OK )
-    {
-        fprintf(stderr, "Warning from iusInputFileLoad: could not load numFrames: %s\n", instance->pFilename);
-        return IUIFI_INVALID;
-    }
-
 
     return instance;
 }
@@ -373,7 +337,7 @@ iuhn_t iusInputFileLoadNode
     return node;
 }
 
-iuif_t iusInputFileLoad
+iuif_t iusInputFileNodeLoad
 (
     const char *pFilename
 )
@@ -388,12 +352,10 @@ iuif_t iusInputFileLoad
     hid_t handle = H5Fopen( pFilename, H5F_ACC_RDONLY, H5P_DEFAULT );
     if (handle <=0)
     {
-        fprintf( stderr, "iusInputFileLoad: could not create file: %s\n", pFilename );
+        fprintf( stderr, "iusInputFileNodeLoad: could not create file: %s\n", pFilename );
         return IUIF_INVALID;
     }
 
-    // Load instance data
-    // Todo: create group @here instead of in Load, see experiment
     iuif_t inputFile = (iuif_t) iusHistoryNodeLoad(handle);
     iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
     instance->pFilename = strdup(pFilename);
@@ -418,14 +380,14 @@ int iusInputFileSaveInstance
     status |= iusExperimentSave(instanceData->experiment, handle);
     status |= iusTransducerSave(instanceData->transducer, instanceData->handle);
     status |= iusHdf5WriteInt( instanceData->handle, IUS_INPUTFILE_PATH_IUSVERSION, &(instanceData->IusVersion), 1);
-    status |= iusHdf5WriteInt( instanceData->handle, IUS_INPUTFILE_PATH_NUMFRAMES, &(instanceData->numFrames), 1);
+//    status |= iusHdf5WriteInt( instanceData->handle, IUS_INPUTFILE_PATH_NUMFRAMES, &(instanceData->numFrames), 1);
     return status;
 }
 
 
-int iusInputFileSave
+int iusInputFileNodeSave
 (
-    iuif_t fileHandle
+iuif_t fileHandle
 )
 {
     herr_t status=0;
@@ -454,7 +416,6 @@ int iusInputFileClose
     {
         status |= H5Fclose(instance->handle);
     }
-
     return status;
 }
 
@@ -467,7 +428,7 @@ static int iusInputFileCompareInstance
     if ( reference == actual ) return IUS_TRUE;
     if ( reference == NULL || actual == NULL ) return IUS_FALSE;
     if ( reference->IusVersion != actual->IusVersion ) return IUS_FALSE;
-    if ( reference->numFrames != actual->numFrames ) return IUS_FALSE;
+//    if ( reference->numFrames != actual->numFrames ) return IUS_FALSE;
     if ( strcmp(reference->pFilename, actual->pFilename) != 0 ) return IUS_FALSE;
     if ( iusFrameListCompare(reference->frameList, actual->frameList)  == IUS_FALSE ) return IUS_FALSE;
     if ( iusPatternListDictCompare(reference->patternListDict, actual->patternListDict)  == IUS_FALSE ) return IUS_FALSE;
