@@ -12,7 +12,7 @@
 #include <iusError.h>
 #include <iusTypes.h>
 #include <iusUtil.h>
-#include <include/iusExperimentPrivate.h>
+#include <include/iusAcquisitionPrivate.h>
 #include <include/iusInputFilePrivate.h>
 #include <include/iusPatternListDictPrivate.h>
 #include <include/iusPulseDictPrivate.h>
@@ -41,8 +41,7 @@ struct IusInputFileInstance
 	iutad_t transmitApodizationDict;     /**< a dictionary of transmitApodizations        */
 	iursd_t receiveSettingsDict;         /**< a dictionary of receiveSettings             */
 	iut_t transducer;                    /**< The transducer description                  */
-	iue_t experiment;                    /**< The description of the performed experiment */
-//    int numFrames;                       /**< The number of frames in the data */
+	iua_t acquisition;                    /**< The description of the performed acquisition */
     int IusVersion;                      /**< The version of input file format */
 
 
@@ -81,7 +80,7 @@ iuifi_t iusInputFileInstanceCreate
     instanceData->transmitApodizationDict = IUTAD_INVALID;
     instanceData->receiveSettingsDict = IURSD_INVALID;
     instanceData->transducer = IUT_INVALID;
-	instanceData->experiment = IUE_INVALID;
+	instanceData->acquisition = IUE_INVALID;
 	instanceData->dataStreamDict = iusDataStreamDictCreate();
     return instanceData;
 }
@@ -288,10 +287,10 @@ static iuifi_t inputFileInstanceLoad
         return IUIFI_INVALID;
     }
 
-    instance->experiment = iusExperimentLoad(instance->handle);
-    if (instance->experiment == IUE_INVALID)
+    instance->acquisition = iusAcquisitionLoad(instance->handle);
+    if (instance->acquisition == IUE_INVALID)
     {
-        fprintf(stderr, "Warning from iusInputFileNodeLoad: could not load experiment: %s\n", instance->pFilename);
+        fprintf(stderr, "Warning from iusInputFileNodeLoad: could not load acquisition: %s\n", instance->pFilename);
         return IUIFI_INVALID;
     }
 
@@ -377,7 +376,7 @@ int iusInputFileSaveInstance
     status |= iusTransmitApodizationDictSave(instanceData->transmitApodizationDict, handle);
     status |= iusReceiveSettingsDictSave(instanceData->receiveSettingsDict, handle);
 
-    status |= iusExperimentSave(instanceData->experiment, handle);
+    status |= iusAcquisitionSave(instanceData->acquisition, handle);
     status |= iusTransducerSave(instanceData->transducer, instanceData->handle);
     status |= iusHdf5WriteInt( instanceData->handle, IUS_INPUTFILE_PATH_IUSVERSION, &(instanceData->IusVersion), 1);
 //    status |= iusHdf5WriteInt( instanceData->handle, IUS_INPUTFILE_PATH_NUMFRAMES, &(instanceData->numFrames), 1);
@@ -438,7 +437,7 @@ static int iusInputFileCompareInstance
     if ( iusTransmitApodizationDictCompare(reference->transmitApodizationDict, actual->transmitApodizationDict)  == IUS_FALSE ) return IUS_FALSE;
     if ( iusReceiveSettingsDictCompare(reference->receiveSettingsDict, actual->receiveSettingsDict)  == IUS_FALSE ) return IUS_FALSE;
     if ( iusTransducerCompare(reference->transducer, actual->transducer) == IUS_FALSE) return IUS_FALSE;
-    if ( iusExperimentCompare(reference->experiment, actual->experiment) == IUS_FALSE) return IUS_FALSE;
+    if (iusAcquisitionCompare(reference->acquisition, actual->acquisition) == IUS_FALSE) return IUS_FALSE;
     return IUS_TRUE;
 }
 
@@ -556,15 +555,15 @@ iursd_t iusInputFileGetReceiveSettingsDict
     return NULL;
 }
 
-iue_t iusInputFileGetExperiment
+iua_t iusInputFileGetAcquisition
 (
-	iuif_t iusInputFile
+iuif_t iusInputFile
 )
 {
 	if ( iusInputFile != NULL )
 	{
         iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)iusInputFile);
-		return instance->experiment;
+		return instance->acquisition;
 	}
 	return NULL;
 }
@@ -707,18 +706,18 @@ int iusInputFileSetReceiveSettingsDict
 }
 
 
-int iusInputFileSetExperiment
+int iusInputFileSetAcquisition
 (
-	iuif_t inputFile,
-	iue_t experiment
+iuif_t inputFile,
+iua_t acquisition
 )
 {
 	int status = IUS_ERR_VALUE;
 
-	if (inputFile != NULL && experiment != NULL)
+	if (inputFile != NULL && acquisition != NULL)
 	{
         iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
-        instance->experiment = experiment;
+        instance->acquisition = acquisition;
 		status = IUS_E_OK;
 	}
 	return status;

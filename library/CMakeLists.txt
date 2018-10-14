@@ -50,8 +50,8 @@ add_library(ius STATIC
         include/iusData.h
 		include/iusDataStream.h
 		include/iusDataStreamDictPrivate.h
-        include/iusExperiment.h
-        include/iusExperimentPrivate.h
+        include/iusAcquisition.h
+        include/iusAcquisitionPrivate.h
 		include/iusFile.h
 		include/iusFrame.h
 		include/iusFrameList.h
@@ -119,7 +119,7 @@ add_library(ius STATIC
         src/iusData.c
 		src/iusDataStream.c
 		src/iusDataStreamDict.c
-		src/iusExperiment.c
+        src/iusAcquisition.c
 		src/iusFile.c
 		src/iusFrame.c
 		src/iusFrameList.c

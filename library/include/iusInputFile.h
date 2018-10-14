@@ -2,7 +2,7 @@
 #ifndef IUSLIBRARY_IUSHLINPUTFILE_H
 #define IUSLIBRARY_IUSHLINPUTFILE_H
 
-#include <iusExperiment.h>
+#include <iusAcquisition.h>
 #include <iusPatternListDict.h>
 #include <iusPulseDict.h>
 #include <iusReceiveChannelMapDict.h>
@@ -107,7 +107,7 @@ iursd_t iusInputFileGetReceiveSettingsDict
     iuif_t inputFile
 );
 
-iue_t iusInputFileGetExperiment
+iua_t iusInputFileGetAcquisition
 (
 	iuif_t fileHandle
 );
@@ -177,10 +177,10 @@ int iusInputFileSetReceiveSettingsDict
     iursd_t transmitApreceiveSettingsDict
 );
 
-int iusInputFileSetExperiment
+int iusInputFileSetAcquisition
 (
 	iuif_t inputFile,
-	iue_t  experiment
+	iua_t acquisition
 );
 
 int iusInputFileSetTransducer

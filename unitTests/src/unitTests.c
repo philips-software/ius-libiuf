@@ -4,7 +4,6 @@
 
 #include <stdio.h>
 #include <unity_fixture.h>
-#include <uniTests.h>
 
 #include <iusTypes.h>
 #include <iusUtil.h>
@@ -24,7 +23,7 @@ static void RunAllTests(void)
     RUN_TEST_GROUP(Ius3DTransducerElementList);
     RUN_TEST_GROUP(IusDataStream);
     RUN_TEST_GROUP(IusDataStreamDict);
-    RUN_TEST_GROUP(IusExperiment);
+    RUN_TEST_GROUP(IusAcquisition);
     RUN_TEST_GROUP(IusFrame);
     RUN_TEST_GROUP(IusFrameList);
     RUN_TEST_GROUP(IusInputFile);

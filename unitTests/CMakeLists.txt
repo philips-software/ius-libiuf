@@ -25,7 +25,7 @@ add_executable(unitTests
         src/testIus3DTransducerElementList.c
         src/testIusDataStream.c
         src/testIusDataStreamDict.c
-        src/testIusExperiment.c
+        src/testIusAcquisition.c
         src/testIusFile.c
         src/testIusFrame.c
         src/testIusFrameList.c

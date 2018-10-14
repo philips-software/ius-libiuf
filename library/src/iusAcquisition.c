@@ -10,56 +10,55 @@
 #include <iusUtil.h>
 #include <iusError.h>
 #include <iusInputFileStructure.h>
-#include <iusExperimentPrivate.h>
+#include <iusAcquisitionPrivate.h>
 #include <include/iusHDF5.h>
 
 // ADT
-//#define PULSETYPEFMT "%s/speedOfSound"
-//#define LABELFMT "%s/description"
 
-/** \brief An Ultrasound experiment is identified by a date and a description, also the speed of sound has been determined */
+
+/** \brief An Ultrasound acquisition is identified by a date and a description, also the speed of sound has been determined */
 struct IusAcquisition
 {
     float  speedOfSound;    /**< speed of sound in m/s */
     int    date;            /**< interger concatenation of year-month-day e.g. 20160123 for 23th Jan 2016 */
-    char * pDescription;    /**< Experiment notes */
+    char * pDescription;    /**< Acquisition notes */
 } ;
 
 iua_t iusAcquisitionCreate
 (
-float speedOfSound, /**< speed of sound in m/s */
-int date,           /**< interger concatenation of year-month-day  */
-const char *pDescription  /**< Experiment notes */
+    float speedOfSound, /**< speed of sound in m/s */
+    int date,           /**< interger concatenation of year-month-day  */
+    const char *pDescription  /**< Acquisition notes */
 )
 {
     if ( speedOfSound < 0.0f ) return IUE_INVALID;
     if ( date <= 0 ) return IUE_INVALID;
 
-    IusAcquisition *pExperiment = (IusAcquisition *) calloc(1, sizeof(IusAcquisition));
-    pExperiment->speedOfSound = speedOfSound;
-    pExperiment->date = date;
+    IusAcquisition *pAcquisition = (IusAcquisition *) calloc(1, sizeof(IusAcquisition));
+    pAcquisition->speedOfSound = speedOfSound;
+    pAcquisition->date = date;
     if( pDescription == NULL )
-        pExperiment->pDescription = "";
+        pAcquisition->pDescription = "";
     else
-        pExperiment->pDescription = strdup(pDescription);
-    return pExperiment;
+        pAcquisition->pDescription = strdup(pDescription);
+    return pAcquisition;
 }
 
 int iusAcquisitionDelete
 (
-iua_t experiment
+    iua_t acquisition
 )
 {
-    if( experiment == NULL ) return IUS_ERR_VALUE;
-    free(experiment->pDescription);
-    free(experiment);
+    if( acquisition == NULL ) return IUS_ERR_VALUE;
+    free(acquisition->pDescription);
+    free(acquisition);
     return IUS_E_OK;
 }
 
 IUS_BOOL iusAcquisitionCompare
 (
-iua_t reference,
-iua_t actual
+    iua_t reference,
+    iua_t actual
 )
 {
     if( reference == actual ) return IUS_TRUE;
@@ -78,34 +77,34 @@ iua_t actual
 // getters
 float iusAcquisitionGetSpeedOfSound
 (
-iua_t experiment
+    iua_t acquisition
 )
 {
-    if( experiment == NULL ) return NAN;
-    return experiment->speedOfSound;
+    if( acquisition == NULL ) return NAN;
+    return acquisition->speedOfSound;
 }
 
 int iusAcquisitionGetDate
 (
-iua_t experiment
+    iua_t acquisition
 )
 {
-    if( experiment == NULL ) return -1;
-    return experiment->date;
+    if( acquisition == NULL ) return -1;
+    return acquisition->date;
 }
 
 char * iusAcquisitionGetDescription
 (
-iua_t experiment
+    iua_t acquisition
 )
 {
-    if( experiment == NULL ) return NULL;
-    return experiment->pDescription;
+    if( acquisition == NULL ) return NULL;
+    return acquisition->pDescription;
 }
 
 #if 0
 // old routines
-int LF_copyExperimentData
+int LF_copyAcquisitionData
 (
     iua_t pDst,
     iua_t pSrc
@@ -129,34 +128,34 @@ int LF_copyExperimentData
 #endif
 
 // serialization
-int iusExperimentSave
+int iusAcquisitionSave
 (
-    iua_t experiment,
+    iua_t acquisition,
     hid_t handle
 )
 {
     int status=0;
 
-	hid_t experiment_id;
-	status = H5Gget_objinfo(handle, IUS_INPUTFILE_PATH_EXPERIMENT, 0, NULL); // todo centralize the path "Sources"
+	hid_t acquisition_id;
+	status = H5Gget_objinfo(handle, IUS_INPUTFILE_PATH_ACQUISITION, 0, NULL); // todo centralize the path "Sources"
 	if (status != 0) // the group does not exist yet
 	{
-		experiment_id = H5Gcreate(handle, IUS_INPUTFILE_PATH_EXPERIMENT, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+		acquisition_id = H5Gcreate(handle, IUS_INPUTFILE_PATH_ACQUISITION, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 	}
 	else
 	{
-		experiment_id = H5Gopen(handle, IUS_INPUTFILE_PATH_EXPERIMENT, H5P_DEFAULT);
+		acquisition_id = H5Gopen(handle, IUS_INPUTFILE_PATH_ACQUISITION, H5P_DEFAULT);
 	}
-	if (experiment_id > 0) status = 0;
-    status |= iusHdf5WriteFloat(experiment_id, IUS_INPUTFILE_PATH_EXPERIMENT_SPEEDOFSOUND, &experiment->speedOfSound, 1);
-    status |= iusHdf5WriteInt(experiment_id, IUS_INPUTFILE_PATH_EXPERIMENT_DATE, &experiment->date, 1);
-    status |= iusHdf5WriteString(experiment_id, IUS_INPUTFILE_PATH_EXPERIMENT_DESCRIPTION, experiment->pDescription);
+	if (acquisition_id > 0) status = 0;
+    status |= iusHdf5WriteFloat(acquisition_id, IUS_INPUTFILE_PATH_ACQUISITION_SPEEDOFSOUND, &acquisition->speedOfSound, 1);
+    status |= iusHdf5WriteInt(acquisition_id, IUS_INPUTFILE_PATH_ACQUISITION_DATE, &acquisition->date, 1);
+    status |= iusHdf5WriteString(acquisition_id, IUS_INPUTFILE_PATH_ACQUISITION_DESCRIPTION, acquisition->pDescription);
 
-	H5Gclose(experiment_id);
+	H5Gclose(acquisition_id);
     return status;
 }
 
-iua_t iusExperimentLoad
+iua_t iusAcquisitionLoad
 (
     hid_t handle
 )
@@ -165,17 +164,17 @@ iua_t iusExperimentLoad
     float speedOfSound;
     int date;
     char description[IUS_MAX_HDF5_PATH];
-    iua_t experiment;
+    iua_t acquisition;
 
-	hid_t experiment_id = H5Gopen(handle, IUS_INPUTFILE_PATH_EXPERIMENT, H5P_DEFAULT); // todo move "Experiment" to central place
-    status |= iusHdf5ReadFloat(experiment_id, IUS_INPUTFILE_PATH_EXPERIMENT_SPEEDOFSOUND, &(speedOfSound));
-    status |= iusHdf5ReadInt(experiment_id, IUS_INPUTFILE_PATH_EXPERIMENT_DATE, &(date));
-    status |= iusHdf5ReadString(experiment_id, IUS_INPUTFILE_PATH_EXPERIMENT_DESCRIPTION, description);
+	hid_t acquisition_id = H5Gopen(handle, IUS_INPUTFILE_PATH_ACQUISITION, H5P_DEFAULT); // todo move "Acquisition" to central place
+    status |= iusHdf5ReadFloat(acquisition_id, IUS_INPUTFILE_PATH_ACQUISITION_SPEEDOFSOUND, &(speedOfSound));
+    status |= iusHdf5ReadInt(acquisition_id, IUS_INPUTFILE_PATH_ACQUISITION_DATE, &(date));
+    status |= iusHdf5ReadString(acquisition_id, IUS_INPUTFILE_PATH_ACQUISITION_DESCRIPTION, description);
 	
-	H5Gclose(experiment_id);
+	H5Gclose(acquisition_id);
     if( status < 0 )
         return NULL;
-    experiment = iusAcquisitionCreate(speedOfSound, date, description);
-    return experiment;
+    acquisition = iusAcquisitionCreate(speedOfSound, date, description);
+    return acquisition;
 }
 

@@ -4,7 +4,7 @@
 #ifndef IUSLIBRARY_TESTDATAGENERATORS_H
 #define IUSLIBRARY_TESTDATAGENERATORS_H
 
-#include <include/iusExperiment.h>
+#include <include/iusAcquisition.h>
 #include <include/iusPatternList.h>
 #include <include/iusPulseDict.h>
 #include <include/iusReceiveChannelMapDict.h>
@@ -98,7 +98,7 @@ iursd_t dgGenerateReceiveSettingsDict
     char *label
 );
 
-iue_t dgGenerateExperiment
+iua_t dgGenerateAcquisition
 (
 	void
 );

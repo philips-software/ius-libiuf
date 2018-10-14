@@ -4,7 +4,7 @@
 #include <unity.h>
 
 #include <include/ius.h>
-#include <include/iusExperiment.h>
+#include <include/iusAcquisition.h>
 #include <include/iusNonParametricPulse.h>
 #include <include/iusParametricPulse.h>
 #include <include/iusPulseDict.h>
@@ -164,8 +164,8 @@ iuif_t dgGenerateInputFile
     TEST_ASSERT_EQUAL(IUS_E_OK, status);
 
     // save
-    iue_t experiment = dgGenerateExperiment();
-    status = iusInputFileSetExperiment(inputFile, experiment);
+    iua_t acquisition = dgGenerateAcquisition();
+    status = iusInputFileSetAcquisition(inputFile, acquisition);
     TEST_ASSERT(status == IUS_E_OK);
 
 
@@ -370,16 +370,16 @@ iurcmd_t dgGenerateReceiveChannelMapDict
     return dict;
 }
 
-iue_t dgGenerateExperiment()
+iua_t dgGenerateAcquisition()
 {
 	int date = 20180416;
-	char *pDescription = "a nice experiment that almost won me the nobel prize";
+	char *pDescription = "a nice acquisition that almost won me the nobel prize";
 	float speedOfSound = 1540.0f;
 
-	iue_t experiment = iusExperimentCreate(speedOfSound, date, pDescription);
-	TEST_ASSERT(experiment != IUE_INVALID);
+	iua_t acquisition = iusAcquisitionCreate(speedOfSound, date, pDescription);
+	TEST_ASSERT(acquisition != IUE_INVALID);
 
-	return experiment;
+	return acquisition;
 }
 
 
@@ -579,13 +579,13 @@ iuh_t create2DTransducerHeader()
     float speedOfSound = 1498.1f;
     int date = 20160124;
     int status;
-    char *pDescription = "My important experiment notes, by create3DTransducerHeader()";
+    char *pDescription = "My important acquisition notes, by create3DTransducerHeader()";
     IusSourceLocationType locationType = IUS_PARAMETRIC_3D_SOURCE_LOCATION;
 
 
     iuh_t iuhHeader;
     iut_t tra;
-    iue_t ex;
+    iua_t ex;
     iuds_t dri;
 
     iuhHeader = iusCreateInputHeader();
@@ -594,8 +594,8 @@ iuh_t create2DTransducerHeader()
 //    IusReceiveSettings * pReceiveSettings; /**< data receive settings */
 //    IusDrivingScheme   * pDrivingScheme;   /**< data transmit settings */
 
-    ex = iusCreateExperiment(speedOfSound, date, pDescription);
-    status = iusHeaderSetExperiment(iuhHeader, ex);
+    ex = iusCreateAcquisition(speedOfSound, date, pDescription);
+    status = iusHeaderSetAcquisition(iuhHeader, ex);
     if (status != IUS_E_OK) return IUH_INVALID;
 
     tra = create2DTransducer();
@@ -616,11 +616,11 @@ iuh_t create3DTransducerHeader()
     float speedOfSound = 1498.1f;
     int date = 20160124;
     int status;
-    char *pDescription = "My important experiment notes, by create3DTransducerHeader()";
+    char *pDescription = "My important acquisition notes, by create3DTransducerHeader()";
 
     iuh_t iuhHeader;
     iut_t tra;
-    iue_t ex;
+    iua_t ex;
     iuds_t dri;
 
 
@@ -630,8 +630,8 @@ iuh_t create3DTransducerHeader()
 //   Todo:
 // IusReceiveSettings * pReceiveSettings; /**< data receive settings */
 
-    ex = iusCreateExperiment(speedOfSound, date, pDescription);
-    status = iusHeaderSetExperiment(iuhHeader, ex);
+    ex = iusCreateAcquisition(speedOfSound, date, pDescription);
+    status = iusHeaderSetAcquisition(iuhHeader, ex);
     if (status != IUS_E_OK) return IUH_INVALID;
 
 

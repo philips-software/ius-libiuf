@@ -228,15 +228,14 @@ iurcmd_t ncFillReceiveChannelMapDict
     return dict;
 }
 
-iue_t ncFillExperiment()
+iua_t ncFillAcquisition()
 {
     int date = 20180416;
-    char *pDescription = "a nice experiment that almost won me the nobel prize";
+    char *pDescription = "a nice acquisition that almost won me the nobel prize";
     float speedOfSound = 1540.0f;
 
-    iue_t experiment = iusExperimentCreate(speedOfSound, date, pDescription);
-
-    return experiment;
+    iua_t acquisition = iusAcquisitionCreate(speedOfSound,date,pDescription);
+    return acquisition;
 }
 
 
@@ -319,8 +318,8 @@ int ncInputFileNodeConfig
     iupald_t patternListDict = ncFillPatternListDict(label, pulseLabel, sourceLabel, label, label);
     status |= iusInputFileSetPatternListDict(inputFile,patternListDict);
 
-    iue_t experiment = ncFillExperiment();
-    status |= iusInputFileSetExperiment(inputFile, experiment);
+    iua_t acquisition = ncFillAcquisition();
+    status |= iusInputFileSetAcquisition(inputFile, acquisition);
 
 
     iut_t transducer = ncFillTransducer(transducerName);

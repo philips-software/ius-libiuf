@@ -279,32 +279,32 @@ TEST(IusInputFile, iusInputFileSetGetReceiveSettingsDict)
     iusInputFileDelete(obj);
 }
 
-TEST(IusInputFile, iusInputFileSetGetExperiment)
+TEST(IusInputFile, iusInputFileSetGetAcquisition)
 {
     IUS_BOOL equal;
     int status;
-    iue_t experiment = dgGenerateExperiment();
+    iua_t acquisition = dgGenerateAcquisition();
     iuif_t obj = iusInputFileCreate(pFilename);
     TEST_ASSERT(obj != IUIF_INVALID);
 
-    status = iusInputFileSetExperiment(obj, experiment);
+    status = iusInputFileSetAcquisition(obj, acquisition);
     TEST_ASSERT_EQUAL(IUS_E_OK, status);
 
-    iue_t gotMeAnExperiment = iusInputFileGetExperiment(obj);
-    TEST_ASSERT_NOT_EQUAL(NULL, gotMeAnExperiment);
+    iua_t gotMeAnAcquisition = iusInputFileGetAcquisition(obj);
+    TEST_ASSERT_NOT_EQUAL(NULL, gotMeAnAcquisition);
 
-    equal = iusExperimentCompare(experiment, gotMeAnExperiment);
+    equal = iusAcquisitionCompare(acquisition, gotMeAnAcquisition);
     TEST_ASSERT_EQUAL(IUS_TRUE, equal);
 
     // invalid param
-    status = iusInputFileSetExperiment(obj, NULL);
+    status = iusInputFileSetAcquisition(obj, NULL);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
 
-    status = iusInputFileSetExperiment(NULL, experiment);
+    status = iusInputFileSetAcquisition(NULL, acquisition);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
 
-    gotMeAnExperiment = iusInputFileGetExperiment(NULL);
-    TEST_ASSERT_EQUAL(IURSD_INVALID, gotMeAnExperiment);
+    gotMeAnAcquisition = iusInputFileGetAcquisition(NULL);
+    TEST_ASSERT_EQUAL(IURSD_INVALID, gotMeAnAcquisition);
 
     status = iusInputFileClose(obj);
     TEST_ASSERT(status == IUS_E_OK);
@@ -693,7 +693,7 @@ TEST_GROUP_RUNNER(IusInputFile)
     RUN_TEST_CASE(IusInputFile, iusInputFileSetGetReceiveChannelMapDict);
     RUN_TEST_CASE(IusInputFile, iusInputFileSetGetTransmitApodizationDict);
     RUN_TEST_CASE(IusInputFile, iusInputFileSetGetReceiveSettingsDict);
-    RUN_TEST_CASE(IusInputFile, iusInputFileSetGetExperiment);
+    RUN_TEST_CASE(IusInputFile, iusInputFileSetGetAcquisition);
     RUN_TEST_CASE(IusInputFile, iusInputFileSetGetTransducer);
     RUN_TEST_CASE(IusInputFile, testIusInputFileSerialization);
     RUN_TEST_CASE(IusInputFile, testIusInputFileDataIOSaveFrame);

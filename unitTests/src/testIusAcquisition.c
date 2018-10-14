@@ -11,21 +11,21 @@
 #include <iusTypes.h>
 #include <iusAcquisitionPrivate.h>
 
-TEST_GROUP(IusExperiment);
+TEST_GROUP(IusAcquisition);
 
-TEST_SETUP(IusExperiment)
+TEST_SETUP(IusAcquisition)
 {
 }
 
-TEST_TEAR_DOWN(IusExperiment)
+TEST_TEAR_DOWN(IusAcquisition)
 {
 }
 
-TEST(IusExperiment, testIusCreateExperiment)
+TEST(IusAcquisition, testIusCreateAcquisition)
 {
     float speedOfSound = 1498.1f;
     int date = 20160124;
-    char *pDescription = "My important acquisition notes, by testIusCreateExperiment";
+    char *pDescription = "My important acquisition notes, by testIusCreateAcquisition";
 
     iua_t obj = iusAcquisitionCreate(speedOfSound, date, pDescription);
     iua_t notherObj = iusAcquisitionCreate(speedOfSound, date, pDescription);
@@ -43,11 +43,11 @@ TEST(IusExperiment, testIusCreateExperiment)
     TEST_ASSERT(obj == IUE_INVALID);
 }
 
-TEST(IusExperiment, testIusDeleteExperiment)
+TEST(IusAcquisition, testIusDeleteAcquisition)
 {
     float speedOfSound = 1498.1f;
     int date = 20160124;
-    char *pDescription = "My important acquisition notes, by testIusCreateExperiment";
+    char *pDescription = "My important acquisition notes, by testIusCreateAcquisition";
     iua_t obj = iusAcquisitionCreate(speedOfSound, date, pDescription);
     TEST_ASSERT(obj != IUE_INVALID);
     int status = iusAcquisitionDelete(obj);
@@ -58,12 +58,12 @@ TEST(IusExperiment, testIusDeleteExperiment)
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
 }
 
-TEST(IusExperiment, testIusCompareExperiment)
+TEST(IusAcquisition, testIusCompareAcquisition)
 {
     IUS_BOOL equal;
     float speedOfSound = 1498.1f;
     int date = 20160124;
-    char *pDescription = "My important acquisition notes, by testIusCreateExperiment";
+    char *pDescription = "My important acquisition notes, by testIusCreateAcquisition";
 
     iua_t obj = iusAcquisitionCreate(speedOfSound, date, pDescription);
     iua_t notherObj = iusAcquisitionCreate(speedOfSound, date, pDescription);
@@ -90,11 +90,11 @@ TEST(IusExperiment, testIusCompareExperiment)
     iusAcquisitionDelete(differentObj);
 }
 
-TEST(IusExperiment, testIusGetExperiment)
+TEST(IusAcquisition, testIusGetAcquisition)
 {
     float speedOfSound = 1498.1f;
     int date = 20160124;
-    char *pDescription = "My important acquisition notes, by testIusCreateExperiment";
+    char *pDescription = "My important acquisition notes, by testIusCreateAcquisition";
 
     iua_t obj = iusAcquisitionCreate(speedOfSound, date, pDescription);
 
@@ -109,13 +109,13 @@ TEST(IusExperiment, testIusGetExperiment)
     iusAcquisitionDelete(obj);
 }
 
-TEST(IusExperiment, testIusSerialization)
+TEST(IusAcquisition, testIusSerialization)
 {
     float speedOfSound = 1498.1f;
     int date = 20160124;
-    char *pDescription = "My important acquisition notes, by testIusCreateExperiment";
-    char *filename = "testIusExperiment.hdf5";
-    //char *experimentPath =  "/Experiment";
+    char *pDescription = "My important acquisition notes, by testIusCreateAcquisition";
+    char *filename = "testIusAcquisition.hdf5";
+    //char *acquisitionPath =  "/Acquisition";
 
     // create and save
     iua_t obj = iusAcquisitionCreate(speedOfSound, date, pDescription);
@@ -133,7 +133,7 @@ TEST(IusExperiment, testIusSerialization)
     // read back
     handle = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT );
 	TEST_ASSERT(handle > 0);
-	//group_id = H5Gopen(handle, experimentPath, H5P_DEFAULT);
+	//group_id = H5Gopen(handle, acquisitionPath, H5P_DEFAULT);
 	//TEST_ASSERT(group_id > 0);
     iua_t savedObj = iusAcquisitionLoad(handle);
 	//H5Gclose(group_id);
@@ -147,11 +147,11 @@ TEST(IusExperiment, testIusSerialization)
 
 
 
-TEST_GROUP_RUNNER(IusExperiment)
+TEST_GROUP_RUNNER(IusAcquisition)
 {
-    RUN_TEST_CASE(IusExperiment, testIusCreateExperiment);
-    RUN_TEST_CASE(IusExperiment, testIusDeleteExperiment);
-    RUN_TEST_CASE(IusExperiment, testIusCompareExperiment);
-    RUN_TEST_CASE(IusExperiment, testIusGetExperiment);
-    RUN_TEST_CASE(IusExperiment, testIusSerialization);
+    RUN_TEST_CASE(IusAcquisition, testIusCreateAcquisition);
+    RUN_TEST_CASE(IusAcquisition, testIusDeleteAcquisition);
+    RUN_TEST_CASE(IusAcquisition, testIusCompareAcquisition);
+    RUN_TEST_CASE(IusAcquisition, testIusGetAcquisition);
+    RUN_TEST_CASE(IusAcquisition, testIusSerialization);
 }

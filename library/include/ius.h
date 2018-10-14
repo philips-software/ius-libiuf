@@ -21,7 +21,7 @@
 #include <iusData.h>
 #include <iusDataStream.h>
 #include <iusError.h>
-#include <iusExperiment.h>
+#include <iusAcquisition.h>
 #include <iusFile.h>
 #include <iusFrame.h>
 #include <iusFrameList.h>

@@ -31,7 +31,7 @@
  * #IusReceiveSettings, #IusReceiveChannelMap, #IusTransmitApodization and #IusPulse. Together these 5 objects from each 
  * dictionary describe the pattern. See the subsections blow.
  *
- * In addition, an #IusInputFile contains a transducer description #IusTransducer and experiment description #IusExperiment.
+ * In addition, an #IusInputFile contains a transducer description #IusTransducer and acquisition description #IusAcquisition.
  * 
  * The data is stored in a 4D block of floats for each #IusPatternList with dimensions: 
  * numChannels x numSamplesPerLine x numPulses x numFrames. 
