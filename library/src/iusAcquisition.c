@@ -18,24 +18,24 @@
 //#define LABELFMT "%s/description"
 
 /** \brief An Ultrasound experiment is identified by a date and a description, also the speed of sound has been determined */
-struct IusExperiment
+struct IusAcquisition
 {
     float  speedOfSound;    /**< speed of sound in m/s */
     int    date;            /**< interger concatenation of year-month-day e.g. 20160123 for 23th Jan 2016 */
     char * pDescription;    /**< Experiment notes */
 } ;
 
-iue_t iusExperimentCreate
+iua_t iusAcquisitionCreate
 (
-    float speedOfSound, /**< speed of sound in m/s */
-    int date,           /**< interger concatenation of year-month-day  */
-    const char *pDescription  /**< Experiment notes */
+float speedOfSound, /**< speed of sound in m/s */
+int date,           /**< interger concatenation of year-month-day  */
+const char *pDescription  /**< Experiment notes */
 )
 {
     if ( speedOfSound < 0.0f ) return IUE_INVALID;
     if ( date <= 0 ) return IUE_INVALID;
 
-    IusExperiment *pExperiment = (IusExperiment *) calloc(1, sizeof(IusExperiment));
+    IusAcquisition *pExperiment = (IusAcquisition *) calloc(1, sizeof(IusAcquisition));
     pExperiment->speedOfSound = speedOfSound;
     pExperiment->date = date;
     if( pDescription == NULL )
@@ -45,9 +45,9 @@ iue_t iusExperimentCreate
     return pExperiment;
 }
 
-int iusExperimentDelete
+int iusAcquisitionDelete
 (
-    iue_t experiment
+iua_t experiment
 )
 {
     if( experiment == NULL ) return IUS_ERR_VALUE;
@@ -56,10 +56,10 @@ int iusExperimentDelete
     return IUS_E_OK;
 }
 
-IUS_BOOL iusExperimentCompare
+IUS_BOOL iusAcquisitionCompare
 (
-    iue_t reference,
-    iue_t actual
+iua_t reference,
+iua_t actual
 )
 {
     if( reference == actual ) return IUS_TRUE;
@@ -76,27 +76,27 @@ IUS_BOOL iusExperimentCompare
 }
 
 // getters
-float iusExperimentGetSpeedOfSound
+float iusAcquisitionGetSpeedOfSound
 (
-    iue_t experiment
+iua_t experiment
 )
 {
     if( experiment == NULL ) return NAN;
     return experiment->speedOfSound;
 }
 
-int iusExperimentGetDate
+int iusAcquisitionGetDate
 (
-    iue_t experiment
+iua_t experiment
 )
 {
     if( experiment == NULL ) return -1;
     return experiment->date;
 }
 
-char * iusExperimentGetDescription
+char * iusAcquisitionGetDescription
 (
-    iue_t experiment
+iua_t experiment
 )
 {
     if( experiment == NULL ) return NULL;
@@ -107,8 +107,8 @@ char * iusExperimentGetDescription
 // old routines
 int LF_copyExperimentData
 (
-    iue_t pDst,
-    iue_t pSrc
+    iua_t pDst,
+    iua_t pSrc
 )
 {
     // speed of sound in m/s
@@ -131,7 +131,7 @@ int LF_copyExperimentData
 // serialization
 int iusExperimentSave
 (
-    iue_t experiment,
+    iua_t experiment,
     hid_t handle
 )
 {
@@ -156,7 +156,7 @@ int iusExperimentSave
     return status;
 }
 
-iue_t iusExperimentLoad
+iua_t iusExperimentLoad
 (
     hid_t handle
 )
@@ -165,7 +165,7 @@ iue_t iusExperimentLoad
     float speedOfSound;
     int date;
     char description[IUS_MAX_HDF5_PATH];
-    iue_t experiment;
+    iua_t experiment;
 
 	hid_t experiment_id = H5Gopen(handle, IUS_INPUTFILE_PATH_EXPERIMENT, H5P_DEFAULT); // todo move "Experiment" to central place
     status |= iusHdf5ReadFloat(experiment_id, IUS_INPUTFILE_PATH_EXPERIMENT_SPEEDOFSOUND, &(speedOfSound));
@@ -175,7 +175,7 @@ iue_t iusExperimentLoad
 	H5Gclose(experiment_id);
     if( status < 0 )
         return NULL;
-    experiment = iusExperimentCreate(speedOfSound,date,description);
+    experiment = iusAcquisitionCreate(speedOfSound, date, description);
     return experiment;
 }
 

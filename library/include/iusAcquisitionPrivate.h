@@ -6,18 +6,18 @@
 #define IUSLIBRARY_IUSHLEXPERIMENTIMP_H
 
 #include <hdf5.h>
-#include <iusExperiment.h>
+#include <iusAcquisition.h>
 
 
-int iusExperimentSave
+int iusAcquisitionSave
 (
-    iue_t experiment,
-    hid_t handle
+iua_t acquisition,
+hid_t handle
 );
 
-iue_t iusExperimentLoad
+iua_t iusAcquisitionLoad
 (
-    hid_t handle
+hid_t handle
 );
 
 #endif //IUSLIBRARY_IUSHLEXPERIMENTIMP_H
