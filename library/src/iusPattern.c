@@ -51,7 +51,7 @@ iupa_t iusPatternCreate
         strcmp(pReceiveSettingsLabel,"") == 0
     ) return IUPA_INVALID;
 
-    if( timeInFrame <= 0.0f ) return IUPA_INVALID;
+    if( timeInFrame < 0.0f ) return IUPA_INVALID;
     iupa_t created = calloc(1, sizeof(IusPattern));
     created->timeInFrame = timeInFrame;
     created->pPulseLabel = strdup(pPulseLabel);

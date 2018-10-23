@@ -134,6 +134,12 @@ int iusInputFileGetNumChannels
     char *label
 );
 
+int iusInputFileGetSamplesPerLine
+(
+	iuif_t iusInputFile,
+	char *label
+);
+
 // Setters
 int iusInputFileSetFrameList
 (

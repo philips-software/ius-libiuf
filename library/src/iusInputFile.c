@@ -171,18 +171,21 @@ int iusInputFileGetNumResponses
     return iusPatternListGetSize(patternList);
 }
 
+//TODO: the label of the patternList decides which labels for the receiveSettings and receivechannelmap are to be used for subfuncions iusInputFileGetNumChannels and iusInputFileGetSamplesPerLine
 iud_t iusInputFileFrameCreate
 (
     iuif_t iusInputFile,
-    char *label
+    char *patternListLabel
 )
 {
     if(iusInputFile == NULL) return IUD_INVALID;
     // calculate frame size:
     // numchannels * numresponses * numsamples = [x*y*z]
-    int numChannels = iusInputFileGetNumChannels(iusInputFile,label);
-    int numResponses = iusInputFileGetNumResponses(iusInputFile,label);
-    int numSamples = iusInputFileGetSamplesPerLine(iusInputFile,label);
+	int numResponses = iusInputFileGetNumResponses(iusInputFile, patternListLabel);
+
+    int numChannels = iusInputFileGetNumChannels(iusInputFile, patternListLabel);   //wrong: get the correct label from the patternlist->receivechennels
+    int numSamples = iusInputFileGetSamplesPerLine(iusInputFile, patternListLabel); //wrong: get the correct label from the patternlist->receiveSettings
+
     int frameSize = numChannels * numSamples * numResponses;
     return iusDataCreate(frameSize);
 }
