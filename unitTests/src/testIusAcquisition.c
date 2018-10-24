@@ -29,18 +29,18 @@ TEST(IusAcquisition, testIusCreateAcquisition)
 
     iua_t obj = iusAcquisitionCreate(speedOfSound, date, pDescription);
     iua_t notherObj = iusAcquisitionCreate(speedOfSound, date, pDescription);
-    TEST_ASSERT(obj != IUE_INVALID);
-    TEST_ASSERT(notherObj != IUE_INVALID);
+    TEST_ASSERT(obj != IUA_INVALID);
+    TEST_ASSERT(notherObj != IUA_INVALID);
     iusAcquisitionDelete(obj);
     iusAcquisitionDelete(notherObj);
 
     // invalid params
     obj = iusAcquisitionCreate(-1.0f, date, pDescription);
-    TEST_ASSERT(obj == IUE_INVALID);
+    TEST_ASSERT(obj == IUA_INVALID);
     obj = iusAcquisitionCreate(speedOfSound, -1, pDescription);
-    TEST_ASSERT(obj == IUE_INVALID);
+    TEST_ASSERT(obj == IUA_INVALID);
     obj = iusAcquisitionCreate(speedOfSound, -1, NULL);
-    TEST_ASSERT(obj == IUE_INVALID);
+    TEST_ASSERT(obj == IUA_INVALID);
 }
 
 TEST(IusAcquisition, testIusDeleteAcquisition)
@@ -49,7 +49,7 @@ TEST(IusAcquisition, testIusDeleteAcquisition)
     int date = 20160124;
     char *pDescription = "My important acquisition notes, by testIusCreateAcquisition";
     iua_t obj = iusAcquisitionCreate(speedOfSound, date, pDescription);
-    TEST_ASSERT(obj != IUE_INVALID);
+    TEST_ASSERT(obj != IUA_INVALID);
     int status = iusAcquisitionDelete(obj);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
@@ -68,8 +68,8 @@ TEST(IusAcquisition, testIusCompareAcquisition)
     iua_t obj = iusAcquisitionCreate(speedOfSound, date, pDescription);
     iua_t notherObj = iusAcquisitionCreate(speedOfSound, date, pDescription);
     iua_t differentObj = iusAcquisitionCreate(speedOfSound, date + 1, pDescription);
-    TEST_ASSERT(obj != IUE_INVALID);
-    TEST_ASSERT(notherObj != IUE_INVALID);
+    TEST_ASSERT(obj != IUA_INVALID);
+    TEST_ASSERT(notherObj != IUA_INVALID);
     equal = iusAcquisitionCompare(obj, obj);
     TEST_ASSERT_EQUAL(IUS_TRUE,equal);
     equal = iusAcquisitionCompare(NULL, NULL);

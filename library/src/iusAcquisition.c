@@ -31,8 +31,8 @@ iua_t iusAcquisitionCreate
     const char *pDescription  /**< Acquisition notes */
 )
 {
-    if ( speedOfSound < 0.0f ) return IUE_INVALID;
-    if ( date <= 0 ) return IUE_INVALID;
+    if ( speedOfSound < 0.0f ) return IUA_INVALID;
+    if ( date <= 0 ) return IUA_INVALID;
 
     IusAcquisition *pAcquisition = (IusAcquisition *) calloc(1, sizeof(IusAcquisition));
     pAcquisition->speedOfSound = speedOfSound;

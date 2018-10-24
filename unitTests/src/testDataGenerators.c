@@ -377,7 +377,7 @@ iua_t dgGenerateAcquisition()
 	float speedOfSound = 1540.0f;
 
 	iua_t acquisition = iusAcquisitionCreate(speedOfSound, date, pDescription);
-	TEST_ASSERT(acquisition != IUE_INVALID);
+	TEST_ASSERT(acquisition != IUA_INVALID);
 
 	return acquisition;
 }

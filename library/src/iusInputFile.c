@@ -80,7 +80,7 @@ iuifi_t iusInputFileInstanceCreate
     instanceData->transmitApodizationDict = IUTAD_INVALID;
     instanceData->receiveSettingsDict = IURSD_INVALID;
     instanceData->transducer = IUT_INVALID;
-	instanceData->acquisition = IUE_INVALID;
+	instanceData->acquisition = IUA_INVALID;
 	instanceData->dataStreamDict = iusDataStreamDictCreate();
     return instanceData;
 }
@@ -288,7 +288,7 @@ static iuifi_t inputFileInstanceLoad
     }
 
     instance->acquisition = iusAcquisitionLoad(instance->handle);
-    if (instance->acquisition == IUE_INVALID)
+    if (instance->acquisition == IUA_INVALID)
     {
         fprintf(stderr, "Warning from iusInputFileNodeLoad: could not load acquisition: %s\n", instance->pFilename);
         return IUIFI_INVALID;

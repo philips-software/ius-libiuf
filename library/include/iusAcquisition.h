@@ -10,7 +10,7 @@
 struct IusAcquisition;
 typedef  struct IusAcquisition IusAcquisition;
 typedef  IusAcquisition    * iua_t;
-#define IUE_INVALID (iua_t) NULL
+#define IUA_INVALID (iua_t) NULL
 
 iua_t iusAcquisitionCreate
 (
