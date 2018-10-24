@@ -5,11 +5,6 @@
 #include <stdlib.h>
 
 #include <ius.h>
-#include <iusError.h>
-#include <iusTypes.h>
-#include <iusUtil.h>
-
-#include "include/iusDataStream.h"
 
 // ADT
 iuds_t iusDataStreamCreate

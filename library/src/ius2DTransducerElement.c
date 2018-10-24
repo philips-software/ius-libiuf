@@ -2,20 +2,14 @@
 //
 // Created by nlv09165 on 23/05/2018.
 //
-#include <math.h>
 #include <stdlib.h>
 
 #include <ius.h>
-#include <iusError.h>
-#include <iusTypes.h>
-#include <iusInputFileStructure.h>
-#include <iusUtil.h>
 #include <ius2DSizePrivate.h>
-#include <iusTransducerElement.h>
-#include <iusTransducerElementPrivate.h>
 #include <ius2DTransducerElementPrivate.h>
 #include <ius3DTransducerElementPrivate.h>
-#include <include/iusPositionPrivate.h>
+#include <iusPositionPrivate.h>
+#include <iusTransducerElementPrivate.h>
 
 struct Ius2DTransducerElement
 {
@@ -25,7 +19,6 @@ struct Ius2DTransducerElement
 } ;
 
 // ADT
-
 iu2dte_t ius2DTransducerElementCreate
 (
     iu2dp_t pos,

@@ -6,12 +6,7 @@
 #include <stdlib.h>
 
 #include <ius.h>
-#include <iusError.h>
-#include <iusTypes.h>
-#include <iusUtil.h>
-#include <iusInputFileStructure.h>
 #include <ius2DSizePrivate.h>
-#include <include/iusHDF5.h>
 
 // ADT
 iu2ds_t ius2DSizeCreate
@@ -36,7 +31,6 @@ int ius2DSizeDelete
     if(ius2DSize != NULL)
     {
         free(ius2DSize);
-        ius2DSize = NULL;
         status = IUS_E_OK;
     }
     return status;

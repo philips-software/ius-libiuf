@@ -8,6 +8,8 @@
 #include <iusTypes.h>
 #include <iusSource.h>
 #include <hdf5.h>
+#include <hdf5_hl.h>
+
 
 struct IusSource
 {

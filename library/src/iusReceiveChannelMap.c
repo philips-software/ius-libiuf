@@ -1,15 +1,9 @@
 // Created by Frank van Heesch on 18/07/2018.
 //
-#include <math.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include <ius.h>
-#include <iusHDF5.h>
-#include <iusUtil.h>
-#include <iusError.h>
-#include <iusInputFileStructure.h>
-#include <iusReceiveChannelMap.h>
 #include <iusReceiveChannelMapPrivate.h>
 
 

@@ -2,16 +2,12 @@
 // Created by nlv09165 on 12/09/2018.
 //
 #include <stdlib.h>
-#include <math.h>
-#include <assert.h>
 #include <string.h>
 
 #include <hashmap.h>
+
 #include <ius.h>
-#include <iusError.h>
-#include <iusUtil.h>
 #include <iusParameterDictPrivate.h>
-#include <include/iusHDF5.h>
 
 // ADT
 struct HashableParameter
@@ -184,14 +180,14 @@ iupad_t iusParameterDictLoad
 )
 {
     hsize_t nobj;
-    int i;
+    hsize_t i;
     int status = H5Gget_num_objs(handle, &nobj);
     char memberName[IUS_MAX_HDF5_PATH];
     char memberValue[IUS_MAX_HDF5_PATH];
     if( handle == H5I_INVALID_HID ) return IUPAD_INVALID;
 
     iupad_t dict = iusParameterDictCreate();
-    for (i = 0; i < (int) nobj && status == IUS_E_OK; i++)
+    for (i = 0; i < nobj && status == IUS_E_OK; i++)
     {
         H5Gget_objname_by_idx(handle, i, memberName, (size_t)IUS_MAX_HDF5_PATH);
         iusHdf5ReadString(handle,memberName, memberValue);

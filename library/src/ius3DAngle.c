@@ -5,13 +5,8 @@
 #include <math.h>
 #include <stdlib.h>
 
-#include <iusInputFileStructure.h>
 #include <ius.h>
-#include <iusError.h>
-#include <iusTypes.h>
-#include <iusUtil.h>
 #include <ius3DAnglePrivate.h>
-#include <include/iusHDF5.h>
 
 // ADT
 iu3da_t ius3DAngleCreate
@@ -36,12 +31,10 @@ int ius3DAngleDelete
     if(ius3DAngle != NULL)
     {
         free(ius3DAngle);
-        ius3DAngle = NULL;
         status = IUS_E_OK;
     }
     return status;
 }
-
 
 // operations
 int ius3DAngleCompare

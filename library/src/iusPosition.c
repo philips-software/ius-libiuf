@@ -3,10 +3,8 @@
 //
 #include <stdlib.h>
 
-#include <iusInputFileStructure.h>
+#include <ius.h>
 #include <iusPositionPrivate.h>
-#include <iusUtil.h>
-#include <include/iusHDF5.h>
 
 IUS_BOOL ius3DPositionCompare
 (

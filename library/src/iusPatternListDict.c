@@ -2,17 +2,12 @@
 // Created by nlv12901 on 08/10/2018.
 //
 #include <stdlib.h>
-#include <math.h>
+#include <string.h>
 
 #include <hashmap.h>
+
 #include <ius.h>
-#include <iusError.h>
-#include <iusUtil.h>
-#include <iusInputFileStructure.h>
 #include <iusPatternListPrivate.h>
-#include <iusPatternListDict.h>
-#include <assert.h>
-#include <string.h>
 
 // ADT
 struct HashablePatternList
@@ -162,7 +157,6 @@ int iusPatternListDictSave
 )
 {
 	int status = 0;
-	//char path[IUS_MAX_HDF5_PATH];
 	struct hashmap_iter *iter;
 
 	if (dict == NULL)
@@ -170,9 +164,7 @@ int iusPatternListDictSave
 	if (handle == H5I_INVALID_HID)
 		return IUS_ERR_VALUE;
 	hid_t group_id;
-	//hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-	 //hid_t group_id = H5Gcreate(handle, "ReceiveSettings", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-	status = H5Gget_objinfo(handle, IUS_INPUTFILE_PATH_PATTERNLISTDICT, 0, NULL); // todo centralize the path
+	status = H5Gget_objinfo(handle, IUS_INPUTFILE_PATH_PATTERNLISTDICT, 0, NULL);
 	if (status != 0) // the group does not exist yet
 	{
 		group_id = H5Gcreate(handle, IUS_INPUTFILE_PATH_PATTERNLISTDICT, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
@@ -206,9 +198,8 @@ iupald_t iusPatternListDictLoad
 	hid_t handle
 )
 {
-	int i;
-	int status = IUS_E_OK;
-	//char path[IUS_MAX_HDF5_PATH];
+    hsize_t i;
+	int status;
 	char memb_name[MAX_NAME];
 
 	hid_t grpid = H5Gopen(handle, IUS_INPUTFILE_PATH_PATTERNLISTDICT, H5P_DEFAULT);
@@ -219,7 +210,7 @@ iupald_t iusPatternListDictLoad
 	status = H5Gget_num_objs(grpid, &nobj);
 
 	iupald_t dict = iusPatternListDictCreate();
-	for (i = 0; i < (int)nobj && status == IUS_E_OK; i++)
+	for (i = 0; i < nobj && status == IUS_E_OK; i++)
 	{
 		H5Gget_objname_by_idx(grpid, (hsize_t)i, memb_name, (size_t)MAX_NAME);
 		hid_t patternList_id = H5Gopen(grpid, memb_name, H5P_DEFAULT);

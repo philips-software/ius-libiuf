@@ -4,32 +4,23 @@
 //
 #include <stdlib.h>
 #include <string.h>
-#include <hdf5.h>
-#include <hdf5_hl.h>
+
 
 
 #include <ius.h>
-#include <iusError.h>
-#include <iusTypes.h>
-#include <iusUtil.h>
 #include <include/iusAcquisitionPrivate.h>
+#include <include/iusDataStreamDictPrivate.h>
+#include <include/iusFrameListPrivate.h>
+#include <include/iusHistoryNodePrivate.h>
 #include <include/iusInputFilePrivate.h>
+#include <include/iusInputFileStructure.h>
 #include <include/iusPatternListDictPrivate.h>
 #include <include/iusPulseDictPrivate.h>
 #include <include/iusReceiveChannelMapDictPrivate.h>
-#include <include/iusFrameList.h>
-#include <include/iusSourceDict.h>
-#include <include/iusReceiveSettings.h>
-#include <include/iusTransducer.h>
-#include <include/iusFrameListPrivate.h>
-#include <include/iusSourceDictPrivate.h>
 #include <include/iusReceiveSettingsDictPrivate.h>
+#include <include/iusSourceDictPrivate.h>
 #include <include/iusTransducerPrivate.h>
-#include <include/iusHistoryNode.h>
-#include <include/iusHistoryNodePrivate.h>
 #include <include/iusTransmitApodizationDictPrivate.h>
-#include <include/iusInputFileStructure.h>
-#include <include/iusDataStreamDictPrivate.h>
 
 struct IusInputFileInstance
 {

@@ -3,26 +3,14 @@
 // Created by nlv09165 on 24/07/2018.
 //
 #include <stdlib.h>
-#include <stdarg.h>
-#define IUSLIBRARY_IMPLEMENTATION
+#include <string.h>
 
 #include <ius.h>
-#include <iusError.h>
-#include <iusTypes.h>
-#include <iusUtil.h>
-#include <string.h>
-#include <iusInputFileStructure.h>
-#include <include/ius3DNonParametricSource.h>
-#include <include/ius2DParametricSource.h>
-#include <include/ius2DNonParametricSource.h>
-#include <include/iusHDF5.h>
-#include <hdf5_hl.h>
-#include <include/ius2DNonParametricSourcePrivate.h>
-#include <include/ius2DParametricSourcePrivate.h>
-#include <include/ius3DNonParametricSourcePrivate.h>
-#include <include/ius3DParametricSourcePrivate.h>
-#include "include/iusSourcePrivate.h"
-#include "include/ius3DParametricSource.h"
+#include <ius2DNonParametricSourcePrivate.h>
+#include <ius2DParametricSourcePrivate.h>
+#include <ius3DNonParametricSourcePrivate.h>
+#include <ius3DParametricSourcePrivate.h>
+#include <iusSourcePrivate.h>
 
 
 // ADT
@@ -35,7 +23,6 @@ int iusSourceDelete
     if(iusSource != NULL)
     {
         free(iusSource);
-        iusSource = NULL;
         status = IUS_E_OK;
     }
     return status;

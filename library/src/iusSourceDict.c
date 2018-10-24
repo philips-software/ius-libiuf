@@ -2,17 +2,12 @@
 // Created by nlv09165 on 31/07/2018.
 //
 #include <stdlib.h>
-#include <math.h>
+#include <string.h>
 
 #include <hashmap.h>
+
 #include <ius.h>
-#include <iusError.h>
-#include <iusUtil.h>
-#include <iusInputFileStructure.h>
 #include <iusSourcePrivate.h>
-#include <iusSourceDict.h>
-#include <assert.h>
-#include <string.h>
 
 // ADT
 struct HashableSource
@@ -207,7 +202,7 @@ iusd_t iusSourceDictLoad
 )
 {
     int i;
-    int status = IUS_E_OK;
+    int status;
     char memb_name[MAX_NAME];
 
 	hid_t grpid = H5Gopen(handle, IUS_INPUTFILE_PATH_SOURCEDICT, H5P_DEFAULT);

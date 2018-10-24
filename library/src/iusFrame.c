@@ -1,17 +1,10 @@
 //
 // Created by nlv09165 on 15/08/2018.
 //
-#include <stdlib.h>
+#include <string.h>
 
 #include <ius.h>
-#include <iusError.h>
-#include <iusTypes.h>
-#include <iusUtil.h>
-#include <iusInputFileStructure.h>
 #include <iusFramePrivate.h>
-#include <include/iusHDF5.h>
-#include <math.h>
-#include <string.h>
 
 struct IusFrame
 {

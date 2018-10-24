@@ -4,9 +4,9 @@
 #ifndef IUSLIBRARY_IUSHLTRANSDUCERIMP_H
 #define IUSLIBRARY_IUSHLTRANSDUCERIMP_H
 
-#include <iusHDF5.h>
 #include <iusTransducer.h>
-#include <ius3DTransducer.h>
+#include <hdf5.h>
+#include <hdf5_hl.h>
 
 struct IusTransducer
 {

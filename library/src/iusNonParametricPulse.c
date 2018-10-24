@@ -4,17 +4,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <hdf5.h>
-#include <hdf5_hl.h>
-
 #include <ius.h>
-#include <iusError.h>
-#include <iusUtil.h>
-#include <iusPulse.h>
-#include <iusInputFileStructure.h>
-#include <iusNonParametricPulse.h>
 #include <iusPulsePrivate.h>
-#include <include/iusHDF5.h>
 
 struct IusNonParametricPulse
 {

@@ -5,18 +5,11 @@
 #include <stdlib.h>
 
 #include <ius.h>
-#include <iusError.h>
-#include <iusTypes.h>
-#include <iusUtil.h>
-#include <iusInputFileStructure.h>
-#include <iusPosition.h>
-#include <iusTransducerElement.h>
-#include <ius3DTransducerElementPrivate.h>
+#include <ius3DSizePrivate.h>
+#include <iusPositionPrivate.h>
+#include <ius3DAnglePrivate.h>
 #include <iusTransducerElementPrivate.h>
-#include <include/ius3DSizePrivate.h>
-#include <include/iusHDF5.h>
-#include <include/iusPositionPrivate.h>
-#include <include/ius3DAnglePrivate.h>
+#include <ius3DTransducerElementPrivate.h>
 
 struct Ius3DTransducerElement
 {
@@ -63,7 +56,6 @@ int ius3DTransducerElementDelete
     if(ius3DTransducerElement != NULL)
     {
         free(ius3DTransducerElement);
-        ius3DTransducerElement = NULL;
         status = IUS_E_OK;
     }
     return status;

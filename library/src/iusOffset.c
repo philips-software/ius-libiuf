@@ -4,15 +4,8 @@
 #include <stdlib.h>
 
 #include <ius.h>
-#include <iusError.h>
-#include <iusTypes.h>
-#include <iusUtil.h>
-
-#include "include/iusOffset.h"
-
 
 // ADT
-
 iuo_t iusOffsetCreate
 (
     void

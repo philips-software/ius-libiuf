@@ -2,16 +2,12 @@
 // Created by nlv12901 on 10/10/2018.
 //
 #include <stdlib.h>
-#include <math.h>
+#include <string.h>
 
 #include <hashmap.h>
+
 #include <ius.h>
-#include <iusError.h>
-#include <iusUtil.h>
-#include <iusInputFileStructure.h>
 #include <iusDataStreamDictPrivate.h>
-#include <assert.h>
-#include <string.h>
 
 // ADT
 struct HashableDataStream

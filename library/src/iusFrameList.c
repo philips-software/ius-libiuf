@@ -2,15 +2,10 @@
 // Created by nlv09165 on 15/08/2018.
 //
 #include <stdlib.h>
-#include <math.h>
 
 #include <ius.h>
-#include <iusError.h>
-#include <iusUtil.h>
-#include <iusInputFileStructure.h>
+#include <iusFramePrivate.h>
 #include <iusFrameListPrivate.h>
-#include <include/iusHDF5.h>
-#include <include/iusFramePrivate.h>
 
 
 // ADT
@@ -106,7 +101,6 @@ int iusFrameListSet
 }
 
 //TODO: do we need "numframes" if we have framelist size?
-
 iufl_t iusFrameListLoad
 (
     hid_t handle
@@ -178,7 +172,7 @@ int iusFrameListSave
         return IUS_ERR_VALUE;
 
 
-	status = H5Gget_objinfo(handle, IUS_INPUTFILE_PATH_FRAMELIST, 0, NULL); // todo centralize the path
+	status = H5Gget_objinfo(handle, IUS_INPUTFILE_PATH_FRAMELIST, 0, NULL);
 	if (status != 0) // the group does not exist yet
 	{
 		group_id = H5Gcreate(handle, IUS_INPUTFILE_PATH_FRAMELIST, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
@@ -190,7 +184,6 @@ int iusFrameListSave
 	if (group_id == H5I_INVALID_HID)
 		return IUS_ERR_VALUE;
 
-	status = 0;
 	iufr_t sourceElement;
     size = iusFrameListGetSize(list);
     status = iusHdf5WriteInt(group_id, IUS_INPUTFILE_PATH_FRAMELIST_SIZE, &(size), 1);

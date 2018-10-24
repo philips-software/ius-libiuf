@@ -2,19 +2,15 @@
 // Created by nlv09165 on 02/05/2018.
 //
 #include <stdlib.h>
+#include <string.h>
 #include <math.h>
 
 #include <hashmap.h>
+
 #include <ius.h>
-#include <iusError.h>
-#include <iusUtil.h>
-#include <iusInputFileStructure.h>
 #include <iusPulsePrivate.h>
 #include <iusParametricPulsePrivate.h>
 #include <iusNonParametricPulsePrivate.h>
-#include <iusPulseDict.h>
-#include <assert.h>
-#include <string.h>
 
 // ADT
 struct HashablePulse
@@ -127,7 +123,7 @@ iup_t iusPulseDictGet
 {
     HashablePulse * search;
     search = HashablePulse_hashmap_get(&dict->map, key);
-    if( dict == NULL )
+    if (dict == IUPD_INVALID)
         return IUP_INVALID;
     return search->pulse;
 }
@@ -163,7 +159,6 @@ int iusPulseDictSave
 )
 {
     int status=0;
-    //char path[IUS_MAX_HDF5_PATH];
     struct hashmap_iter *iter;
 
     if(dict == NULL)
@@ -171,9 +166,7 @@ int iusPulseDictSave
     if(handle == H5I_INVALID_HID)
         return IUS_ERR_VALUE;
 	hid_t group_id;
-	//hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-	 //hid_t group_id = H5Gcreate(handle, "ReceiveSettings", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-	status = H5Gget_objinfo(handle, IUS_INPUTFILE_PATH_PULSEDICT, 0, NULL); // todo centralize the path
+	status = H5Gget_objinfo(handle, IUS_INPUTFILE_PATH_PULSEDICT, 0, NULL);
 	if (status != 0) // the group does not exist yet
 	{
 		group_id = H5Gcreate(handle, IUS_INPUTFILE_PATH_PULSEDICT, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
@@ -192,7 +185,6 @@ int iusPulseDictSave
     {
 		pulseDictItem = HashablePulse_hashmap_iter_get_data(iter);
 		hid_t subgroup_id = H5Gcreate(group_id, pulseDictItem->key, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-        //sprintf(path, LABELPATH, parentPath, sourceElement->pulse->label);
         iusPulseSave(pulseDictItem->pulse, subgroup_id);
 		status |=  H5Gclose(subgroup_id);
     }
@@ -209,7 +201,7 @@ iupd_t iusPulseDictLoad
 )
 {
 	int i;
-	int status = IUS_E_OK;
+	int status;
 	//char path[IUS_MAX_HDF5_PATH];
 	char memb_name[MAX_NAME];
 

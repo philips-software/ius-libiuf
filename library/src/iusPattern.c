@@ -3,18 +3,11 @@
 // Created by nlv09165 on 13/07/2018.
 //
 #include <stdlib.h>
-#include <hdf5.h>
-
-#include <ius.h>
-#include <iusError.h>
-#include <iusTypes.h>
-#include <iusUtil.h>
 #include <math.h>
 #include <string.h>
-#include <include/iusHDF5.h>
-#include <iusInputFileStructure.h>
-#include "include/iusPulse.h"
-#include "include/iusPatternPrivate.h"
+
+#include <ius.h>
+#include <iusPatternPrivate.h>
 
 struct IusPattern
 {

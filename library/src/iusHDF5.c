@@ -1,27 +1,24 @@
-
-#include "iusBasicFunctions.h"
-#include "iusTypes.h"
-#include "iusError.h"
 #include <stdio.h>
 #include <string.h>
-#include <stdlib.h>
 #include <hdf5.h>
 #include <hdf5_hl.h>
+
+#include <ius.h>
+
 
 //------------------------------------------------------------------------------
 // 
 //------------------------------------------------------------------------------
-
 static int verbose = IUS_FALSE;
 
 herr_t iusHdf5ReadFloat
 (
-hid_t        handle,
-const char * pVariableString,
-float *      pValue
+    hid_t        handle,
+    const char * pVariableString,
+    float *      pValue
 )
 {
-    herr_t status = -1;
+    herr_t status;
 
     IUS_ASSERT_MEMORY( pVariableString && pValue );
 
@@ -44,12 +41,12 @@ float *      pValue
 //------------------------------------------------------------------------------
 herr_t iusHdf5ReadShort
 (
-hid_t        handle,
-const char * pVariableString,
-short *      pValue
+    hid_t        handle,
+    const char * pVariableString,
+    short *      pValue
 )
 {
-    herr_t status = -1;
+    herr_t status;
 
     IUS_ASSERT_MEMORY( pVariableString && pValue );
 
@@ -72,12 +69,12 @@ short *      pValue
 //------------------------------------------------------------------------------
 herr_t iusHdf5ReadInt
 (
-hid_t        handle,
-const char * pVariableString,
-int *        pValue
+    hid_t        handle,
+    const char * pVariableString,
+    int *        pValue
 )
 {
-    herr_t status = -1;
+    herr_t status;
 
     IUS_ASSERT_MEMORY( pVariableString && pValue );
 
@@ -100,12 +97,12 @@ int *        pValue
 //------------------------------------------------------------------------------
 herr_t iusHdf5ReadLong
 (
-hid_t        handle,
-const char * pVariableString,
-long int *   pValue
+    hid_t        handle,
+    const char * pVariableString,
+    long int *   pValue
 )
 {
-    herr_t status = -1;
+    herr_t status;
 
     IUS_ASSERT_MEMORY( pVariableString && pValue );
 
@@ -134,7 +131,7 @@ herr_t iusHdf5ReadString
     char * ppReturnString
 )
 {
-    herr_t status = -1;
+    herr_t status;
     size_t strLength;
 
 //    IUS_ASSERT_MEMORY( pVariableString && ppReturnString );
@@ -202,9 +199,9 @@ int *        pDim2
 //------------------------------------------------------------------------------
 herr_t iusHdf5ReadGrid
 (
-hid_t              handle,
-const char * const pGridName,
-const IusGrid *    pGrid
+    hid_t        handle,
+    const char * pGridName,
+    IusGrid *    pGrid
 )
 {
     herr_t status = -1;
@@ -258,10 +255,10 @@ const IusGrid *    pGrid
 //------------------------------------------------------------------------------
 herr_t iusHdf5WriteFloat
 (
-hid_t               handle,
-const char * const  pVariableString,
-const float * const pValues,
-int                 numValues
+    hid_t handle,
+    const char *  pVariableString,
+    float * pValues,
+    int numValues
 )
 {
     herr_t   returnValue;
@@ -287,10 +284,10 @@ int                 numValues
 //------------------------------------------------------------------------------
 herr_t iusHdf5WriteInt
 (
-hid_t              handle,
-const char * const pVariableString,
-const int * const  pValues,
-int                numValues
+    hid_t              handle,
+    const char * pVariableString,
+    int * pValues,
+    int  numValues
 )
 {
     herr_t returnValue;
@@ -315,10 +312,10 @@ int                numValues
 //------------------------------------------------------------------------------
 herr_t iusHdf5WriteLong
 (
-hid_t              handle,
-const char * const pVariableString,
-const long * const pValues,
-int                numValues
+    hid_t handle,
+    const char * pVariableString,
+    long * pValues,
+    int  numValues
 )
 {
     herr_t returnValue;
@@ -365,9 +362,9 @@ const char * const pString
 //------------------------------------------------------------------------------
 herr_t iusHdf5WriteGrid
 (
-hid_t        handle,
-const char * pGridName,
-IusGrid *    pGrid
+    hid_t        handle,
+    const char * pGridName,
+    IusGrid *    pGrid
 )
 {
     herr_t returnValue;

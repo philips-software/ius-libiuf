@@ -1,23 +1,13 @@
 //
 // Created by Ruijzendaal on 30/03/2018.
 //
-#include <math.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include <hdf5.h>
-#include <hdf5_hl.h>
-
 #include <ius.h>
-#include <iusHDF5.h>
-#include <iusUtil.h>
-#include <iusError.h>
-#include <iusInputFileStructure.h>
-#include <iusPulse.h>
 #include <iusPulsePrivate.h>
 #include <iusParametricPulsePrivate.h>
 #include <iusNonParametricPulsePrivate.h>
-
 
 #define TOSTR(x)    #x
 

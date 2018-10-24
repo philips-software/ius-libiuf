@@ -3,17 +3,11 @@
 //
 #include <stdlib.h>
 #include <string.h>
-#include <memory.h>
 #include <math.h>
 
 #include <ius.h>
-#include <iusError.h>
-#include <iusTypes.h>
-#include <iusUtil.h>
-#include <iusInputFileStructure.h>
 #include <iusReceiveSettingsPrivate.h>
 #include <iusTGCPrivate.h>
-#include <include/iusHDF5.h>
 
 struct IusReceiveSettings
 {

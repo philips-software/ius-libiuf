@@ -1,15 +1,9 @@
 // Created by Frank van Heesch on 18/07/2018.
 //
-#include <math.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include <ius.h>
-#include <iusHDF5.h>
-#include <iusUtil.h>
-#include <iusError.h>
-#include <iusInputFileStructure.h>
-#include <iusTransmitApodization.h>
 #include <iusTransmitApodizationPrivate.h>
 
 
@@ -19,7 +13,7 @@ iuta_t iusTransmitApodizationCreate
 )
 {
 	int idx;
-	iuta_t transmitApodization = IUTA_INVALID;
+	iuta_t transmitApodization;
 
 	if (numElements <= 0) return IUTA_INVALID;
 
@@ -140,7 +134,7 @@ iuta_t iusTransmitApodizationLoad
 	status = iusHdf5ReadInt(group_id, IUS_INPUTFILE_PATH_TRANSMITAPODIZATION_NUMELEMENTS, &numElements);
 	if (status != 0 || numElements <= 0) return NULL;
 
-	apodization = (float *)calloc(numElements, sizeof(int));
+	apodization = (float *)calloc((size_t)numElements, sizeof(int));
 	status |= iusHdf5ReadFloat(group_id, IUS_INPUTFILE_PATH_TRANSMITAPODIZATION_APODIZATION, apodization);
 	if (status != 0) return NULL;
 

@@ -5,21 +5,10 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include <hdf5.h>
-#include <hdf5_hl.h>
-
 #include <ius.h>
-#include <iusHDF5.h>
-#include <iusError.h>
-#include <iusTypes.h>
-#include <iusUtil.h>
-#include <iusInputFileStructure.h>
 #include <iusTransducerPrivate.h>
 #include <ius2DTransducerPrivate.h>
 #include <ius3DTransducerPrivate.h>
-#include <iusTransducerElement.h>
-#include <ius2DTransducerElementList.h>
-#include <ius3DTransducerElementList.h>
 
 // ADT
 iut_t iusTransducerCreate

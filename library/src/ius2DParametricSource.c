@@ -2,20 +2,11 @@
 // Created by nlv09165 on 30/07/2018.
 //
 #include <stdlib.h>
-#include <string.h>
-#include <memory.h>
 #include <math.h>
 
 #include <ius.h>
-#include <iusError.h>
-#include <iusTypes.h>
-#include <iusUtil.h>
-
-#include <include/iusInputFileStructure.h>
-#include <include/iusSourcePrivate.h>
-#include <include/iusPositionPrivate.h>
-#include <include/ius2DParametricSource.h>
-#include <include/iusHDF5.h>
+#include <iusSourcePrivate.h>
+#include <iusPositionPrivate.h>
 
 struct Ius2DParametricSource
 {
@@ -42,7 +33,7 @@ iu2dps_t ius2DParametricSourceCreate
     iu2dps_t created = calloc(1,sizeof(Ius2DParametricSource));
     if( created == NULL ) return NULL;
 
-    created->pLocations = (struct Ius2DPosition *) calloc(numLocations, sizeof(Ius2DPosition));
+    created->pLocations = (struct Ius2DPosition *) calloc((size_t)numLocations, sizeof(Ius2DPosition));
     if( created->pLocations == NULL )
     {
         free(created);
@@ -66,7 +57,6 @@ int ius2DParametricSourceDelete
     if(ius2DParametricSource != NULL)
     {
         free(ius2DParametricSource);
-        ius2DParametricSource = NULL;
         status = IUS_E_OK;
     }
     return status;
@@ -168,7 +158,7 @@ int ius2DParametricSourceSetAngularDelta
 (
     iu2dps_t ius2DParametricSource,
     float angularDelta
-    )
+)
 {
     if (ius2DParametricSource == NULL) return IUS_ERR_VALUE;
     ius2DParametricSource->angularDelta = angularDelta;
@@ -262,7 +252,6 @@ int ius2DParametricSourceSave
     status |= iusHdf5WriteFloat( handle, IUS_INPUTFILE_PATH_SOURCE_STARTANGLE, &(source->startAngle), 1);
 
     // Save locations
-	// todo: should we make a Locations group here?
     status |= ius2DParametricSourceSaveLocations(source, handle);
     return status;
 }

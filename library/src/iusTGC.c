@@ -4,18 +4,9 @@
 //
 #include <stdlib.h>
 #include <math.h>
-#include <memory.h>
-
-//#include <hdf5_hl.h>
 
 #include <ius.h>
-#include <iusError.h>
-#include <iusTypes.h>
-#include <iusUtil.h>
-#include <iusInputFileStructure.h>
-#include <iusHDF5.h>
 #include <iusTGCPrivate.h>
-#include <hdf5_hl.h>
 
 struct IusTGC
 {

@@ -6,12 +6,7 @@
 #include <stdlib.h>
 
 #include <ius.h>
-#include <iusError.h>
-#include <iusTypes.h>
-#include <iusUtil.h>
-#include <iusInputFileStructure.h>
-#include <ius3DSize.h>
-#include <include/iusHDF5.h>
+
 
 // ADT
 iu3ds_t ius3DSizeCreate
@@ -38,7 +33,6 @@ int ius3DSizeDelete
     if(ius3DSize != NULL)
     {
         free(ius3DSize);
-        ius3DSize = NULL;
         status = IUS_E_OK;
     }
     return status;

@@ -2,14 +2,10 @@
 // Created by nlv09165 on 07/09/2018.
 //
 #include <stdlib.h>
-#include <math.h>
 
-#include <include/ius.h>
-#include <include/iusError.h>
-#include <include/iusUtil.h>
-#include <include/iusHistoryNodeListPrivate.h>
-#include <include/iusHistoryNodePrivate.h>
-#include <include/iusHDF5.h>
+#include <ius.h>
+#include <iusHistoryNodePrivate.h>
+#include <iusHistoryNodeListPrivate.h>
 
 // ADT
 struct IusHistoryNodeList
@@ -19,7 +15,6 @@ struct IusHistoryNodeList
 } ;
 
 // ADT
-
 iuhnl_t iusHistoryNodeListCreate
 (
     int numHistoryNodes

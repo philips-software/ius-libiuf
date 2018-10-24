@@ -1,15 +1,10 @@
 //
 // Created by nlv09165 on 23/05/2018.
 //
-#include <math.h>
 #include <stdlib.h>
 
 #include <ius.h>
-#include <iusError.h>
-#include <iusUtil.h>
-#include <iusInputFileStructure.h>
-#include <ius2DTransducerElementList.h>
-#include <include/ius2DTransducerElementPrivate.h>
+#include <ius2DTransducerElementPrivate.h>
 
 // ADT
 struct Ius2DTransducerElementList
@@ -19,7 +14,6 @@ struct Ius2DTransducerElementList
 } ;
 
 // ADT
-
 iu2dtel_t ius2DTransducerElementListCreate
 (
     int num2DTransducerElements
@@ -156,7 +150,7 @@ iu2dtel_t ius2DTransducerElementListLoad
 
     if(handle == H5I_INVALID_HID) return IU2DTEL_INVALID;
 	
-	hid_t elements_id = H5Gopen(handle, IUS_INPUTFILE_PATH_TRANSDUCER_ELEMENTLIST, H5P_DEFAULT); //todo centralize this
+	hid_t elements_id = H5Gopen(handle, IUS_INPUTFILE_PATH_TRANSDUCER_ELEMENTLIST, H5P_DEFAULT);
 	if (elements_id == H5I_INVALID_HID)
 		return IU2DTEL_INVALID;
 

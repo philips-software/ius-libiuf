@@ -2,18 +2,12 @@
 // Created by nlv12901 on 18/07/2018.
 //
 #include <stdlib.h>
-#include <math.h>
+#include <string.h>
 
 #include <hashmap.h>
+
 #include <ius.h>
-#include <iusError.h>
-#include <iusUtil.h>
-#include <iusInputFileStructure.h>
 #include <iusReceiveChannelMapPrivate.h>
-#include <iusReceiveChannelMapDict.h>
-#include <assert.h>
-#include <string.h>
-#include <include/iusHDF5.h>
 
 // ADT
 struct HashableReceiveChannelMap
@@ -156,7 +150,6 @@ herr_t iusReceiveChannelMapDictSave
 )
 {
 	herr_t status = 0;
-	//char path[IUS_MAX_HDF5_PATH];
 	struct hashmap_iter *iter;
 	hid_t group_id;
 
@@ -165,7 +158,6 @@ herr_t iusReceiveChannelMapDictSave
 	if (handle == H5I_INVALID_HID)
 		return IUS_ERR_VALUE;
 
-	//hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 	status = H5Gget_objinfo(handle, IUS_INPUTFILE_PATH_RECEIVECHANNELMAPDICT, 0, NULL); // todo centralize the path
 	if (status != 0) // the group does not exist yet
 	{
@@ -186,7 +178,6 @@ herr_t iusReceiveChannelMapDictSave
 	{
 		hid_t subgroup_id;
 		receiveChannelMapDictItem = HashableReceiveChannelMap_hashmap_iter_get_data(iter);
-		//sprintf(path, "%s/%s", parentPath, sourceElement->key);
 		subgroup_id = H5Gcreate(group_id, receiveChannelMapDictItem->key, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 		if (subgroup_id <= 0)
 		{
@@ -210,7 +201,6 @@ iurcmd_t iusReceiveChannelMapDictLoad
 )
 {
 	int status = 0;
-	//char path[64];
 	iurcm_t receiveChannelMap;
 	hsize_t i;
 	char memberName[MAX_NAME];
@@ -226,11 +216,9 @@ iurcmd_t iusReceiveChannelMapDictLoad
 	for (i = 0; i < nobj && status == IUS_E_OK; i++)
 	{
 		H5Gget_objname_by_idx(groupId, i, memberName, (size_t)MAX_NAME);
-		//sprintf(path, "%s/%s", parentPath, memberName);
 		hid_t subgroupId = H5Gopen(groupId, memberName, H5P_DEFAULT);
 		receiveChannelMap = iusReceiveChannelMapLoad(subgroupId);
 		status = iusReceiveChannelMapDictSet(dict, memberName, receiveChannelMap);
-		//iusReceiveChannelMapDelete(receiveChannelMap); do not delete becasue then it is out of the dictionary?
 		H5Gclose(subgroupId);
 	}
 	H5Gclose(handle);

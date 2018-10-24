@@ -2,8 +2,10 @@
 #ifndef IUSLIBRARY_IUSHLINPUTFILEIMP_H
 #define IUSLIBRARY_IUSHLINPUTFILEIMP_H
 
-#include "iusInputFile.h"
-#include "iusHistoryNode.h"
+#include <hdf5.h>
+#include <hdf5_hl.h>
+#include <iusInputFile.h>
+#include <iusHistoryNode.h>
 
 typedef struct IusInputFileInstance IusInputFileInstance;
 typedef IusInputFileInstance *iuifi_t;

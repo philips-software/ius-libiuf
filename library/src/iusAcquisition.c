@@ -3,19 +3,12 @@
 //
 #include <stdlib.h>
 #include <string.h>
-#include <memory.h>
 #include <math.h>
 
 #include <ius.h>
-#include <iusUtil.h>
-#include <iusError.h>
-#include <iusInputFileStructure.h>
 #include <iusAcquisitionPrivate.h>
-#include <include/iusHDF5.h>
 
 // ADT
-
-
 /** \brief An Ultrasound acquisition is identified by a date and a description, also the speed of sound has been determined */
 struct IusAcquisition
 {
@@ -137,7 +130,7 @@ int iusAcquisitionSave
     int status=0;
 
 	hid_t acquisition_id;
-	status = H5Gget_objinfo(handle, IUS_INPUTFILE_PATH_ACQUISITION, 0, NULL); // todo centralize the path "Sources"
+	status = H5Gget_objinfo(handle, IUS_INPUTFILE_PATH_ACQUISITION, 0, NULL);
 	if (status != 0) // the group does not exist yet
 	{
 		acquisition_id = H5Gcreate(handle, IUS_INPUTFILE_PATH_ACQUISITION, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
@@ -166,7 +159,7 @@ iua_t iusAcquisitionLoad
     char description[IUS_MAX_HDF5_PATH];
     iua_t acquisition;
 
-	hid_t acquisition_id = H5Gopen(handle, IUS_INPUTFILE_PATH_ACQUISITION, H5P_DEFAULT); // todo move "Acquisition" to central place
+	hid_t acquisition_id = H5Gopen(handle, IUS_INPUTFILE_PATH_ACQUISITION, H5P_DEFAULT);
     status |= iusHdf5ReadFloat(acquisition_id, IUS_INPUTFILE_PATH_ACQUISITION_SPEEDOFSOUND, &(speedOfSound));
     status |= iusHdf5ReadInt(acquisition_id, IUS_INPUTFILE_PATH_ACQUISITION_DATE, &(date));
     status |= iusHdf5ReadString(acquisition_id, IUS_INPUTFILE_PATH_ACQUISITION_DESCRIPTION, description);

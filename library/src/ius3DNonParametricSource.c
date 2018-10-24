@@ -4,18 +4,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <memory.h>
-#include <math.h>
 
 #include <ius.h>
-#include <iusError.h>
-#include <iusTypes.h>
-#include <iusUtil.h>
-#include <iusInputFileStructure.h>
-// todo: check if the "include" filder below is needed
-#include <include/iusSourcePrivate.h>
-#include <include/iusPositionPrivate.h>
-#include <include/ius3DNonParametricSource.h>
-#include <include/iusHDF5.h>
+#include <iusSourcePrivate.h>
+#include <iusPositionPrivate.h>
 
 struct Ius3DNonParametricSource
 {
@@ -34,7 +26,7 @@ iu3dnps_t ius3DNonParametricSourceCreate
     iu3dnps_t created = calloc(1,sizeof(Ius3DNonParametricSource));
     if( created == NULL ) return NULL;
 
-    created->pLocations = (struct Ius3DPosition *) calloc(numLocations, sizeof(Ius3DPosition));
+    created->pLocations = (struct Ius3DPosition *) calloc((size_t)numLocations, sizeof(Ius3DPosition));
     if( created->pLocations == NULL )
     {
         free(created);
@@ -55,7 +47,6 @@ int ius3DNonParametricSourceDelete
     if(ius3DNonParametricSource != NULL)
     {
         free(ius3DNonParametricSource);
-        ius3DNonParametricSource = NULL;
         status = IUS_E_OK;
     }
     return status;
@@ -148,7 +139,7 @@ static int ius3DNonParametricSourceLoadLocations
     hid_t handle
 )
 {
-    int p, status = IUS_E_OK;
+    int p, status;
     char path[IUS_MAX_HDF5_PATH];
     iu3dp_t pos;
 	hid_t locationList_id = H5Gopen(handle, IUS_INPUTFILE_PATH_SOURCE_LOCATIONLIST, H5P_DEFAULT);

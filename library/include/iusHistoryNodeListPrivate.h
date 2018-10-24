@@ -3,6 +3,7 @@
 #define IUSLIBRARY_IUSHISTORYNODELISTIMP_H
 
 #include <hdf5.h>
+#include <hdf5_hl.h>
 #include <iusHistoryNodeList.h>
 
 int iusHistoryNodeListSave

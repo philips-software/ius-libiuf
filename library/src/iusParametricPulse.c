@@ -6,12 +6,6 @@
 #include <string.h>
 
 #include <ius.h>
-#include <iusError.h>
-#include <iusPulse.h>
-#include <iusUtil.h>
-#include <iusHDF5.h>
-#include <iusInputFileStructure.h>
-#include <iusParametricPulse.h>
 #include <iusPulsePrivate.h>
 
 // ADT

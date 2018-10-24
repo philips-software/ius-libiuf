@@ -8,14 +8,9 @@
 #include <math.h>
 
 #include <ius.h>
-#include <iusError.h>
-#include <iusTypes.h>
-#include <iusUtil.h>
-#include <iusInputFileStructure.h>
-#include <include/iusSourcePrivate.h>
-#include <include/iusPositionPrivate.h>
-#include <include/ius3DParametricSource.h>
-#include <include/iusHDF5.h>
+#include <iusSourcePrivate.h>
+#include <iusPositionPrivate.h>
+
 
 struct Ius3DParametricSource
 {
@@ -45,7 +40,7 @@ iu3dps_t ius3DParametricSourceCreate
     iu3dps_t created = calloc(1,sizeof(Ius3DParametricSource));
     if( created == NULL ) return NULL;
 
-    created->pLocations = (struct Ius3DPosition *) calloc(numLocations, sizeof(Ius3DPosition));
+    created->pLocations = (struct Ius3DPosition *) calloc((size_t)numLocations, sizeof(Ius3DPosition));
     if( created->pLocations == NULL )
     {
         free(created);
@@ -71,7 +66,6 @@ int ius3DParametricSourceDelete
     if(ius3DParametricSource != NULL)
     {
         free(ius3DParametricSource);
-        ius3DParametricSource = NULL;
         status = IUS_E_OK;
     }
     return status;
@@ -271,7 +265,7 @@ static int ius3DParametricSourceLoadLocations
     hid_t handle
 )
 {
-    int p, status = IUS_E_OK;
+    int p, status;
     char path[IUS_MAX_HDF5_PATH];
     iu3dp_t pos;
 	hid_t locationList_id = H5Gopen(handle, IUS_INPUTFILE_PATH_SOURCE_LOCATIONLIST, H5P_DEFAULT);

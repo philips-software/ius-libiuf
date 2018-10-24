@@ -2,17 +2,12 @@
 // Created by nlv09165 on 02/05/2018.
 //
 #include <stdlib.h>
-#include <math.h>
-#include <assert.h>
 #include <string.h>
 
 #include <hashmap.h>
+
 #include <ius.h>
-#include <iusError.h>
-#include <iusUtil.h>
-#include <iusInputFileStructure.h>
 #include <iusReceiveSettingsPrivate.h>
-#include <iusReceiveSettingsDict.h>
 
 // ADT
 struct HashableReceiveSettings

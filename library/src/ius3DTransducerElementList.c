@@ -2,15 +2,10 @@
 // Created by nlv09165 on 23/05/2018.
 //
 #include <stdlib.h>
-#include <math.h>
 
 #include <ius.h>
-#include <iusError.h>
-#include <iusUtil.h>
-#include <iusInputFileStructure.h>
-#include <ius3DTransducerElementListPrivate.h>
 #include <ius3DTransducerElementPrivate.h>
-#include <include/iusHDF5.h>
+#include <ius3DTransducerElementListPrivate.h>
 
 struct Ius3DTransducerElementList
 {
@@ -210,7 +205,7 @@ int ius3DTransducerElementListSave
     hid_t group_id = H5Gcreate(handle, IUS_INPUTFILE_PATH_TRANSDUCER_ELEMENTLIST, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
     iu3dte_t sourceElement;
 
-    status |= iusHdf5WriteInt(group_id, IUS_INPUTFILE_PATH_TRANSDUCER_ELEMENTLIST_SIZE, &(list->count), 1); //TODO centralize this string
+    status |= iusHdf5WriteInt(group_id, IUS_INPUTFILE_PATH_TRANSDUCER_ELEMENTLIST_SIZE, &(list->count), 1);
 
     // iterate over source list elements and save'em
     for (i=0;i < list->count ;i++)

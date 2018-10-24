@@ -2,22 +2,10 @@
 // Created by nlv09165 on 25/07/2018.
 //
 #include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-#include <memory.h>
-#include <math.h>
-
 
 #include <ius.h>
-#include <iusError.h>
-#include <iusTypes.h>
-#include <iusUtil.h>
-
-#include <include/iusInputFileStructure.h>
-#include <include/iusSourcePrivate.h>
-#include <include/iusPositionPrivate.h>
-#include <include/ius2DNonParametricSource.h>
-#include <include/iusHDF5.h>
+#include <iusSourcePrivate.h>
+#include <iusPositionPrivate.h>
 
 struct Ius2DNonParametricSource
 {
@@ -36,7 +24,7 @@ iu2dnps_t ius2DNonParametricSourceCreate
     iu2dnps_t created = calloc(1,sizeof(Ius2DNonParametricSource));
     if( created == NULL ) return NULL;
 
-    created->pLocations = (struct Ius2DPosition *) calloc(numLocations, sizeof(Ius2DPosition));
+    created->pLocations = (struct Ius2DPosition *) calloc((size_t)numLocations, sizeof(Ius2DPosition));
     if( created->pLocations == NULL )
     {
         free(created);
@@ -57,7 +45,6 @@ int ius2DNonParametricSourceDelete
     if(ius2DNonParametricSource != NULL)
     {
         free(ius2DNonParametricSource);
-        ius2DNonParametricSource = NULL;
         status = IUS_E_OK;
     }
     return status;

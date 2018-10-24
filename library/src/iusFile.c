@@ -2,19 +2,9 @@
 //
 // Created by nlv09165 on 31/08/2018.
 //
-#include <stdlib.h>
-
 #include <ius.h>
-#include <iusError.h>
-#include <iusTypes.h>
-#include <iusUtil.h>
-
-#include <iusFile.h>
-#include <hdf5.h>
-#include <include/iusHistoryNodePrivate.h>
-#include <memory.h>
-#include <include/iusInputFile.h>
-#include <include/iusInputFilePrivate.h>
+#include <iusHistoryNodePrivate.h>
+#include <iusInputFilePrivate.h>
 
 struct IusFile
 {

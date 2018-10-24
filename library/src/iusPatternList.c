@@ -3,14 +3,10 @@
 // Created by nlv09165 on 18/07/2018.
 //
 #include <stdlib.h>
-#include <math.h>
-#include <include/iusPatternListPrivate.h>
+
 #include <include/ius.h>
-#include <include/iusError.h>
-#include <include/iusUtil.h>
-#include <iusInputFileStructure.h>
-#include <include/iusPatternPrivate.h>
-#include <include/iusHDF5.h>
+#include <iusPatternPrivate.h>
+#include <iusPatternListPrivate.h>
 
 // ADT
 struct IusPatternList
@@ -171,21 +167,9 @@ int iusPatternListSave
         return IUS_ERR_VALUE;
     if(iusPatternListFull(list) == IUS_FALSE)
         return IUS_ERR_VALUE;
-	
-	//hid_t patternList_id;
-	//status = H5Gget_objinfo(handle, IUS_INPUTFILE_PATH_PATTERNLIST, 0, NULL); // todo centralize the path "Sources"
-	//if (status != 0) // the group does not exist yet
-	//{
-	//	patternList_id = H5Gcreate(handle, IUS_INPUTFILE_PATH_PATTERNLIST, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-	//}
-	//else
-	//{
-	//	patternList_id = H5Gopen(handle, IUS_INPUTFILE_PATH_PATTERNLIST, H5P_DEFAULT);
-	//}
-    //hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+
     iupa_t pattern;
     size = iusPatternListGetSize(list);
-    //sprintf(path, FRAMELISTSIZEFMT, parentPath);
     status |= iusHdf5WriteInt(handle, IUS_INPUTFILE_PATH_PATTERNLIST_SIZE, &(size), 1);
 
     // iterate over source list elements and save'em
@@ -195,7 +179,6 @@ int iusPatternListSave
         if(pattern == IUPA_INVALID) continue;
 		sprintf(path, IUS_INPUTFILE_PATH_PATTERNLIST_PATTERN, i);
 		hid_t pattern_id = H5Gcreate(handle, path, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-        //sprintf(path, FRAMELISTFMT, parentPath, i);
         status = iusPatternSave(pattern, pattern_id);
 		H5Gclose(pattern_id);
         if(status != IUS_E_OK) break;

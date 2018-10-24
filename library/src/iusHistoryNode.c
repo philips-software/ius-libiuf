@@ -1,26 +1,14 @@
 //
 // Created by Ruijzendaal on 12/03/2018.
 //
-#include <memory.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 
 #include <ius.h>
-#include <iusUuid.h>
-#include <iusTypes.h>
-#include <iusHDF5.h>
-#include <iusError.h>
-#include <hdf5_hl.h>
-#include <iusHistoryNodeList.h>
-#include <iusHistoryNode.h>
-#include <include/iusHistoryNodeListPrivate.h>
-#include <include/iusParameterDictPrivate.h>
-#include <include/iusInputFilePrivate.h>
+#include <iusInputFilePrivate.h>
+#include <iusParameterDictPrivate.h>
+#include <iusHistoryNodeListPrivate.h>
 
-#define MAX_TYPE_LENGTH 40
 #define MAX_ID_LENGTH   40
-#define MAX_PARENTS     10
 
 // ADT
 struct IusHistoryNode
@@ -225,14 +213,6 @@ int iusHistoryNodeSetInstanceData
 #define NODE_PARAMETERS "NodeParameters"
 
 
-//if (strcmp(iusHistoryNodeGetType(file->history),IUS_INPUT_TYPE)==0)
-//{
-//iuif_t pFileInst = iusInputFileAlloc(pFilename);
-//memcpy(pFileInst,file,sizeof(IusFile));
-//pFileInst = iusInputFileSpecificsLoad(pFileInst);
-//file = (iuf_t) pFileInst;
-//}
-
 void *iusHistoryNodeLoadInstance
 (
     iuhn_t node,
@@ -247,8 +227,6 @@ void *iusHistoryNodeLoadInstance
     }
     return instance;
 }
-
-
 
 
 iuhn_t iusHistoryNodeLoad

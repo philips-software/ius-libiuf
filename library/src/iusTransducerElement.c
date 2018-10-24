@@ -4,10 +4,6 @@
 #include <stdlib.h>
 
 #include <ius.h>
-#include <iusError.h>
-#include <iusTypes.h>
-#include <iusUtil.h>
-#include <iusTransducerElement.h>
 #include <iusTransducerElementPrivate.h>
 
 // ADT

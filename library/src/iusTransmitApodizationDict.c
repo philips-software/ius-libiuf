@@ -2,18 +2,12 @@
 // Created by nlv12901 on 18/07/2018.
 //
 #include <stdlib.h>
-#include <math.h>
+#include <string.h>
 
 #include <hashmap.h>
+
 #include <ius.h>
-#include <iusError.h>
-#include <iusUtil.h>
-#include <iusInputFileStructure.h>
 #include <iusTransmitApodizationPrivate.h>
-#include <iusTransmitApodizationDict.h>
-#include <assert.h>
-#include <string.h>
-#include <include/iusHDF5.h>
 
 // ADT
 struct HashableTransmitApodization

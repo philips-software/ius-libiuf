@@ -3,14 +3,9 @@
 // Created by nlv09165 on 05/10/2018.
 //
 #include <stdlib.h>
-
-#include <ius.h>
-#include <iusError.h>
-#include <iusTypes.h>
-#include <iusUtil.h>
 #include <memory.h>
 
-#include "include/iusData.h"
+#include <ius.h>
 
 struct IusData
 {
@@ -27,7 +22,7 @@ iud_t iusDataCreate
     if( size < 0 ) return IUD_INVALID;
     iud_t created = calloc(1,sizeof(IusData));
     created->size = size;
-    created->pData = calloc(size,sizeof(float));
+    created->pData = calloc((size_t)size,sizeof(float));
     return created;
 }
 
