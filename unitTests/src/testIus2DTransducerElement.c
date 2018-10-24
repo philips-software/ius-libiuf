@@ -9,8 +9,6 @@
 #include <unity_fixture.h>
 
 #include <include/ius.h>
-#include <include/iusError.h>
-#include <include/iusTypes.h>
 #include "include/ius2DTransducerElementPrivate.h"
 
 TEST_GROUP(Ius2DTransducerElement);
@@ -28,7 +26,7 @@ TEST(Ius2DTransducerElement, testIus2DTransducerElementCreate)
 {
     const float transducerPitch = 0.000005f;
     const int numTransducerElements = 128;
-    iu2dp_t elemPos = ius2DPositionCreate((10 - numTransducerElements / 2)*transducerPitch, 0.0f);
+    iu2dp_t elemPos = ius2DPositionCreate((float)(10 - numTransducerElements / 2.0)*transducerPitch, 0.0f);
     iu2ds_t elemSize = ius2DSizeCreate(0.0001f,0.0001f);
     float  theta = 0.3f;
     iu2dte_t element = ius2DTransducerElementCreate(elemPos, theta, elemSize);
@@ -37,7 +35,6 @@ TEST(Ius2DTransducerElement, testIus2DTransducerElementCreate)
     //invalid params
     iu2dte_t notherElement = ius2DTransducerElementCreate(elemPos, theta, NULL);
     TEST_ASSERT_EQUAL(IU2DTE_INVALID,notherElement);
-    int status = ius2DTransducerElementDelete(notherElement);
 
     float ap = NAN;
     notherElement = ius2DTransducerElementCreate(elemPos, ap, elemSize);
@@ -46,7 +43,7 @@ TEST(Ius2DTransducerElement, testIus2DTransducerElementCreate)
     notherElement = ius2DTransducerElementCreate(NULL, theta, elemSize);
     TEST_ASSERT_EQUAL(IU2DTE_INVALID,notherElement);
 
-    status = ius2DTransducerElementDelete(element);
+    int status = ius2DTransducerElementDelete(element);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 }
 
@@ -55,7 +52,7 @@ TEST(Ius2DTransducerElement, testIus2DTransducerElementDelete)
 {
     const float transducerPitch = 0.000005f;
     const int numTransducerElements = 128;
-    iu2dp_t elemPos = ius2DPositionCreate((10 - numTransducerElements / 2)*transducerPitch, 0.0f);
+    iu2dp_t elemPos = ius2DPositionCreate((float)(10 - numTransducerElements / 2.0)*transducerPitch, 0.0f);
     iu2ds_t elemSize = ius2DSizeCreate(0.0001f,0.0001f);
     float  theta = 0.3f;
     iu2dte_t element = ius2DTransducerElementCreate(elemPos, theta, elemSize);
@@ -76,8 +73,8 @@ TEST(Ius2DTransducerElement, testIus2DTransducerElementCompare)
     IUS_BOOL equal;
     const float transducerPitch = 0.000005f;
     const int numTransducerElements = 128;
-    iu2dp_t elemPos = ius2DPositionCreate((10 - numTransducerElements / 2)*transducerPitch, 0.0f);
-    iu2dp_t diffElemPos = ius2DPositionCreate((19 - numTransducerElements / 2)*transducerPitch, 0.0f);
+    iu2dp_t elemPos = ius2DPositionCreate((float)(10 - numTransducerElements / 2.0)*transducerPitch, 0.0f);
+    iu2dp_t diffElemPos = ius2DPositionCreate((float)(19 - numTransducerElements / 2.0)*transducerPitch, 0.0f);
 
     iu2ds_t elemSize = ius2DSizeCreate(0.0001f,0.0001f);
     iu2ds_t diffElemSize = ius2DSizeCreate(0.0002f,0.0001f);
@@ -133,7 +130,7 @@ TEST(Ius2DTransducerElement, testIus2DTransducerElementSetGet)
     IUS_BOOL equal;
     const float transducerPitch = 0.000005f;
     const int numTransducerElements = 128;
-    iu2dp_t elemPos = ius2DPositionCreate((10 - numTransducerElements / 2)*transducerPitch, 0.0f);
+    iu2dp_t elemPos = ius2DPositionCreate((float)(10 - numTransducerElements / 2.0)*transducerPitch, 0.0f);
     iu2ds_t elemSize = ius2DSizeCreate(0.0001f,0.0001f);
     float  theta = 0.3f;
 
@@ -162,7 +159,7 @@ TEST(Ius2DTransducerElement, testIus2DTransducerElementSerialization)
     //char *path = "/TransducerElement"; Elements path is not variable 
     const float transducerPitch = 0.000005f;
     const int numTransducerElements = 128;
-    iu2dp_t elemPos = ius2DPositionCreate((10 - numTransducerElements / 2)*transducerPitch, 0.0f);
+    iu2dp_t elemPos = ius2DPositionCreate((float)(10 - numTransducerElements / 2.0)*transducerPitch, 0.0f);
     iu2ds_t elemSize = ius2DSizeCreate(0.0001f,0.0001f);
     float theta = 0.3f;
 

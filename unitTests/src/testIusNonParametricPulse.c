@@ -6,12 +6,7 @@
 #include <unity_fixture.h>
 
 #include <ius.h>
-#include <iusError.h>
-#include <iusTypes.h>
-#include <iusPulsePrivate.h>
-#include <iusParametricPulse.h>
 #include <iusNonParametricPulsePrivate.h>
-
 #include <testDataGenerators.h>
 
 TEST_GROUP(IusNonParametricPulse);

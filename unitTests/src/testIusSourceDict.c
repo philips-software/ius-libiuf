@@ -5,11 +5,8 @@
 #include <unity_internals.h>
 #include <unity_fixture.h>
 
-#include <hdf5.h>
 #include <ius.h>
 #include <iusSourceDictPrivate.h>
-#include <include/ius3DParametricSource.h>
-#include <include/ius3DNonParametricSource.h>
 
 TEST_GROUP(IusSourceDict);
 
@@ -131,13 +128,10 @@ TEST(IusSourceDict, testIusCompareSourceDict)
 
 TEST(IusSourceDict, testIusSerialization)
 {
-//    IUS_BOOL equal;
-
     char *_3d_non_parametric_label = "label for 3d non parametric source";
     char *_3d_parametric_label = "label for 3d parametric source";
     int locationCount = 5; /**< number of locations */
     char *filename = "testIusSourceDictSerialization.hdf5";
-    //char *dictPath =  "/SourceDict";
 
     // Happy flow
     float angularDelta = 0.13f;

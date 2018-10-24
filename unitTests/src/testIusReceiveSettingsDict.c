@@ -5,7 +5,6 @@
 #include <unity_internals.h>
 #include <unity_fixture.h>
 
-#include <hdf5.h>
 #include <ius.h>
 #include <iusReceiveSettingsDictPrivate.h>
 #include <testDataGenerators.h>

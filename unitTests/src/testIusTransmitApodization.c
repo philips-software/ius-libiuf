@@ -6,10 +6,7 @@
 #include <unity_fixture.h>
 
 #include <ius.h>
-#include <iusHDF5.h>
-#include <iusError.h>
-#include <iusTypes.h>
-#include <iusTransmitApodization.h>
+
 
 TEST_GROUP(IusTransmitApodization);
 
@@ -92,5 +89,4 @@ TEST_GROUP_RUNNER(IusTransmitApodization)
 	RUN_TEST_CASE(IusTransmitApodization, testIusTransmitApodizationDelete);
 	RUN_TEST_CASE(IusTransmitApodization, testIusTransmitApodizationCompare);
 	RUN_TEST_CASE(IusTransmitApodization, testIusTransmitApodizationGet);
-	//RUN_TEST_CASE(IusTransmitApodization, testIusTransmitApodizationSerialization);
 }

@@ -5,10 +5,9 @@
 #include <unity.h>
 #include <unity_internals.h>
 #include <unity_fixture.h>
-#include <include/ius2DTransducerElement.h>
-#include <include/ius2DTransducerElementListPrivate.h>
+
 #include <include/ius.h>
-#include <iusError.h>
+#include <ius2DTransducerElementListPrivate.h>
 
 TEST_GROUP(Ius2DTransducerElementList);
 

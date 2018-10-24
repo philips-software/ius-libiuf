@@ -158,7 +158,7 @@ herr_t iusTransmitApodizationDictSave
 	if (handle == H5I_INVALID_HID)
 		return IUS_ERR_VALUE;
 
-	status = H5Gget_objinfo(handle, IUS_INPUTFILE_PATH_TRANSMITAPODIZATIONDICT, 0, NULL); // todo centralize the path
+	status = H5Gget_objinfo(handle, IUS_INPUTFILE_PATH_TRANSMITAPODIZATIONDICT, 0, NULL);
 	if (status != 0) // the group does not exist yet
 	{
 		group_id = H5Gcreate(handle, IUS_INPUTFILE_PATH_TRANSMITAPODIZATIONDICT, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);

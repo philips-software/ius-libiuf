@@ -6,11 +6,7 @@
 #include <unity_fixture.h>
 
 #include <ius.h>
-#include <iusHDF5.h>
-#include <iusError.h>
-#include <iusTypes.h>
-#include <iusReceiveChannelMap.h>
-#include <iusReceiveChannelMapDict.h>
+
 
 TEST_GROUP(IusReceiveChannelMap);
 
@@ -93,5 +89,4 @@ TEST_GROUP_RUNNER(IusReceiveChannelMap)
 	RUN_TEST_CASE(IusReceiveChannelMap, testIusReceiveChannelMapDelete);
 	RUN_TEST_CASE(IusReceiveChannelMap, testIusReceiveChannelMapCompare);
 	RUN_TEST_CASE(IusReceiveChannelMap, testIusReceiveChannelMapGet);
-//	RUN_TEST_CASE(IusReceiveChannelMap, testIusReceiveChannelMapSerialization);
 }

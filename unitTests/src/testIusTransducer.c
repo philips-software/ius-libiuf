@@ -6,13 +6,10 @@
 #include <unity_internals.h>
 #include <unity_fixture.h>
 
-#include <hdf5.h>
 #include <ius.h>
-#include <iusError.h>
-#include <iusTypes.h>
-#include <include/iusTransducerPrivate.h>
-#include <include/ius2DTransducerPrivate.h>
-#include <include/ius3DTransducerPrivate.h>
+#include <iusTransducerPrivate.h>
+#include <ius2DTransducerPrivate.h>
+#include <ius3DTransducerPrivate.h>
 
 TEST_GROUP(IusTransducer);
 
@@ -133,7 +130,7 @@ TEST(IusTransducer, testIusTransducerSerialization)
 	iut_t transducer =  (iut_t) ius2DTransducerCreate(transducerName, IUS_LINE, centerfrequency, numTransducerElements);
 	for (i = 0; i < numTransducerElements; i++)
 	{
-		iu2dp_t elemPos = ius2DPositionCreate((i - numTransducerElements / 2)*transducerPitch, 0.0f);
+		iu2dp_t elemPos = ius2DPositionCreate((float)(i - numTransducerElements / 2.0)*transducerPitch, 0.0f);
 		iu2ds_t elemSize = ius2DSizeCreate(0.0001f,0.0001f);
 		iu2dte_t element = ius2DTransducerElementCreate(elemPos, 0.0f, elemSize);
 		ius2DTransducerSetElement( (iu2dt_t) transducer, i, element);

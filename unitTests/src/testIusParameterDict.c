@@ -6,7 +6,7 @@
 #include <unity_fixture.h>
 
 #include <ius.h>
-#include <include/iusParameterDictPrivate.h>
+#include <iusParameterDictPrivate.h>
 #include <testDataGenerators.h>
 
 TEST_GROUP(IusParameterDict);

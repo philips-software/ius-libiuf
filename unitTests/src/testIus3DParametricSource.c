@@ -7,10 +7,8 @@
 #include <unity_internals.h>
 #include <unity_fixture.h>
 
-#include <include/ius.h>
-#include <include/iusError.h>
-#include <include/iusTypes.h>
-#include "include/ius3DParametricSourcePrivate.h"
+#include <ius.h>
+#include <ius3DParametricSourcePrivate.h>
 
 TEST_GROUP(Ius3DParametricSource);
 

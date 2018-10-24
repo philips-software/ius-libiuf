@@ -7,8 +7,6 @@
 #include <unity_fixture.h>
 
 #include <ius.h>
-#include <iusError.h>
-#include <iusTypes.h>
 #include <iusAcquisitionPrivate.h>
 
 TEST_GROUP(IusAcquisition);
@@ -123,20 +121,15 @@ TEST(IusAcquisition, testIusSerialization)
 
     hid_t handle = H5Fcreate( filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT );
     TEST_ASSERT(handle > 0);
-	//hid_t group_id = H5Gcreate(handle, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-	//TEST_ASSERT(group_id > 0);
+
     int status = iusAcquisitionSave(obj, handle);
-	//H5Gclose(group_id);
     H5Fclose(handle);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
     // read back
     handle = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT );
 	TEST_ASSERT(handle > 0);
-	//group_id = H5Gopen(handle, acquisitionPath, H5P_DEFAULT);
-	//TEST_ASSERT(group_id > 0);
     iua_t savedObj = iusAcquisitionLoad(handle);
-	//H5Gclose(group_id);
     H5Fclose(handle);
 
     TEST_ASSERT_EQUAL(IUS_TRUE, iusAcquisitionCompare(obj, savedObj));

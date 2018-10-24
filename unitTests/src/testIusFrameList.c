@@ -5,9 +5,8 @@
 #include <unity_internals.h>
 #include <unity_fixture.h>
 
-#include <iusFrame.h>
-#include <iusFrameListPrivate.h>
 #include <ius.h>
+#include <iusFrameListPrivate.h>
 
 TEST_GROUP(IusFrameList);
 
@@ -87,7 +86,6 @@ TEST(IusFrameList, testIusSerialization)
   int status;
   IUS_BOOL equal;
   char *pFilename = "testIusFrameListSerialization.hdf5";
-  //char *pFrameListPath = "/FrameList";
 
   // fill list
   iufl_t frameList = iusFrameListCreate(numFrames);

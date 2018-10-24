@@ -6,10 +6,7 @@
 #include <unity_internals.h>
 #include <unity_fixture.h>
 
-#include <hdf5.h>
 #include <ius.h>
-#include <iusError.h>
-#include <iusTypes.h>
 #include <include/ius2DTransducerPrivate.h>
 
 TEST_GROUP(Ius2DTransducer);
@@ -81,7 +78,7 @@ TEST(Ius2DTransducer,  testIusHL2DTransducerCompare)
     const int numTransducerElements = 128;
     const int diffNumTransducerElements = 256;
     const float transducerPitch = 0.000005f;
-    iu2dp_t elemPos = ius2DPositionCreate((10 - numTransducerElements / 2)*transducerPitch, 0.0f);
+    iu2dp_t elemPos = ius2DPositionCreate((float)(10 - numTransducerElements/2.0)*transducerPitch, 0.0f);
     iu2ds_t elemSize = ius2DSizeCreate(0.0001f,0.0001f);
     float elemAngle = 0.5f;
 
@@ -145,7 +142,7 @@ TEST(Ius2DTransducer, testIus2DTransducerSetGet)
     float centerFrequency = 2500000.0f;
     const int numTransducerElements = 128;
     const float transducerPitch = 0.000005f;
-    iu2dp_t elemPos = ius2DPositionCreate((10 - numTransducerElements / 2)*transducerPitch, 0.0f);
+    iu2dp_t elemPos = ius2DPositionCreate((float)(10 - numTransducerElements / 2.0)*transducerPitch, 0.0f);
     iu2ds_t elemSize = ius2DSizeCreate(0.0001f,0.0001f);
     float elemAngle = 0.5f;
 
@@ -192,7 +189,7 @@ TEST(Ius2DTransducer, testIus2DTransducerSerialization)
     TEST_ASSERT(transducer != IU2DT_INVALID);
 	for (i = 0; i < numTransducerElements; i++)
 	{
-        iu2dp_t elemPos = ius2DPositionCreate((10 - numTransducerElements / 2)*transducerPitch, 0.0f);
+        iu2dp_t elemPos = ius2DPositionCreate((float)(10 - numTransducerElements / 2.0)*transducerPitch, 0.0f);
         iu2ds_t elemSize = ius2DSizeCreate(0.0001f,0.0001f);
         float elemAngle = 0.5f;
 		iu2dte_t element = ius2DTransducerElementCreate(elemPos, elemAngle, elemSize);

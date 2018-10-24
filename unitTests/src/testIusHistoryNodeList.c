@@ -5,9 +5,8 @@
 #include <unity_internals.h>
 #include <unity_fixture.h>
 
-#include <iusHistoryNode.h>
-#include <iusHistoryNodeListPrivate.h>
 #include <ius.h>
+#include <iusHistoryNodeListPrivate.h>
 
 TEST_GROUP(IusHistoryNodeList);
 

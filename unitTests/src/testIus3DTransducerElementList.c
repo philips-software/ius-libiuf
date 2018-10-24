@@ -5,10 +5,9 @@
 #include <unity.h>
 #include <unity_internals.h>
 #include <unity_fixture.h>
-#include <include/ius3DTransducerElement.h>
-#include <include/ius3DTransducerElementListPrivate.h>
-#include <include/ius.h>
-#include <iusError.h>
+
+#include <ius.h>
+#include <ius3DTransducerElementListPrivate.h>
 
 TEST_GROUP(Ius3DTransducerElementList);
 
@@ -55,7 +54,7 @@ TEST(Ius3DTransducerElementList, testIus3DTransducerElementListCompare)
     IUS_BOOL equal;
     const int numTransducerElements = 128;
     const float transducerPitch = 0.000005f;
-    iu3dp_t elemPos = ius3DPositionCreate((10 - numTransducerElements / 2)*transducerPitch, 0.0f, 0.0f);
+    iu3dp_t elemPos = ius3DPositionCreate((float)(10 - numTransducerElements / 2.0)*transducerPitch, 0.0f, 0.0f);
     iu3ds_t elemSize = ius3DSizeCreate(0.0001f,0.0001f,0.0001f);
     iu3da_t elemAngle = ius3DAngleCreate(0.0f,0.3f);
 
@@ -96,7 +95,7 @@ TEST(Ius3DTransducerElementList, testIus3DTransducerElementListSetGet)
 
     const int numTransducerElements = 128;
     const float transducerPitch = 0.000005f;
-    iu3dp_t elemPos = ius3DPositionCreate((10 - numTransducerElements / 2)*transducerPitch, 0.0f, 0.0f);
+    iu3dp_t elemPos = ius3DPositionCreate((float)(10 - numTransducerElements / 2.0)*transducerPitch, 0.0f, 0.0f);
     iu3ds_t elemSize = ius3DSizeCreate(0.0001f,0.0001f,0.0001f);
     iu3da_t elemAngle = ius3DAngleCreate(0.0f,0.3f);
     iu3dte_t element = ius3DTransducerElementCreate(elemPos, elemAngle, elemSize);
@@ -139,7 +138,7 @@ TEST(Ius3DTransducerElementList, testIus3DTransducerElementListSerialization)
     // fill list
     for (i = 0; i < num3DTransducerElements; i++)
     {
-        iu3dp_t elemPos = ius3DPositionCreate((10 - num3DTransducerElements / 2)*transducerPitch, 0.0f, 0.0f);
+        iu3dp_t elemPos = ius3DPositionCreate((float)(10 - num3DTransducerElements / 2.0)*transducerPitch, 0.0f, 0.0f);
         iu3ds_t elemSize = ius3DSizeCreate(0.0001f,0.0001f,0.0001f);
         iu3da_t elemAngle = ius3DAngleCreate(0.0f,0.3f);
         iu3dte_t element = ius3DTransducerElementCreate(elemPos, elemAngle, elemSize);

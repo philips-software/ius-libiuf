@@ -7,10 +7,8 @@
 #include <unity_internals.h>
 #include <unity_fixture.h>
 
-#include <include/ius.h>
-#include <include/iusError.h>
-#include <include/iusTypes.h>
-#include "include/iusPatternPrivate.h"
+#include <ius.h>
+#include <iusPatternPrivate.h>
 
 
 static const char *pPulseLabel = "pulseLabel";

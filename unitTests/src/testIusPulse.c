@@ -8,11 +8,7 @@
 #include <unity_fixture.h>
 
 #include <ius.h>
-#include <iusError.h>
-#include <iusTypes.h>
 #include <iusPulsePrivate.h>
-#include <iusNonParametricPulse.h>
-#include <iusParametricPulse.h>
 
 TEST_GROUP(IusPulse);
 

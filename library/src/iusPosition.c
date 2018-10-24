@@ -77,7 +77,6 @@ void ius2DPositionDelete
     free(iusPos);
 }
 
-// TODO: position should serialize to a "position" with x,y,z properties instead of
 iu3dp_t ius3DPositionLoad
 (
     hid_t handle
@@ -123,7 +122,7 @@ int ius3DPositionSave
 )
 {
     hid_t position_id;
-    int status = H5Gget_objinfo(handle, IUS_INPUTFILE_PATH_POSITION, 0, NULL); // todo centralize the path "Sources"
+    int status = H5Gget_objinfo(handle, IUS_INPUTFILE_PATH_POSITION, 0, NULL);
     if (status != 0) // the group does not exist yet
     {
         position_id = H5Gcreate(handle, IUS_INPUTFILE_PATH_POSITION,
@@ -147,7 +146,7 @@ int ius2DPositionSave
 )
 {
     hid_t position_id;
-    int status = H5Gget_objinfo(handle, IUS_INPUTFILE_PATH_POSITION, 0, NULL); // todo centralize the path "Sources"
+    int status = H5Gget_objinfo(handle, IUS_INPUTFILE_PATH_POSITION, 0, NULL);
     if (status != 0) // the group does not exist yet
     {
         position_id = H5Gcreate(handle, IUS_INPUTFILE_PATH_POSITION,
@@ -157,7 +156,7 @@ int ius2DPositionSave
     {
         position_id = H5Gopen(handle, IUS_INPUTFILE_PATH_POSITION, H5P_DEFAULT);
     }
-    status = iusHdf5WriteFloat(position_id, IUS_INPUTFILE_PATH_POSITION_X, &(position->x), 1);   //todo put x and z as defines in central place
+    status = iusHdf5WriteFloat(position_id, IUS_INPUTFILE_PATH_POSITION_X, &(position->x), 1);
     status |= iusHdf5WriteFloat(position_id, IUS_INPUTFILE_PATH_POSITION_Z, &(position->z), 1);
     H5Gclose(position_id);
 

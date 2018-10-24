@@ -5,7 +5,6 @@
 #include <unity_internals.h>
 #include <unity_fixture.h>
 
-#include <hdf5.h>
 #include <ius.h>
 #include <iusReceiveChannelMapDictPrivate.h>
 
@@ -75,6 +74,7 @@ TEST(IusReceiveChannelMapDict, testIusReceiveChannelMapDictCompare)
 	iurcmd_t notherDict = iusReceiveChannelMapDictCreate();
 	status = iusReceiveChannelMapSetMap(inverseReceiveChannelMap, inverseMap);
 	status |= iusReceiveChannelMapDictSet(dict, "inverse", receiveChannelMap);
+	TEST_ASSERT(status == IUS_E_OK);
 
 	TEST_ASSERT(dict != IURCMD_INVALID);
 	TEST_ASSERT(notherDict != IURCMD_INVALID);
@@ -98,7 +98,6 @@ TEST(IusReceiveChannelMapDict, testIusReceiveChannelMapDictCompare)
 TEST(IusReceiveChannelMapDict, testIusReceiveChannelMapDictSerialization)
 {
 	char *filename = "testIusReceiveChannelMapSerialization.hdf5";
-	//char *ReceiveChannelMapDictPath = "/ReceiveChannelMap";
 
 	int numChannels = 8;
 	char *label = "one-to-one";
@@ -110,6 +109,7 @@ TEST(IusReceiveChannelMapDict, testIusReceiveChannelMapDictSerialization)
 
 	iurcmd_t receiveChannelMapDict = iusReceiveChannelMapDictCreate();
 	status |= iusReceiveChannelMapDictSet(receiveChannelMapDict, label, obj);
+	TEST_ASSERT(status == IUS_E_OK);
 
 	hid_t handle = H5Fcreate(filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
 	TEST_ASSERT(handle > 0);

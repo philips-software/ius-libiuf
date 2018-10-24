@@ -5,11 +5,8 @@
 #include <unity_internals.h>
 #include <unity_fixture.h>
 
-#include <hdf5.h>
 #include <ius.h>
 #include <iusPulseDictPrivate.h>
-#include <iusParametricPulse.h>
-#include <iusNonParametricPulse.h>
 
 TEST_GROUP(IusPulseDict);
 
@@ -65,7 +62,7 @@ TEST(IusPulseDict, testIusPulseDictCompare)
     float   pulseFrequency=8000000.0f;   /**< frequency that the pulse represents in Hz */
     float   pulseAmplitude=800.0f;       /**< (max) amplitude of the pulse in Volts */
     int     pulseCount=10;               /**< number of cycles that the pulse represents */
-    int     status=10;
+    int     status;
     iupp_t  parametricPulse;
     iunpp_t nonParametricPulse;
 
@@ -121,7 +118,7 @@ TEST(IusPulseDict, testIusSerialization)
     float   pulseFrequency=8000000.0f;   /**< frequency that the pulse represents in Hz */
     float   pulseAmplitude=800.0f;       /**< (max) amplitude of the pulse in Volts */
     int     pulseCount=10;               /**< number of cycles that the pulse represents */
-    int     status=10;
+    int     status;
     char *filename = "testIusPulseDictSerialization.hdf5";
     //char *dictPath =  "/PulseDict"; fixed to /Pulses
 

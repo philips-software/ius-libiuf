@@ -7,11 +7,8 @@
 #include <unity_internals.h>
 #include <unity_fixture.h>
 
-#include <include/ius.h>
-#include <include/iusError.h>
-#include <include/iusTypes.h>
-#include <include/iusTGC.h>
-#include "include/iusReceiveSettingsPrivate.h"
+#include <ius.h>
+#include <iusReceiveSettingsPrivate.h>
 
 TEST_GROUP(IusReceiveSettings);
 
@@ -38,7 +35,7 @@ TEST(IusReceiveSettings, testIusReceiveSettingsCreate)
     iusReceiveSettingsDelete(notherObj);
 
     // invalid params
-    obj = iusReceiveSettingsCreate(-1.0, numDelays, numSamplesPerLine, numTGCentries);
+    obj = iusReceiveSettingsCreate((float)-1.0, numDelays, numSamplesPerLine, numTGCentries);
     TEST_ASSERT(obj == IURS_INVALID);
     obj = iusReceiveSettingsCreate(sampleFrequency, 0, numSamplesPerLine, numTGCentries);
     TEST_ASSERT(obj == IURS_INVALID);

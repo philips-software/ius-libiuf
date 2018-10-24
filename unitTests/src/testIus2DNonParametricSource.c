@@ -7,9 +7,6 @@
 #include <unity_fixture.h>
 
 #include <include/ius.h>
-#include <include/iusError.h>
-#include <include/iusTypes.h>
-#include <include/iusPosition.h>
 #include "include/ius2DNonParametricSourcePrivate.h"
 
 TEST_GROUP(Ius2DNonParametricSource);

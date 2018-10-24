@@ -6,7 +6,7 @@
 #include <unity_fixture.h>
 
 #include <ius.h>
-#include <include/iusDataStreamDictPrivate.h>
+#include <iusDataStreamDictPrivate.h>
 #include <testDataGenerators.h>
 
 TEST_GROUP(IusDataStreamDict);

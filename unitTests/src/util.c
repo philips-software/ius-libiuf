@@ -1,14 +1,7 @@
 //
 // Created by Ruijzendaal on 20/03/2018.
 //
-#include <unity.h>
-
 #include <ius.h>
-#include <util.h>
-#include <iusTransducer.h>
-#include <iusPosition.h>
-#include <ius3DAngle.h>
-#include <ius3DSize.h>
 
 iu3dte_t iusUtilCreate3DElement
     (

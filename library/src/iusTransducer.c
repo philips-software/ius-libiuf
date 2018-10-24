@@ -224,16 +224,13 @@ herr_t iusTransducerSave
 	herr_t  status=0;
 	hid_t transducer_id;
 
-	status = H5Gget_objinfo(handle, IUS_INPUTFILE_PATH_TRANSDUCER, 0, NULL); // todo centralize the path "Transducer"
+	status = H5Gget_objinfo(handle, IUS_INPUTFILE_PATH_TRANSDUCER, 0, NULL);
 	if (status != 0) // the group does not exist yet
-	{
 		transducer_id = H5Gcreate(handle, IUS_INPUTFILE_PATH_TRANSDUCER, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-	}
 	else
-	{
 		transducer_id = H5Gopen(handle, IUS_INPUTFILE_PATH_TRANSDUCER, H5P_DEFAULT);
-	}
-	// todo check if transducer_id is valid
+    if (transducer_id == H5I_INVALID_HID) return -1;
+
 	status = 0;
     if (transducer->type == IUS_3D_SHAPE)
 		status |= ius3DTransducerSave((Ius3DTransducer *) transducer, transducer_id);

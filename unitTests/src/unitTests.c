@@ -4,10 +4,7 @@
 
 #include <stdio.h>
 #include <unity_fixture.h>
-
-#include <iusTypes.h>
 #include <iusUtil.h>
-
 
 static void RunAllTests(void)
 {

@@ -7,10 +7,8 @@
 #include <unity_internals.h>
 #include <unity_fixture.h>
 
-#include <include/ius.h>
-#include <include/iusError.h>
-#include <include/iusTypes.h>
-#include "include/iusTGCPrivate.h"
+#include <ius.h>
+#include <iusTGCPrivate.h>
 
 TEST_GROUP(IusTGC);
 
@@ -95,7 +93,6 @@ TEST(IusTGC, testIusTGCCompare)
 
 TEST(IusTGC, testIusTGCSetGet)
 {
-//    IUS_BOOL equal;
     int numTGCValues=2;
     iutgc_t obj = iusTGCCreate(numTGCValues);
     TEST_ASSERT(obj != IUTGC_INVALID);

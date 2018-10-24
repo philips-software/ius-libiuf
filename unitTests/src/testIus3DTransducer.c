@@ -6,11 +6,8 @@
 #include <unity_internals.h>
 #include <unity_fixture.h>
 
-#include <hdf5.h>
 #include <ius.h>
-#include <iusError.h>
-#include <iusTypes.h>
-#include <include/ius3DTransducerPrivate.h>
+#include <ius3DTransducerPrivate.h>
 
 TEST_GROUP(Ius3DTransducer);
 
@@ -79,7 +76,7 @@ TEST(Ius3DTransducer,  testIusHL3DTransducerCompare)
     const int numTransducerElements = 128;
     const int diffNumTransducerElements = 256;
     const float transducerPitch = 0.000005f;
-    iu3dp_t elemPos = ius3DPositionCreate((10 - numTransducerElements / 2)*transducerPitch, 0.0f, 0.0f);
+    iu3dp_t elemPos = ius3DPositionCreate((float)(10 - numTransducerElements / 2.0)*transducerPitch, 0.0f, 0.0f);
     iu3ds_t elemSize = ius3DSizeCreate(0.0001f,0.0001f,0.0001f);
     iu3da_t elemAngle = ius3DAngleCreate(0.0f,0.3f);
 
@@ -143,7 +140,7 @@ TEST(Ius3DTransducer, testIus3DTransducerSetGet)
     float centerFrequency = 2500000.0f;
     const int numTransducerElements = 128;
     const float transducerPitch = 0.000005f;
-    iu3dp_t elemPos = ius3DPositionCreate((10 - numTransducerElements / 2)*transducerPitch, 0.0f, 0.0f);
+    iu3dp_t elemPos = ius3DPositionCreate((float)(10 - numTransducerElements / 2.0)*transducerPitch, 0.0f, 0.0f);
     iu3ds_t elemSize = ius3DSizeCreate(0.0001f,0.0001f,0.0001f);
     iu3da_t elemAngle = ius3DAngleCreate(0.0f,0.3f);
 
@@ -190,7 +187,7 @@ TEST(Ius3DTransducer, testIus3DTransducerSerialization)
     TEST_ASSERT(transducer != IU3DT_INVALID);
 	for (i = 0; i < numTransducerElements; i++)
 	{
-        iu3dp_t elemPos = ius3DPositionCreate((10 - numTransducerElements / 2)*transducerPitch, 0.0f, 0.0f);
+        iu3dp_t elemPos = ius3DPositionCreate((float)(10 - numTransducerElements / 2.0)*transducerPitch, 0.0f, 0.0f);
         iu3ds_t elemSize = ius3DSizeCreate(0.0001f,0.0001f,0.0001f);
         iu3da_t elemAngle = ius3DAngleCreate(0.0f,0.3f);
 		iu3dte_t element = ius3DTransducerElementCreate(elemPos, elemAngle, elemSize);

@@ -110,12 +110,11 @@ int iusParametricPulseSave
 	if (handle == H5I_INVALID_HID)
 		return IUS_ERR_VALUE;
 
-	//TODO chekc if /Pulses exist
     status = iusBasePulseSave((iup_t)pulse, handle);
-    status |= iusHdf5WriteFloat(handle, IUS_INPUTFILE_PATH_PULSE_FREQUENCY, &(pulse->pulseFrequency), 1);
+    if (status == IUS_ERR_VALUE) return status;
+    status = iusHdf5WriteFloat(handle, IUS_INPUTFILE_PATH_PULSE_FREQUENCY, &(pulse->pulseFrequency), 1);
     status |= iusHdf5WriteFloat(handle, IUS_INPUTFILE_PATH_PULSE_PULSEAMPLITUDES, &(pulse->pulseAmplitude), 1);
     status |= iusHdf5WriteInt(handle, IUS_INPUTFILE_PATH_PULSE_COUNT, &(pulse->pulseCount), 1);
-
     return status;
 }
 

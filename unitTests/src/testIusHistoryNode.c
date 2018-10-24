@@ -7,13 +7,9 @@
 #include <unity_internals.h>
 #include <unity_fixture.h>
 
-#include <include/ius.h>
-#include <include/iusError.h>
-#include <include/iusTypes.h>
-#include <include/iusHistoryNodeList.h>
-#include <include/iusParameterDict.h>
+#include <ius.h>
 #include <testDataGenerators.h>
-#include <include/iusHistoryNodePrivate.h>
+#include <iusHistoryNodePrivate.h>
 
 TEST_GROUP(IusHistoryNode);
 
@@ -24,7 +20,6 @@ TEST_SETUP(IusHistoryNode)
 TEST_TEAR_DOWN(IusHistoryNode)
 {
 }
-
 
 TEST(IusHistoryNode, testIusHistoryNodeCreate)
 {
@@ -115,7 +110,7 @@ TEST(IusHistoryNode, testIusHistoryNodeSetGet)
 {
     char *type =  IUS_INPUT_TYPE;
     int numParents = 0;
-    iuhn_t node;
+    iuhn_t node=IUHN_INVALID;
 
     for (numParents=0 ; numParents < 100 ; numParents++)
     {

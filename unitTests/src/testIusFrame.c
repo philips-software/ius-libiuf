@@ -6,8 +6,6 @@
 #include <unity_fixture.h>
 
 #include <ius.h>
-#include <iusError.h>
-#include <iusTypes.h>
 #include <iusFramePrivate.h>
 
 TEST_GROUP(IusFrame);

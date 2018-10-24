@@ -7,21 +7,8 @@
 #include <unity_internals.h>
 #include <unity_fixture.h>
 
-#include <include/ius.h>
-#include <include/iusError.h>
-#include <include/iusTypes.h>
-#include <include/iusInputFile.h>
-#include <include/iusPulseDict.h>
-#include <include/iusReceiveChannelMapDict.h>
-#include <include/iusTransmitApodizationDict.h>
-
-#include <include/iusParametricPulse.h>
-#include <include/iusNonParametricPulse.h>
-
+#include <ius.h>
 #include <testDataGenerators.h>
-#include <include/iusOffset.h>
-#include <include/iusPosition.h>
-#include <include/ius3DSize.h>
 
 static const char *pFilename = "IusInputFile.hdf5";
 static const char *pNotherFilename = "AnotherIusInputFile.hdf5";
@@ -386,8 +373,6 @@ int saveFrames
         dgFillData(frame, 1 + i * 1.0f);
         offset->t = i;
         status |= iusInputFileFrameSave(inputFile, label, frame, offset);
-//        status |= iusInputFileResponseSave(inputFile, label, response, offset);
-//        status |= iusInputFileChannelSave(inputFile, label, channel, offset);
     }
 
     iusDataDelete(frame);
