@@ -134,6 +134,9 @@ TEST(Ius2DTransducer,  testIusHL2DTransducerCompare)
     status = ius2DTransducerDelete(identicalTransducer);
     TEST_ASSERT_EQUAL(IUS_E_OK, status);
 
+    ius2DTransducerElementDelete(element);
+    ius2DPositionDelete(elemPos);
+    ius2DSizeDelete(elemSize);
 }
 
 TEST(Ius2DTransducer, testIus2DTransducerSetGet)
@@ -170,7 +173,10 @@ TEST(Ius2DTransducer, testIus2DTransducerSetGet)
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE,status);
     status = ius2DTransducerSetElement(transducer,0,NULL);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE,status);
-
+    ius2DTransducerDelete(transducer);
+    ius2DTransducerElementDelete(element);
+    ius2DPositionDelete(elemPos);
+    ius2DSizeDelete(elemSize);
 }
 
 TEST(Ius2DTransducer, testIus2DTransducerSerialization)
@@ -210,9 +216,20 @@ TEST(Ius2DTransducer, testIus2DTransducerSerialization)
     H5Fclose(handle);
 
     TEST_ASSERT_EQUAL(IUS_TRUE, ius2DTransducerCompare(transducer,savedObj));
+	// cleanup
+    for (i = 0; i < numTransducerElements; i++)
+    {
+        iu2dte_t element = ius2DTransducerGetElement(transducer, i);
+        iu2dp_t elemPos = ius2DTransducerElementGetPosition(element);
+        iu2ds_t elemSize = ius2DTransducerElementGetSize(element);
+        ius2DTransducerElementDelete(element);
+        ius2DPositionDelete(elemPos);
+        ius2DSizeDelete(elemSize);
+    }
+
     status = ius2DTransducerDelete(transducer);
     status |= ius2DTransducerDelete(savedObj);
-	TEST_ASSERT(status == IUS_E_OK);
+    TEST_ASSERT(status == IUS_E_OK);
 }
 
 

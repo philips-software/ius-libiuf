@@ -50,10 +50,7 @@ int ius2DTransducerDelete
 )
 {
     if(ius2DTransducer == NULL) return IUS_ERR_VALUE;
-    if(ius2DTransducer->baseTransducer.loadedFromFile == IUS_TRUE)
-    {
-        ius2DTransducerElementListDelete(ius2DTransducer->elements);
-    }
+    ius2DTransducerElementListDelete(ius2DTransducer->elements);
     free(ius2DTransducer->baseTransducer.pTransducerName);
     free(ius2DTransducer);
     return IUS_E_OK;
