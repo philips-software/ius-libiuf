@@ -14,6 +14,7 @@ struct Ius3DNonParametricSource
     struct IusSource base;
     int locationCount;
     struct Ius3DPosition *pLocations;
+    IUS_BOOL loadedFromFile;
 } ;
 
 // ADT
@@ -33,6 +34,7 @@ iu3dnps_t ius3DNonParametricSourceCreate
         return NULL;
     }
 
+    created->loadedFromFile = IUS_FALSE;
     created->base.type = IUS_3D_NON_PARAMETRIC_SOURCE;
     created->locationCount = numLocations;
     return created;
@@ -46,6 +48,7 @@ int ius3DNonParametricSourceDelete
     int status = IUS_ERR_VALUE;
     if(ius3DNonParametricSource != NULL)
     {
+        free(ius3DNonParametricSource->pLocations);
         free(ius3DNonParametricSource);
         status = IUS_E_OK;
     }
@@ -156,6 +159,7 @@ static int ius3DNonParametricSourceLoadLocations
         }
 		H5Gclose(location_id);
         ius3DNonParametricSourceSetPosition(source, pos, p);
+        ius3DPositionDelete(pos);
     }
 	H5Gclose(locationList_id);
     return status;
@@ -191,6 +195,7 @@ iu3dnps_t ius3DNonParametricSourceLoad
 
     source = ius3DNonParametricSourceCreate(locationCount);
     status = ius3DNonParametricSourceLoadLocations(source, handle);
+    source->loadedFromFile = IUS_TRUE;
     if (status <-0)
         return NULL;
     return source;

@@ -65,6 +65,7 @@ int ius3DParametricSourceDelete
     int status = IUS_ERR_VALUE;
     if(ius3DParametricSource != NULL)
     {
+        free(ius3DParametricSource->pLocations);
         free(ius3DParametricSource);
         status = IUS_E_OK;
     }
@@ -282,6 +283,7 @@ static int ius3DParametricSourceLoadLocations
         }
 		H5Gclose(location_id);
         ius3DParametricSourceSetPosition(source, pos, p);
+        ius3DPositionDelete(pos);
     }
 	H5Gclose(locationList_id);
     return status;

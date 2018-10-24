@@ -106,6 +106,7 @@ TEST(Ius3DParametricSource, testIus3DParametricSourceCompare)
     ius3DParametricSourceDelete(obj);
     ius3DParametricSourceDelete(notherObj);
     ius3DParametricSourceDelete(differentObj);
+    ius3DPositionDelete(pos);
 }
 
 TEST(Ius3DParametricSource, testIus3DParametricSourceSetGet)
@@ -133,6 +134,7 @@ TEST(Ius3DParametricSource, testIus3DParametricSourceSetGet)
         ius3DParametricSourceSetPosition(obj,pos,p);
         iu3dp_t get = ius3DParametricSourceGetPosition(obj,p);
         TEST_ASSERT_EQUAL(IUS_TRUE, ius3DPositionCompare(pos,get));
+        ius3DPositionDelete(pos);
     }
 
 
@@ -176,6 +178,7 @@ TEST(Ius3DParametricSource, testIus3DParametricSourceSerialization)
     {
         iu3dp_t pos = ius3DPositionCreate(p * 1.0f, p * 2.0f, p * 3.0f);
         ius3DParametricSourceSetPosition(obj, pos, p);
+        ius3DPositionDelete(pos);
     }
 
     // save

@@ -41,6 +41,9 @@ TEST(Ius3DTransducerElement, testIus3DTransducerElementCreate)
 
     int status = ius3DTransducerElementDelete(element);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
+    ius3DAngleDelete(elemAngle);
+    ius3DSizeDelete(elemSize);
+    ius3DPositionDelete(elemPos);
 }
 
 
@@ -186,6 +189,9 @@ TEST(Ius3DTransducerElement, testIus3DTransducerElementSerialization)
     status = ius3DTransducerElementDelete(element);
     status |= ius3DTransducerElementDelete(savedObj);
     TEST_ASSERT(status == IUS_E_OK);
+    ius3DAngleDelete(elemAngle);
+    ius3DSizeDelete(elemSize);
+    ius3DPositionDelete(elemPos);
 }
 
 TEST_GROUP_RUNNER(Ius3DTransducerElement)

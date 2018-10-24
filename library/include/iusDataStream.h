@@ -15,7 +15,9 @@ typedef IusDataStream *iuds_t;
 #define  IUDS_INVALID (iuds_t) NULL
 
 iuds_t iusDataStreamCreate
-();
+(
+
+);
 
 int iusDataStreamDelete
 (

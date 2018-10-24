@@ -31,12 +31,12 @@ iudsd_t iusDataStreamDictCreate
 (
 )
 {
-	iudsd_t list = calloc(1, sizeof(IusDataStreamDict));
-	if (list != NULL)
+	iudsd_t dict = calloc(1, sizeof(IusDataStreamDict));
+	if (dict != NULL)
 	{
-		hashmap_init(&list->map, hashmap_hash_string, hashmap_compare_string, 0);
+		hashmap_init(&dict->map, hashmap_hash_string, hashmap_compare_string, 0);
 	}
-	return list;
+	return dict;
 }
 
 int iusDataStreamDictDelete
@@ -52,6 +52,7 @@ int iusDataStreamDictDelete
     {
         iterElement = HashableDataStream_hashmap_iter_get_data(iter);
         iusDataStreamDelete(iterElement->dataStream);
+        free(iterElement);
     }
     hashmap_destroy(&dict->map);
 	free(dict);

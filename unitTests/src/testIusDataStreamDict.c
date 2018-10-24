@@ -37,7 +37,8 @@ TEST(IusDataStreamDict, testIusDataStreamDictSetGet)
     iuds_t value = iusDataStreamCreate();
     iudsd_t dict = iusDataStreamDictCreate();
     TEST_ASSERT_EQUAL(IUS_E_OK, iusDataStreamDictSet(dict, key, value));
-    TEST_ASSERT_EQUAL_STRING(value, iusDataStreamDictGet(dict, key));
+    TEST_ASSERT_EQUAL_FLOAT(value->rfDataset,iusDataStreamDictGet(dict, key)->rfDataset);
+    TEST_ASSERT_EQUAL_FLOAT(value->fileChunkConfig,iusDataStreamDictGet(dict, key)->fileChunkConfig);
 
     // invalid args
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, iusDataStreamDictSet(NULL, key, value));
@@ -46,6 +47,8 @@ TEST(IusDataStreamDict, testIusDataStreamDictSetGet)
 
     TEST_ASSERT_EQUAL(NULL, iusDataStreamDictGet(dict, NULL));
     TEST_ASSERT_EQUAL(NULL, iusDataStreamDictGet(dict, "unknownKey"));
+
+    iusDataStreamDictDelete(dict);
 }
 
 TEST(IusDataStreamDict, testIusDataStreamDictCompare)

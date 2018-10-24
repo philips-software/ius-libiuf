@@ -91,6 +91,7 @@ TEST(Ius3DNonParametricSource, testIus3DNonParametricSourceCompare)
     ius3DNonParametricSourceDelete(obj);
     ius3DNonParametricSourceDelete(notherObj);
     ius3DNonParametricSourceDelete(differentObj);
+    ius3DPositionDelete(pos);
 }
 
 TEST(Ius3DNonParametricSource, testIus3DNonParametricSourceSetGet)
@@ -106,6 +107,7 @@ TEST(Ius3DNonParametricSource, testIus3DNonParametricSourceSetGet)
         ius3DNonParametricSourceSetPosition(obj,pos,p);
         iu3dp_t get = ius3DNonParametricSourceGetPosition(obj,p);
         TEST_ASSERT_EQUAL(IUS_TRUE, ius3DPositionCompare(pos,get));
+        ius3DPositionDelete(pos);
     }
 
     // invalid param
@@ -132,6 +134,7 @@ TEST(Ius3DNonParametricSource, testIus3DNonParametricSourceSerialization)
         ius3DNonParametricSourceSetPosition(obj, pos, p);
         iu3dp_t get = ius3DNonParametricSourceGetPosition(obj, p);
         TEST_ASSERT_EQUAL(IUS_TRUE, ius3DPositionCompare(pos, get));
+        ius3DPositionDelete(pos);
     }
 
     // save

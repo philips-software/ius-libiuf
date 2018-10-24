@@ -26,10 +26,10 @@ TEST(Ius3DTransducerElementList, testIus3DTransducerElementListCreate)
     iu3dtel_t _3dTransducerElementList = ius3DTransducerElementListCreate(num3DTransducerElements);
     TEST_ASSERT_NOT_EQUAL(IU3DTEL_INVALID, _3dTransducerElementList);
     TEST_ASSERT_EQUAL(num3DTransducerElements, ius3DTransducerElementListGetSize(_3dTransducerElementList));
+    ius3DTransducerElementListDelete(_3dTransducerElementList);
 
     _3dTransducerElementList = ius3DTransducerElementListCreate(-1);
     TEST_ASSERT_EQUAL(IU3DTEL_INVALID, _3dTransducerElementList);
-    ius3DTransducerElementListDelete(_3dTransducerElementList);
 }
 
 
@@ -82,9 +82,12 @@ TEST(Ius3DTransducerElementList, testIus3DTransducerElementListCompare)
     equal = ius3DTransducerElementListCompare(_3dTransducerElementList, nother3DTransducerElementList);
     TEST_ASSERT_EQUAL(IUS_TRUE, equal);
 
-
     ius3DTransducerElementListDelete(_3dTransducerElementList);
+    ius3DTransducerElementListDelete(nother3DTransducerElementList);
     ius3DTransducerElementDelete(element);
+    ius3DPositionDelete(elemPos);
+    ius3DSizeDelete(elemSize);
+    ius3DAngleDelete(elemAngle);
 }
 
 TEST(Ius3DTransducerElementList, testIus3DTransducerElementListSetGet)
@@ -110,6 +113,11 @@ TEST(Ius3DTransducerElementList, testIus3DTransducerElementListSetGet)
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, ius3DTransducerElementListSet(_3dTransducerElementList,element,-1));
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, ius3DTransducerElementListSet(_3dTransducerElementList,element,num3DTransducerElements));
 
+    ius3DTransducerElementListDelete(_3dTransducerElementList);
+    ius3DTransducerElementDelete(element);
+    ius3DPositionDelete(elemPos);
+    ius3DSizeDelete(elemSize);
+    ius3DAngleDelete(elemAngle);
 }
 
 TEST(Ius3DTransducerElementList, testIus3DTransducerElementListSerialization)
@@ -164,7 +172,20 @@ TEST(Ius3DTransducerElementList, testIus3DTransducerElementListSerialization)
     equal = ius3DTransducerElementListCompare(_3dTransducerElementList, saved3DTransducerElementList);
     TEST_ASSERT_EQUAL(IUS_TRUE, equal);
 
+    // cleanup
+    for (i = 0; i < num3DTransducerElements; i++)
+    {
+        iu3dte_t element = ius3DTransducerElementListGet(_3dTransducerElementList, i);
+        iu3dp_t elemPos = ius3DTransducerElementGetPosition(element);
+        iu3ds_t elemSize = ius3DTransducerElementGetSize(element);
+        iu3da_t elemAngle = ius3DTransducerElementGetAngle(element);
+        ius3DAngleDelete(elemAngle);
+        ius3DSizeDelete(elemSize);
+        ius3DPositionDelete(elemPos);
+        ius3DTransducerElementDelete(element);
+    }
     ius3DTransducerElementListDelete(_3dTransducerElementList);
+    ius3DTransducerElementListDelete(saved3DTransducerElementList);
 
 }
 

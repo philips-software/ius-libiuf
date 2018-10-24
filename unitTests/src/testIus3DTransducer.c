@@ -131,7 +131,10 @@ TEST(Ius3DTransducer,  testIusHL3DTransducerCompare)
     TEST_ASSERT_EQUAL(IUS_E_OK, status);
     status = ius3DTransducerDelete(identicalTransducer);
     TEST_ASSERT_EQUAL(IUS_E_OK, status);
-
+    ius3DTransducerElementDelete(element);
+    ius3DPositionDelete(elemPos);
+    ius3DSizeDelete(elemSize);
+    ius3DAngleDelete(elemAngle);
 }
 
 TEST(Ius3DTransducer, testIus3DTransducerSetGet)
@@ -169,6 +172,11 @@ TEST(Ius3DTransducer, testIus3DTransducerSetGet)
     status = ius3DTransducerSetElement(transducer,0,NULL);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE,status);
 
+    ius3DTransducerDelete(transducer);
+    ius3DTransducerElementDelete(element);
+    ius3DPositionDelete(elemPos);
+    ius3DSizeDelete(elemSize);
+    ius3DAngleDelete(elemAngle);
 }
 
 TEST(Ius3DTransducer, testIus3DTransducerSerialization)
@@ -208,9 +216,23 @@ TEST(Ius3DTransducer, testIus3DTransducerSerialization)
     H5Fclose(handle);
 
     TEST_ASSERT_EQUAL(IUS_TRUE, ius3DTransducerCompare(transducer,savedObj));
+
+	// cleanup
+    for (i = 0; i < numTransducerElements; i++)
+    {
+        iu3dte_t element = ius3DTransducerGetElement(transducer, i);
+        iu3dp_t elemPos = ius3DTransducerElementGetPosition(element);
+        iu3ds_t elemSize = ius3DTransducerElementGetSize(element);
+        iu3da_t elemAngle = ius3DTransducerElementGetAngle(element);
+        ius3DTransducerElementDelete(element);
+        ius3DPositionDelete(elemPos);
+        ius3DSizeDelete(elemSize);
+        ius3DAngleDelete(elemAngle);
+    }
     status = ius3DTransducerDelete(transducer);
     status |= ius3DTransducerDelete(savedObj);
-	TEST_ASSERT(status == IUS_E_OK);
+    TEST_ASSERT(status == IUS_E_OK);
+
 }
 
 
