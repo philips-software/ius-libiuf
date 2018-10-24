@@ -26,6 +26,7 @@ TEST(Ius2DTransducerElementList, testIus2DTransducerElementListCreate)
     iu2dtel_t _2dTransducerElementList = ius2DTransducerElementListCreate(num2DTransducerElements);
     TEST_ASSERT_NOT_EQUAL(IU2DTEL_INVALID, _2dTransducerElementList);
     TEST_ASSERT_EQUAL(num2DTransducerElements, ius2DTransducerElementListGetSize(_2dTransducerElementList));
+    ius2DTransducerElementListDelete(_2dTransducerElementList);
 
     _2dTransducerElementList = ius2DTransducerElementListCreate(-1);
     TEST_ASSERT_EQUAL(IU2DTEL_INVALID, _2dTransducerElementList);
@@ -54,7 +55,7 @@ TEST(Ius2DTransducerElementList, testIus2DTransducerElementListCompare)
     IUS_BOOL equal;
     const int numTransducerElements = 128;
     const float transducerPitch = 0.000005f;
-    iu2dp_t elemPos = ius2DPositionCreate((10 - numTransducerElements / 2)*transducerPitch, 0.0f);
+    iu2dp_t elemPos = ius2DPositionCreate((float)(10 - numTransducerElements / 2.0)*transducerPitch, 0.0f);
     iu2ds_t elemSize = ius2DSizeCreate(0.0001f,0.0001f);
     float elemAngle = 0.3f;
 
@@ -84,18 +85,20 @@ TEST(Ius2DTransducerElementList, testIus2DTransducerElementListCompare)
 
 
     ius2DTransducerElementListDelete(_2dTransducerElementList);
+    ius2DTransducerElementListDelete(nother2DTransducerElementList);
     ius2DTransducerElementDelete(element);
+    ius2DPositionDelete(elemPos);
+    ius2DSizeDelete(elemSize);
 }
 
 TEST(Ius2DTransducerElementList, testIus2DTransducerElementListSetGet)
 {
     int num2DTransducerElements = 2;
     int status;
-    //IUS_BOOL equal;
 
     const int numTransducerElements = 128;
     const float transducerPitch = 0.000005f;
-    iu2dp_t elemPos = ius2DPositionCreate((10 - numTransducerElements / 2)*transducerPitch,0.0f);
+    iu2dp_t elemPos = ius2DPositionCreate((float)(10 - numTransducerElements / 2.0)*transducerPitch,0.0f);
     iu2ds_t elemSize = ius2DSizeCreate(0.0001f,0.0001f);
     float elemAngle = 0.3f;
     iu2dte_t element = ius2DTransducerElementCreate(elemPos, elemAngle, elemSize);
@@ -103,13 +106,16 @@ TEST(Ius2DTransducerElementList, testIus2DTransducerElementListSetGet)
     iu2dtel_t _2dTransducerElementList = ius2DTransducerElementListCreate(num2DTransducerElements);
     status = ius2DTransducerElementListSet(_2dTransducerElementList,element,0);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
-
     // invalid params
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, ius2DTransducerElementListSet(NULL,element,0));
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, ius2DTransducerElementListSet(_2dTransducerElementList,NULL,0));
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, ius2DTransducerElementListSet(_2dTransducerElementList,element,-1));
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, ius2DTransducerElementListSet(_2dTransducerElementList,element,num2DTransducerElements));
 
+    ius2DTransducerElementListDelete(_2dTransducerElementList);
+    ius2DTransducerElementDelete(element);
+    ius2DPositionDelete(elemPos);
+    ius2DSizeDelete(elemSize);
 }
 
 TEST(Ius2DTransducerElementList, testIus2DTransducerElementListSerialization)
@@ -138,7 +144,7 @@ TEST(Ius2DTransducerElementList, testIus2DTransducerElementListSerialization)
     // fill list
     for (i = 0; i < num2DTransducerElements; i++)
     {
-        iu2dp_t elemPos = ius2DPositionCreate((10 - num2DTransducerElements / 2)*transducerPitch, 0.0f);
+        iu2dp_t elemPos = ius2DPositionCreate((float)(10 - num2DTransducerElements / 2.0)*transducerPitch, 0.0f);
         iu2ds_t elemSize = ius2DSizeCreate(0.0001f,0.0001f);
         float elemAngle = 0.4f;
         iu2dte_t element = ius2DTransducerElementCreate(elemPos, elemAngle, elemSize);
@@ -165,8 +171,18 @@ TEST(Ius2DTransducerElementList, testIus2DTransducerElementListSerialization)
     TEST_ASSERT_EQUAL(IUS_TRUE, equal);
 
 
+    // cleanup
+    for (i = 0; i < num2DTransducerElements; i++)
+    {
+        iu2dte_t element = ius2DTransducerElementListGet(_2dTransducerElementList, i);
+        iu2dp_t elemPos = ius2DTransducerElementGetPosition(element);
+        iu2ds_t elemSize = ius2DTransducerElementGetSize(element);
+        ius2DTransducerElementDelete(element);
+        ius2DPositionDelete(elemPos);
+        ius2DSizeDelete(elemSize);
+    }
     ius2DTransducerElementListDelete(_2dTransducerElementList);
-
+    ius2DTransducerElementListDelete(saved2DTransducerElementList);
 
 }
 

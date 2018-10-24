@@ -16,6 +16,7 @@ struct Ius2DTransducerElement
   iu2dp_t   position;
   float     theta;
   iu2ds_t   size;
+  IUS_BOOL  loadedFromFile;
 } ;
 
 // ADT
@@ -34,6 +35,7 @@ iu2dte_t ius2DTransducerElementCreate
     created->position = pos;
     created->theta = theta;
     created->size = siz;
+    created->loadedFromFile = IUS_FALSE;
     return created;
 }
 
@@ -43,9 +45,9 @@ int ius2DTransducerElementDeepDelete
 )
 {
     if (ius2DTransducerElement == NULL) return IUS_ERR_VALUE;
-    ius2DPositionDelete(ius2DTransducerElementGetPosition(ius2DTransducerElement));
-    ius2DSizeDelete(ius2DTransducerElementGetSize(ius2DTransducerElement));
-    return ius2DTransducerElementDelete(ius2DTransducerElement);
+    ius2DPositionDelete(ius2DTransducerElement->position);
+    ius2DSizeDelete(ius2DTransducerElement->size);
+    return IUS_E_OK;
 }
 
 int ius2DTransducerElementDelete
@@ -54,6 +56,8 @@ int ius2DTransducerElementDelete
 )
 {
     if (ius2DTransducerElement == NULL) return IUS_ERR_VALUE;
+    if (ius2DTransducerElement->loadedFromFile == IUS_TRUE)
+        ius2DTransducerElementDeepDelete(ius2DTransducerElement);
     free(ius2DTransducerElement);
     return IUS_E_OK;
 }
@@ -109,7 +113,9 @@ iu2dte_t ius2DTransducerElementLoad
     status = iusHdf5ReadFloat(handle, IUS_INPUTFILE_PATH_ANGLE_THETA, &theta);
     if (status < 0) return IU2DTE_INVALID;
 
-    return ius2DTransducerElementCreate(elemPos, theta, elemSize);
+    iu2dte_t element = ius2DTransducerElementCreate(elemPos, theta, elemSize);
+    element->loadedFromFile = IUS_TRUE;
+    return element;
 }
 
 // Getters

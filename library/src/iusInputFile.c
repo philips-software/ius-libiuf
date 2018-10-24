@@ -60,7 +60,6 @@ iuifi_t iusInputFileInstanceCreate
 		return IUIFI_INVALID;
 	}
 
-//	instanceData->numFrames = IUS_DEFAULT_NUM_FRAMES;
 	instanceData->IusVersion = iusGetVersionMajor();
 	instanceData->pFilename = "";
 	instanceData->frameList = IUFL_INVALID;
@@ -97,7 +96,6 @@ iuif_t iusInputFileCreate
 
     instanceData->handle = H5Fcreate(pFilename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
 	instanceData->pFilename = strdup(pFilename);
-//	instanceData->numFrames = numFrames;
 	if (instanceData->handle == H5I_INVALID_HID)
 	{
 		free((void *)instanceData);
@@ -215,6 +213,7 @@ int iusInputFileDelete
     {
         iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)iusInputFile);
         iusDataStreamDictDelete(instance->dataStreamDict);
+        free((void *)instance->pFilename);
         free(iusInputFile);
         status = IUS_E_OK;
     }

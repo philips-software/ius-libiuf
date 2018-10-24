@@ -11,6 +11,7 @@ struct Ius2DTransducerElementList
 {
     int count;
     iu2dte_t *   p2DTransducerElements ;
+    IUS_BOOL loadedFromFile;
 } ;
 
 // ADT
@@ -23,6 +24,7 @@ iu2dtel_t ius2DTransducerElementListCreate
     iu2dtel_t list = calloc(1, sizeof(Ius2DTransducerElementList));
     if(list!=NULL)
     {
+        list->loadedFromFile = IUS_FALSE;
         list->count = num2DTransducerElements;
         list->p2DTransducerElements = (iu2dte_t *) calloc((size_t)num2DTransducerElements, sizeof(iu2dte_t));
         if( list->p2DTransducerElements == NULL )
@@ -49,9 +51,8 @@ int ius2DTransducerElementListDeepDelete
     if(list == NULL) return IUS_ERR_VALUE;
     for (int i = 0 ; i < list->count ; i++ )
     {
-        ius2DTransducerElementDeepDelete(list->p2DTransducerElements[i]);
+        ius2DTransducerElementDelete(list->p2DTransducerElements[i]);
     }
-    ius2DTransducerElementListDelete(list);
     return IUS_E_OK;
 }
 
@@ -61,6 +62,8 @@ int ius2DTransducerElementListDelete
 )
 {
     if(list == NULL) return IUS_ERR_VALUE;
+    if(list->loadedFromFile == IUS_TRUE)
+        ius2DTransducerElementListDeepDelete(list);
     free(list->p2DTransducerElements);
     free(list);
     return IUS_E_OK;
@@ -177,9 +180,10 @@ iu2dtel_t ius2DTransducerElementListLoad
     }
 
 	H5Gclose(elements_id);
+    elementList->loadedFromFile = IUS_TRUE;
     if( status == IUS_ERR_VALUE )
     {
-        ius2DTransducerElementListDeepDelete(elementList);
+        ius2DTransducerElementListDelete(elementList);
         elementList = IU2DTEL_INVALID;
     }
     return elementList;

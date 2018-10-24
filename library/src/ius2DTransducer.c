@@ -52,10 +52,6 @@ int ius2DTransducerDelete
     if(ius2DTransducer == NULL) return IUS_ERR_VALUE;
     if(ius2DTransducer->baseTransducer.loadedFromFile == IUS_TRUE)
     {
-        ius2DTransducerElementListDeepDelete(ius2DTransducer->elements);
-    }
-    else
-    {
         ius2DTransducerElementListDelete(ius2DTransducer->elements);
     }
     free(ius2DTransducer->baseTransducer.pTransducerName);
@@ -111,6 +107,19 @@ int ius2DTransducerSetElement
     return ius2DTransducerElementListSet(transducer->elements,element,elementIndex);
 }
 
+int ius2DTransducerSetElementList
+(
+    iu2dt_t transducer,
+    iu2dtel_t elementList
+)
+{
+    if( transducer == NULL ) return IUS_ERR_VALUE;
+    if( elementList == NULL ) return IUS_ERR_VALUE;
+    if( transducer->elements != NULL ) ius2DTransducerElementListDelete(transducer->elements);
+    transducer->elements = elementList;
+    return IUS_E_OK;
+}
+
 herr_t ius2DTransducerSave
 (
     iu2dt_t transducer,
@@ -125,6 +134,7 @@ herr_t ius2DTransducerSave
     status = ius2DTransducerElementListSave(transducer->elements, handle);
     return status;
 }
+
 
 
 iu2dt_t ius2DTransducerLoad
@@ -143,8 +153,8 @@ iu2dt_t ius2DTransducerLoad
                                                   baseTransducer->centerFrequency,
                                                   numElements);
 	if (transducer == IU2DT_INVALID) return IU2DT_INVALID;
-    ius2DTransducerElementListDeepDelete(transducer->elements);
-	transducer->elements = elements;
+    ius2DTransducerSetElementList(transducer,elements);
+    transducer->baseTransducer.loadedFromFile = IUS_TRUE;
     iusBaseTransducerDelete(baseTransducer);
     return transducer;
 }

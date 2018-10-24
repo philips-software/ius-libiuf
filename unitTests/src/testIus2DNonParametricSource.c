@@ -90,6 +90,7 @@ TEST(Ius2DNonParametricSource, testIus2DNonParametricSourceCompare)
     ius2DNonParametricSourceDelete(obj);
     ius2DNonParametricSourceDelete(notherObj);
     ius2DNonParametricSourceDelete(differentObj);
+    ius2DPositionDelete(pos);
 }
 
 TEST(Ius2DNonParametricSource, testIus2DNonParametricSourceSetGet)
@@ -105,6 +106,7 @@ TEST(Ius2DNonParametricSource, testIus2DNonParametricSourceSetGet)
         ius2DNonParametricSourceSetPosition(obj,pos,p);
         iu2dp_t get = ius2DNonParametricSourceGetPosition(obj,p);
         TEST_ASSERT_EQUAL(IUS_TRUE, ius2DPositionCompare(pos,get));
+        ius2DPositionDelete(pos);
     }
 
     // invalid param
@@ -131,6 +133,7 @@ TEST(Ius2DNonParametricSource, testIus2DNonParametricSourceSerialization)
         ius2DNonParametricSourceSetPosition(obj, pos, p);
         iu2dp_t get = ius2DNonParametricSourceGetPosition(obj, p);
         TEST_ASSERT_EQUAL(IUS_TRUE, ius2DPositionCompare(pos, get));
+        ius2DPositionDelete(pos);
     }
 
     // save

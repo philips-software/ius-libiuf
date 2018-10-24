@@ -45,6 +45,8 @@ TEST(Ius2DTransducerElement, testIus2DTransducerElementCreate)
 
     int status = ius2DTransducerElementDelete(element);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
+    ius2DPositionDelete(elemPos);
+    ius2DSizeDelete(elemSize);
 }
 
 
@@ -183,6 +185,8 @@ TEST(Ius2DTransducerElement, testIus2DTransducerElementSerialization)
     status = ius2DTransducerElementDelete(element);
     status |= ius2DTransducerElementDelete(savedObj);
     TEST_ASSERT(status == IUS_E_OK);
+    ius2DPositionDelete(elemPos);
+    ius2DSizeDelete(elemSize);
 }
 
 TEST_GROUP_RUNNER(Ius2DTransducerElement)

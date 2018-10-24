@@ -44,6 +44,7 @@ int ius2DNonParametricSourceDelete
     int status = IUS_ERR_VALUE;
     if(ius2DNonParametricSource != NULL)
     {
+        free(ius2DNonParametricSource->pLocations);
         free(ius2DNonParametricSource);
         status = IUS_E_OK;
     }
@@ -156,9 +157,9 @@ static int ius2DNonParametricSourceLoadLocations
         }
 		H5Gclose(location_id);
         ius2DNonParametricSourceSetPosition(source, pos, p);
+        ius2DPositionDelete(pos);
     }
 	H5Gclose(locationList_id);
-
     return status;
 }
 

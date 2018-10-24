@@ -19,10 +19,10 @@ iu2dte_t ius2DTransducerElementCreate
     iu2ds_t siz
 );
 
-int ius2DTransducerElementDeepDelete
-(
-    iu2dte_t ius2DTransducerElement
-);
+//int ius2DTransducerElementDeepDelete
+//(
+//    iu2dte_t ius2DTransducerElement
+//);
 
 int ius2DTransducerElementDelete
 (
