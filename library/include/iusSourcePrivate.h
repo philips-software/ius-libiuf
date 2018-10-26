@@ -16,7 +16,6 @@ struct IusSource
     IusSourceType type;
 } ;
 
-
 IUS_BOOL iusBaseSourceCompare
 (
     ius_t reference,

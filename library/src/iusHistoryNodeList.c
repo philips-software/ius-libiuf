@@ -12,6 +12,7 @@ struct IusHistoryNodeList
 {
     int count;
     iuhn_t *   pHistoryNodes ;
+    IUS_BOOL loadedFromFile;
 } ;
 
 // ADT
@@ -20,9 +21,11 @@ iuhnl_t iusHistoryNodeListCreate
     int numHistoryNodes
 )
 {
+    if (numHistoryNodes<=0) return IUHNL_INVALID;
     iuhnl_t list = calloc(1, sizeof(IusHistoryNodeList));
     if(list!=NULL)
     {
+        list->loadedFromFile = IUS_FALSE;
         list->count = numHistoryNodes;
         list->pHistoryNodes = (iuhn_t *) calloc((size_t)numHistoryNodes, sizeof(iuhn_t));
         if( list->pHistoryNodes == NULL )
@@ -34,12 +37,22 @@ iuhnl_t iusHistoryNodeListCreate
     return list;
 }
 
+
 int iusHistoryNodeListDelete
 (
     iuhnl_t list
 )
 {
+    int i;
     if(list == NULL) return IUS_ERR_VALUE;
+    if(list->loadedFromFile==IUS_TRUE)
+    {
+        for (i=0;i<list->count;i++)
+        {
+            iusHistoryNodeDelete(list->pHistoryNodes[i]);
+        }
+    }
+    free(list->pHistoryNodes);
     free(list);
     return IUS_E_OK;
 }
@@ -132,6 +145,7 @@ iuhnl_t iusHistoryNodeListLoad
         iusHistoryNodeListDelete(nodeList);
         nodeList = IUHNL_INVALID;
     }
+    nodeList->loadedFromFile = IUS_TRUE;
     return nodeList;
 }
 

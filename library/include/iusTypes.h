@@ -161,7 +161,7 @@ typedef struct
 typedef enum
 {
 	IUS_INVALID_TRANSDUCER_SHAPE = 0,
-    IUS_LINE,           /**< Todo: See Draft */
+    IUS_LINE,
     IUS_CIRCLE,
     IUS_PLANE,
     IUS_CYLINDER,

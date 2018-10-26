@@ -91,6 +91,8 @@ TEST(IusReceiveChannelMapDict, testIusReceiveChannelMapDictCompare)
 	equal = iusReceiveChannelMapDictCompare(NULL, dict);
 	TEST_ASSERT_EQUAL(IUS_FALSE, equal);
 
+	iusReceiveChannelMapDelete(receiveChannelMap);
+	iusReceiveChannelMapDelete(inverseReceiveChannelMap);
 	iusReceiveChannelMapDictDelete(dict);
 	iusReceiveChannelMapDictDelete(notherDict);
 }
@@ -124,6 +126,7 @@ TEST(IusReceiveChannelMapDict, testIusReceiveChannelMapDictSerialization)
 	H5Fclose(handle);
 
 	TEST_ASSERT_EQUAL(IUS_TRUE, iusReceiveChannelMapDictCompare(receiveChannelMapDict, savedDict));
+	iusReceiveChannelMapDelete(obj);
 	iusReceiveChannelMapDictDelete(receiveChannelMapDict);
 	iusReceiveChannelMapDictDelete(savedDict);
 }

@@ -134,7 +134,7 @@ TEST(Ius2DTransducerElementList, testIus2DTransducerElementListSerialization)
     TEST_ASSERT_NOT_EQUAL(IU2DTEL_INVALID, _2dTransducerElementList);
     hid_t handle = H5Fcreate(pFilename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
     TEST_ASSERT(handle > 0);
-    status = ius2DTransducerElementListSave(_2dTransducerElementList, handle); // todo change this test by creating a transducer first?
+    status = ius2DTransducerElementListSave(_2dTransducerElementList, handle);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
     status = H5Fclose(handle);
     TEST_ASSERT_EQUAL(IUS_E_OK, status);

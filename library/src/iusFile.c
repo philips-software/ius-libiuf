@@ -22,8 +22,8 @@ int iusFileDelete
     int status = IUS_ERR_VALUE;
     if(iusFile != NULL)
     {
+        iusHistoryNodeDelete(iusFile->history);
         free(iusFile);
-        iusFile = NULL;
         status = IUS_E_OK;
     }
     return status;

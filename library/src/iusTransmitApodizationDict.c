@@ -21,6 +21,7 @@ typedef struct HashableTransmitApodization HashableTransmitApodization;
 struct IusTransmitApodizationDict
 {
 	struct hashmap map;
+    IUS_BOOL loadedFromFile;
 };
 
 /* Declare type-specific blob_hashmap_* functions with this handy macro */
@@ -31,12 +32,13 @@ iutad_t iusTransmitApodizationDictCreate
 (
 )
 {
-	iutad_t list = calloc(1, sizeof(IusTransmitApodizationDict));
-	if (list != NULL)
+	iutad_t dict = calloc(1, sizeof(IusTransmitApodizationDict));
+	if (dict != NULL)
 	{
-		hashmap_init(&list->map, hashmap_hash_string, hashmap_compare_string, 0);
+		hashmap_init(&dict->map, hashmap_hash_string, hashmap_compare_string, 0);
+		dict->loadedFromFile = IUS_FALSE;
 	}
-	return list;
+	return dict;
 }
 
 int iusTransmitApodizationDictDelete
@@ -44,8 +46,17 @@ int iusTransmitApodizationDictDelete
 	iutad_t dict
 )
 {
+	struct hashmap_iter *iter;
+	HashableTransmitApodization *iterElement;
 	if (dict == NULL) return IUS_ERR_VALUE;
 	/* Free all allocated resources associated with map and reset its state */
+	for (iter = hashmap_iter(&dict->map); iter; iter = hashmap_iter_next(&dict->map, iter))
+	{
+		iterElement = HashableTransmitApodization_hashmap_iter_get_data(iter);
+		if(dict->loadedFromFile==IUS_TRUE)
+		    iusTransmitApodizationDelete(iterElement->transmitApodization);
+		free(iterElement);
+	}
 	hashmap_destroy(&dict->map);
 	free(dict);
 	return IUS_E_OK;
@@ -219,7 +230,7 @@ iutad_t iusTransmitApodizationDictLoad
 	{
 		return NULL;
 	}
-
+    dict->loadedFromFile = IUS_TRUE;
 	return dict;
 }
 

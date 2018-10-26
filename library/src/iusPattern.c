@@ -63,8 +63,12 @@ int iusPatternDelete
     int status = IUS_ERR_VALUE;
     if(iusPattern != IUPA_INVALID)
     {
+        free((void *)iusPattern->pApodizationLabel);
+        free((void *)iusPattern->pChannelMapLabel);
+        free((void *)iusPattern->pPulseLabel);
+        free((void *)iusPattern->pSourceLabel);
+        free((void *)iusPattern->pReceiveSettingsLabel);
         free(iusPattern);
-        iusPattern = NULL;
         status = IUS_E_OK;
     }
     return status;

@@ -13,6 +13,7 @@ struct IusFrameList
 {
     int count;
     iufr_t *   pFrames ;
+    IUS_BOOL loadedFromFile;
 } ;
 
 // ADT
@@ -25,6 +26,7 @@ iufl_t iusFrameListCreate
     iufl_t list = calloc(1, sizeof(IusFrameList));
     if(list!=NULL)
     {
+        list->loadedFromFile = IUS_FALSE;
         list->count = numFrames;
         list->pFrames = (iufr_t *) calloc((size_t)numFrames, sizeof(iufr_t));
         if( list->pFrames == NULL )
@@ -36,12 +38,30 @@ iufl_t iusFrameListCreate
     return list;
 }
 
+int iusFrameListDeepDelete
+(
+    iufl_t list
+)
+{
+    int index;
+    int status = 0;
+    if(list == NULL) return IUS_ERR_VALUE;
+    for(index = 0 ; index < list->count ; index++ )
+    {
+        status |= iusFrameDelete(list->pFrames[index]);
+    }
+    return status;
+}
+
 int iusFrameListDelete
 (
     iufl_t list
 )
 {
     if(list == NULL) return IUS_ERR_VALUE;
+    if(list->loadedFromFile == IUS_TRUE)
+        iusFrameListDeepDelete(list);
+    free(list->pFrames);
     free(list);
     return IUS_E_OK;
 }
@@ -100,7 +120,6 @@ int iusFrameListSet
     return IUS_E_OK;
 }
 
-//TODO: do we need "numframes" if we have framelist size?
 iufl_t iusFrameListLoad
 (
     hid_t handle
@@ -131,6 +150,7 @@ iufl_t iusFrameListLoad
         iusFrameListSet(frameList,sourceElement,i);
     }
 	H5Gclose(frameList_id);
+    frameList->loadedFromFile = IUS_TRUE;
     return frameList;
 }
 

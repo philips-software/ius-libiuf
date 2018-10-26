@@ -44,8 +44,15 @@ int iusPatternListDictDelete
 	iupald_t dict
 )
 {
+    HashablePatternList *iterElement;
+    struct hashmap_iter *iter;
 	if (dict == NULL) return IUS_ERR_VALUE;
 	/* Free all allocated resources associated with map and reset its state */
+    for (iter = hashmap_iter(&dict->map); iter; iter = hashmap_iter_next(&dict->map, iter))
+    {
+        iterElement = HashablePatternList_hashmap_iter_get_data(iter);
+        iusPatternListDelete(iterElement->patternList);
+    }
 	hashmap_destroy(&dict->map);
 	free(dict);
 	return IUS_E_OK;

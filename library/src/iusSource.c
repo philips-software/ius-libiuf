@@ -16,16 +16,32 @@
 // ADT
 int iusSourceDelete
 (
-    ius_t iusSource
+    ius_t source
 )
 {
-    int status = IUS_ERR_VALUE;
-    if(iusSource != NULL)
+    if( source == IUS_INVALID) return IUS_ERR_VALUE;
+    switch (source->type)
     {
-        free(iusSource);
-        status = IUS_E_OK;
+        case IUS_2D_NON_PARAMETRIC_SOURCE:
+        {
+            return ius2DNonParametricSourceDelete((iu2dnps_t) source);
+        }
+        case IUS_2D_PARAMETRIC_SOURCE:
+        {
+            return ius2DParametricSourceDelete((iu2dps_t) source);
+        }
+        case IUS_3D_NON_PARAMETRIC_SOURCE:
+        {
+            return ius3DNonParametricSourceDelete((iu3dnps_t) source);
+        }
+        case IUS_3D_PARAMETRIC_SOURCE:
+        {
+            return ius3DParametricSourceDelete((iu3dps_t) source);
+        }
+        case IUS_INVALID_SOURCE_TYPE:
+            break;
     }
-    return status;
+    return IUS_ERR_VALUE;
 }
 
 
@@ -51,8 +67,6 @@ IUS_BOOL iusSourceCompare
         return IUS_TRUE;
     if( reference == NULL || actual == NULL )
         return IUS_FALSE;
-    if( reference->type == IUS_3D_PARAMETRIC_SOURCE )
-        return ius3DParametricSourceCompare((iu3dps_t) reference, (iu3dps_t)actual);
     switch (reference->type)
     {
         case IUS_2D_NON_PARAMETRIC_SOURCE:
@@ -198,12 +212,13 @@ ius_t iusSourceLoad
     hid_t handle
 )
 {
-	ius_t source;
+	ius_t base;
+    ius_t source;
 
-    source = iusBaseSourceLoad(handle);
-	if (source == NULL) return IUS_INVALID;
+    base = iusBaseSourceLoad(handle);
+	if (base == NULL) return IUS_INVALID;
 
-    switch(source->type)
+    switch(base->type)
     {
         case IUS_2D_NON_PARAMETRIC_SOURCE:
         {
@@ -231,6 +246,7 @@ ius_t iusSourceLoad
             break;
         }
     }
+    free(base);
     return source;
 }
 

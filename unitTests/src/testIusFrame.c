@@ -93,13 +93,13 @@ TEST(IusFrame, testIusFrameSetGet)
     TEST_ASSERT_EQUAL(NULL,iusFrameGetPatternListLabel(NULL));
     TEST_ASSERT_EQUAL(-1,iusFrameGetDataIndex(NULL));
     iusFrameDelete(obj);
+    iusFrameDelete(notherObj);
 }
 
 
 TEST(IusFrame, testIusSerialization)
 {
     char *filename = "testIusFrameSerialization.hdf5";
-    //char *framePath =  "/Frame";
 
     char *patternListLabel="test";
     int dataIndex=202;

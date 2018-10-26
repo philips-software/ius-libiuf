@@ -65,7 +65,7 @@ TEST(IusPatternListDict, testIusPatternListDictSetGet)
     iusPatternDelete(pattern1);
     iusPatternDelete(pattern2);
     iusPatternListDelete(obj);
-	iusPatternListDictDelete(dict);
+//	iusPatternListDictDelete(dict);
 }
 
 
@@ -124,8 +124,8 @@ TEST(IusPatternListDict, testIusComparePatternListDict)
 	equal = iusPatternListDictCompare(NULL, dict);
 	TEST_ASSERT_EQUAL(IUS_FALSE, equal);
 
-	iusPatternListDictDelete(dict);
-	iusPatternListDictDelete(notherDict);
+//	iusPatternListDictDelete(dict);
+//	iusPatternListDictDelete(notherDict);
 }
 
 TEST(IusPatternListDict, testIusSerialization)

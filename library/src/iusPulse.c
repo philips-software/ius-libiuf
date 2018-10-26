@@ -182,7 +182,6 @@ iup_t iusPulseLoad
 	iup_t pulse = NULL;
 	pulse = iusBasePulseLoad(handle);
 	if (pulse == NULL) return IUP_INVALID;
-	//todo free pulse here to prevent memory loss?
 
     if( pulse->type == IUS_PARAMETRIC_PULSETYPE )
         pulse = (iup_t) iusParametricPulseLoad(handle);

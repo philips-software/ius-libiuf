@@ -25,10 +25,10 @@ TEST(IusFrameList, testIusCreateFrameList)
   iufl_t patternList = iusFrameListCreate(numFrames);
   TEST_ASSERT_NOT_EQUAL(IUFL_INVALID, patternList);
   TEST_ASSERT_EQUAL(numFrames, iusFrameListGetSize(patternList));
+  iusFrameListDelete(patternList);
 
   patternList = iusFrameListCreate(-1);
   TEST_ASSERT_EQUAL(IUFL_INVALID, patternList);
-  iusFrameListDelete(patternList);
 }
 
 TEST(IusFrameList, testIusCompareFrameList)
@@ -76,6 +76,7 @@ TEST(IusFrameList, testIusCompareFrameList)
   TEST_ASSERT_EQUAL(IUS_TRUE, equal);
 
   iusFrameListDelete(frameList);
+  iusFrameListDelete(notherFrameList);
   iusFrameDelete(obj);
   iusFrameDelete(notherObj);
 }
@@ -124,6 +125,7 @@ TEST(IusFrameList, testIusSerialization)
   // for lists it should not be posible to save, if not all elements have been
   // filled.
   iusFrameListDelete(frameList);
+  iusFrameListDelete(savedFrameList);
   iusFrameDelete(obj);
   iusFrameDelete(notherObj);
 }

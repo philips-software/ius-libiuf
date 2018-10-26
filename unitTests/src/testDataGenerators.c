@@ -301,10 +301,6 @@ iusd_t dgGenerateSourceDict
                                                               angularDelta, startAngle, deltaPhi, startPhi);
 
     TEST_ASSERT(parametricSource != IU3DPS_INVALID);
-    iu3dps_t _nother3dps = ius3DParametricSourceCreate(locationCount, FNumber,
-                                                         angularDelta, startAngle, deltaPhi, startPhi);
-
-    TEST_ASSERT(_nother3dps != IU3DPS_INVALID);
     iu3dnps_t nonParametricSource = ius3DNonParametricSourceCreate(locationCount);
     TEST_ASSERT(nonParametricSource != IU3DNPS_INVALID);
 

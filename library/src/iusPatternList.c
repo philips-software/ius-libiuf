@@ -13,6 +13,7 @@ struct IusPatternList
 {
     int count;
     iupa_t *   pPatterns ;
+    IUS_BOOL loadedFromFile;
 } ;
 
 // ADT
@@ -24,6 +25,7 @@ iupal_t iusPatternListCreate
     iupal_t list = calloc(1, sizeof(IusPatternList));
     if(list!=NULL)
     {
+        list->loadedFromFile = IUS_FALSE;
         list->count = numPatterns;
         list->pPatterns = (iupa_t *) calloc((size_t)numPatterns, sizeof(iupa_t));
         if( list->pPatterns == NULL )
@@ -40,7 +42,15 @@ int iusPatternListDelete
     iupal_t list
 )
 {
+    int index;
     if(list == NULL) return IUS_ERR_VALUE;
+    if(list->loadedFromFile == IUS_TRUE)
+    {
+        for(index = 0 ; index < list->count ; index++ )
+        {
+            iusPatternDelete(list->pPatterns[index]);
+        }
+    }
     free(list);
     return IUS_E_OK;
 }
@@ -108,9 +118,6 @@ iupal_t iusPatternListLoad
     char path[IUS_MAX_HDF5_PATH];
     int numPatterns,i;
 
-	//hid_t frameListId = H5Gopen(handle, IUS_INPUTFILE_PATH_PATTERNLIST, H5P_DEFAULT);
-    
-	//sprintf(path, FRAMELISTSIZEFMT, parentPath);
     int status = iusHdf5ReadInt(handle, IUS_INPUTFILE_PATH_PATTERNLIST_SIZE, &(numPatterns));
     if(status!=0) return IUPAL_INVALID;
 
@@ -129,7 +136,7 @@ iupal_t iusPatternListLoad
         }
         iusPatternListSet(patternList,pattern,i);
     }
-
+    patternList->loadedFromFile = IUS_TRUE;
     return patternList;
 }
 

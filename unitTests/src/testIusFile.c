@@ -47,6 +47,8 @@ TEST(IusFile, testIusInputFileHistoryScenario)
     // algo params should be empty
     int numAlgoParams = iusHistoryNodeGetNumParams(rootNode);
     TEST_ASSERT_EQUAL(0, numAlgoParams);
+    iusInputFileDelete(iusInputFile);
+    iusFileDelete(iusFile);
 }
 
 TEST(IusFile, testIusCWCFileHistoryScenario)

@@ -79,10 +79,6 @@ TEST(IusSourceDict, testIusCompareSourceDict)
                                                         angularDelta, startAngle, deltaPhi, startPhi);
 
     TEST_ASSERT(parametricSource != IU3DPS_INVALID);
-    iu3dps_t _nother3dps = ius3DParametricSourceCreate(locationCount, FNumber,
-                                                              angularDelta, startAngle, deltaPhi, startPhi);
-
-    TEST_ASSERT(_nother3dps != IU3DPS_INVALID);
     iu3dnps_t nonParametricSource = ius3DNonParametricSourceCreate(locationCount);
     TEST_ASSERT(nonParametricSource != IU3DNPS_INVALID);
 
@@ -124,6 +120,9 @@ TEST(IusSourceDict, testIusCompareSourceDict)
 
     iusSourceDictDelete(dict);
     iusSourceDictDelete(notherDict);
+    ius3DParametricSourceDelete(parametricSource);
+    ius3DNonParametricSourceDelete(nonParametricSource);
+
 }
 
 TEST(IusSourceDict, testIusSerialization)
@@ -143,10 +142,6 @@ TEST(IusSourceDict, testIusSerialization)
                                                               angularDelta, startAngle, deltaPhi, startPhi);
 
     TEST_ASSERT(parametricSource != IU3DPS_INVALID);
-    iu3dps_t _nother3dps = ius3DParametricSourceCreate(locationCount, FNumber,
-                                                         angularDelta, startAngle, deltaPhi, startPhi);
-
-    TEST_ASSERT(_nother3dps != IU3DPS_INVALID);
     iu3dnps_t nonParametricSource = ius3DNonParametricSourceCreate(locationCount);
     TEST_ASSERT(nonParametricSource != IU3DNPS_INVALID);
 
@@ -177,7 +172,8 @@ TEST(IusSourceDict, testIusSerialization)
 
     iusSourceDictDelete(dict);
     iusSourceDictDelete(savedObj);
-
+    ius3DParametricSourceDelete(parametricSource);
+    ius3DNonParametricSourceDelete(nonParametricSource);
 }
 
 

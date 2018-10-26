@@ -150,8 +150,6 @@ TEST(IusTransducer, testIusTransducerSerialization)
     TEST_ASSERT_NOT_EQUAL(NULL, savedObj);
     H5Fclose(handle);
 
-    // TODO: introduce deep Delete method.
-    // API user may decide.
     TEST_ASSERT_EQUAL(IUS_TRUE, iusTransducerCompare(transducer,savedObj));
     for (i = 0; i < numTransducerElements; i++)
     {

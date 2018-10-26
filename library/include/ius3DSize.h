@@ -3,8 +3,7 @@
 #define IUSLIBRARY_IUSHL3DSIZE_H
 
 // ADT
-typedef 
-struct Ius3DSize
+typedef struct Ius3DSize
 {
 	float sx;
 	float sy;
@@ -33,5 +32,4 @@ int ius3DSizeCompare
     iu3ds_t reference,
     iu3ds_t actual
 );
-
 #endif //IUSLIBRARY_IUSHL3DSIZE_H

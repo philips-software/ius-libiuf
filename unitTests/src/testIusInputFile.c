@@ -179,6 +179,7 @@ TEST(IusInputFile, iusInputFileSetGetSourceDict)
     status = iusInputFileClose(obj);
     TEST_ASSERT(status == IUS_E_OK);
     iusInputFileDelete(obj);
+    iusSourceDictDelete(sourceDict);
 }
 
 
@@ -405,6 +406,7 @@ int saveResponses
     }
 
     iusDataDelete(response);
+    iusOffsetDelete(offset);
     return status;
 }
 
@@ -439,6 +441,7 @@ int saveChannels
     }
 
     iusDataDelete(channel);
+    iusOffsetDelete(offset);
     return status;
 }
 
@@ -506,6 +509,7 @@ IUS_BOOL validateResponses
 
     iusDataDelete(referenceResponse);
     iusDataDelete(actualResponse);
+    iusOffsetDelete(offset);
     return equal;
 }
 
@@ -551,6 +555,7 @@ IUS_BOOL validateChannels
 
     iusDataDelete(referenceChannel);
     iusDataDelete(actualChannel);
+    iusOffsetDelete(offset);
     return equal;
 }
 

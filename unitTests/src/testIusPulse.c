@@ -101,9 +101,6 @@ TEST(IusPulse, testIusPulseGet)
 
 TEST(IusPulse, testIusSerialization)
 {
-
-  // TODO how to cope with changes/addition in the data type? 
-
   char *filename = "testIusPulseSerialization.hdf5";
 
   float   pulseFrequency=8000000.0f;   /**< frequency that the pulse represents in Hz */

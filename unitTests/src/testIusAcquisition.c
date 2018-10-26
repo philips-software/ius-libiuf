@@ -135,6 +135,7 @@ TEST(IusAcquisition, testIusSerialization)
     TEST_ASSERT_EQUAL(IUS_TRUE, iusAcquisitionCompare(obj, savedObj));
     TEST_ASSERT_EQUAL(IUS_FALSE, iusAcquisitionCompare(notherObj, savedObj));
     iusAcquisitionDelete(obj);
+    iusAcquisitionDelete(notherObj);
     iusAcquisitionDelete(savedObj);
 }
 

@@ -27,7 +27,7 @@ typedef IusSource *ius_t;
 
 int iusSourceDelete
 (
-    ius_t iusSource
+    ius_t source
 );
 
 

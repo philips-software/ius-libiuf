@@ -139,6 +139,9 @@ TEST(IusReceiveSettingsDict, testIusSerialization)
     H5Fclose(handle);
 
     TEST_ASSERT_EQUAL(IUS_TRUE, iusReceiveSettingsDictCompare(dict, savedDict));
+
+    iurs_t rs = iusReceiveSettingsDictGet(dict,"bmode");
+    iusReceiveSettingsDelete(rs);
     iusReceiveSettingsDictDelete(dict);
     iusReceiveSettingsDictDelete(savedDict);
 }

@@ -90,6 +90,8 @@ TEST(IusTransmitApodizationDict, testIusTransmitApodizationDictCompare)
 	equal = iusTransmitApodizationDictCompare(NULL, dict);
 	TEST_ASSERT_EQUAL(IUS_FALSE, equal);
 
+	iusTransmitApodizationDelete(transmitApodization);
+	iusTransmitApodizationDelete(otherTransmitApodization);
 	iusTransmitApodizationDictDelete(dict);
 	iusTransmitApodizationDictDelete(notherDict);
 }
@@ -127,6 +129,7 @@ TEST(IusTransmitApodizationDict, testIusTransmitApodizationDictSerialization)
 	H5Fclose(handle);
 
 	TEST_ASSERT_EQUAL(IUS_TRUE, iusTransmitApodizationDictCompare(transmitApodizationDict, savedDict));
+	iusTransmitApodizationDelete(obj);
 	iusTransmitApodizationDictDelete(transmitApodizationDict);
 	iusTransmitApodizationDictDelete(savedDict);
 }

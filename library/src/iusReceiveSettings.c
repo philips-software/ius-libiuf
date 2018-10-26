@@ -19,6 +19,21 @@ struct IusReceiveSettings
 } ;
 
 // ADT
+iurs_t iusReceiveSettingsCreateWithoutTGC
+(
+    float sampleFrequency,
+    int numDelays,
+    int numSamplesPerLine
+)
+{
+    iurs_t created = calloc(1,sizeof(IusReceiveSettings));
+    created->sampleFrequency = sampleFrequency;
+    created->startDelay = (float *) calloc(numDelays, sizeof(float));
+    created->numSamplesPerLine = numSamplesPerLine;
+    created->numDelays = numDelays;
+    return created;
+}
+
 iurs_t iusReceiveSettingsCreate
 (
     float sampleFrequency,
@@ -31,12 +46,7 @@ iurs_t iusReceiveSettingsCreate
     if( numDelays <= 0 ) return IURS_INVALID;
     if( numSamplesPerLine < 0 ) return IURS_INVALID;
     if( numTGCentries <= 0 ) return IURS_INVALID;
-
-	iurs_t created = calloc(1,sizeof(IusReceiveSettings));
-    created->sampleFrequency = sampleFrequency;
-    created->startDelay = (float *) calloc(numDelays, sizeof(float));
-    created->numSamplesPerLine = numSamplesPerLine;
-    created->numDelays = numDelays;
+    iurs_t created = iusReceiveSettingsCreateWithoutTGC(sampleFrequency,numDelays,numSamplesPerLine);
     created->TGC = iusTGCCreate(numTGCentries);
     return created;
 }
@@ -49,6 +59,7 @@ int iusReceiveSettingsDelete
     int status = IUS_ERR_VALUE;
     if(iusReceiveSettings != NULL)
     {
+        iusTGCDelete(iusReceiveSettings->TGC);
         free(iusReceiveSettings->startDelay);
         free(iusReceiveSettings);
         status = IUS_E_OK;
@@ -178,9 +189,8 @@ iurs_t iusReceiveSettingsLoad
     float sampleFrequency;
     int numDelays;
     int numSamplesPerLine;
-    int numTGCentries;
     int status=0;
-	
+
     iutgc_t tgc;
     iurs_t iusReceiveSettings;
 	
@@ -194,10 +204,12 @@ iurs_t iusReceiveSettingsLoad
 	H5Gclose(tgc_id);
     if ( tgc == IUTGC_INVALID ) return IURS_INVALID;
 
-    numTGCentries = iusTGCGetNumValues(tgc);
-    iusReceiveSettings = iusReceiveSettingsCreate(sampleFrequency,numDelays,numSamplesPerLine,numTGCentries);
+    iusReceiveSettings = iusReceiveSettingsCreateWithoutTGC(sampleFrequency,numDelays,numSamplesPerLine);
+    iusReceiveSettings->TGC = tgc;
 
-    status |= iusHdf5ReadFloat(handle, IUS_INPUTFILE_PATH_RECEIVESETTINGS_STATRDELAY, iusReceiveSettings->startDelay); //todo: understand why startDelay is not in iusReceiveSettingsCreate
+    // Memory allocation for startDelays has been done in iusReceiveSettingsCreate
+    // now, the delays can be read into iusReceiveSettings->startDelay.
+    status |= iusHdf5ReadFloat(handle, IUS_INPUTFILE_PATH_RECEIVESETTINGS_STATRDELAY, iusReceiveSettings->startDelay);
     if ( status != 0 )
     {
         iusReceiveSettingsDelete(iusReceiveSettings);

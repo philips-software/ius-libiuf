@@ -8,19 +8,19 @@
 
 
 #include <ius.h>
-#include <include/iusAcquisitionPrivate.h>
-#include <include/iusDataStreamDictPrivate.h>
-#include <include/iusFrameListPrivate.h>
-#include <include/iusHistoryNodePrivate.h>
-#include <include/iusInputFilePrivate.h>
-#include <include/iusInputFileStructure.h>
-#include <include/iusPatternListDictPrivate.h>
-#include <include/iusPulseDictPrivate.h>
-#include <include/iusReceiveChannelMapDictPrivate.h>
-#include <include/iusReceiveSettingsDictPrivate.h>
-#include <include/iusSourceDictPrivate.h>
-#include <include/iusTransducerPrivate.h>
-#include <include/iusTransmitApodizationDictPrivate.h>
+#include <iusAcquisitionPrivate.h>
+#include <iusDataStreamDictPrivate.h>
+#include <iusFrameListPrivate.h>
+#include <iusHistoryNodePrivate.h>
+#include <iusInputFilePrivate.h>
+#include <iusInputFileStructure.h>
+#include <iusPatternListDictPrivate.h>
+#include <iusPulseDictPrivate.h>
+#include <iusReceiveChannelMapDictPrivate.h>
+#include <iusReceiveSettingsDictPrivate.h>
+#include <iusSourceDictPrivate.h>
+#include <iusTransducerPrivate.h>
+#include <iusTransmitApodizationDictPrivate.h>
 
 struct IusInputFileInstance
 {
@@ -40,6 +40,7 @@ struct IusInputFileInstance
     hid_t               handle;           /**< HDF5 file handle     */
     const char          *pFilename;       /**< the filename         */
     iudsd_t             dataStreamDict;   /**< Contains dataset administration */
+    IUS_BOOL            loadedFromFile;
 }  ;
 
 
@@ -75,7 +76,47 @@ iuifi_t iusInputFileInstanceCreate
     return instanceData;
 }
 
+int iusInputFileInstanceDelete
+(
+    iuifi_t instance
+)
+{
+    if (instance == NULL) return IUS_ERR_VALUE;
+    iusDataStreamDictDelete(instance->dataStreamDict);
+    free((void *)instance->pFilename);
+    if(instance->loadedFromFile)
+    {
+        iusFrameListDelete(instance->frameList);
+        iusAcquisitionDelete(instance->acquisition);
+        iusTransducerDelete(instance->transducer);
+        iusReceiveSettingsDictDelete(instance->receiveSettingsDict);
+        iusTransmitApodizationDictDelete(instance->transmitApodizationDict);
+        iusReceiveChannelMapDictDelete(instance->receiveChannelMapDict);
+        iusSourceDictDelete(instance->pulseSourceDict);
+        iusPulseDictDelete(instance->pulseDict);
+        iusPatternListDictDelete(instance->patternListDict);
+    }
+    free(instance);
+    return IUS_E_OK;
+}
+
 // ADT
+int iusInputFileDelete
+(
+    iuif_t iusInputFile
+)
+{
+    int status = IUS_ERR_VALUE;
+    if(iusInputFile != NULL)
+    {
+        iuifi_t instance = iusHistoryNodeGetInstanceData(iusInputFile);
+        iusInputFileInstanceDelete(instance);
+        iusHistoryNodeDelete((iuhn_t)iusInputFile);
+        status = IUS_E_OK;
+    }
+    return status;
+}
+
 iuif_t iusInputFileCreate
 (
     const char *pFilename
@@ -95,12 +136,12 @@ iuif_t iusInputFileCreate
 	}
 
     instanceData->handle = H5Fcreate(pFilename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
-	instanceData->pFilename = strdup(pFilename);
 	if (instanceData->handle == H5I_INVALID_HID)
 	{
 		free((void *)instanceData);
 		return IUIF_INVALID;
 	}
+    instanceData->pFilename = strdup(pFilename);
 	iuhn_t node = iusHistoryNodeCreate(IUS_INPUT_TYPE,0);
 	iusHistoryNodeSetInstanceData(node,(void *)instanceData);
 	return (iuif_t)node;
@@ -203,24 +244,6 @@ iud_t iusInputFileChannelCreate
 }
 
 
-int iusInputFileDelete
-(
-    iuif_t iusInputFile
-)
-{
-    int status = IUS_ERR_VALUE;
-    if(iusInputFile != NULL)
-    {
-        iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)iusInputFile);
-        iusDataStreamDictDelete(instance->dataStreamDict);
-        free((void *)instance->pFilename);
-        free(iusInputFile);
-        status = IUS_E_OK;
-    }
-    return status;
-}
-
-
 static iuifi_t inputFileInstanceLoad
 (
     iuifi_t instance
@@ -298,6 +321,7 @@ static iuifi_t inputFileInstanceLoad
         return IUIFI_INVALID;
     }
 
+    instance->loadedFromFile = IUS_TRUE;
     return instance;
 }
 
@@ -307,8 +331,14 @@ void *iusInputFileInstanceLoad
 )
 {
     iuifi_t instance = iusInputFileInstanceCreate();
+    iuifi_t new_instance;
     instance->handle = handle;
-    instance = inputFileInstanceLoad(instance);
+    new_instance = inputFileInstanceLoad(instance);
+    if( new_instance == IUIFI_INVALID )
+    {
+        iusInputFileInstanceDelete(instance);
+        instance = new_instance;
+    }
     return (void *)instance;
 }
 
@@ -369,7 +399,6 @@ int iusInputFileSaveInstance
     status |= iusAcquisitionSave(instanceData->acquisition, handle);
     status |= iusTransducerSave(instanceData->transducer, instanceData->handle);
     status |= iusHdf5WriteInt( instanceData->handle, IUS_INPUTFILE_PATH_IUSVERSION, &(instanceData->IusVersion), 1);
-//    status |= iusHdf5WriteInt( instanceData->handle, IUS_INPUTFILE_PATH_NUMFRAMES, &(instanceData->numFrames), 1);
     return status;
 }
 
@@ -399,7 +428,6 @@ int iusInputFileClose
 
     iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)fileHandle);
 
-
     // Terminate access to the file.
     if( instance->handle != H5I_INVALID_HID )
     {
@@ -417,7 +445,6 @@ static int iusInputFileCompareInstance
     if ( reference == actual ) return IUS_TRUE;
     if ( reference == NULL || actual == NULL ) return IUS_FALSE;
     if ( reference->IusVersion != actual->IusVersion ) return IUS_FALSE;
-//    if ( reference->numFrames != actual->numFrames ) return IUS_FALSE;
     if ( strcmp(reference->pFilename, actual->pFilename) != 0 ) return IUS_FALSE;
     if ( iusFrameListCompare(reference->frameList, actual->frameList)  == IUS_FALSE ) return IUS_FALSE;
     if ( iusPatternListDictCompare(reference->patternListDict, actual->patternListDict)  == IUS_FALSE ) return IUS_FALSE;

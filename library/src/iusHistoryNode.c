@@ -64,6 +64,10 @@ int iusHistoryNodeDelete
 )
 {
     if ( node == NULL ) return IUS_ERR_VALUE;
+    free(node->pId);
+    free(node->pType);
+    if(node->numberOfParents!=0)
+        iusHistoryNodeListDelete(node->parents);
     free(node);
     return IUS_E_OK;
 }
@@ -248,12 +252,15 @@ iuhn_t iusHistoryNodeLoad
         return IUHN_INVALID;
 
     iuhn_t loadedObj = iusHistoryNodeCreateWithId((char *)ID, (char *)type,numberOfParents);
-    iuhnl_t loadedParents = iusHistoryNodeListLoad(handle, numberOfParents);
-    status = iusHistoryNodeSetParents(loadedObj, loadedParents);
-    if (status != 0)
+    if (numberOfParents > 0)
     {
-        iusHistoryNodeDelete(loadedObj);
-        return IUHN_INVALID;
+        iuhnl_t loadedParents = iusHistoryNodeListLoad(handle, numberOfParents);
+        status = iusHistoryNodeSetParents(loadedObj, loadedParents);
+        if (status != 0)
+        {
+            iusHistoryNodeDelete(loadedObj);
+            return IUHN_INVALID;
+        }
     }
 
     // Processing parameters are optional
@@ -327,7 +334,11 @@ int iusHistoryNodeSave
         status |= iusParameterDictSave(node->parameters, group_id);
         status |= H5Gclose(group_id );
     }
-    status |= iusHistoryNodeListSave(node->parents, handle);
+
+    if (node->numberOfParents != 0)
+    {
+        status |= iusHistoryNodeListSave(node->parents, handle);
+    }
     status |= iusHistoryNodeSaveInstance(node, handle);
     return status;
 }

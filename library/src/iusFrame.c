@@ -38,6 +38,7 @@ int iusFrameDelete
     int status = IUS_ERR_VALUE;
     if(iusFrame != NULL)
     {
+        free(iusFrame->patternListLabel);
         free(iusFrame);
         status = IUS_E_OK;
     }

@@ -111,6 +111,7 @@ TEST(IusReceiveSettings, testIusReceiveSettingsCompare)
     
     iusReceiveSettingsDelete(obj);
     iusReceiveSettingsDelete(notherObj);
+    iusReceiveSettingsDelete(differentObj);
 }
 
 
@@ -142,6 +143,7 @@ TEST(IusReceiveSettings, testIusReceiveSettingsSetGet)
         TEST_ASSERT(status == IUS_E_OK);
         TEST_ASSERT_EQUAL_FLOAT(delay, iusReceiveSettingsGetStartDelay(obj, i));
     }
+    iusReceiveSettingsDelete(obj);
 }
 
 TEST(IusReceiveSettings, testIusSerialization)
@@ -150,7 +152,7 @@ TEST(IusReceiveSettings, testIusSerialization)
     float sampleFrequency=4000;
     int numDelays=10;
     int numSamplesPerLine=10;
-    int numTGCentries = 1;
+    int numTGCentries = 2;
     int i;
     int status;
 

@@ -25,10 +25,12 @@ TEST(IusHistoryNodeList, testIusCreateHistoryNodeList)
   iuhnl_t nodeList = iusHistoryNodeListCreate(numHistoryNodes);
   TEST_ASSERT_NOT_EQUAL(IUHNL_INVALID, nodeList);
   TEST_ASSERT_EQUAL(numHistoryNodes, iusHistoryNodeListGetSize(nodeList));
+  iusHistoryNodeListDelete(nodeList);
 
   nodeList = iusHistoryNodeListCreate(-1);
   TEST_ASSERT_EQUAL(IUHNL_INVALID, nodeList);
-  iusHistoryNodeListDelete(nodeList);
+  nodeList = iusHistoryNodeListCreate(0);
+  TEST_ASSERT_EQUAL(IUHNL_INVALID, nodeList);
 }
 
 TEST(IusHistoryNodeList, testIusCompareHistoryNodeList)
@@ -74,9 +76,10 @@ TEST(IusHistoryNodeList, testIusCompareHistoryNodeList)
   equal = iusHistoryNodeListCompare(nodeList, notherHistoryNodeList);
   TEST_ASSERT_EQUAL(IUS_TRUE, equal);
 
-  iusHistoryNodeListDelete(nodeList);
   iusHistoryNodeDelete(obj);
   iusHistoryNodeDelete(notherObj);
+  iusHistoryNodeListDelete(nodeList);
+  iusHistoryNodeListDelete(notherHistoryNodeList);
 }
 
 TEST(IusHistoryNodeList, testIusSerialization)
@@ -122,9 +125,10 @@ TEST(IusHistoryNodeList, testIusSerialization)
   // TODO: Non-happy flow
   // for lists it should not be posible to save, if not all elements have been
   // filled.
-  iusHistoryNodeListDelete(nodeList);
   iusHistoryNodeDelete(obj);
   iusHistoryNodeDelete(notherObj);
+  iusHistoryNodeListDelete(nodeList);
+  iusHistoryNodeListDelete(savedHistoryNodeList);
 }
 
 TEST_GROUP_RUNNER(IusHistoryNodeList)
