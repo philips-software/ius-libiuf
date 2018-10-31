@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
-which cmake >/dev/null 2>&1
+which cmake3 >/dev/null 2>&1
 if (( $? == 0 ))
 then
-    # cmake found
-    CMAKE=cmake
-    CTEST=ctest
-else
-    # use cmake3
+    # cmake3 found
     CMAKE=cmake3
     CTEST=ctest3
+else
+    # use cmake
+    CMAKE=cmake
+    CTEST=ctest
 fi
 BuildFolder=C_v3/build/$(uname)
 
