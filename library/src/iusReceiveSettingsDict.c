@@ -41,6 +41,16 @@ iursd_t iusReceiveSettingsDictCreate
     return dict;
 }
 
+int iusReceiveSettingsDictDeepDelete
+(
+    iursd_t dict
+)
+{
+    if (dict == NULL) return IUS_ERR_VALUE;
+    dict->loadedFromFile = IUS_TRUE;
+    return iusReceiveSettingsDictDelete(dict);
+}
+
 int iusReceiveSettingsDictDelete
 (
     iursd_t dict
@@ -53,7 +63,7 @@ int iusReceiveSettingsDictDelete
     for (iter = hashmap_iter(&dict->map); iter; iter = hashmap_iter_next(&dict->map, iter))
     {
         iterElement = HashableReceiveSettings_hashmap_iter_get_data(iter);
-        if (dict->loadedFromFile)
+        if (dict->loadedFromFile == IUS_TRUE)
             iusReceiveSettingsDelete(iterElement->receiveSettings);
         free(iterElement);
     }

@@ -37,16 +37,21 @@ iupad_t dgGenerateParameterDict
 
 int dgInputFileAddGeneratedData
 (
-iuif_t inputFile,
-char *label
+	iuif_t inputFile,
+	char *label
 );
 
 iuif_t dgGenerateInputFile
 (
-char *ptestFileName,
-char *transducerName,
-char *label,
-int numFrames
+	char *ptestFileName,
+	char *transducerName,
+	char *label,
+	int numFrames
+);
+
+int dgDeleteInputFile
+(
+	iuif_t iusInputFile
 );
 
 iufl_t dgGenerateFrameList

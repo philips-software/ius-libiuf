@@ -21,41 +21,38 @@ struct IusHistoryNode
     int                 numberOfParameters;
     iupad_t             parameters;
     void *              instanceData;
+    IUS_BOOL            loadedFromFile;
 
 } ;
 
 static iuhn_t iusHistoryNodeCreateWithId
 (
     char *ID,
-    char *pNodeType,
-    int parents
+    char *pNodeType
 )
 {
     if ( pNodeType == NULL ) return IUHN_INVALID;
-    if ( parents < 0 ) return IUHN_INVALID;
     IusHistoryNode *pIusNode = calloc(1, sizeof( IusHistoryNode ));
     pIusNode->pId = strdup(ID);
     pIusNode->pType = strdup(pNodeType);
-    pIusNode->numberOfParents = parents;
     pIusNode->numberOfParameters = 0;
-    pIusNode->parents = iusHistoryNodeListCreate(parents);
+    pIusNode->parents = IUHNL_INVALID;
     pIusNode->parameters = IUPAD_INVALID;
     pIusNode->instanceData = NULL;
+    pIusNode->loadedFromFile = IUS_FALSE;
     return pIusNode;
 }
 
 iuhn_t iusHistoryNodeCreate
 (
-    char *pNodeType,
-    int parents
+    char *pNodeType
 )
 {
     char ID[MAX_ID_LENGTH];
     if ( pNodeType == NULL ) return IUHN_INVALID;
-    if ( parents < 0 ) return IUHN_INVALID;
     // Uuid should be generated for it.
     setIusUuidCreate( ID );
-    return iusHistoryNodeCreateWithId(ID,pNodeType,parents);
+    return iusHistoryNodeCreateWithId(ID,pNodeType);
 }
 
 int iusHistoryNodeDelete
@@ -64,10 +61,14 @@ int iusHistoryNodeDelete
 )
 {
     if ( node == NULL ) return IUS_ERR_VALUE;
+    if(node->numberOfParents!=0 && node->loadedFromFile == IUS_TRUE)
+        iusHistoryNodeListDelete(node->parents);
+    if(node->numberOfParameters!=0 && node->loadedFromFile == IUS_TRUE)
+    {
+        iusParameterDictDelete(node->parameters);
+    }
     free(node->pId);
     free(node->pType);
-    if(node->numberOfParents!=0)
-        iusHistoryNodeListDelete(node->parents);
     free(node);
     return IUS_E_OK;
 }
@@ -125,7 +126,8 @@ int iusHistoryNodeGetNumParents
 )
 {
     if ( node == NULL ) return -1;
-    return node->numberOfParents;
+    if ( node->parents == IUHNL_INVALID ) return 0;
+    return iusHistoryNodeListGetSize(node->parents);
 }
 
 int iusHistoryNodeGetNumParams
@@ -251,7 +253,7 @@ iuhn_t iusHistoryNodeLoad
     if (status!=0)
         return IUHN_INVALID;
 
-    iuhn_t loadedObj = iusHistoryNodeCreateWithId((char *)ID, (char *)type,numberOfParents);
+    iuhn_t loadedObj = iusHistoryNodeCreateWithId((char *)ID, (char *)type);
     if (numberOfParents > 0)
     {
         iuhnl_t loadedParents = iusHistoryNodeListLoad(handle, numberOfParents);
@@ -280,6 +282,7 @@ iuhn_t iusHistoryNodeLoad
     // load instance data
     void *instance = iusHistoryNodeLoadInstance(loadedObj,handle);
     iusHistoryNodeSetInstanceData(loadedObj,instance);
+    loadedObj->loadedFromFile = IUS_TRUE;
     return loadedObj;
 }
 

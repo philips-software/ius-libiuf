@@ -20,6 +20,11 @@ int iusReceiveSettingsDictDelete
     iursd_t dict
 );
 
+int iusReceiveSettingsDictDeepDelete
+(
+    iursd_t dict
+);
+
 int iusReceiveSettingsDictCompare
 (
     iursd_t reference,

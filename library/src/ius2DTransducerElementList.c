@@ -43,17 +43,15 @@ iu2dtel_t ius2DTransducerElementListCreate
     return list;
 }
 
+
 int ius2DTransducerElementListDeepDelete
 (
     iu2dtel_t list
 )
 {
     if(list == NULL) return IUS_ERR_VALUE;
-    for (int i = 0 ; i < list->count ; i++ )
-    {
-        ius2DTransducerElementDelete(list->p2DTransducerElements[i]);
-    }
-    return IUS_E_OK;
+    list->loadedFromFile = IUS_TRUE;
+    return ius2DTransducerElementListDelete(list);
 }
 
 int ius2DTransducerElementListDelete
@@ -63,7 +61,12 @@ int ius2DTransducerElementListDelete
 {
     if(list == NULL) return IUS_ERR_VALUE;
     if(list->loadedFromFile == IUS_TRUE)
-        ius2DTransducerElementListDeepDelete(list);
+    {
+        for (int i = 0 ; i < list->count ; i++ )
+        {
+            ius2DTransducerElementDelete(list->p2DTransducerElements[i]);
+        }
+    }
     free(list->p2DTransducerElements);
     free(list);
     return IUS_E_OK;

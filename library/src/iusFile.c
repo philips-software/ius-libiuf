@@ -5,12 +5,12 @@
 #include <ius.h>
 #include <iusHistoryNodePrivate.h>
 #include <iusInputFilePrivate.h>
+#include <memory.h>
 
 struct IusFile
 {
     iuhn_t history;
     hid_t handle;                         /**< file handle */
-    void *instance_data;
 } ;
 
 // ADT
@@ -22,6 +22,11 @@ int iusFileDelete
     int status = IUS_ERR_VALUE;
     if(iusFile != NULL)
     {
+        if( strcmp( iusHistoryNodeGetType(iusFile->history), IUS_INPUT_TYPE ) == 0 )
+        {
+            iuifi_t instance = iusHistoryNodeGetInstanceData(iusFile->history);
+            iusInputFileInstanceDelete(instance);
+        }
         iusHistoryNodeDelete(iusFile->history);
         free(iusFile);
         status = IUS_E_OK;
@@ -71,6 +76,10 @@ iuf_t iusFileLoad
     }
 
     file->history = iusHistoryNodeLoad(file->handle);
+    if( strcmp( iusHistoryNodeGetType(file->history), IUS_INPUT_TYPE ) == 0 )
+    {
+        iusInputFileSetFilename((iuif_t)file->history,pFilename);
+    }
 
     return file;
 }

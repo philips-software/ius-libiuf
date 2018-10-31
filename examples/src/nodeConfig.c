@@ -88,10 +88,9 @@ iuhn_t ncFillHistoryNode
 )
 {
     char *type =  "TYPE3";
-    int numParents = 0;
     iuhn_t node;
 
-    node = iusHistoryNodeCreate(type,numParents);
+    node = iusHistoryNodeCreate(type);
 
     iupad_t parameterDict = ncFillParameterDict(10);
     iusHistoryNodeSetParameters(node, parameterDict);

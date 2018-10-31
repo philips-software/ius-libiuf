@@ -51,11 +51,8 @@ int ius3DTransducerElementListDeepDelete
 )
 {
     if(list == NULL) return IUS_ERR_VALUE;
-    for (int i = 0 ; i < list->count ; i++ )
-    {
-        ius3DTransducerElementDelete(list->p3DTransducerElements[i]);
-    }
-    return IUS_E_OK;
+    list->loadedFromFile = IUS_TRUE;
+    return ius3DTransducerElementListDelete(list);
 }
 
 int ius3DTransducerElementListDelete
@@ -65,7 +62,12 @@ int ius3DTransducerElementListDelete
 {
     if(list == NULL) return IUS_ERR_VALUE;
     if(list->loadedFromFile == IUS_TRUE)
-        ius3DTransducerElementListDeepDelete(list);
+    {
+        for (int i = 0 ; i < list->count ; i++ )
+        {
+            ius3DTransducerElementDeepDelete(list->p3DTransducerElements[i]);
+        }
+    }
     free(list->p3DTransducerElements);
     free(list);
     return IUS_E_OK;

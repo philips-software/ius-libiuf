@@ -47,7 +47,7 @@ TEST(IusFile, testIusInputFileHistoryScenario)
     // algo params should be empty
     int numAlgoParams = iusHistoryNodeGetNumParams(rootNode);
     TEST_ASSERT_EQUAL(0, numAlgoParams);
-    iusInputFileDelete(iusInputFile);
+    dgDeleteInputFile(iusInputFile);
     iusFileDelete(iusFile);
 }
 
@@ -56,7 +56,7 @@ TEST(IusFile, testIusCWCFileHistoryScenario)
 // As a developer I want to be able get the data history of an ius file.
 // The data history  is organised as a DataHistory Tree.
     int numParents = 0;
-    char pNodeType[] = IUS_INPUT_TYPE;
+    char *pNodeType = IUS_INPUT_TYPE;
     char *pFilename = "testIusCWCFileHistoryScenario.hdf5";
     char *pFilename2 = "testIusCWCFileHistoryScenario2.hdf5";
 
@@ -81,12 +81,11 @@ TEST(IusFile, testIusCWCFileHistoryScenario)
     TEST_ASSERT_EQUAL_STRING(iusFileGetType(iusFile),iusHistoryNodeGetType(rootNode));
 
     iuif_t iusInputFile2 = dgGenerateInputFile(pFilename, "S5-1-0", "bmode", 10);
-    iuhn_t cwcParents = iusHistoryNodeCreate(pNodeType,1);
-    iuhnl_t parents = iusHistoryNodeGetParents(cwcParents);
+    iuhn_t cwcParents = iusHistoryNodeCreate(pNodeType);
+    iuhnl_t parents = iusHistoryNodeListCreate(1);
     iusHistoryNodeListSet(parents,rootNode,0);
     iusHistoryNodeSetParents(cwcParents,parents);
     iusFileSetHistoryTree((iuf_t) iusInputFile2, cwcParents);
-
 
     // --- Validate History
     iusInputFileNodeSave(iusInputFile2);
@@ -101,6 +100,11 @@ TEST(IusFile, testIusCWCFileHistoryScenario)
     // Input file history should be empty
     numParents = iusHistoryNodeGetNumParents(cwcRootNode);
     TEST_ASSERT(numParents == 0);
+
+    dgDeleteInputFile(iusInputFile);
+    dgDeleteInputFile(iusInputFile2);
+    iusFileDelete(iusFile);
+    iusFileDelete(iusCWCFile);
 
 }
 

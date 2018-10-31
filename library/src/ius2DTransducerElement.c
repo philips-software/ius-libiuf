@@ -45,9 +45,8 @@ int ius2DTransducerElementDeepDelete
 )
 {
     if (ius2DTransducerElement == NULL) return IUS_ERR_VALUE;
-    ius2DPositionDelete(ius2DTransducerElement->position);
-    ius2DSizeDelete(ius2DTransducerElement->size);
-    return IUS_E_OK;
+    ius2DTransducerElement->loadedFromFile=IUS_TRUE;
+    return ius2DTransducerElementDelete(ius2DTransducerElement);
 }
 
 int ius2DTransducerElementDelete
@@ -57,7 +56,10 @@ int ius2DTransducerElementDelete
 {
     if (ius2DTransducerElement == NULL) return IUS_ERR_VALUE;
     if (ius2DTransducerElement->loadedFromFile == IUS_TRUE)
-        ius2DTransducerElementDeepDelete(ius2DTransducerElement);
+    {
+        ius2DPositionDelete(ius2DTransducerElement->position);
+        ius2DSizeDelete(ius2DTransducerElement->size);
+    }
     free(ius2DTransducerElement);
     return IUS_E_OK;
 }

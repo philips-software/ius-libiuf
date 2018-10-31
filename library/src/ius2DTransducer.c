@@ -43,6 +43,15 @@ iu2dt_t ius2DTransducerCreate
     return created;
 }
 
+int ius2DTransducerDeepDelete
+(
+    iu2dt_t ius2DTransducer
+)
+{
+    if (ius2DTransducer == NULL) return IUS_ERR_VALUE;
+    ius2DTransducer->baseTransducer.loadedFromFile = IUS_TRUE;
+    return ius2DTransducerDelete(ius2DTransducer);
+}
 
 int ius2DTransducerDelete
 (
@@ -50,7 +59,19 @@ int ius2DTransducerDelete
 )
 {
     if(ius2DTransducer == NULL) return IUS_ERR_VALUE;
-    ius2DTransducerElementListDelete(ius2DTransducer->elements);
+    int numElements =  ius2DTransducerElementListGetSize(ius2DTransducer->elements);
+    if (numElements > 0)
+    {
+        if (ius2DTransducer->baseTransducer.loadedFromFile == IUS_TRUE)
+        {
+            ius2DTransducerElementListDeepDelete(ius2DTransducer->elements);
+
+        }
+        else
+        {
+            ius2DTransducerElementListDelete(ius2DTransducer->elements);
+        }
+    }
     free(ius2DTransducer->baseTransducer.pTransducerName);
     free(ius2DTransducer);
     return IUS_E_OK;

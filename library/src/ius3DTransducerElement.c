@@ -43,10 +43,8 @@ int ius3DTransducerElementDeepDelete
 )
 {
     if (ius3DTransducerElement == NULL) return IUS_ERR_VALUE;
-    ius3DPositionDelete(ius3DTransducerElementGetPosition(ius3DTransducerElement));
-    ius3DSizeDelete(ius3DTransducerElementGetSize(ius3DTransducerElement));
-    ius3DAngleDelete(ius3DTransducerElementGetAngle(ius3DTransducerElement));
-    return IUS_E_OK;
+    ius3DTransducerElement->loadedFromFile = IUS_TRUE;
+    return ius3DTransducerElementDelete(ius3DTransducerElement);
 }
 
 int ius3DTransducerElementDelete
@@ -58,7 +56,11 @@ int ius3DTransducerElementDelete
     if(ius3DTransducerElement != NULL)
     {
         if(ius3DTransducerElement->loadedFromFile == IUS_TRUE)
-            ius3DTransducerElementDeepDelete(ius3DTransducerElement);
+        {
+            ius3DPositionDelete(ius3DTransducerElementGetPosition(ius3DTransducerElement));
+            ius3DSizeDelete(ius3DTransducerElementGetSize(ius3DTransducerElement));
+            ius3DAngleDelete(ius3DTransducerElementGetAngle(ius3DTransducerElement));
+        }
         free(ius3DTransducerElement);
         status = IUS_E_OK;
     }

@@ -20,6 +20,11 @@ int iusPulseDictDelete
     iupd_t dict
 );
 
+int iusPulseDictDeepDelete
+(
+    iupd_t dict
+);
+
 int iusPulseDictCompare
 (
     iupd_t reference,

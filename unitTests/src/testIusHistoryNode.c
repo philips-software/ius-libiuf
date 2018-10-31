@@ -24,25 +24,19 @@ TEST_TEAR_DOWN(IusHistoryNode)
 TEST(IusHistoryNode, testIusHistoryNodeCreate)
 {
     char *type =  IUS_INPUT_TYPE;
-    int numParents = 0;
-    iuhn_t node = iusHistoryNodeCreate(type,numParents);
+    iuhn_t node = iusHistoryNodeCreate(type);
     TEST_ASSERT_NOT_EQUAL(IUHN_INVALID,node);
     iusHistoryNodeDelete(node);
 
     // invalid params
-    node = iusHistoryNodeCreate(NULL,numParents);
+    node = iusHistoryNodeCreate(NULL);
     TEST_ASSERT_EQUAL(IUHN_INVALID,node);
-
-    node = iusHistoryNodeCreate(type,-1);
-    TEST_ASSERT_EQUAL(IUHN_INVALID,node);
-    iusHistoryNodeDelete(node);
 }
 
 TEST(IusHistoryNode, testIusHistoryNodeDelete)
 {
     char *type =  IUS_INPUT_TYPE;
-    int numParents = 0;
-    iuhn_t node = iusHistoryNodeCreate(type,numParents);
+    iuhn_t node = iusHistoryNodeCreate(type);
     TEST_ASSERT_NOT_EQUAL(IUHN_INVALID,node);
     int status = iusHistoryNodeDelete(node);
     TEST_ASSERT_EQUAL(IUS_E_OK, status);
@@ -57,11 +51,14 @@ TEST(IusHistoryNode, testIusHistoryNodeDelete)
 TEST(IusHistoryNode, testIusHistoryNodeCompare)
 {
     char *type =  IUS_INPUT_TYPE;
-    int numParents = 1;
-    iuhn_t node = iusHistoryNodeCreate(type,numParents);
+    iuhn_t node = iusHistoryNodeCreate(type);
     TEST_ASSERT_NOT_EQUAL(IUHN_INVALID,node);
-    iuhn_t notherNode = iusHistoryNodeCreate(type,numParents);
+    iuhn_t notherNode = iusHistoryNodeCreate(type);
     TEST_ASSERT_NOT_EQUAL(IUHN_INVALID,node);
+    iuhnl_t parents = iusHistoryNodeListCreate(1);
+    iuhnl_t notherParents = iusHistoryNodeListCreate(1);
+    iusHistoryNodeSetParents(node,parents);
+    iusHistoryNodeSetParents(notherNode,notherParents);
 
     // History nodes will always have unique Id
     IUS_BOOL equal = iusHistoryNodeCompareWithId(node,notherNode);
@@ -71,7 +68,7 @@ TEST(IusHistoryNode, testIusHistoryNodeCompare)
 
     // change node, compare
     // change parents
-    iuhn_t parentNode = iusHistoryNodeCreate(type,0);
+    iuhn_t parentNode = iusHistoryNodeCreate(type);
     iuhnl_t parentList = iusHistoryNodeGetParents(node);
     int status = iusHistoryNodeListSet(parentList,parentNode,0);
     TEST_ASSERT_EQUAL(IUS_E_OK, status);
@@ -84,7 +81,7 @@ TEST(IusHistoryNode, testIusHistoryNodeCompare)
     parentList = iusHistoryNodeGetParents(notherNode);
     status = iusHistoryNodeListSet(parentList,parentNode,0);
     TEST_ASSERT_EQUAL(IUS_E_OK, status);
-    status = iusHistoryNodeSetParents(node,parentList);
+    status = iusHistoryNodeSetParents(notherNode,parentList);
     TEST_ASSERT_EQUAL(IUS_E_OK, status);
     equal = iusHistoryNodeCompare(node,notherNode);
     TEST_ASSERT_EQUAL(IUS_TRUE,equal);
@@ -101,10 +98,11 @@ TEST(IusHistoryNode, testIusHistoryNodeCompare)
     equal = iusHistoryNodeCompare(node,notherNode);
     TEST_ASSERT_EQUAL(IUS_TRUE,equal);
 
-//    iusHistoryNodeDelete(node);
-//    iusHistoryNodeDelete(notherNode);
-//    iusHistoryNodeDelete(parentNode);
-//    iusHistoryNodeListDelete(parentList);
+    iusHistoryNodeDelete(node);
+    iusHistoryNodeDelete(notherNode);
+    iusHistoryNodeDelete(parentNode);
+    iusHistoryNodeListDelete(parents);
+    iusHistoryNodeListDelete(notherParents);
     iusParameterDictDelete(params);
 
 }
@@ -116,7 +114,7 @@ TEST(IusHistoryNode, testIusHistoryNodeSetGet)
     int numParents = 0;
     iuhn_t node;
 
-    node = iusHistoryNodeCreate(type,numParents);
+    node = iusHistoryNodeCreate(type);
     TEST_ASSERT_NOT_EQUAL(IUHN_INVALID,node);
     TEST_ASSERT_EQUAL_STRING(IUS_INPUT_TYPE, iusHistoryNodeGetType(node));
     TEST_ASSERT_EQUAL(numParents, iusHistoryNodeGetNumParents(node));
@@ -126,17 +124,20 @@ TEST(IusHistoryNode, testIusHistoryNodeSetGet)
 
     for (numParents=1 ; numParents < 100 ; numParents++)
     {
-        node = iusHistoryNodeCreate(type,numParents);
+        node = iusHistoryNodeCreate(type);
         TEST_ASSERT_NOT_EQUAL(IUHN_INVALID,node);
         TEST_ASSERT_EQUAL_STRING(IUS_INPUT_TYPE, iusHistoryNodeGetType(node));
+        iuhnl_t parents = iusHistoryNodeListCreate(numParents);
+        TEST_ASSERT_EQUAL(IUS_E_OK,iusHistoryNodeSetParents(node,parents));
         TEST_ASSERT_EQUAL(numParents, iusHistoryNodeGetNumParents(node));
-        iuhnl_t parents = iusHistoryNodeGetParents(node);
+        parents = iusHistoryNodeGetParents(node);
         TEST_ASSERT_EQUAL(numParents, iusHistoryNodeListGetSize(parents));
         iusHistoryNodeDelete(node);
+        iusHistoryNodeListDelete(parents);
     }
 
     iupad_t parameterDict = dgGenerateParameterDict(10);
-    node = iusHistoryNodeCreate(type,numParents);
+    node = iusHistoryNodeCreate(type);
     iusHistoryNodeSetParameters(node, parameterDict);
     iupad_t otherPd = iusHistoryNodeGetParameters(node);
     IUS_BOOL equal = iusParameterDictCompare(parameterDict,otherPd);
@@ -171,6 +172,8 @@ TEST(IusHistoryNode, testIusHistoryNodeSerialize)
 
     TEST_ASSERT_EQUAL(IUS_TRUE, iusHistoryNodeCompareWithId(historyNode,savedObj));
 
+    if( iusHistoryNodeGetNumParams(historyNode) != 0 )
+        iusParameterDictDelete(iusHistoryNodeGetParameters(historyNode));
     iusHistoryNodeDelete(historyNode);
     iusHistoryNodeDelete(savedObj);
 }

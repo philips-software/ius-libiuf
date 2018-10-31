@@ -41,6 +41,17 @@ iutad_t iusTransmitApodizationDictCreate
 	return dict;
 }
 
+
+int iusTransmitApodizationDictDeepDelete
+(
+	iutad_t dict
+)
+{
+	if (dict == NULL) return IUS_ERR_VALUE;
+	dict->loadedFromFile = IUS_TRUE;
+	return iusTransmitApodizationDictDelete(dict);
+}
+
 int iusTransmitApodizationDictDelete
 (
 	iutad_t dict

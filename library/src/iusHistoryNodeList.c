@@ -52,7 +52,8 @@ int iusHistoryNodeListDelete
             iusHistoryNodeDelete(list->pHistoryNodes[i]);
         }
     }
-    free(list->pHistoryNodes);
+    if(list->count>0)
+        free(list->pHistoryNodes);
     free(list);
     return IUS_E_OK;
 }
@@ -84,6 +85,7 @@ int iusHistoryNodeListGetSize
     iuhnl_t list
 )
 {
+    if( list == NULL ) return -1;
     return list->count;
 }
 

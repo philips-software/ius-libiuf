@@ -41,6 +41,17 @@ iusd_t iusSourceDictCreate
     return dict;
 }
 
+
+int iusSourceDictDeepDelete
+(
+iusd_t dict
+)
+{
+    if(dict == NULL) return IUS_ERR_VALUE;
+    dict->loadedFromFile = IUS_TRUE;
+    return iusSourceDictDelete(dict);
+}
+
 int iusSourceDictDelete
 (
   iusd_t dict

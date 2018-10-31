@@ -23,6 +23,11 @@ int ius3DTransducerDelete
     iu3dt_t ius3DTransducer
 );
 
+int ius3DTransducerDeepDelete
+(
+	iu3dt_t ius3DTransducer
+);
+
 // operations
 int ius3DTransducerCompare
 (

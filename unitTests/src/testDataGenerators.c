@@ -78,10 +78,9 @@ iuhn_t dgGenerateHistoryNode
 )
 {
     char *type =  "TYPE3";
-    int numParents = 0;
     iuhn_t node;
 
-    node = iusHistoryNodeCreate(type,numParents);
+    node = iusHistoryNodeCreate(type);
     TEST_ASSERT_NOT_EQUAL(IUHN_INVALID,node);
 
     iupad_t parameterDict = dgGenerateParameterDict(10);
@@ -109,6 +108,24 @@ iupad_t dgGenerateParameterDict
     }
 
     return dict;
+}
+
+int dgDeleteInputFile
+(
+    iuif_t iusInputFile
+)
+{
+    int status = iusFrameListDeepDelete(iusInputFileGetFrameList(iusInputFile));
+    status |= iusReceiveChannelMapDictDeepDelete(iusInputFileGetReceiveChannelMapDict(iusInputFile));
+    status |= iusTransducerDeepDelete(iusInputFileGetTransducer(iusInputFile));
+    status |= iusTransmitApodizationDictDeepDelete(iusInputFileGetTransmitApodizationDict(iusInputFile));
+    status |= iusReceiveSettingsDictDeepDelete(iusInputFileGetReceiveSettingsDict(iusInputFile));
+    status |= iusPatternListDictDeepDelete(iusInputFileGetPatternListDict(iusInputFile));
+    status |= iusPulseDictDeepDelete(iusInputFileGetPulseDict(iusInputFile));
+    status |= iusSourceDictDeepDelete(iusInputFileGetSourceDict(iusInputFile));
+    status |= iusAcquisitionDelete(iusInputFileGetAcquisition(iusInputFile));
+    status |= iusInputFileDelete(iusInputFile);
+    return status;
 }
 
 iuif_t dgGenerateInputFile

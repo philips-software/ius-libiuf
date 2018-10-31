@@ -61,6 +61,16 @@ int iusReceiveChannelMapDictDelete
 	return IUS_E_OK;
 }
 
+int iusReceiveChannelMapDictDeepDelete
+(
+	iurcmd_t dict
+)
+{
+	if (dict == NULL) return IUS_ERR_VALUE;
+	dict->loadedFromFile=IUS_TRUE;
+	return iusReceiveChannelMapDictDelete(dict);
+}
+
 static int iusReceiveChannelMapDictSourceInTarget
 (
 	iurcmd_t source,

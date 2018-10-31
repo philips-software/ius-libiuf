@@ -41,6 +41,18 @@ iupald_t iusPatternListDictCreate
 	return dict;
 }
 
+
+
+int iusPatternListDictDeepDelete
+(
+    iupald_t dict
+)
+{
+    if (dict == NULL) return IUS_ERR_VALUE;
+    dict->loadedFromFile = IUS_TRUE;
+    return iusPatternListDictDelete(dict);
+}
+
 int iusPatternListDictDelete
 (
 	iupald_t dict
@@ -54,7 +66,7 @@ int iusPatternListDictDelete
     {
         iterElement = HashablePatternList_hashmap_iter_get_data(iter);
         if (dict->loadedFromFile == IUS_TRUE)
-            iusPatternListDelete(iterElement->patternList);
+            iusPatternListDeepDelete(iterElement->patternList);
         free(iterElement);
     }
 	hashmap_destroy(&dict->map);

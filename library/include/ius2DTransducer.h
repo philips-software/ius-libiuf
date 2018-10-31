@@ -22,6 +22,11 @@ int ius2DTransducerDelete
   iu2dt_t transducer
 );
 
+int ius2DTransducerDeepDelete
+(
+    iu2dt_t transducer
+);
+
 
 // operations
 int ius2DTransducerCompare

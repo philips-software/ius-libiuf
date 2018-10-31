@@ -20,6 +20,11 @@ int iusPatternListDictDelete
 	iupald_t dict
 );
 
+int iusPatternListDictDeepDelete
+(
+	iupald_t dict
+);
+
 int iusPatternListDictCompare
 (
 	iupald_t reference,

@@ -73,6 +73,7 @@ iuifi_t iusInputFileInstanceCreate
     instanceData->transducer = IUT_INVALID;
 	instanceData->acquisition = IUA_INVALID;
 	instanceData->dataStreamDict = iusDataStreamDictCreate();
+	instanceData->loadedFromFile = IUS_FALSE;
     return instanceData;
 }
 
@@ -84,7 +85,7 @@ int iusInputFileInstanceDelete
     if (instance == NULL) return IUS_ERR_VALUE;
     iusDataStreamDictDelete(instance->dataStreamDict);
     free((void *)instance->pFilename);
-    if(instance->loadedFromFile)
+    if(instance->loadedFromFile == IUS_TRUE)
     {
         iusFrameListDelete(instance->frameList);
         iusAcquisitionDelete(instance->acquisition);
@@ -142,7 +143,7 @@ iuif_t iusInputFileCreate
 		return IUIF_INVALID;
 	}
     instanceData->pFilename = strdup(pFilename);
-	iuhn_t node = iusHistoryNodeCreate(IUS_INPUT_TYPE,0);
+	iuhn_t node = iusHistoryNodeCreate(IUS_INPUT_TYPE);
 	iusHistoryNodeSetInstanceData(node,(void *)instanceData);
 	return (iuif_t)node;
 }
@@ -339,6 +340,7 @@ void *iusInputFileInstanceLoad
         iusInputFileInstanceDelete(instance);
         instance = new_instance;
     }
+    instance->loadedFromFile = IUS_TRUE;
     return (void *)instance;
 }
 
@@ -348,7 +350,7 @@ iuhn_t iusInputFileLoadNode
     hid_t handle
 )
 {
-    iuhn_t node = iusHistoryNodeCreate(IUS_INPUT_TYPE, 0);
+    iuhn_t node = iusHistoryNodeCreate(IUS_INPUT_TYPE);
     iuifi_t instance = iusInputFileInstanceCreate();
     instance->handle = handle;
     instance = inputFileInstanceLoad(instance);
@@ -758,6 +760,22 @@ int iusInputFileSetTransducer
     return status;
 }
 
+int iusInputFileSetFilename
+(
+    iuif_t inputFile,
+    char * fileName
+)
+{
+    int status = IUS_ERR_VALUE;
+
+    if (inputFile != NULL)
+    {
+        iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
+        instance->pFilename = strdup(fileName);
+        status = IUS_E_OK;
+    }
+    return status;
+}
 
 
 void fillChunkDims

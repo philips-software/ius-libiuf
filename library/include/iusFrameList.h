@@ -19,6 +19,11 @@ int iusFrameListDelete
     iufl_t list
 );
 
+int iusFrameListDeepDelete
+(
+    iufl_t list
+);
+
 int iusFrameListCompare
 (
     iufl_t reference,

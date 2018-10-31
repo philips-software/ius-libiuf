@@ -44,6 +44,15 @@ iu3dt_t ius3DTransducerCreate
     return created;
 }
 
+int ius3DTransducerDeepDelete
+(
+    iu3dt_t ius3DTransducer
+)
+{
+    if (ius3DTransducer == NULL) return IUS_ERR_VALUE;
+    ius3DTransducer->baseTransducer.loadedFromFile = IUS_TRUE;
+    return ius3DTransducerDelete(ius3DTransducer);
+}
 
 int ius3DTransducerDelete
 (
@@ -51,7 +60,19 @@ int ius3DTransducerDelete
 )
 {
     if (ius3DTransducer == NULL) return IUS_ERR_VALUE;
-    ius3DTransducerElementListDelete(ius3DTransducer->elements);
+    int numElements =  ius3DTransducerElementListGetSize(ius3DTransducer->elements);
+    if (numElements > 0)
+    {
+        if (ius3DTransducer->baseTransducer.loadedFromFile == IUS_TRUE)
+        {
+            ius3DTransducerElementListDeepDelete(ius3DTransducer->elements);
+
+        }
+        else
+        {
+            ius3DTransducerElementListDelete(ius3DTransducer->elements);
+        }
+    }
     free(ius3DTransducer->baseTransducer.pTransducerName);
     free(ius3DTransducer);
     return IUS_E_OK;
@@ -158,6 +179,7 @@ iu3dt_t ius3DTransducerLoad
 	                                              numElements);
     ius3DTransducerSetElementList(transducer,elements);
     iusBaseTransducerDelete(baseTransducer);
+    transducer->baseTransducer.loadedFromFile = IUS_TRUE;
     return transducer;
 }
 

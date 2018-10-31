@@ -38,7 +38,7 @@ iufl_t iusFrameListCreate
     return list;
 }
 
-int iusFrameListDeepDelete
+int iusFrameListDeleteFrames
 (
     iufl_t list
 )
@@ -53,6 +53,16 @@ int iusFrameListDeepDelete
     return status;
 }
 
+int iusFrameListDeepDelete
+(
+    iufl_t list
+)
+{
+    if(list == NULL) return IUS_ERR_VALUE;
+    list->loadedFromFile = IUS_TRUE;
+    return iusFrameListDelete(list);
+}
+
 int iusFrameListDelete
 (
     iufl_t list
@@ -60,7 +70,7 @@ int iusFrameListDelete
 {
     if(list == NULL) return IUS_ERR_VALUE;
     if(list->loadedFromFile == IUS_TRUE)
-        iusFrameListDeepDelete(list);
+        iusFrameListDeleteFrames(list);
     free(list->pFrames);
     free(list);
     return IUS_E_OK;

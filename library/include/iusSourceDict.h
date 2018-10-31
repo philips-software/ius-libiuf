@@ -20,6 +20,11 @@ int iusSourceDictDelete
     iusd_t dict
 );
 
+int iusSourceDictDeepDelete
+(
+    iusd_t dict
+);
+
 int iusSourceDictCompare
 (
     iusd_t reference,

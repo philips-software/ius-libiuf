@@ -15,8 +15,7 @@ typedef IusHistoryNode *iuhn_t;
 
 iuhn_t iusHistoryNodeCreate
 (
-    char *pNodeType,
-    int parents
+    char *pNodeType
 );
 
 int iusHistoryNodeDelete

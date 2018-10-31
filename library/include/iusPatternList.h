@@ -21,6 +21,11 @@ int iusPatternListDelete
     iupal_t list
 );
 
+int iusPatternListDeepDelete
+(
+    iupal_t list
+);
+
 int iusPatternListCompare
 (
     iupal_t reference,

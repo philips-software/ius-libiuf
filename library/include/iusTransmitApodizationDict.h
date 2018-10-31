@@ -20,6 +20,11 @@ int iusTransmitApodizationDictDelete
 	iutad_t dict
 );
 
+int iusTransmitApodizationDictDeepDelete
+(
+	iutad_t dict
+);
+
 int iusTransmitApodizationDictCompare
 (
 	iutad_t reference,

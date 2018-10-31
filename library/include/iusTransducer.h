@@ -23,6 +23,11 @@ int iusTransducerDelete
     iut_t iusTransducer
 );
 
+int iusTransducerDeepDelete
+(
+    iut_t iusTransducer
+);
+
 
 // operations
 int iusTransducerCompare

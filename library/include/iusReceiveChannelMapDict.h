@@ -20,6 +20,11 @@ int iusReceiveChannelMapDictDelete
 	iurcmd_t dict
 );
 
+int iusReceiveChannelMapDictDeepDelete
+(
+	iurcmd_t dict
+);
+
 int iusReceiveChannelMapDictCompare
 (
 	iurcmd_t reference,

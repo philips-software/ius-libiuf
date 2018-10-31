@@ -36,7 +36,7 @@ iupad_t iusParameterDictCreate
     if(dict!=NULL)
     {
         hashmap_init(&dict->map, hashmap_hash_string, hashmap_compare_string, 0);
-        dict->loadedFromFile = IUS_TRUE;
+        dict->loadedFromFile = IUS_FALSE;
     }
     return dict;
 }
@@ -55,11 +55,8 @@ int iusParameterDictDelete
     for (iter = hashmap_iter(&dict->map); iter; iter = hashmap_iter_next(&dict->map, iter))
     {
         iterElement = HashableParameter_hashmap_iter_get_data(iter);
-        if (dict->loadedFromFile == IUS_TRUE)
-        {
-            free(iterElement->key);
-            free(iterElement->value);
-        }
+        free(iterElement->key);
+        free(iterElement->value);
         free(iterElement);
     }
     hashmap_destroy(&dict->map);
@@ -161,6 +158,8 @@ int iusParameterDictSet
     if (HashableParameter_hashmap_put(&dict->map, newMember->key, newMember) != newMember)
     {
         printf("discarding blob with duplicate key: %s\n", newMember->key);
+        free(newMember->key);
+        free(newMember->value);
         free(newMember);
         return IUS_ERR_VALUE;
     }

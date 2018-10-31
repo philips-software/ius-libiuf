@@ -34,5 +34,15 @@ void *iusInputFileInstanceLoad
     hid_t handle
 );
 
+int iusInputFileInstanceDelete
+(
+    iuifi_t instanceData
+);
+
+int iusInputFileSetFilename
+(
+    iuif_t inputFile,
+    char * fileName
+);
 
 #endif //IUSLIBRARY_IUSHLINPUTFILEIMP_H

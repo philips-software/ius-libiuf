@@ -48,8 +48,8 @@ TEST(IusHistoryNodeList, testIusCompareHistoryNodeList)
   equal = iusHistoryNodeListCompare(nodeList, notherHistoryNodeList);
   TEST_ASSERT_EQUAL(IUS_TRUE, equal);
 
-  iuhn_t obj = iusHistoryNodeCreate("TYPE1",0);
-  iuhn_t notherObj = iusHistoryNodeCreate("TYPE2",0);
+  iuhn_t obj = iusHistoryNodeCreate("TYPE1");
+  iuhn_t notherObj = iusHistoryNodeCreate("TYPE2");
 
   // Change one list..add bmode
   status = iusHistoryNodeListSet(nodeList, obj, 0);
@@ -93,8 +93,8 @@ TEST(IusHistoryNodeList, testIusSerialization)
   iuhnl_t nodeList = iusHistoryNodeListCreate(numHistoryNodes);
   TEST_ASSERT_NOT_EQUAL(IUHNL_INVALID, nodeList);
 
-  iuhn_t obj = iusHistoryNodeCreate("TYPE1",0);
-  iuhn_t notherObj = iusHistoryNodeCreate("TYPE2",0);
+  iuhn_t obj = iusHistoryNodeCreate("TYPE1");
+  iuhn_t notherObj = iusHistoryNodeCreate("TYPE2");
 
 
   // Change one list..add bmode

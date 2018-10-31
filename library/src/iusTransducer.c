@@ -35,6 +35,22 @@ iut_t iusTransducerCreate
     return created;
 }
 
+int iusTransducerDeepDelete
+(
+    iut_t iusTransducer
+)
+{
+    int status = IUS_ERR_VALUE;
+    if (iusTransducer == NULL) return status;
+    iusTransducer->loadedFromFile = IUS_TRUE;
+    if( iusTransducer->type == IUS_2D_SHAPE )
+        return ius2DTransducerDeepDelete((iu2dt_t) iusTransducer);
+    if( iusTransducer->type == IUS_3D_SHAPE )
+        return ius3DTransducerDeepDelete((iu3dt_t) iusTransducer);
+    return status;
+}
+
+
 int iusTransducerDelete
 (
     iut_t iusTransducer

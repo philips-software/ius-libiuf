@@ -44,6 +44,16 @@ iupd_t iusPulseDictCreate
     return dict;
 }
 
+int iusPulseDictDeepDelete
+(
+    iupd_t dict
+)
+{
+    if (dict == NULL) return IUS_ERR_VALUE;
+    dict->loadedFromFile = IUS_TRUE;
+    return iusPulseDictDelete(dict);
+}
+
 int iusPulseDictDelete
 (
   iupd_t dict

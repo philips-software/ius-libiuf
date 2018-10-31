@@ -37,6 +37,17 @@ iupal_t iusPatternListCreate
     return list;
 }
 
+int iusPatternListDeepDelete
+(
+    iupal_t list
+)
+{
+    if(list == NULL) return IUS_ERR_VALUE;
+    list->loadedFromFile = IUS_TRUE;
+    return iusPatternListDelete(list);
+}
+
+
 int iusPatternListDelete
 (
     iupal_t list

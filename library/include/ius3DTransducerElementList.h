@@ -16,10 +16,10 @@ iu3dtel_t ius3DTransducerElementListCreate
     int num3DTransducerElement
 );
 
-//int ius3DTransducerElementListDeepDelete
-//(
-//    iu3dtel_t list
-//);
+int ius3DTransducerElementListDeepDelete
+(
+    iu3dtel_t list
+);
 
 int ius3DTransducerElementListDelete
 (
