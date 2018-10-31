@@ -8,15 +8,19 @@ The ius C_v3 library consists of 3 folders:
 - examples, contains an example of a program using the library
 
 #### Build requirements
-- Install cmake
+- cmake
   - tested with 3.10.3 on windows (7/10 pro)
   - tested with 3.12.1 on Linux (centos:7.4.1708)
   - tested with 3.10.2 on MacOs (Sierra 10.12.6)
   
-- Install hdf5 library
+- hdf5 library
   - tested with 1.8.20 on windows (7/10 pro)
   - tested with 1.8.12 on Linux (centos:7.4.1708)
   - tested with 1.8.20 on MacOs (Sierra 10.12.6)
+
+- gcovr
+  - tested with 4.1 on Linux (centos:7.4.1708)
+  - tested with 4.1 on MacOs (Sierra 10.12.6)
 
 #### Generate API documentation
 ```
@@ -24,7 +28,29 @@ The ius C_v3 library consists of 3 folders:
     $ doxygen
 ```
 
+#### Installation instructions Linux (cluster running centos 7.4)
+```
+    # login on compute server
+    $ ssh llogin
+      Welcome to aharna running Linux 3.10.0-693.11.6.el7.x86_64 
+
+    $ hosts $(hostname)
+    login
+
+    $ qsh
+    Started on lato in isar
+
+    $ hosts $(hostname)
+    compute
+    
+    # install gcovr build dependencies using cadenv
+    $ cadenv -r 2.7-64 python
+```
+
 #### Build instructions for Mac/Linux
+
+- Linux cluster users only: login to compute server as instructed in the
+installation steps
 
 - Checkout and build code
 
