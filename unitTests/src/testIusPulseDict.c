@@ -107,6 +107,8 @@ TEST(IusPulseDict, testIusPulseDictCompare)
     equal = iusPulseDictCompare(NULL, dict);
     TEST_ASSERT_EQUAL(IUS_FALSE,equal);
 
+    iusPulseDelete((iup_t)parametricPulse);
+    iusPulseDelete((iup_t)nonParametricPulse);
     iusPulseDictDelete(dict);
     iusPulseDictDelete(notherDict);
 }
@@ -153,6 +155,8 @@ TEST(IusPulseDict, testIusSerialization)
 
     TEST_ASSERT_EQUAL(IUS_TRUE, iusPulseDictCompare(dict,savedObj));
 
+    iusPulseDelete((iup_t)parametricPulse);
+    iusPulseDelete((iup_t)nonParametricPulse);
     iusPulseDictDelete(dict);
     iusPulseDictDelete(savedObj);
 }

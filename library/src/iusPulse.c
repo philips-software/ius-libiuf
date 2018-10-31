@@ -34,8 +34,11 @@ int iusPulseDelete
 )
 {
     if( pulse == NULL ) return IUS_ERR_VALUE;
-    free(pulse);
-    return IUS_E_OK;
+    if( pulse->type == IUS_NON_PARAMETRIC_PULSETYPE )
+        return iusNonParametricPulseDelete((iunpp_t) pulse);
+    if( pulse->type == IUS_PARAMETRIC_PULSETYPE )
+        return iusParametricPulseDelete((iupp_t) pulse);
+    return IUS_ERR_VALUE;
 }
 
 IUS_BOOL iusBasePulseCompare
@@ -179,14 +182,15 @@ iup_t iusPulseLoad
 	hid_t handle
 )
 {
-	iup_t pulse = NULL;
-	pulse = iusBasePulseLoad(handle);
-	if (pulse == NULL) return IUP_INVALID;
+    int status = IUS_E_OK;
+    IusPulseType type;
+    status |= iusReadPulseType(handle, IUS_INPUTFILE_PATH_PULSE_PULSETYPE, &(type));
+    if (status < 0)
+        return IUP_INVALID;
 
-    if( pulse->type == IUS_PARAMETRIC_PULSETYPE )
-        pulse = (iup_t) iusParametricPulseLoad(handle);
-    if( pulse->type == IUS_NON_PARAMETRIC_PULSETYPE )
-        pulse = (iup_t) iusNonParametricPulseLoad(handle);
-
-	return pulse;
+    if( type == IUS_PARAMETRIC_PULSETYPE )
+        return (iup_t) iusParametricPulseLoad(handle);
+    if( type == IUS_NON_PARAMETRIC_PULSETYPE )
+        return (iup_t) iusNonParametricPulseLoad(handle);
+	return IUP_INVALID;
 }

@@ -135,6 +135,7 @@ TEST(IusPulse, testIusSerialization)
   TEST_ASSERT_EQUAL(IUS_FALSE, iusPulseCompare((iup_t)notherObj, savedObj));
   iusPulseDelete((iup_t)obj);
   iusPulseDelete(savedObj);
+  iusPulseDelete((iup_t)notherObj);
 }
 
 

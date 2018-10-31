@@ -74,7 +74,7 @@ installation steps
     Process finished with exit code 0
     ```
 
-- The next example will build a dist folder contining 
+- The next example will build a dist folder containing 
 the distributable SDK:
     ```
     $ uname
@@ -110,7 +110,7 @@ the distributable SDK:
     ```
     c:\proj> C_v3\bin\ut.bat
     ```
-- Build a dist folder contining the distributable SDK:
+- Build a dist folder containing the distributable SDK:
 
     ```
     c:\proj> C_v3\bin\dist.bat
