@@ -133,8 +133,9 @@ iup_t iusPulseDictGet
 )
 {
     HashablePulse * search;
+    if( dict == NULL || key == NULL ) return IUP_INVALID;
     search = HashablePulse_hashmap_get(&dict->map, key);
-    if (dict == IUPD_INVALID)
+    if (dict == IUPD_INVALID || search == NULL)
         return IUP_INVALID;
     return search->pulse;
 }

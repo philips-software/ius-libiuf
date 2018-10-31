@@ -109,6 +109,8 @@ TEST(IusNonParametricPulse, testIusCompareNonParametricPulse)
 
     status = iusNonParametricPulseDelete(nonParametricPulse);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
+    status = iusNonParametricPulseDelete(notherNonParametricPulse);
+    TEST_ASSERT_EQUAL(IUS_E_OK,status);
     status = iusParametricPulseDelete(parametricPulse);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 }

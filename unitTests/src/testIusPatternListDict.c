@@ -65,7 +65,7 @@ TEST(IusPatternListDict, testIusPatternListDictSetGet)
     iusPatternDelete(pattern1);
     iusPatternDelete(pattern2);
     iusPatternListDelete(obj);
-//	iusPatternListDictDelete(dict);
+	iusPatternListDictDelete(dict);
 }
 
 
@@ -124,8 +124,12 @@ TEST(IusPatternListDict, testIusComparePatternListDict)
 	equal = iusPatternListDictCompare(NULL, dict);
 	TEST_ASSERT_EQUAL(IUS_FALSE, equal);
 
-//	iusPatternListDictDelete(dict);
-//	iusPatternListDictDelete(notherDict);
+	iusPatternDelete(pattern1);
+	iusPatternDelete(pattern2);
+	iusPatternListDelete(patternListDual);
+	iusPatternListDelete(patternListSingle);
+	iusPatternListDictDelete(dict);
+	iusPatternListDictDelete(notherDict);
 }
 
 TEST(IusPatternListDict, testIusSerialization)
@@ -182,6 +186,10 @@ TEST(IusPatternListDict, testIusSerialization)
 
 	TEST_ASSERT_EQUAL(IUS_TRUE, iusPatternListDictCompare(dict, savedObj));
 
+    iusPatternDelete(pattern1);
+    iusPatternDelete(pattern2);
+    iusPatternListDelete(bModePatternList);
+    iusPatternListDelete(dopplerPatternList);
 	iusPatternListDictDelete(dict);
 	iusPatternListDictDelete(savedObj);
 }

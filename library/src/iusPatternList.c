@@ -51,6 +51,7 @@ int iusPatternListDelete
             iusPatternDelete(list->pPatterns[index]);
         }
     }
+    free(list->pPatterns);
     free(list);
     return IUS_E_OK;
 }

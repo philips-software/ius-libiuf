@@ -21,6 +21,7 @@ typedef struct HashablePatternList HashablePatternList;
 struct IusPatternListDict
 {
 	struct hashmap map;
+	IUS_BOOL loadedFromFile;
 };
 
 /* Declare type-specific blob_hashmap_* functions with this handy macro */
@@ -31,12 +32,13 @@ iupald_t iusPatternListDictCreate
 (
 )
 {
-	iupald_t list = calloc(1, sizeof(IusPatternListDict));
-	if (list != NULL)
+	iupald_t dict = calloc(1, sizeof(IusPatternListDict));
+	if (dict != NULL)
 	{
-		hashmap_init(&list->map, hashmap_hash_string, hashmap_compare_string, 0);
+		hashmap_init(&dict->map, hashmap_hash_string, hashmap_compare_string, 0);
+		dict->loadedFromFile = IUS_FALSE;
 	}
-	return list;
+	return dict;
 }
 
 int iusPatternListDictDelete
@@ -51,7 +53,9 @@ int iusPatternListDictDelete
     for (iter = hashmap_iter(&dict->map); iter; iter = hashmap_iter_next(&dict->map, iter))
     {
         iterElement = HashablePatternList_hashmap_iter_get_data(iter);
-        iusPatternListDelete(iterElement->patternList);
+        if (dict->loadedFromFile == IUS_TRUE)
+            iusPatternListDelete(iterElement->patternList);
+        free(iterElement);
     }
 	hashmap_destroy(&dict->map);
 	free(dict);
@@ -230,5 +234,6 @@ iupald_t iusPatternListDictLoad
 	{
 		return NULL;
 	}
+	dict->loadedFromFile = IUS_TRUE;
 	return dict;
 }

@@ -32,10 +32,10 @@ TEST(IusPatternList, testIusCreatePatternList)
     iupal_t patternList = iusPatternListCreate(numPatterns);
     TEST_ASSERT_NOT_EQUAL(IUPAL_INVALID, patternList);
     TEST_ASSERT_EQUAL(numPatterns, iusPatternListGetSize(patternList));
+    iusPatternListDelete(patternList);
 
     patternList = iusPatternListCreate(-1);
     TEST_ASSERT_EQUAL(IUPAL_INVALID, patternList);
-    iusPatternListDelete(patternList);
 }
 
 TEST(IusPatternList, testIusComparePatternList)
@@ -93,6 +93,7 @@ TEST(IusPatternList, testIusComparePatternList)
     TEST_ASSERT_EQUAL(IUS_TRUE, equal);
 
     iusPatternListDelete(patternList);
+    iusPatternListDelete(notherPatternList);
     iusPatternDelete(bmodePattern);
     iusPatternDelete(dopplerPattern);
 }
@@ -147,6 +148,7 @@ TEST(IusPatternList, testIusSerialization)
     TEST_ASSERT_EQUAL(IUS_TRUE, equal);
 
     iusPatternListDelete(patternList);
+    iusPatternListDelete(savedPatternList);
     iusPatternDelete(bmodePattern);
     iusPatternDelete(dopplerPattern);
 

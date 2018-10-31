@@ -46,6 +46,7 @@ TEST(IusParameterDict, testIusParameterDictSetGet)
 
     TEST_ASSERT_EQUAL(NULL, iusParameterDictGet(dict, NULL));
     TEST_ASSERT_EQUAL(NULL, iusParameterDictGet(dict, "unknownKey"));
+    iusParameterDictDelete(dict);
 }
 
 TEST(IusParameterDict, testIusParameterDictCompare)

@@ -240,6 +240,7 @@ TEST(IusPattern, testIusSerialization)
     TEST_ASSERT_EQUAL(IUS_TRUE, iusPatternCompare(obj,savedObj));
     TEST_ASSERT_EQUAL(IUS_FALSE, iusPatternCompare(notherObj,savedObj));
     iusPatternDelete((iupa_t)obj);
+    iusPatternDelete((iupa_t)notherObj);
     iusPatternDelete(savedObj);
 }
 

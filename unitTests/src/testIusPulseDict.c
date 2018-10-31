@@ -165,6 +165,6 @@ TEST_GROUP_RUNNER(IusPulseDict)
 {
     RUN_TEST_CASE(IusPulseDict, testIusPulseDictCreate);
     RUN_TEST_CASE(IusPulseDict, testIusPulseDictCompare);
-//    RUN_TEST_CASE(IusPulseDict, testIusPulseDictSetGet);
+    RUN_TEST_CASE(IusPulseDict, testIusPulseDictSetGet);
     RUN_TEST_CASE(IusPulseDict, testIusSerialization);
 }
