@@ -57,8 +57,11 @@ int main
     iusDiagDisable();
 
     if (argc != 2)
+    {
+        printf("Usage: ./example [outputfile]\n");
         return -1;
-    printf("Creating file %s, for version %d\n", argv[0], version);
+    }
+    printf("Creating file %s, for version %d\n", argv[1], version);
     iuif_t ifh = iusInputFileCreate(argv[1]);
     if (ifh == IUIF_INVALID)
     {
