@@ -136,13 +136,13 @@ iuif_t iusInputFileCreate
 		return IUIF_INVALID;
 	}
 
+    instanceData->pFilename = strdup(pFilename);
     instanceData->handle = H5Fcreate(pFilename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
 	if (instanceData->handle == H5I_INVALID_HID)
 	{
-		free((void *)instanceData);
+        iusInputFileInstanceDelete(instanceData);
 		return IUIF_INVALID;
 	}
-    instanceData->pFilename = strdup(pFilename);
 	iuhn_t node = iusHistoryNodeCreate(IUS_INPUT_TYPE);
 	iusHistoryNodeSetInstanceData(node,(void *)instanceData);
 	return (iuif_t)node;

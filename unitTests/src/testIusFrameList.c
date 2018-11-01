@@ -81,6 +81,7 @@ TEST(IusFrameList, testIusCompareFrameList)
   iusFrameDelete(notherObj);
 }
 
+
 TEST(IusFrameList, testIusSerialization)
 {
   int numFrames = 2;
@@ -99,16 +100,24 @@ TEST(IusFrameList, testIusSerialization)
   // Change one list..add bmode
   status = iusFrameListSet(frameList, obj, 0);
   TEST_ASSERT_EQUAL(IUS_E_OK, status);
-  status = iusFrameListSet(frameList, notherObj, 1);
-  TEST_ASSERT_EQUAL(IUS_E_OK, status);
+
 
   // save
   hid_t handle = H5Fcreate(pFilename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
   TEST_ASSERT(handle > 0);
+
+  status = iusFrameListSave(frameList, handle);
+  TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
+
+  status = iusFrameListSet(frameList, notherObj, 1);
+  TEST_ASSERT_EQUAL(IUS_E_OK, status);
+
   status = iusFrameListSave(frameList, handle);
   TEST_ASSERT_EQUAL(IUS_E_OK, status);
+
   status = H5Fclose(handle);
   TEST_ASSERT_EQUAL(IUS_E_OK, status);
+
 
   // read back
   handle = H5Fopen(pFilename, H5F_ACC_RDONLY, H5P_DEFAULT);
@@ -121,9 +130,6 @@ TEST(IusFrameList, testIusSerialization)
   equal = iusFrameListCompare(frameList, savedFrameList);
   TEST_ASSERT_EQUAL(IUS_TRUE, equal);
 
-  // TODO: Non-happy flow
-  // for lists it should not be posible to save, if not all elements have been
-  // filled.
   iusFrameListDelete(frameList);
   iusFrameListDelete(savedFrameList);
   iusFrameDelete(obj);

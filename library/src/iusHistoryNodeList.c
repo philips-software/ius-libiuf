@@ -151,6 +151,24 @@ iuhnl_t iusHistoryNodeListLoad
     return nodeList;
 }
 
+IUS_BOOL iusHistoryNodeListFull
+(
+    iuhnl_t node
+)
+{
+    IUS_BOOL isFull = IUS_TRUE;
+    int i;
+    for (i=0;i < node->count;i++)
+    {
+        if(node->pHistoryNodes[i] == IUHN_INVALID)
+        {
+            isFull = IUS_FALSE;
+            break;
+        }
+    }
+    return isFull;
+}
+
 int iusHistoryNodeListSave
 (
     iuhnl_t node,
@@ -163,6 +181,9 @@ int iusHistoryNodeListSave
 
     if( node == NULL ) return IUS_ERR_VALUE;
     if ( handle == H5I_INVALID_HID ) return IUS_ERR_VALUE;
+    if(iusHistoryNodeListFull(node) == IUS_FALSE)
+        return IUS_ERR_VALUE;
+
     for (i=0;i<node->count;i++)
     {
         sprintf(parentPath, "parent%d", i);

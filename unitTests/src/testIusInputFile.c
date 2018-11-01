@@ -120,6 +120,7 @@ TEST(IusInputFile, iusInputFileSetGetFrameList)
 
     status = iusInputFileClose(obj);
     TEST_ASSERT(status == IUS_E_OK);
+    iusFrameListDeepDelete(frameList);
     iusInputFileDelete(obj);
 }
 
@@ -142,6 +143,7 @@ TEST(IusInputFile, iusInputFileSetGetPatternListDict)
     status = iusInputFileClose(obj);
     TEST_ASSERT(status == IUS_E_OK);
     iusInputFileDelete(obj);
+    iusPatternListDictDeepDelete(patternListDict);
 }
 
 
@@ -161,6 +163,7 @@ TEST(IusInputFile, iusInputFileSetGetPulseDict)
     status = iusInputFileClose(obj);
     TEST_ASSERT(status == IUS_E_OK);
     iusInputFileDelete(obj);
+    iusPulseDictDeepDelete(pulseDict);
 }
 
 TEST(IusInputFile, iusInputFileSetGetSourceDict)
@@ -178,8 +181,8 @@ TEST(IusInputFile, iusInputFileSetGetSourceDict)
 
     status = iusInputFileClose(obj);
     TEST_ASSERT(status == IUS_E_OK);
+    iusSourceDictDeepDelete(sourceDict);
     iusInputFileDelete(obj);
-    iusSourceDictDelete(sourceDict);
 }
 
 
@@ -200,6 +203,7 @@ TEST(IusInputFile, iusInputFileSetGetReceiveChannelMapDict)
     status = iusInputFileClose(obj);
     TEST_ASSERT(status == IUS_E_OK);
     iusInputFileDelete(obj);
+    iusReceiveChannelMapDictDelete(receiveChannelMapDict);
 }
 
 TEST(IusInputFile, iusInputFileSetGetTransmitApodizationDict)
@@ -233,6 +237,7 @@ TEST(IusInputFile, iusInputFileSetGetTransmitApodizationDict)
 	status = iusInputFileClose(obj);
 	TEST_ASSERT(status == IUS_E_OK);
     iusInputFileDelete(obj);
+    iusTransmitApodizationDictDelete(transmitApodizationDict);
 }
 
 TEST(IusInputFile, iusInputFileSetGetReceiveSettingsDict)
@@ -265,6 +270,7 @@ TEST(IusInputFile, iusInputFileSetGetReceiveSettingsDict)
     status = iusInputFileClose(obj);
     TEST_ASSERT(status == IUS_E_OK);
     iusInputFileDelete(obj);
+    iusReceiveSettingsDictDeepDelete(receiveSettingsDict);
 }
 
 TEST(IusInputFile, iusInputFileSetGetAcquisition)
@@ -297,6 +303,7 @@ TEST(IusInputFile, iusInputFileSetGetAcquisition)
     status = iusInputFileClose(obj);
     TEST_ASSERT(status == IUS_E_OK);
     iusInputFileDelete(obj);
+    iusAcquisitionDelete(acquisition);
 }
 
 TEST(IusInputFile, iusInputFileSetGetTransducer)
@@ -329,6 +336,7 @@ TEST(IusInputFile, iusInputFileSetGetTransducer)
     status = iusInputFileClose(obj);
     TEST_ASSERT(status == IUS_E_OK);
     iusInputFileDelete(obj);
+    iusTransducerDeepDelete(transducer);
 }
 
 TEST(IusInputFile, testIusInputFileSerialization)
@@ -353,7 +361,7 @@ TEST(IusInputFile, testIusInputFileSerialization)
 	status = iusInputFileClose(savedObj);
 	TEST_ASSERT(status == IUS_E_OK);
 
-    iusInputFileDelete(inputFile);
+	dgDeleteInputFile(inputFile);
     iusInputFileDelete(savedObj);
 }
 
@@ -376,6 +384,7 @@ int saveFrames
         status |= iusInputFileFrameSave(inputFile, label, frame, offset);
     }
 
+    iusOffsetDelete(offset);
     iusDataDelete(frame);
     return status;
 }
@@ -471,6 +480,7 @@ IUS_BOOL validateFrames
 
     iusDataDelete(referenceFrame);
     iusDataDelete(actualFrame);
+    iusOffsetDelete(offset);
     return equal;
 }
 
@@ -592,7 +602,7 @@ TEST(IusInputFile, testIusInputFileDataIOSaveFrame)
     // create channel
     iusInputFileClose(savedObj);
     iusInputFileDelete(savedObj);
-    iusInputFileDelete(inputFile);
+    dgDeleteInputFile(inputFile);
 }
 
 TEST(IusInputFile, testIusInputFileDataIOSaveResponse)
@@ -629,7 +639,7 @@ TEST(IusInputFile, testIusInputFileDataIOSaveResponse)
     // create channel
     iusInputFileClose(savedObj);
     iusInputFileDelete(savedObj);
-    iusInputFileDelete(inputFile);
+    dgDeleteInputFile(inputFile);
 }
 
 TEST(IusInputFile, testIusInputFileDataIOSaveChannel)
@@ -668,7 +678,7 @@ TEST(IusInputFile, testIusInputFileDataIOSaveChannel)
     // create channel
     iusInputFileClose(savedObj);
     iusInputFileDelete(savedObj);
-    iusInputFileDelete(inputFile);
+    dgDeleteInputFile(inputFile);
 }
 
 TEST_GROUP_RUNNER(IusInputFile)

@@ -112,5 +112,5 @@ TEST_GROUP_RUNNER(IusFile)
 {
     // testIusCWCFileHistoryScenario
     RUN_TEST_CASE(IusFile, testIusInputFileHistoryScenario);
-    RUN_TEST_CASE(IusFile, testIusCWCFileHistoryScenario);
+//    RUN_TEST_CASE(IusFile, testIusCWCFileHistoryScenario);
 }

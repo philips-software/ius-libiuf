@@ -100,14 +100,21 @@ TEST(IusHistoryNodeList, testIusSerialization)
   // Change one list..add bmode
   status = iusHistoryNodeListSet(nodeList, obj, 0);
   TEST_ASSERT_EQUAL(IUS_E_OK, status);
-  status = iusHistoryNodeListSet(nodeList, notherObj, 1);
-  TEST_ASSERT_EQUAL(IUS_E_OK, status);
 
   // save
   hid_t handle = H5Fcreate(pFilename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
   TEST_ASSERT(handle > 0);
+
+  // Not all list elements have been configured => error.
+  status = iusHistoryNodeListSave(nodeList, handle);
+  TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
+
+  status = iusHistoryNodeListSet(nodeList, notherObj, 1);
+  TEST_ASSERT_EQUAL(IUS_E_OK, status);
+
   status = iusHistoryNodeListSave(nodeList, handle);
   TEST_ASSERT_EQUAL(IUS_E_OK, status);
+
   status = H5Fclose(handle);
   TEST_ASSERT_EQUAL(IUS_E_OK, status);
 
@@ -122,9 +129,6 @@ TEST(IusHistoryNodeList, testIusSerialization)
   equal = iusHistoryNodeListCompare(nodeList, savedHistoryNodeList);
   TEST_ASSERT_EQUAL(IUS_TRUE, equal);
 
-  // TODO: Non-happy flow
-  // for lists it should not be posible to save, if not all elements have been
-  // filled.
   iusHistoryNodeDelete(obj);
   iusHistoryNodeDelete(notherObj);
   iusHistoryNodeListDelete(nodeList);

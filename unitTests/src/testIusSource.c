@@ -140,9 +140,6 @@ TEST(IusSource, testIusSerialization)
     H5Fclose(handle);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
-	/* can't be done without knowing the label */
-	// todo fix this test
-#if 0
     // read back
     handle = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT );
     ius_t savedObj = iusSourceLoad(handle);
@@ -150,10 +147,10 @@ TEST(IusSource, testIusSerialization)
     H5Fclose(handle);
     TEST_ASSERT_EQUAL(IUS_TRUE, iusSourceCompare((ius_t)obj,savedObj));
     TEST_ASSERT_EQUAL(IUS_FALSE, iusSourceCompare((ius_t)notherObj,savedObj));
-#endif
+
+    iusSourceDelete(savedObj);
     iusSourceDelete(obj);
 	iusSourceDelete(notherObj);
-
 }
 
 
