@@ -28,8 +28,7 @@ extern "C" {
  *                                variable to be read
  * \param[in]   pVariableString : the name of the variable to be read
  * \param[out]  pValue          : the float value or array read from file
- * \param[in]   verbose         : (0/1) print file information to stdout
- * \return      the result of H5LTread_dataset_int()
+ * \return      the HDF5 error status of the reading
  */
 herr_t iusHdf5ReadFloat
 (
@@ -49,8 +48,7 @@ herr_t iusHdf5ReadFloat
  *                                variable to be read
  * \param[in]   pVariableString : the name of the variable to be read
  * \param[out]  pValue          : the short value or array that is read from file
- * \param[in]   verbose         : (0/1) print file information to stdout
- * \return      the result of H5LTread_dataset_float()
+ * \return      the HDF5 error status of the reading
  */
 herr_t iusHdf5ReadShort
 (
@@ -72,8 +70,7 @@ herr_t iusHdf5ReadShort
  *                                variable to be read
  * \param[in]   pVariableString : the name of the variable to be read
  * \param[out]  pValue          : the int value or array that is read from file
- * \param[in]   verbose         : (0/1) print file information to stdout
- * \return      the result of H5LTread_dataset_float()
+ * \return      the HDF5 error status of the reading
  */
 herr_t iusHdf5ReadInt
     (
@@ -95,8 +92,7 @@ herr_t iusHdf5ReadInt
  * \param[in]   pVariableString : the name of the variable to be read
  * \param[out]  pValue          : the long int value or array that is read from
  *                                file
- * \param[in]   verbose         : (0/1) print file information to stdout
- * \return      the result of H5LTread_dataset_long()
+ * \return      the HDF5 error status of the reading
  */
 herr_t iusHdf5ReadLong
 (
@@ -117,8 +113,7 @@ herr_t iusHdf5ReadLong
  *                                variable to be read
  * \param[in]   pVariableString : the name of the variable to be read
  * \param[out]  ppReturnString  : the string (memory is allocated for it)
- * \param[in]   verbose         : boolean, print file information to stdout
- * \return      the result of the reading
+ * \return      the HDF5 error status of the reading
  */
 herr_t iusHdf5ReadString
 (
@@ -143,8 +138,7 @@ herr_t iusHdf5ReadString
  * \param[in]   pGridName : the name of the variable to be read
  * \param[out]  pGrid     : the grid structure that is filled (memory is
  *                         allocated for its contents)
- * \param[out]  verbose   : print verbose output
- * \return     0 if okay, the error status otherwise
+ * \return     the HDF5 error status of the reading
  */
 herr_t iusHdf5ReadGrid
 (
@@ -161,9 +155,9 @@ herr_t iusHdf5ReadGrid
  * \post        values have been written to Hdf5 handle
  * \param[in]   handle          : the file or group handle for writing
  * \param[in]   pVariableString : the name of the variable to be written
- * \param[out]  pValue          : the float value or array that is to be written
- * \param[in]   verbose         : (0/1) print file information to stdout
- * \return      the result of H5LTmake_dataset_float()
+ * \param[out]  pValues         : the float value or array that is to be written
+ * \param[in]   numValues       : The length of the pValues array
+ * \return      the HDF5 error status of the reading
  */
 herr_t iusHdf5WriteFloat
 (
@@ -183,9 +177,9 @@ herr_t iusHdf5WriteFloat
  * \post        values have been written to Hdf5 handle
  * \param[in]   handle          : the file or group handle for writing
  * \param[in]   pVariableString : the name of the variable to be written
- * \param[out]  pValue          : the int value or array that is to be written
- * \param[in]   verbose         : (0/1) print file information to stdout
- * \return      the result of H5LTmake_dataset_int()
+ * \param[out]  pValues         : the int value or array that is to be written
+ * \param[in]   numValues       : The length of the pValues array
+ * \return      the HDF5 error status of the reading
  */
 herr_t iusHdf5WriteInt
 (
@@ -203,9 +197,9 @@ herr_t iusHdf5WriteInt
  * \post        values have been written to Hdf5 handle
  * \param[in]   handle          : the file or group handle for writing
  * \param[in]   pVariableString : the name of the variable to be written
- * \param[out]  pValue          : the long value or array that is to be written
- * \param[in]   verbose         : (0/1) print file information to stdout
- * \return      the result of H5LTmake_dataset_long()
+ * \param[out]  pValues         : the long value or array that is to be written
+ * \param[in]   numValues       : The length of the pValues array
+ * \return      the HDF5 error status of the reading
  */
 herr_t iusHdf5WriteLong
 (
@@ -223,15 +217,14 @@ herr_t iusHdf5WriteLong
  * \post        string has been written to Hdf5 handle
  * \param[in]   handle          : the file or group handle for writing
  * \param[in]   pVariableString : the name of the string to be written
- * \param[out]  pValue          : the actual string itself that is to be written
- * \param[in]   verbose         : (0/1) print file information to stdout
- * \return      the result of H5LTmake_dataset_string()
+ * \param[out]  pString         : the actual string itself that is to be written
+ * \return      the HDF5 error status of the reading
  */
 herr_t iusHdf5WriteString
 (
     hid_t        handle,
     const char * pVariableString,
-    const char *       pString
+    const char * pString
 );
 
 /** 
@@ -249,8 +242,7 @@ herr_t iusHdf5WriteString
  *                         written
  * \param[in]   pVariableString : "PolarGrid" or "CartesianGrid"
  * \param[out]  pGrid           : the grid structure that is filled
- * \param[out]  verbose         : print verbose output
- * \return
+ * \return the HDF5 error status of the reading
  */
 herr_t iusHdf5WriteGrid
 (
