@@ -1,6 +1,12 @@
-//
-// Created by Ruijzendaal on 16/04/2018.
-//
+/** ==============================================================================
+ *    COPYRIGHT 2018 PHILIPS RESEARCH
+ *  ==============================================================================
+ *
+ * \file nodeConfig.c
+ * \brief File containing nodeConfig convenience routine definitions.
+ *
+ *  ==============================================================================
+ */
 #include <include/ius.h>
 
 

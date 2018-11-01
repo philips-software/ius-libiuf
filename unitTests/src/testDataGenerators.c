@@ -40,17 +40,7 @@ iurs_t dgGenerateReceiveSettings
     int numDelays=10;
     int numSamplesPerLine=10;
     int numTGCentries = 1;
-    int status=0,i;
-
     iurs_t obj = iusReceiveSettingsCreate(sampleFrequency, numDelays, numSamplesPerLine, numTGCentries);
-
-    // Delays
-    for(i=0;i<numDelays;i++)
-    {
-        float delay = i*2.0f;
-        status |= iusReceiveSettingsSetStartDelay(obj, i, delay);
-        TEST_ASSERT(status == IUS_E_OK);
-    }
 
     return obj;
 }
@@ -339,7 +329,7 @@ iurcm_t dgGenerateReceiveChannelMap
     void
 )
 {
-    int status;
+    int status,i;
     int numChannels = 8;
     int channelMap[8] = {0, 1, 2, 3, 4, 5, 6, 7};
 
@@ -352,6 +342,15 @@ iurcm_t dgGenerateReceiveChannelMap
 
     status = iusReceiveChannelMapSetMap(receiveChannelMap, channelMap);
     TEST_ASSERT(status == IUS_E_OK);
+
+    // Delays
+    for(i=0;i<numChannels;i++)
+    {
+        float delay = i*2.0f;
+        status |= iusReceiveChannelMapSetStartDelay(receiveChannelMap, i, delay);
+        TEST_ASSERT(status == IUS_E_OK);
+    }
+
 
     return receiveChannelMap;
 }

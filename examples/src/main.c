@@ -1,6 +1,13 @@
-//
-// Created by Ruijzendaal on 07/03/2018.
-//
+/** ==============================================================================
+ *    COPYRIGHT 2018 PHILIPS RESEARCH
+ *  ==============================================================================
+ *
+ * \file main.c
+ * \brief Main source file containing example code of how to construct a version 3
+ * input file type.
+ *
+ *  ==============================================================================
+ */
 #include "ius.h"
 #include "nodeConfig.h"
 

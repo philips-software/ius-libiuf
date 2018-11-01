@@ -1,6 +1,12 @@
-//
-// Created by Ruijzendaal on 12/10/2018.
-//
+/** ==============================================================================
+ *    COPYRIGHT 2018 PHILIPS RESEARCH
+ *  ==============================================================================
+ *
+ * \file nodeConfig.h
+ * \brief File containing nodeConfig declarations.
+ *
+ *  ==============================================================================
+ */
 #ifndef IUS_EXAMPLE_NODE_CONFIG_H
 #define IUS_EXAMPLE_NODE_CONFIG_H
 

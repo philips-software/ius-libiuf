@@ -121,13 +121,10 @@ TEST(IusReceiveSettings, testIusReceiveSettingsSetGet)
     int numDelays=10;
     int numSamplesPerLine=10;
     int numTGCentries = 1;
-    int i;
-    int status;
 
     // Constructor injected parameters
     iurs_t obj = iusReceiveSettingsCreate(sampleFrequency, numDelays, numSamplesPerLine, numTGCentries);
     TEST_ASSERT_EQUAL_FLOAT(sampleFrequency,iusReceiveSettingsGetSampleFrequency(obj));
-    TEST_ASSERT_EQUAL(numDelays,iusReceiveSettingsGetNumDelays(obj));
     TEST_ASSERT_EQUAL(numSamplesPerLine,iusReceiveSettingsGetNumSamplesPerLine(obj));
     TEST_ASSERT_EQUAL(numTGCentries,iusReceiveSettingsGetNumTGCentries(obj));
 
@@ -135,14 +132,6 @@ TEST(IusReceiveSettings, testIusReceiveSettingsSetGet)
     iutgc_t tgc = iusReceiveSettingsGetTGC(obj);
     TEST_ASSERT( tgc != IUTGC_INVALID );
 
-    // Delays
-    for(i=0;i<numDelays;i++)
-    {
-        float delay = i*2.0f;
-        status = iusReceiveSettingsSetStartDelay(obj, i, delay);
-        TEST_ASSERT(status == IUS_E_OK);
-        TEST_ASSERT_EQUAL_FLOAT(delay, iusReceiveSettingsGetStartDelay(obj, i));
-    }
     iusReceiveSettingsDelete(obj);
 }
 
@@ -158,15 +147,6 @@ TEST(IusReceiveSettings, testIusSerialization)
 
     // Create
     iurs_t obj = iusReceiveSettingsCreate(sampleFrequency, numDelays, numSamplesPerLine, numTGCentries);
-
-    // Delays
-    for(i=0;i<numDelays;i++)
-    {
-        float delay = i*3.14f;
-        status = iusReceiveSettingsSetStartDelay(obj, i, delay);
-        TEST_ASSERT(status == IUS_E_OK);
-        TEST_ASSERT_EQUAL_FLOAT(delay, iusReceiveSettingsGetStartDelay(obj, i));
-    }
 
     iutgc_t tgc = iusReceiveSettingsGetTGC(obj);
     for (i=0;i<numTGCentries;i++)
@@ -195,7 +175,6 @@ TEST(IusReceiveSettings, testIusSerialization)
 
 TEST_GROUP_RUNNER(IusReceiveSettings)
 {
-
     RUN_TEST_CASE(IusReceiveSettings, testIusReceiveSettingsCreate);
     RUN_TEST_CASE(IusReceiveSettings, testIusReceiveSettingsDelete);
     RUN_TEST_CASE(IusReceiveSettings, testIusReceiveSettingsCompare);

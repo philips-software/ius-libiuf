@@ -39,6 +39,17 @@ int iusReceiveChannelMapGetChannel
 	int mapIdx
 );
 
+int iusReceiveChannelMapGetNumDelays
+(
+	iurcm_t receiveChannelMap
+);
+
+float iusReceiveChannelMapGetStartDelay
+(
+	iurcm_t receiveChannelMap,
+    int index
+);
+
 int iusReceiveChannelMapSetChannel
 (
 	iurcm_t receiveChannelMap,
@@ -51,6 +62,14 @@ int iusReceiveChannelMapSetMap
 	iurcm_t receiveChannelMap,
 	int *map
 );
+
+int iusReceiveChannelMapSetStartDelay
+(
+	iurcm_t receiveChannelMap,
+    int index,
+    float delay
+);
+
 
 #endif //IUSLIBRARY_IUSHLRECEIVECHANNELMAP_H
 
