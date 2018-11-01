@@ -67,7 +67,7 @@ to be well designed code.
 
 The convention of assertion parameters generally follows this order:
 
-    TEST_ASSERT_X( {modifiers}, {expected}, actual, {size/count} )
+    TEST_ASSERT_X( {modifiers}, {expected}, actual, {size/numElements} )
 
 The very simplest assertion possible uses only a single "actual" parameter (e.g.
 a simple null check).
@@ -78,7 +78,7 @@ assertion construction is the only parameter present in all assertion variants.
 "Expected" is your expected value (duh) to compare to an "actual" value; it's
 marked as an optional parameter because some assertions only need a single
 "actual" parameter (e.g. null check).
-"Size/count" refers to string lengths, number of array elements, etc.
+"Size/numElements" refers to string lengths, number of array elements, etc.
 
 Many of Unity's assertions are apparent duplications in that the same data type
 is handled by several assertions. The differences among these are in how failure
@@ -98,11 +98,11 @@ the reference list below and add a string as the final parameter.
 
 _Example:_
 
-    TEST_ASSERT_X( {modifiers}, {expected}, actual, {size/count} )
+    TEST_ASSERT_X( {modifiers}, {expected}, actual, {size/numElements} )
 
 becomes messageified like thus...
 
-    TEST_ASSERT_X_MESSAGE( {modifiers}, {expected}, actual, {size/count}, message )
+    TEST_ASSERT_X_MESSAGE( {modifiers}, {expected}, actual, {size/numElements}, message )
 
 
 #### TEST_ASSERT_X_ARRAY Variants
@@ -113,10 +113,10 @@ with the `_MESSAGE`variants of Unity's Asserts in that for pretty much any Unity
 type assertion you can tack on `_ARRAY` and run assertions on an entire block of
 memory.
 
-    TEST_ASSERT_EQUAL_TYPEX_ARRAY( expected, actual, {size/count} )
+    TEST_ASSERT_EQUAL_TYPEX_ARRAY( expected, actual, {size/numElements} )
 
 "Expected" is an array itself.
-"Size/count" is one or two parameters necessary to establish the number of array
+"Size/numElements" is one or two parameters necessary to establish the number of array
 elements and perhaps the length of elements within the array.
 
 Notes:
@@ -135,11 +135,11 @@ the Each Equal section below. these are almost on par with the `_MESSAGE`
 variants of Unity's Asserts in that for pretty much any Unity type assertion you
 can inject _EACH_EQUAL and run assertions on an entire block of memory.
 
-    TEST_ASSERT_EACH_EQUAL_TYPEX( expected, actual, {size/count} )
+    TEST_ASSERT_EACH_EQUAL_TYPEX( expected, actual, {size/numElements} )
 
 "Expected" is a single value to compare to.
 "Actual" is an array where each element will be compared to the expected value.
-"Size/count" is one of two parameters necessary to establish the number of array
+"Size/numElements" is one of two parameters necessary to establish the number of array
 elements and perhaps the length of elements within the array.
 
 Notes:

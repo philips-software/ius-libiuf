@@ -11,7 +11,7 @@
 // ADT
 struct IusPatternList
 {
-    int count;
+    int numPatterns;
     iupa_t *   pPatterns ;
     IUS_BOOL loadedFromFile;
 } ;
@@ -26,7 +26,7 @@ iupal_t iusPatternListCreate
     if(list!=NULL)
     {
         list->loadedFromFile = IUS_FALSE;
-        list->count = numPatterns;
+        list->numPatterns = numPatterns;
         list->pPatterns = (iupa_t *) calloc((size_t)numPatterns, sizeof(iupa_t));
         if( list->pPatterns == NULL )
         {
@@ -57,7 +57,7 @@ int iusPatternListDelete
     if(list == NULL) return IUS_ERR_VALUE;
     if(list->loadedFromFile == IUS_TRUE)
     {
-        for(index = 0 ; index < list->count ; index++ )
+        for(index = 0 ; index < list->numPatterns ; index++ )
         {
             iusPatternDelete(list->pPatterns[index]);
         }
@@ -78,8 +78,8 @@ int iusPatternListCompare
     int index;
     if( reference == actual ) return IUS_TRUE;
     if( reference == NULL || actual == NULL ) return IUS_FALSE;
-    if( reference->count != actual->count ) return IUS_FALSE;
-    for(index = 0 ; index < actual->count ; index++ )
+    if( reference->numPatterns != actual->numPatterns ) return IUS_FALSE;
+    for(index = 0 ; index < actual->numPatterns ; index++ )
     {
         if( iusPatternCompare( reference->pPatterns[index], actual->pPatterns[index] )
             == IUS_FALSE )
@@ -94,7 +94,7 @@ int iusPatternListGetSize
     iupal_t list
 )
 {
-    return list->count;
+    return list->numPatterns;
 }
 
 iupa_t iusPatternListGet
@@ -104,7 +104,7 @@ iupa_t iusPatternListGet
 )
 {
     if( index < 0 ) return NULL;
-    if( list == NULL || index >= list->count ) return NULL;
+    if( list == NULL || index >= list->numPatterns ) return NULL;
     return list->pPatterns[index];
 }
 
@@ -116,7 +116,7 @@ int iusPatternListSet
 )
 {
     if( index < 0 ) return IUS_ERR_VALUE;
-    if( list == NULL   || index >= list->count ) return IUS_ERR_VALUE;
+    if( list == NULL   || index >= list->numPatterns ) return IUS_ERR_VALUE;
     list->pPatterns[index] = member;
     return IUS_E_OK;
 }
@@ -159,7 +159,7 @@ IUS_BOOL iusPatternListFull
 {
     IUS_BOOL isFull = IUS_TRUE;
     int i;
-    for (i=0;i < list->count;i++)
+    for (i=0;i < list->numPatterns;i++)
     {
         if(list->pPatterns[i] == IUPA_INVALID)
         {

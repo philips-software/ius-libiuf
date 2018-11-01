@@ -14,18 +14,18 @@ struct IusParametricPulse
     struct  IusPulse base;
     float   pulseFrequency;       /**< frequency that the pulse represents in Hz */
     float   pulseAmplitude;       /**< (max) amplitude of the pulse in Volts */
-    int     pulseCount;           /**< number of cycles that the pulse represents */
+    int     numPulses;           /**< number of cycles that the pulse represents */
 } ;
 
 iupp_t iusParametricPulseCreate
 (
     float pulseFrequency,
     float pulseAmplitude,
-    int pulseCount
+    int numPulses
 )
 {
     IusParametricPulse *pulse;
-    if( pulseCount < 0 ) return NULL;
+    if( numPulses < 0 ) return NULL;
     if( pulseFrequency < 0.0f ) return NULL;
 
     pulse = (IusParametricPulse *) calloc (1,sizeof(IusParametricPulse));
@@ -33,7 +33,7 @@ iupp_t iusParametricPulseCreate
 
     pulse->pulseFrequency = pulseFrequency;
     pulse->pulseAmplitude = pulseAmplitude;
-    pulse->pulseCount = pulseCount;
+    pulse->numPulses = numPulses;
     pulse->base.type = IUS_PARAMETRIC_PULSETYPE;
     return pulse;
 }
@@ -60,7 +60,7 @@ IUS_BOOL iusParametricPulseCompare
 {
     if( reference == actual ) return IUS_TRUE;
     if( reference == NULL || actual == NULL ) return IUS_FALSE;
-    if( reference->pulseCount != actual->pulseCount ) return IUS_FALSE;
+    if( reference->numPulses != actual->numPulses ) return IUS_FALSE;
     if( IUS_EQUAL_FLOAT(reference->pulseAmplitude, actual->pulseAmplitude) == IUS_FALSE ) return IUS_FALSE;
     if( IUS_EQUAL_FLOAT(reference->pulseFrequency, actual->pulseFrequency) == IUS_FALSE ) return IUS_FALSE;
     return iusBasePulseCompare((iup_t)reference,(iup_t)actual);
@@ -88,14 +88,14 @@ float iusParametricPulseGetPulseAmplitude
     return ((IusParametricPulse *)pulse)->pulseAmplitude;
 }
 
-int iusParametricPulseGetCount
+int iusParametricPulseGetNumPulses
 (
-    iupp_t pulse
+iupp_t pulse
 )
 {
     if(pulse == NULL || iusPulseGetType( (iup_t) pulse ) != IUS_PARAMETRIC_PULSETYPE)
         return IUS_ERR_VALUE;
-    return ((IusParametricPulse *)pulse)->pulseCount;
+    return ((IusParametricPulse *)pulse)->numPulses;
 }
 
 int iusParametricPulseSave
@@ -114,7 +114,7 @@ int iusParametricPulseSave
     if (status == IUS_ERR_VALUE) return status;
     status = iusHdf5WriteFloat(handle, IUS_INPUTFILE_PATH_PULSE_FREQUENCY, &(pulse->pulseFrequency), 1);
     status |= iusHdf5WriteFloat(handle, IUS_INPUTFILE_PATH_PULSE_PULSEAMPLITUDES, &(pulse->pulseAmplitude), 1);
-    status |= iusHdf5WriteInt(handle, IUS_INPUTFILE_PATH_PULSE_COUNT, &(pulse->pulseCount), 1);
+    status |= iusHdf5WriteInt(handle, IUS_INPUTFILE_PATH_NUMPULSES, &(pulse->numPulses), 1);
     return status;
 }
 
@@ -126,18 +126,18 @@ iupp_t iusParametricPulseLoad
     int     status = 0;
     float   pulseFrequency;       /**< frequency that the pulse represents in Hz */
     float   pulseAmplitude;       /**< (max) amplitude of the pulse in Volts */
-    int     pulseCount;           /**< number of cycles that the pulse represents */
+    int     numPulses;           /**< number of cycles that the pulse represents */
     iupp_t  pulse;
 
 	if (handle == H5I_INVALID_HID)
 		return NULL;
     status |= iusHdf5ReadFloat(handle, IUS_INPUTFILE_PATH_PULSE_FREQUENCY, &(pulseFrequency));
     status |= iusHdf5ReadFloat(handle, IUS_INPUTFILE_PATH_PULSE_PULSEAMPLITUDES, &(pulseAmplitude));
-    status |= iusHdf5ReadInt(handle, IUS_INPUTFILE_PATH_PULSE_COUNT, &(pulseCount));
+    status |= iusHdf5ReadInt(handle, IUS_INPUTFILE_PATH_NUMPULSES, &(numPulses));
 
     if( status < 0 )
         return NULL;
 
-    pulse = iusParametricPulseCreate(pulseFrequency,pulseAmplitude,pulseCount);
+    pulse = iusParametricPulseCreate(pulseFrequency,pulseAmplitude,numPulses);
     return pulse;
 }

@@ -279,7 +279,7 @@ iupd_t dgGeneratePulseDict
   int     numPulseValues=10;
   float   pulseFrequency=8000000.0f;   /**< frequency that the pulse represents in Hz */
   float   pulseAmplitude=800.0f;       /**< (max) amplitude of the pulse in Volts */
-  int     pulseCount=10;               /**< number of cycles that the pulse represents */
+  int     numPulses=10;               /**< number of cycles that the pulse represents */
   int     status;
 
   // create
@@ -289,7 +289,7 @@ iupd_t dgGeneratePulseDict
   // fill
   char *parametricLabel = "parametricPulseLabel";
   char *nonParametricLabel = "nonParametricPulseLabel";
-  iupp_t parametricPulse = iusParametricPulseCreate(pulseFrequency, pulseAmplitude, pulseCount);
+  iupp_t parametricPulse = iusParametricPulseCreate(pulseFrequency, pulseAmplitude, numPulses);
   iunpp_t nonParametricPulse = iusNonParametricPulseCreate(numPulseValues);
   iusNonParametricPulseSetValue(nonParametricPulse,0,10.0f,10.0f);
   iusNonParametricPulseSetValue(nonParametricPulse,1,20.0f,10.0f);
@@ -305,7 +305,7 @@ iusd_t dgGenerateSourceDict
     void
 )
 {
-    int locationCount = 5; /**< number of locations */
+    int numLocations = 5; /**< number of locations */
     float angularDelta = 0.13f;
     float FNumber = -0.955f;
     float startAngle = 3.14f;
@@ -314,11 +314,11 @@ iusd_t dgGenerateSourceDict
     char *_3d_non_parametric_label = "label for 3d non parametric source";
     char *_3d_parametric_label = "label for 3d parametric source";
 
-    iu3dps_t parametricSource = ius3DParametricSourceCreate(locationCount, FNumber,
+    iu3dps_t parametricSource = ius3DParametricSourceCreate(numLocations, FNumber,
                                                               angularDelta, startAngle, deltaPhi, startPhi);
 
     TEST_ASSERT(parametricSource != IU3DPS_INVALID);
-    iu3dnps_t nonParametricSource = ius3DNonParametricSourceCreate(locationCount);
+    iu3dnps_t nonParametricSource = ius3DNonParametricSourceCreate(numLocations);
     TEST_ASSERT(nonParametricSource != IU3DNPS_INVALID);
 
     // create

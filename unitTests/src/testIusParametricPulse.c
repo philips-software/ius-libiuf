@@ -26,12 +26,12 @@ TEST(IusParametricPulse, testIusCreatePulse)
     int status = 0;
     float   pulseFrequency=8000000.0f;   /**< frequency that the pulse represents in Hz */
     float   pulseAmplitude=800.0f;       /**< (max) amplitude of the pulse in Volts */
-    int     pulseCount=10;               /**< number of cycles that the pulse represents */
+    int     numPulses=10;               /**< number of cycles that the pulse represents */
     iupp_t  parametricPulse;
 
     // Parametric transmit pulse
     parametricPulse =
-    iusParametricPulseCreate(pulseFrequency, pulseAmplitude, pulseCount);
+    iusParametricPulseCreate(pulseFrequency, pulseAmplitude, numPulses);
     TEST_ASSERT(parametricPulse != IUPP_INVALID);
 
 
@@ -43,7 +43,7 @@ TEST(IusParametricPulse, testIusCreatePulse)
     TEST_ASSERT_EQUAL(NULL,
                       iusParametricPulseCreate(-1.0f,
                                                pulseAmplitude,
-                                               pulseCount));
+                                               numPulses));
 
     status = iusParametricPulseDelete(parametricPulse);
     TEST_ASSERT(status == IUS_E_OK);
@@ -55,13 +55,13 @@ TEST(IusParametricPulse, testIusDeletePulse)
     int status = 0;
     float   pulseFrequency=8000000.0f;   /**< frequency that the pulse represents in Hz */
     float   pulseAmplitude=800.0f;       /**< (max) amplitude of the pulse in Volts */
-    int     pulseCount=10;               /**< number of cycles that the pulse represents */
+    int     numPulses=10;               /**< number of cycles that the pulse represents */
     int     numPulseValues;              /**< number of points to describe waveform, 0 implies a parametric description only */
     iupp_t  parametricPulse;
     iunpp_t nonParametricPulse;
 
     // Parametric transmit pulse
-    parametricPulse = iusParametricPulseCreate(pulseFrequency, pulseAmplitude, pulseCount);
+    parametricPulse = iusParametricPulseCreate(pulseFrequency, pulseAmplitude, numPulses);
 
     // Non Parametric transmit pulse
     // alloc mem
@@ -89,7 +89,7 @@ TEST(IusParametricPulse, testIusComparePulse)
     // Transmit parameters
     float   pulseFrequency=8000000.0f;   /**< frequency that the pulse represents in Hz */
     float   pulseAmplitude=800.0f;       /**< (max) amplitude of the pulse in Volts */
-    int     pulseCount=10;               /**< number of cycles that the pulse represents */
+    int     numPulses=10;               /**< number of cycles that the pulse represents */
     int     numPulseValues=20;              /**< number of points to describe waveform, 0 implies a parametric description only */
     iupp_t  parametricPulse,identicalPulse;
     iunpp_t nonParametricPulse;
@@ -97,8 +97,8 @@ TEST(IusParametricPulse, testIusComparePulse)
 
 
     // Parametric transmit pulse
-    parametricPulse = iusParametricPulseCreate(pulseFrequency, pulseAmplitude, pulseCount);
-    identicalPulse = iusParametricPulseCreate(pulseFrequency, pulseAmplitude, pulseCount);
+    parametricPulse = iusParametricPulseCreate(pulseFrequency, pulseAmplitude, numPulses);
+    identicalPulse = iusParametricPulseCreate(pulseFrequency, pulseAmplitude, numPulses);
     nonParametricPulse = iusNonParametricPulseCreate(numPulseValues);
 
     isEqual = iusParametricPulseCompare(parametricPulse, parametricPulse);
@@ -131,27 +131,27 @@ TEST(IusParametricPulse, testIusSetGetPulse)
     // Transmit parameters
     float   pulseFrequency=8000000.0f;   /**< frequency that the pulse represents in Hz */
     float   pulseAmplitude=800.0f;       /**< (max) amplitude of the pulse in Volts */
-    int     pulseCount=10;               /**< number of cycles that the pulse represents */
+    int     numPulses=10;               /**< number of cycles that the pulse represents */
     int     numPulseValues=30;              /**< number of points to describe waveform, 0 implies a parametric description only */
     iupp_t  parametricPulse;
     iunpp_t nonParametricPulse;
 
 
     // Parametric transmit pulse
-    parametricPulse = iusParametricPulseCreate(pulseFrequency, pulseAmplitude, pulseCount);
+    parametricPulse = iusParametricPulseCreate(pulseFrequency, pulseAmplitude, numPulses);
     TEST_ASSERT_EQUAL_FLOAT( iusParametricPulseGetFrequency(parametricPulse), pulseFrequency);
     TEST_ASSERT_EQUAL_FLOAT( iusParametricPulseGetPulseAmplitude(parametricPulse), pulseAmplitude);
-    TEST_ASSERT_EQUAL_FLOAT( iusParametricPulseGetCount(parametricPulse),pulseCount);
+    TEST_ASSERT_EQUAL_FLOAT(iusParametricPulseGetNumPulses(parametricPulse),numPulses);
 
     // Invalid operation on nonparametric dta type
     nonParametricPulse = iusNonParametricPulseCreate(numPulseValues);
     TEST_ASSERT_EQUAL_FLOAT(iusParametricPulseGetFrequency( (iupp_t) nonParametricPulse), NAN);
     TEST_ASSERT_EQUAL_FLOAT(iusParametricPulseGetPulseAmplitude( (iupp_t) nonParametricPulse), NAN);
-    TEST_ASSERT_EQUAL(IUS_ERR_VALUE, iusParametricPulseGetCount( (iupp_t) nonParametricPulse));
+    TEST_ASSERT_EQUAL(IUS_ERR_VALUE, iusParametricPulseGetNumPulses((iupp_t) nonParametricPulse));
 
     TEST_ASSERT_EQUAL_FLOAT(iusParametricPulseGetFrequency( (iupp_t) NULL), NAN);
     TEST_ASSERT_EQUAL_FLOAT(iusParametricPulseGetPulseAmplitude( (iupp_t) NULL), NAN);
-    TEST_ASSERT_EQUAL(IUS_ERR_VALUE, iusParametricPulseGetCount( (iupp_t) NULL));
+    TEST_ASSERT_EQUAL(IUS_ERR_VALUE, iusParametricPulseGetNumPulses((iupp_t) NULL));
 
     status = iusNonParametricPulseDelete(nonParametricPulse);
     TEST_ASSERT(status == IUS_E_OK);
@@ -166,12 +166,12 @@ TEST(IusParametricPulse, testIusSerialization)
     
     float   pulseFrequency=8000000.0f;   /**< frequency that the pulse represents in Hz */
     float   pulseAmplitude=800.0f;       /**< (max) amplitude of the pulse in Volts */
-    int     pulseCount=10;               /**< number of cycles that the pulse represents */
+    int     numPulses=10;               /**< number of cycles that the pulse represents */
 
 
     // create and save
-    iupp_t parametricPulse = iusParametricPulseCreate(pulseFrequency, pulseAmplitude, pulseCount);
-    iupp_t notherParametricPulse = iusParametricPulseCreate(pulseFrequency, pulseAmplitude, pulseCount);
+    iupp_t parametricPulse = iusParametricPulseCreate(pulseFrequency, pulseAmplitude, numPulses);
+    iupp_t notherParametricPulse = iusParametricPulseCreate(pulseFrequency, pulseAmplitude, numPulses);
 
     hid_t handle = H5Fcreate( filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT );
     TEST_ASSERT(handle > 0);

@@ -33,13 +33,13 @@ TEST(IusPulseDict, testIusPulseDictSetGet)
 {
     float   pulseFrequency=8000000.0f;   /**< frequency that the pulse represents in Hz */
     float   pulseAmplitude=800.0f;       /**< (max) amplitude of the pulse in Volts */
-    int     pulseCount=10;               /**< number of cycles that the pulse represents */
+    int     numPulses=10;               /**< number of cycles that the pulse represents */
     int     status;
 
     iupd_t dict = iusPulseDictCreate();
     TEST_ASSERT(dict != IUPD_INVALID);
 
-    iupp_t obj = iusParametricPulseCreate(pulseFrequency, pulseAmplitude, pulseCount);
+    iupp_t obj = iusParametricPulseCreate(pulseFrequency, pulseAmplitude, numPulses);
     char *pObjLabel = "Parametric pulse for testIusPulseDictCompare";
     status = iusPulseDictSet(dict,pObjLabel,(iup_t) obj);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
@@ -61,7 +61,7 @@ TEST(IusPulseDict, testIusPulseDictCompare)
     int numPulseValues=10;
     float   pulseFrequency=8000000.0f;   /**< frequency that the pulse represents in Hz */
     float   pulseAmplitude=800.0f;       /**< (max) amplitude of the pulse in Volts */
-    int     pulseCount=10;               /**< number of cycles that the pulse represents */
+    int     numPulses=10;               /**< number of cycles that the pulse represents */
     int     status;
     iupp_t  parametricPulse;
     iunpp_t nonParametricPulse;
@@ -77,7 +77,7 @@ TEST(IusPulseDict, testIusPulseDictCompare)
     equal = iusPulseDictCompare(dict, notherDict);
     TEST_ASSERT_EQUAL(IUS_TRUE,equal);
 
-    parametricPulse = iusParametricPulseCreate(pulseFrequency, pulseAmplitude, pulseCount);
+    parametricPulse = iusParametricPulseCreate(pulseFrequency, pulseAmplitude, numPulses);
     nonParametricPulse = iusNonParametricPulseCreate(numPulseValues);
 
     char *label = "Parametric pulse for testIusPulseDictCompare";
@@ -119,7 +119,7 @@ TEST(IusPulseDict, testIusSerialization)
     int numPulseValues=10;
     float   pulseFrequency=8000000.0f;   /**< frequency that the pulse represents in Hz */
     float   pulseAmplitude=800.0f;       /**< (max) amplitude of the pulse in Volts */
-    int     pulseCount=10;               /**< number of cycles that the pulse represents */
+    int     numPulses=10;               /**< number of cycles that the pulse represents */
     int     status;
     char *filename = "testIusPulseDictSerialization.hdf5";
     //char *dictPath =  "/PulseDict"; fixed to /Pulses
@@ -131,7 +131,7 @@ TEST(IusPulseDict, testIusSerialization)
     // fill
     char *parametricLabel = "parametricPulseLabel";
     char *nonParametricLabel = "nonParametricPulseLabel";
-    iupp_t parametricPulse = iusParametricPulseCreate(pulseFrequency, pulseAmplitude, pulseCount);
+    iupp_t parametricPulse = iusParametricPulseCreate(pulseFrequency, pulseAmplitude, numPulses);
     iunpp_t nonParametricPulse = iusNonParametricPulseCreate(numPulseValues);
     iusNonParametricPulseSetValue(nonParametricPulse,0,10.0f,10.0f);
     iusNonParametricPulseSetValue(nonParametricPulse,1,20.0f,10.0f);

@@ -14,7 +14,7 @@ iupp_t iusParametricPulseCreate
 (
     float pulseFrequency,
     float pulseAmplitude,
-    int pulseCount
+    int numPulses
 );
 
 int iusParametricPulseDelete
@@ -42,7 +42,7 @@ float iusParametricPulseGetPulseAmplitude
     iupp_t pulse
 );
 
-int iusParametricPulseGetCount
+int iusParametricPulseGetNumPulses
 (
     iupp_t transmitPulse
 );

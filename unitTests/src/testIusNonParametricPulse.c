@@ -44,7 +44,7 @@ TEST(IusNonParametricPulse, testIusDeleteNonParametricPulse)
     // Transmit parameters
     float   pulseFrequency=8000000.0f;   /**< frequency that the pulse represents in Hz */
     float   pulseAmplitude=800.0f;       /**< (max) amplitude of the pulse in Volts */
-    int     pulseCount=10;               /**< number of cycles that the pulse represents */
+    int     numPulses=10;               /**< number of cycles that the pulse represents */
     int     numPulseValues;              /**< number of points to describe waveform, 0 implies a parametric description only */
     iupp_t  parametricPulse;
     iunpp_t nonParametricPulse;
@@ -58,7 +58,7 @@ TEST(IusNonParametricPulse, testIusDeleteNonParametricPulse)
     // Parametric transmit pulse
     parametricPulse = iusParametricPulseCreate(pulseFrequency,
                                                pulseAmplitude,
-                                               pulseCount);
+                                               numPulses);
 
     // Invalid operation on nonparametric dta type
     status = iusNonParametricPulseDelete((iunpp_t) parametricPulse);
@@ -80,7 +80,7 @@ TEST(IusNonParametricPulse, testIusCompareNonParametricPulse)
     // Transmit parameters
     float   pulseFrequency=8000000.0f;   /**< frequency that the pulse represents in Hz */
     float   pulseAmplitude=800.0f;       /**< (max) amplitude of the pulse in Volts */
-    int     pulseCount=10;               /**< number of cycles that the pulse represents */
+    int     numPulses=10;               /**< number of cycles that the pulse represents */
     int     numPulseValues=20;              /**< number of points to describe waveform, 0 implies a parametric description only */
     iupp_t  parametricPulse;
     iunpp_t nonParametricPulse,notherNonParametricPulse;
@@ -89,7 +89,7 @@ TEST(IusNonParametricPulse, testIusCompareNonParametricPulse)
     nonParametricPulse = iusNonParametricPulseCreate(numPulseValues);
     notherNonParametricPulse = iusNonParametricPulseCreate(numPulseValues);
 
-    parametricPulse = iusParametricPulseCreate(pulseFrequency, pulseAmplitude, pulseCount);
+    parametricPulse = iusParametricPulseCreate(pulseFrequency, pulseAmplitude, numPulses);
 
     isEqual = iusNonParametricPulseCompare(nonParametricPulse, nonParametricPulse);
     TEST_ASSERT_EQUAL(IUS_TRUE,isEqual);
@@ -123,7 +123,7 @@ TEST(IusNonParametricPulse, testIusSetGetNonParametricPulse)
     float   pulseFrequency=8000000.0f;   /**< frequency that the pulse represents in Hz */
     float   pulseTime=0.00001f;   /**< frequency that the pulse represents in Hz */
     float   pulseAmplitude=40.0f;       /**< (max) amplitude of the pulse in Volts */
-    int     pulseCount=10;               /**< number of cycles that the pulse represents */
+    int     numPulses=10;               /**< number of cycles that the pulse represents */
     int     numPulseValues;              /**< number of points to describe waveform, 0 implies a parametric description only */
     iupp_t  parametricPulse;
     iunpp_t nonParametricPulse;
@@ -151,7 +151,7 @@ TEST(IusNonParametricPulse, testIusSetGetNonParametricPulse)
 
     // Invalid params
     // Parametric transmit pulse
-    parametricPulse = iusParametricPulseCreate(pulseFrequency, pulseAmplitude, pulseCount);
+    parametricPulse = iusParametricPulseCreate(pulseFrequency, pulseAmplitude, numPulses);
     status = iusNonParametricPulseSetValue((iunpp_t) parametricPulse, 0, pulseTime, pulseAmplitude);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE,status);
     status = iusNonParametricPulseSetValue(NULL, 0, pulseTime, pulseAmplitude);
