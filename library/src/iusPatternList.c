@@ -108,6 +108,17 @@ iupa_t iusPatternListGet
     return list->pPatterns[index];
 }
 
+IUS_BOOL iusPatternListValidateDimensions
+(
+    iupal_t list,
+    iupa_t member
+)
+{
+    IUS_UNUSED(list);
+    IUS_UNUSED(member);
+    return IUS_TRUE;
+}
+
 int iusPatternListSet
 (
     iupal_t list,
@@ -116,7 +127,12 @@ int iusPatternListSet
 )
 {
     if( index < 0 ) return IUS_ERR_VALUE;
-    if( list == NULL   || index >= list->numPatterns ) return IUS_ERR_VALUE;
+    if( list == NULL || index >= list->numPatterns ) return IUS_ERR_VALUE;
+    IUS_BOOL validDimensions = iusPatternListValidateDimensions(list,member);
+    if( validDimensions == IUS_FALSE )
+    {
+        return IUS_ERR_VALUE;
+    }
     list->pPatterns[index] = member;
     return IUS_E_OK;
 }

@@ -148,6 +148,18 @@ iuif_t iusInputFileCreate
 	return (iuif_t)node;
 }
 
+
+int iusInputFileGetNumFrames
+(
+    iuif_t inputFile
+)
+{
+    if (inputFile == NULL) return -1;
+    iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
+    if (instance->frameList == IUFL_INVALID) return 0;
+    return iusFrameListGetSize(instance->frameList);
+}
+
 int iusInputFileGetNumChannels
 (
     iuif_t iusInputFile,
@@ -160,17 +172,6 @@ int iusInputFileGetNumChannels
     iurcm_t receiveChannelMap = iusReceiveChannelMapDictGet(receiveChannelMapDict,label);
     if (receiveChannelMap == IURCM_INVALID) return -1;
     return iusReceiveChannelMapGetNumChannels(receiveChannelMap);
-}
-
-int iusInputFileGetNumFrames
-(
-    iuif_t inputFile
-)
-{
-    if (inputFile == NULL) return -1;
-    iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
-    if (instance->frameList == IUFL_INVALID) return 0;
-    return iusFrameListGetSize(instance->frameList);
 }
 
 

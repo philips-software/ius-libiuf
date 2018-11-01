@@ -40,16 +40,8 @@ iurs_t ncFillReceiveSettings
     int numDelays=10;
     int numSamplesPerLine=10;
     int numTGCentries = 1;
-    int status=0,i;
 
     iurs_t obj = iusReceiveSettingsCreate(sampleFrequency, numDelays, numSamplesPerLine, numTGCentries);
-
-    // Delays
-    for(i=0;i<numDelays;i++)
-    {
-        float delay = i*2.0f;
-        status |= iusReceiveSettingsSetStartDelay(obj, i, delay);
-    }
 
     return obj;
 }
@@ -207,16 +199,24 @@ iusd_t ncFillSourceDict
 
 iurcm_t ncFillReceiveChannelMap
 (
-void
+    void
 )
 {
     int numChannels = 8;
     int channelMap[8] = {0, 1, 2, 3, 4, 5, 6, 7};
+    int status=0,i;
 
     // fill
     iurcm_t receiveChannelMap = iusReceiveChannelMapCreate(numChannels);
 
     iusReceiveChannelMapSetMap(receiveChannelMap, channelMap);
+    // Delays
+    for(i=0;i<numChannels;i++)
+    {
+        float delay = i*2.0f;
+        status |= iusReceiveChannelMapSetStartDelay(receiveChannelMap, i, delay);
+    }
+
     return receiveChannelMap;
 }
 
