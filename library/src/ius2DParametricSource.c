@@ -117,33 +117,6 @@ float ius2DParametricSourceGetStartAngle
     return ius2DParametricSource->startAngle;
 }
 
-iu2dp_t ius2DParametricSourceGetPosition
-(
-    iu2dps_t ius2DParametricSource,
-    int index
-)
-{
-    if ( ius2DParametricSource == NULL  ) return IU2DP_INVALID;
-    if ( index >= ius2DParametricSource->numLocations || index < 0) return IU2DP_INVALID;
-    return &ius2DParametricSource->pLocations[index];
-}
-
-// Setters
-int ius2DParametricSourceSetPosition
-(
-    iu2dps_t ius2DParametricSource,
-    iu2dp_t  pos,
-    int index
-)
-{
-    if (ius2DParametricSource == NULL) return IUS_ERR_VALUE;
-    if (pos == NULL) return IUS_ERR_VALUE;
-    if (index >= ius2DParametricSource->numLocations) return IUS_ERR_VALUE;
-
-    ius2DParametricSource->pLocations[index] = *pos;
-    return IUS_E_OK;
-}
-
 int ius2DParametricSourceSetFNumber
 (
     iu2dps_t ius2DParametricSource,

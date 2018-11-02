@@ -5,8 +5,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-
-
 #include <ius.h>
 #include <iusAcquisitionPrivate.h>
 #include <iusDataStreamDictPrivate.h>
