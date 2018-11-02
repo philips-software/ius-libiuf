@@ -5,7 +5,7 @@
 
 #include <ius.h>
 #include <iusReceiveChannelMapPrivate.h>
-
+#include <math.h>
 
 iurcm_t iusReceiveChannelMapCreate
 (
@@ -18,6 +18,7 @@ iurcm_t iusReceiveChannelMapCreate
 	if (numChannels <= 0) return IURCM_INVALID;
 
 	receiveChannelMap = calloc(1, sizeof(struct IusReceiveChannelMap));
+	receiveChannelMap->startDelay = (float *) calloc(numChannels, sizeof(float));
 	receiveChannelMap->numChannels = numChannels;
 	receiveChannelMap->map = calloc(numChannels, sizeof(int));
 	for (idx = 0; idx < numChannels; idx++)
@@ -35,6 +36,7 @@ int iusReceiveChannelMapDelete
 	if (receiveChannelMap == NULL) return IUS_ERR_VALUE;
 	if (receiveChannelMap->map != NULL)
 	{
+		free(receiveChannelMap->startDelay);
 		free(receiveChannelMap->map);
 	}
 	free(receiveChannelMap);
@@ -59,7 +61,10 @@ IUS_BOOL iusReceiveChannelMapCompare
 	{
 		if (reference->map[idx] != actual->map[idx])
 			return IUS_FALSE;
+        if (IUS_EQUAL_FLOAT(reference->startDelay[idx], actual->startDelay[idx]) == IUS_FALSE )
+            return IUS_FALSE;
 	}
+
 	return IUS_TRUE;
 }
 
@@ -83,6 +88,42 @@ int iusReceiveChannelMapGetChannel
 	if (mapIdx >= receiveChannelMap->numChannels || mapIdx < 0) return -1;
 	return receiveChannelMap->map[mapIdx];
 }
+
+int iusReceiveChannelMapGetNumDelays
+(
+    iurcm_t receiveChannelMap
+)
+{
+    if(receiveChannelMap == NULL) return -1;
+    return receiveChannelMap->numChannels;
+}
+
+float iusReceiveChannelMapGetStartDelay
+(
+    iurcm_t receiveChannelMap,
+    int index
+)
+{
+    if(receiveChannelMap == NULL) return -1;
+    if(index > receiveChannelMap->numChannels) return NAN;
+    return receiveChannelMap->startDelay[index];
+}
+
+
+// Setters
+int iusReceiveChannelMapSetStartDelay
+(
+    iurcm_t receiveChannelMap,
+    int index,
+    float delay
+)
+{
+    if(receiveChannelMap == NULL) return IUS_ERR_VALUE;
+    if(index > receiveChannelMap->numChannels) return IUS_ERR_VALUE;
+    receiveChannelMap->startDelay[index] = delay;
+    return IUS_E_OK;
+}
+
 
 int iusReceiveChannelMapSetChannel
 (
@@ -126,6 +167,7 @@ int iusReceiveChannelMapSave
 
 	status = iusHdf5WriteInt(group_id, IUS_INPUTFILE_PATH_RECEIVECHANNELMAP_NUMCHANNELS, &(receiveChannelMap->numChannels), 1);
 	status |= iusHdf5WriteInt(group_id, IUS_INPUTFILE_PATH_RECEIVECHANNELMAP_MAP, receiveChannelMap->map, receiveChannelMap->numChannels);
+    status |= iusHdf5WriteFloat(group_id, IUS_INPUTFILE_PATH_RECEIVESETTINGS_STATRDELAY, receiveChannelMap->startDelay, receiveChannelMap->numChannels);
 
 	return status;
 }
@@ -159,7 +201,17 @@ iurcm_t iusReceiveChannelMapLoad
 	{
 		free(channelMap);
 	}
-	
-	return receiveChannelMap;
+
+    // Memory allocation for startDelays has been done in iusReceiveSettingsCreate
+    // now, the delays can be read into iusReceiveSettings->startDelay.
+    status |= iusHdf5ReadFloat(group_id, IUS_INPUTFILE_PATH_RECEIVESETTINGS_STATRDELAY, receiveChannelMap->startDelay);
+    if ( status != 0 )
+    {
+        iusReceiveChannelMapDelete(receiveChannelMap);
+        receiveChannelMap = IURCM_INVALID;
+    }
+
+
+    return receiveChannelMap;
 }
 

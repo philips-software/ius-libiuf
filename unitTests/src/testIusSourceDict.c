@@ -32,7 +32,7 @@ TEST(IusSourceDict, testIusCreateSourceDict)
 TEST(IusSourceDict, testIusSourceDictSetGet)
 {
     char *pObjLabel = "label for 3d parametric source";
-    int locationCount = 5; /**< number of locations */
+    int numLocations = 5; /**< number of locations */
 
     // Happy flow
     float angularDelta = 0.13f;
@@ -40,7 +40,7 @@ TEST(IusSourceDict, testIusSourceDictSetGet)
     float startAngle = 3.14f;
     float startPhi = startAngle;
     float deltaPhi = angularDelta;
-    iu3dps_t obj = ius3DParametricSourceCreate(locationCount, FNumber,
+    iu3dps_t obj = ius3DParametricSourceCreate(numLocations, FNumber,
                                                             angularDelta, startAngle, deltaPhi, startPhi);
 
     TEST_ASSERT(obj != IU3DPS_INVALID);
@@ -67,7 +67,7 @@ TEST(IusSourceDict, testIusCompareSourceDict)
 
     char *_3d_non_parametric_label = "label for 3d non parametric source";
     char *_3d_parametric_label = "label for 3d parametric source";
-    int locationCount = 5; /**< number of locations */
+    int numLocations = 5; /**< number of locations */
 
     // Happy flow
     float angularDelta = 0.13f;
@@ -75,11 +75,11 @@ TEST(IusSourceDict, testIusCompareSourceDict)
     float startAngle = 3.14f;
     float startPhi = startAngle;
     float deltaPhi = angularDelta;
-    iu3dps_t parametricSource = ius3DParametricSourceCreate(locationCount, FNumber,
+    iu3dps_t parametricSource = ius3DParametricSourceCreate(numLocations, FNumber,
                                                         angularDelta, startAngle, deltaPhi, startPhi);
 
     TEST_ASSERT(parametricSource != IU3DPS_INVALID);
-    iu3dnps_t nonParametricSource = ius3DNonParametricSourceCreate(locationCount);
+    iu3dnps_t nonParametricSource = ius3DNonParametricSourceCreate(numLocations);
     TEST_ASSERT(nonParametricSource != IU3DNPS_INVALID);
 
     // Same empty lists...
@@ -129,7 +129,7 @@ TEST(IusSourceDict, testIusSerialization)
 {
     char *_3d_non_parametric_label = "label for 3d non parametric source";
     char *_3d_parametric_label = "label for 3d parametric source";
-    int locationCount = 5; /**< number of locations */
+    int numLocations = 5; /**< number of locations */
     char *filename = "testIusSourceDictSerialization.hdf5";
 
     // Happy flow
@@ -138,11 +138,11 @@ TEST(IusSourceDict, testIusSerialization)
     float startAngle = 3.14f;
     float startPhi = startAngle;
     float deltaPhi = angularDelta;
-    iu3dps_t parametricSource = ius3DParametricSourceCreate(locationCount, FNumber,
+    iu3dps_t parametricSource = ius3DParametricSourceCreate(numLocations, FNumber,
                                                               angularDelta, startAngle, deltaPhi, startPhi);
 
     TEST_ASSERT(parametricSource != IU3DPS_INVALID);
-    iu3dnps_t nonParametricSource = ius3DNonParametricSourceCreate(locationCount);
+    iu3dnps_t nonParametricSource = ius3DNonParametricSourceCreate(numLocations);
     TEST_ASSERT(nonParametricSource != IU3DNPS_INVALID);
 
     // create

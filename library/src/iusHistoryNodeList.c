@@ -10,7 +10,7 @@
 // ADT
 struct IusHistoryNodeList
 {
-    int count;
+    int numHistoryNodes;
     iuhn_t *   pHistoryNodes ;
     IUS_BOOL loadedFromFile;
 } ;
@@ -26,7 +26,7 @@ iuhnl_t iusHistoryNodeListCreate
     if(list!=NULL)
     {
         list->loadedFromFile = IUS_FALSE;
-        list->count = numHistoryNodes;
+        list->numHistoryNodes = numHistoryNodes;
         list->pHistoryNodes = (iuhn_t *) calloc((size_t)numHistoryNodes, sizeof(iuhn_t));
         if( list->pHistoryNodes == NULL )
         {
@@ -47,12 +47,12 @@ int iusHistoryNodeListDelete
     if(list == NULL) return IUS_ERR_VALUE;
     if(list->loadedFromFile==IUS_TRUE)
     {
-        for (i=0;i<list->count;i++)
+        for (i=0;i<list->numHistoryNodes;i++)
         {
             iusHistoryNodeDelete(list->pHistoryNodes[i]);
         }
     }
-    if(list->count>0)
+    if(list->numHistoryNodes>0)
         free(list->pHistoryNodes);
     free(list);
     return IUS_E_OK;
@@ -69,8 +69,8 @@ int iusHistoryNodeListCompare
     int index;
     if( reference == actual ) return IUS_TRUE;
     if( reference == NULL || actual == NULL ) return IUS_FALSE;
-    if( reference->count != actual->count ) return IUS_FALSE;
-    for(index = 0 ; index < actual->count ; index++ )
+    if( reference->numHistoryNodes != actual->numHistoryNodes ) return IUS_FALSE;
+    for(index = 0 ; index < actual->numHistoryNodes ; index++ )
     {
         if( iusHistoryNodeCompare( reference->pHistoryNodes[index], actual->pHistoryNodes[index] )
             == IUS_FALSE )
@@ -86,7 +86,7 @@ int iusHistoryNodeListGetSize
 )
 {
     if( list == NULL ) return -1;
-    return list->count;
+    return list->numHistoryNodes;
 }
 
 iuhn_t iusHistoryNodeListGet
@@ -96,7 +96,7 @@ iuhn_t iusHistoryNodeListGet
 )
 {
     if( index < 0 ) return NULL;
-    if( list == NULL || index >= list->count ) return NULL;
+    if( list == NULL || index >= list->numHistoryNodes ) return NULL;
     return list->pHistoryNodes[index];
 }
 
@@ -108,7 +108,7 @@ int iusHistoryNodeListSet
 )
 {
     if( index < 0 ) return IUS_ERR_VALUE;
-    if( list == NULL   || index >= list->count ) return IUS_ERR_VALUE;
+    if( list == NULL   || index >= list->numHistoryNodes ) return IUS_ERR_VALUE;
     list->pHistoryNodes[index] = member;
     return IUS_E_OK;
 }
@@ -158,7 +158,7 @@ IUS_BOOL iusHistoryNodeListFull
 {
     IUS_BOOL isFull = IUS_TRUE;
     int i;
-    for (i=0;i < node->count;i++)
+    for (i=0;i < node->numHistoryNodes;i++)
     {
         if(node->pHistoryNodes[i] == IUHN_INVALID)
         {
@@ -184,7 +184,7 @@ int iusHistoryNodeListSave
     if(iusHistoryNodeListFull(node) == IUS_FALSE)
         return IUS_ERR_VALUE;
 
-    for (i=0;i<node->count;i++)
+    for (i=0;i<node->numHistoryNodes;i++)
     {
         sprintf(parentPath, "parent%d", i);
         hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);

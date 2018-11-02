@@ -40,17 +40,7 @@ iurs_t dgGenerateReceiveSettings
     int numDelays=10;
     int numSamplesPerLine=10;
     int numTGCentries = 1;
-    int status=0,i;
-
     iurs_t obj = iusReceiveSettingsCreate(sampleFrequency, numDelays, numSamplesPerLine, numTGCentries);
-
-    // Delays
-    for(i=0;i<numDelays;i++)
-    {
-        float delay = i*2.0f;
-        status |= iusReceiveSettingsSetStartDelay(obj, i, delay);
-        TEST_ASSERT(status == IUS_E_OK);
-    }
 
     return obj;
 }
@@ -279,7 +269,7 @@ iupd_t dgGeneratePulseDict
   int     numPulseValues=10;
   float   pulseFrequency=8000000.0f;   /**< frequency that the pulse represents in Hz */
   float   pulseAmplitude=800.0f;       /**< (max) amplitude of the pulse in Volts */
-  int     pulseCount=10;               /**< number of cycles that the pulse represents */
+  int     numPulses=10;               /**< number of cycles that the pulse represents */
   int     status;
 
   // create
@@ -289,7 +279,7 @@ iupd_t dgGeneratePulseDict
   // fill
   char *parametricLabel = "parametricPulseLabel";
   char *nonParametricLabel = "nonParametricPulseLabel";
-  iupp_t parametricPulse = iusParametricPulseCreate(pulseFrequency, pulseAmplitude, pulseCount);
+  iupp_t parametricPulse = iusParametricPulseCreate(pulseFrequency, pulseAmplitude, numPulses);
   iunpp_t nonParametricPulse = iusNonParametricPulseCreate(numPulseValues);
   iusNonParametricPulseSetValue(nonParametricPulse,0,10.0f,10.0f);
   iusNonParametricPulseSetValue(nonParametricPulse,1,20.0f,10.0f);
@@ -305,7 +295,7 @@ iusd_t dgGenerateSourceDict
     void
 )
 {
-    int locationCount = 5; /**< number of locations */
+    int numLocations = 5; /**< number of locations */
     float angularDelta = 0.13f;
     float FNumber = -0.955f;
     float startAngle = 3.14f;
@@ -314,11 +304,11 @@ iusd_t dgGenerateSourceDict
     char *_3d_non_parametric_label = "label for 3d non parametric source";
     char *_3d_parametric_label = "label for 3d parametric source";
 
-    iu3dps_t parametricSource = ius3DParametricSourceCreate(locationCount, FNumber,
+    iu3dps_t parametricSource = ius3DParametricSourceCreate(numLocations, FNumber,
                                                               angularDelta, startAngle, deltaPhi, startPhi);
 
     TEST_ASSERT(parametricSource != IU3DPS_INVALID);
-    iu3dnps_t nonParametricSource = ius3DNonParametricSourceCreate(locationCount);
+    iu3dnps_t nonParametricSource = ius3DNonParametricSourceCreate(numLocations);
     TEST_ASSERT(nonParametricSource != IU3DNPS_INVALID);
 
     // create
@@ -339,7 +329,7 @@ iurcm_t dgGenerateReceiveChannelMap
     void
 )
 {
-    int status;
+    int status,i;
     int numChannels = 8;
     int channelMap[8] = {0, 1, 2, 3, 4, 5, 6, 7};
 
@@ -352,6 +342,15 @@ iurcm_t dgGenerateReceiveChannelMap
 
     status = iusReceiveChannelMapSetMap(receiveChannelMap, channelMap);
     TEST_ASSERT(status == IUS_E_OK);
+
+    // Delays
+    for(i=0;i<numChannels;i++)
+    {
+        float delay = i*2.0f;
+        status |= iusReceiveChannelMapSetStartDelay(receiveChannelMap, i, delay);
+        TEST_ASSERT(status == IUS_E_OK);
+    }
+
 
     return receiveChannelMap;
 }

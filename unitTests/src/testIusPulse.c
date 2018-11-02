@@ -25,12 +25,12 @@ TEST(IusPulse, testIusPulseDelete)
 {
     float   pulseFrequency=8000000.0f;   /**< frequency that the pulse represents in Hz */
     float   pulseAmplitude=800.0f;       /**< (max) amplitude of the pulse in Volts */
-    int     pulseCount=10;               /**< number of cycles that the pulse represents */
+    int     numPulses=10;               /**< number of cycles that the pulse represents */
     int     numPulseValues=2;               /**< number of cycles that the pulse represents */
 
 
     // create and save
-    iup_t obj = (iup_t) iusParametricPulseCreate(pulseFrequency, pulseAmplitude, pulseCount);
+    iup_t obj = (iup_t) iusParametricPulseCreate(pulseFrequency, pulseAmplitude, numPulses);
     iup_t notherObj = (iup_t) iusNonParametricPulseCreate(numPulseValues);
 
     int status = iusPulseDelete(obj);
@@ -52,12 +52,12 @@ TEST(IusPulse, testIusPulseCompare)
     IUS_BOOL equal;
     float   pulseFrequency=8000000.0f;   /**< frequency that the pulse represents in Hz */
     float   pulseAmplitude=800.0f;       /**< (max) amplitude of the pulse in Volts */
-    int     pulseCount=10;               /**< number of cycles that the pulse represents */
+    int     numPulses=10;               /**< number of cycles that the pulse represents */
     int     numPulseValues=2;               /**< number of cycles that the pulse represents */
 
 
     // create and save
-    iup_t obj = (iup_t) iusParametricPulseCreate(pulseFrequency, pulseAmplitude, pulseCount);
+    iup_t obj = (iup_t) iusParametricPulseCreate(pulseFrequency, pulseAmplitude, numPulses);
     iup_t notherObj = (iup_t) iusNonParametricPulseCreate(numPulseValues);
     TEST_ASSERT(obj != IUP_INVALID);
     TEST_ASSERT(notherObj != IUP_INVALID);
@@ -82,11 +82,11 @@ TEST(IusPulse, testIusPulseGet)
 {
     float   pulseFrequency=8000000.0f;   /**< frequency that the pulse represents in Hz */
     float   pulseAmplitude=800.0f;       /**< (max) amplitude of the pulse in Volts */
-    int     pulseCount=10;               /**< number of cycles that the pulse represents */
+    int     numPulses=10;               /**< number of cycles that the pulse represents */
 
     // create and save
-    iup_t obj = (iup_t) iusParametricPulseCreate(pulseFrequency, pulseAmplitude, pulseCount);
-    iup_t notherObj = (iup_t) iusNonParametricPulseCreate(pulseCount);
+    iup_t obj = (iup_t) iusParametricPulseCreate(pulseFrequency, pulseAmplitude, numPulses);
+    iup_t notherObj = (iup_t) iusNonParametricPulseCreate(numPulses);
 
     // int param
     TEST_ASSERT_EQUAL(IUS_PARAMETRIC_PULSETYPE,iusPulseGetType( (iup_t) obj));
@@ -105,11 +105,11 @@ TEST(IusPulse, testIusSerialization)
 
   float   pulseFrequency=8000000.0f;   /**< frequency that the pulse represents in Hz */
   float   pulseAmplitude=800.0f;       /**< (max) amplitude of the pulse in Volts */
-  int     pulseCount=10;               /**< number of cycles that the pulse represents */
+  int     numPulses=10;               /**< number of cycles that the pulse represents */
   int     numPulseValues=2;            /**< number of cycles that the pulse represents */
 
   // create and save
-  iupp_t obj = iusParametricPulseCreate(pulseFrequency, pulseAmplitude, pulseCount);
+  iupp_t obj = iusParametricPulseCreate(pulseFrequency, pulseAmplitude, numPulses);
   iunpp_t notherObj = iusNonParametricPulseCreate(numPulseValues);
 
   // fill

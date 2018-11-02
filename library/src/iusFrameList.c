@@ -11,7 +11,7 @@
 // ADT
 struct IusFrameList
 {
-    int count;
+    int numFrames;
     iufr_t *   pFrames ;
     IUS_BOOL loadedFromFile;
 } ;
@@ -27,7 +27,7 @@ iufl_t iusFrameListCreate
     if(list!=NULL)
     {
         list->loadedFromFile = IUS_FALSE;
-        list->count = numFrames;
+        list->numFrames = numFrames;
         list->pFrames = (iufr_t *) calloc((size_t)numFrames, sizeof(iufr_t));
         if( list->pFrames == NULL )
         {
@@ -46,7 +46,7 @@ int iusFrameListDeleteFrames
     int index;
     int status = 0;
     if(list == NULL) return IUS_ERR_VALUE;
-    for(index = 0 ; index < list->count ; index++ )
+    for(index = 0 ; index < list->numFrames ; index++ )
     {
         status |= iusFrameDelete(list->pFrames[index]);
     }
@@ -87,8 +87,8 @@ int iusFrameListCompare
     int index;
     if( reference == actual ) return IUS_TRUE;
     if( reference == NULL || actual == NULL ) return IUS_FALSE;
-    if( reference->count != actual->count ) return IUS_FALSE;
-    for(index = 0 ; index < actual->count ; index++ )
+    if( reference->numFrames != actual->numFrames ) return IUS_FALSE;
+    for(index = 0 ; index < actual->numFrames ; index++ )
     {
         if( iusFrameCompare( reference->pFrames[index], actual->pFrames[index] )
             == IUS_FALSE )
@@ -103,7 +103,7 @@ int iusFrameListGetSize
     iufl_t list
 )
 {
-    return list->count;
+    return list->numFrames;
 }
 
 iufr_t iusFrameListGet
@@ -113,7 +113,7 @@ iufr_t iusFrameListGet
 )
 {
     if( index < 0 ) return NULL;
-    if( list == NULL || index >= list->count ) return NULL;
+    if( list == NULL || index >= list->numFrames ) return NULL;
     return list->pFrames[index];
 }
 
@@ -125,7 +125,7 @@ int iusFrameListSet
 )
 {
     if( index < 0 ) return IUS_ERR_VALUE;
-    if( list == NULL   || index >= list->count ) return IUS_ERR_VALUE;
+    if( list == NULL   || index >= list->numFrames ) return IUS_ERR_VALUE;
     list->pFrames[index] = member;
     return IUS_E_OK;
 }
@@ -171,7 +171,7 @@ IUS_BOOL iusFrameListFull
 {
     IUS_BOOL isFull = IUS_TRUE;
     int i;
-    for (i=0;i < list->count;i++)
+    for (i=0;i < list->numFrames;i++)
     {
         if(list->pFrames[i] == IUF_INVALID)
         {

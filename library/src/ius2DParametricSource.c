@@ -11,7 +11,7 @@
 struct Ius2DParametricSource
 {
     struct IusSource base;
-    int locationCount;
+    int numLocations;
     struct Ius2DPosition *pLocations;
 
     float fNumber;          /**< distance in [m] of sources to transducer for POLAR */
@@ -41,7 +41,7 @@ iu2dps_t ius2DParametricSourceCreate
     }
 
     created->base.type = IUS_2D_PARAMETRIC_SOURCE;
-    created->locationCount = numLocations;
+    created->numLocations = numLocations;
     created->angularDelta = angularDelta;
     created->startAngle = startAngle;
     created->fNumber = fNumber;
@@ -73,13 +73,13 @@ int ius2DParametricSourceCompare
 {
     if (reference == actual ) return IUS_TRUE;
     if (reference == NULL || actual == NULL ) return IUS_FALSE;
-    if (reference->locationCount != actual->locationCount) return IUS_FALSE;
+    if (reference->numLocations != actual->numLocations) return IUS_FALSE;
     if (iusBaseSourceCompare((ius_t)reference, (ius_t)actual) == IUS_FALSE ) return IUS_FALSE;
     if (IUS_EQUAL_FLOAT(reference->fNumber, actual->fNumber) == IUS_FALSE ) return IUS_FALSE;
     if (IUS_EQUAL_FLOAT(reference->startAngle, actual->startAngle) == IUS_FALSE ) return IUS_FALSE;
     if (IUS_EQUAL_FLOAT(reference->angularDelta, actual->angularDelta) == IUS_FALSE ) return IUS_FALSE;
     int i;
-    for( i = 0; i < reference->locationCount; i++ )
+    for( i = 0; i < reference->numLocations; i++ )
     {
         if( ius2DPositionCompare(&reference->pLocations[i],&actual->pLocations[i]) == IUS_FALSE )
         {
@@ -124,7 +124,7 @@ iu2dp_t ius2DParametricSourceGetPosition
 )
 {
     if ( ius2DParametricSource == NULL  ) return IU2DP_INVALID;
-    if ( index >= ius2DParametricSource->locationCount || index < 0) return IU2DP_INVALID;
+    if ( index >= ius2DParametricSource->numLocations || index < 0) return IU2DP_INVALID;
     return &ius2DParametricSource->pLocations[index];
 }
 
@@ -138,7 +138,7 @@ int ius2DParametricSourceSetPosition
 {
     if (ius2DParametricSource == NULL) return IUS_ERR_VALUE;
     if (pos == NULL) return IUS_ERR_VALUE;
-    if (index >= ius2DParametricSource->locationCount) return IUS_ERR_VALUE;
+    if (index >= ius2DParametricSource->numLocations) return IUS_ERR_VALUE;
 
     ius2DParametricSource->pLocations[index] = *pos;
     return IUS_E_OK;
@@ -190,7 +190,7 @@ static int ius2DParametricSourceSaveLocations
     iu2dp_t sourceElement;
 
 	hid_t locationList_id = H5Gcreate(handle, IUS_INPUTFILE_PATH_SOURCE_LOCATIONLIST, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-    int i,size = pSource->locationCount;
+    int i,size = pSource->numLocations;
     int status = iusHdf5WriteInt(locationList_id, IUS_INPUTFILE_PATH_SOURCE_LISTSIZE, &(size), 1);
 
 //  iterate over source list elements and save'em
@@ -218,7 +218,7 @@ static int ius2DParametricSourceLoadLocations
     char path[IUS_MAX_HDF5_PATH];
     iu2dp_t pos;
 	hid_t locationList_id = H5Gopen(handle, IUS_INPUTFILE_PATH_SOURCE_LOCATIONLIST, H5P_DEFAULT);
-    for (p = 0; p < source->locationCount; p++) // locationCount could be loaded from the handle, but is already know and set before... is this smart? 
+    for (p = 0; p < source->numLocations; p++) // numLocations could be loaded from the handle, but is already know and set before... is this smart?
     {
         sprintf(path, IUS_INPUTFILE_PATH_SOURCE_LOCATION, p);
 		hid_t location_id = H5Gopen(locationList_id, path, H5P_DEFAULT);
@@ -269,19 +269,19 @@ iu2dps_t ius2DParametricSourceLoad
     float fNumber;          /**< distance in [m] of sources to transducer for POLAR */
     float angularDelta;     /**< angle in [rad] between sources */
     float startAngle;       /**< angle in [rad] between sources */
-    int locationCount;
+    int numLocations;
     iu2dps_t  source;
 
     status |= iusHdf5ReadFloat(handle, IUS_INPUTFILE_PATH_SOURCE_FNUMBER, &(fNumber));
     status |= iusHdf5ReadFloat(handle, IUS_INPUTFILE_PATH_SOURCE_ANGULARDELTA, &(angularDelta));
     status |= iusHdf5ReadFloat(handle, IUS_INPUTFILE_PATH_SOURCE_STARTANGLE, &(startAngle));
 	hid_t locationList_id = H5Gopen(handle, IUS_INPUTFILE_PATH_SOURCE_LOCATIONLIST, H5P_DEFAULT);
-    status |= iusHdf5ReadInt(locationList_id, IUS_INPUTFILE_PATH_SOURCE_LISTSIZE, &(locationCount));
+    status |= iusHdf5ReadInt(locationList_id, IUS_INPUTFILE_PATH_SOURCE_LISTSIZE, &(numLocations));
 	H5Gclose(locationList_id);
     if (status < 0)
         return NULL;
 
-    source = ius2DParametricSourceCreate(locationCount,fNumber,angularDelta,startAngle);
+    source = ius2DParametricSourceCreate(numLocations,fNumber,angularDelta,startAngle);
     status = ius2DParametricSourceLoadLocations(source, handle);
     if (status <-0)
         return NULL;

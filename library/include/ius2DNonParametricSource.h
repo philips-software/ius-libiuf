@@ -1,4 +1,12 @@
-// Created by nlv09165 on 31/07/2018.
+/** ==============================================================================
+ *    COPYRIGHT 2018 PHILIPS RESEARCH
+ *  ==============================================================================
+ *
+ * \file ius2DNonParametricSource.h
+ * \brief File containing ius2DNonParametricSource related declarations.
+ *
+ *  ==============================================================================
+ */
 #ifndef IUSLIBRARY_IUSHL2DNONPARAMETRICSOURCE_H
 #define IUSLIBRARY_IUSHL2DNONPARAMETRICSOURCE_H
 

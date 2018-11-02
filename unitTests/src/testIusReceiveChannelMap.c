@@ -6,7 +6,7 @@
 #include <unity_fixture.h>
 
 #include <ius.h>
-
+#include <library/include/iusReceiveChannelMapPrivate.h>
 
 TEST_GROUP(IusReceiveChannelMap);
 
@@ -74,13 +74,63 @@ TEST(IusReceiveChannelMap, testIusReceiveChannelMapCompare)
 	iusReceiveChannelMapDelete(notherObj);
 }
 
-TEST(IusReceiveChannelMap, testIusReceiveChannelMapGet)
+TEST(IusReceiveChannelMap, testIusReceiveChannelMapSetGet)
 {
+    int i;
+    int status;
 	const int numChannels=5;
 
 	iurcm_t obj = iusReceiveChannelMapCreate(numChannels);
 	TEST_ASSERT_EQUAL(numChannels, iusReceiveChannelMapGetNumChannels(obj));
+	TEST_ASSERT_EQUAL(numChannels,iusReceiveChannelMapGetNumDelays(obj));
+
+	// Delays
+	for(i=0;i<numChannels;i++)
+	{
+		float delay = i*2.0f;
+		status = iusReceiveChannelMapSetStartDelay(obj, i, delay);
+		TEST_ASSERT(status == IUS_E_OK);
+		TEST_ASSERT_EQUAL_FLOAT(delay, iusReceiveChannelMapGetStartDelay(obj, i));
+	}
+
 	iusReceiveChannelMapDelete(obj);
+}
+
+TEST(IusReceiveChannelMap, testIusSerialization)
+{
+    char *filename = "testIusReceiveChannelMap.hdf5";
+    int numChannels=10;
+    int i;
+    int status;
+
+    // Create
+    iurcm_t obj = iusReceiveChannelMapCreate(numChannels);
+
+    // Delays
+    for(i=0;i<numChannels;i++)
+    {
+        float delay = i*3.14f;
+        status = iusReceiveChannelMapSetStartDelay(obj, i, delay);
+        TEST_ASSERT(status == IUS_E_OK);
+        TEST_ASSERT_EQUAL_FLOAT(delay, iusReceiveChannelMapGetStartDelay(obj, i));
+    }
+
+    // save
+    hid_t handle = H5Fcreate( filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT );
+    TEST_ASSERT(handle > 0);
+    status = iusReceiveChannelMapSave(obj, handle);
+    H5Fclose(handle);
+    TEST_ASSERT_EQUAL(IUS_E_OK,status);
+
+    // read back
+    handle = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT );
+    iurcm_t savedObj = iusReceiveChannelMapLoad(handle);
+    TEST_ASSERT(savedObj != NULL);
+    H5Fclose(handle);
+
+    TEST_ASSERT_EQUAL(IUS_TRUE, iusReceiveChannelMapCompare(obj, savedObj));
+    iusReceiveChannelMapDelete(obj);
+    iusReceiveChannelMapDelete(savedObj);
 }
 
 TEST_GROUP_RUNNER(IusReceiveChannelMap)
@@ -88,5 +138,5 @@ TEST_GROUP_RUNNER(IusReceiveChannelMap)
 	RUN_TEST_CASE(IusReceiveChannelMap, testIusReceiveChannelMapCreate);
 	RUN_TEST_CASE(IusReceiveChannelMap, testIusReceiveChannelMapDelete);
 	RUN_TEST_CASE(IusReceiveChannelMap, testIusReceiveChannelMapCompare);
-	RUN_TEST_CASE(IusReceiveChannelMap, testIusReceiveChannelMapGet);
+	RUN_TEST_CASE(IusReceiveChannelMap, testIusReceiveChannelMapSetGet);
 }

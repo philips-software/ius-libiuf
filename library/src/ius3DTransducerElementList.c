@@ -9,7 +9,7 @@
 
 struct Ius3DTransducerElementList
 {
-    int count;
+    int numElements;
     iu3dte_t *   p3DTransducerElements ;
     IUS_BOOL loadedFromFile;
 } ;
@@ -25,7 +25,7 @@ iu3dtel_t ius3DTransducerElementListCreate
     if(list!=NULL)
     {
         list->loadedFromFile = IUS_FALSE;
-        list->count = num3DTransducerElements;
+        list->numElements = num3DTransducerElements;
         list->p3DTransducerElements = (iu3dte_t *) calloc((size_t)num3DTransducerElements, sizeof(iu3dte_t));
         if( list->p3DTransducerElements == NULL )
         {
@@ -34,7 +34,7 @@ iu3dtel_t ius3DTransducerElementListCreate
         }
         else
         {
-            for (i=0;i < list->count ;i++)
+            for (i=0;i < list->numElements ;i++)
             {
                 ius3DTransducerElementListSet(list,IU3DTE_INVALID,i);
             }
@@ -63,7 +63,7 @@ int ius3DTransducerElementListDelete
     if(list == NULL) return IUS_ERR_VALUE;
     if(list->loadedFromFile == IUS_TRUE)
     {
-        for (int i = 0 ; i < list->count ; i++ )
+        for (int i = 0 ; i < list->numElements ; i++ )
         {
             ius3DTransducerElementDeepDelete(list->p3DTransducerElements[i]);
         }
@@ -84,8 +84,8 @@ int ius3DTransducerElementListCompare
     int index;
     if( reference == actual ) return IUS_TRUE;
     if( reference == NULL || actual == NULL ) return IUS_FALSE;
-    if( reference->count != actual->count ) return IUS_FALSE;
-    for(index = 0 ; index < actual->count ; index++ )
+    if( reference->numElements != actual->numElements ) return IUS_FALSE;
+    for(index = 0 ; index < actual->numElements ; index++ )
     {
         if( ius3DTransducerElementCompare( reference->p3DTransducerElements[index], actual->p3DTransducerElements[index] )
             == IUS_FALSE )
@@ -101,7 +101,7 @@ int ius3DTransducerElementListGetSize
 )
 {
     if( list == NULL ) return -1;
-    return list->count;
+    return list->numElements;
 }
 
 iu3dte_t ius3DTransducerElementListGet
@@ -111,7 +111,7 @@ iu3dte_t ius3DTransducerElementListGet
 )
 {
     if( index < 0 ) return NULL;
-    if( list == NULL || index >= list->count ) return NULL;
+    if( list == NULL || index >= list->numElements ) return NULL;
     return list->p3DTransducerElements[index];
 }
 
@@ -124,7 +124,7 @@ int ius3DTransducerElementListSet
 {
     if( list == NULL || member == NULL ) return IUS_ERR_VALUE;
     if( index < 0 ) return IUS_ERR_VALUE;
-    if( index >= list->count ) return IUS_ERR_VALUE;
+    if( index >= list->numElements ) return IUS_ERR_VALUE;
     list->p3DTransducerElements[index] = member;
     return IUS_E_OK;
 }
@@ -136,7 +136,7 @@ IUS_BOOL ius3DTransducerElementListFull
 {
     IUS_BOOL isFull = IUS_TRUE;
     int i;
-    for (i=0;i < list->count;i++)
+    for (i=0;i < list->numElements;i++)
     {
         if(list->p3DTransducerElements[i] == IU3DTE_INVALID)
         {
@@ -211,10 +211,10 @@ int ius3DTransducerElementListSave
     hid_t group_id = H5Gcreate(handle, IUS_INPUTFILE_PATH_TRANSDUCER_ELEMENTLIST, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
     iu3dte_t sourceElement;
 
-    status |= iusHdf5WriteInt(group_id, IUS_INPUTFILE_PATH_TRANSDUCER_ELEMENTLIST_SIZE, &(list->count), 1);
+    status |= iusHdf5WriteInt(group_id, IUS_INPUTFILE_PATH_TRANSDUCER_ELEMENTLIST_SIZE, &(list->numElements), 1);
 
     // iterate over source list elements and save'em
-    for (i=0;i < list->count ;i++)
+    for (i=0;i < list->numElements ;i++)
     {
         sourceElement = ius3DTransducerElementListGet(list,i);
         if(sourceElement == IU3DTE_INVALID) continue;

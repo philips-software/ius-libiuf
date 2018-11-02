@@ -9,7 +9,7 @@
 // ADT
 struct Ius2DTransducerElementList
 {
-    int count;
+    int numElements;
     iu2dte_t *   p2DTransducerElements ;
     IUS_BOOL loadedFromFile;
 } ;
@@ -25,7 +25,7 @@ iu2dtel_t ius2DTransducerElementListCreate
     if(list!=NULL)
     {
         list->loadedFromFile = IUS_FALSE;
-        list->count = num2DTransducerElements;
+        list->numElements = num2DTransducerElements;
         list->p2DTransducerElements = (iu2dte_t *) calloc((size_t)num2DTransducerElements, sizeof(iu2dte_t));
         if( list->p2DTransducerElements == NULL )
         {
@@ -34,7 +34,7 @@ iu2dtel_t ius2DTransducerElementListCreate
         }
         else
         {
-            for(i = 0 ; i < list->count ; i++ )
+            for(i = 0 ; i < list->numElements ; i++ )
             {
                 ius2DTransducerElementListSet(list,IU2DTE_INVALID,i);
             }
@@ -62,7 +62,7 @@ int ius2DTransducerElementListDelete
     if(list == NULL) return IUS_ERR_VALUE;
     if(list->loadedFromFile == IUS_TRUE)
     {
-        for (int i = 0 ; i < list->count ; i++ )
+        for (int i = 0 ; i < list->numElements ; i++ )
         {
             ius2DTransducerElementDelete(list->p2DTransducerElements[i]);
         }
@@ -82,8 +82,8 @@ int ius2DTransducerElementListCompare
     int index;
     if( reference == actual ) return IUS_TRUE;
     if( reference == NULL || actual == NULL ) return IUS_FALSE;
-    if( reference->count != actual->count ) return IUS_FALSE;
-    for(index = 0 ; index < actual->count ; index++ )
+    if( reference->numElements != actual->numElements ) return IUS_FALSE;
+    for(index = 0 ; index < actual->numElements ; index++ )
     {
         if( ius2DTransducerElementCompare( reference->p2DTransducerElements[index], actual->p2DTransducerElements[index] )
             == IUS_FALSE )
@@ -99,7 +99,7 @@ int ius2DTransducerElementListGetSize
 )
 {
     if( list == NULL ) return -1;
-    return list->count;
+    return list->numElements;
 }
 
 iu2dte_t ius2DTransducerElementListGet
@@ -109,7 +109,7 @@ iu2dte_t ius2DTransducerElementListGet
 )
 {
     if( list == NULL ) return NULL;
-    if( index >= list->count ) return NULL;
+    if( index >= list->numElements ) return NULL;
     if( index < 0 ) return NULL;
     return list->p2DTransducerElements[index];
 }
@@ -122,7 +122,7 @@ int ius2DTransducerElementListSet
 )
 {
     if( list == NULL || member == NULL ) return IUS_ERR_VALUE;
-    if( index >= list->count ) return IUS_ERR_VALUE;
+    if( index >= list->numElements ) return IUS_ERR_VALUE;
     if( index < 0 ) return IUS_ERR_VALUE;
     list->p2DTransducerElements[index] = member;
     return IUS_E_OK;
@@ -135,7 +135,7 @@ IUS_BOOL ius2DTransducerElementListFull
 {
     IUS_BOOL isFull = IUS_TRUE;
     int i;
-    for (i=0;i < list->count;i++)
+    for (i=0;i < list->numElements;i++)
     {
         if(list->p2DTransducerElements[i] == IU2DTE_INVALID)
         {
@@ -213,10 +213,10 @@ int ius2DTransducerElementListSave
     iu2dte_t sourceElement;
 	hid_t elements_id = H5Gcreate(handle, IUS_INPUTFILE_PATH_TRANSDUCER_ELEMENTLIST, 
 							H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-    status |= iusHdf5WriteInt(elements_id, IUS_INPUTFILE_PATH_TRANSDUCER_ELEMENTLIST_SIZE, &(list->count), 1);
+    status |= iusHdf5WriteInt(elements_id, IUS_INPUTFILE_PATH_TRANSDUCER_ELEMENTLIST_SIZE, &(list->numElements), 1);
 
     // iterate over source list elements and save'em
-    for (i=0; i<list->count; i++)
+    for (i=0; i<list->numElements; i++)
     {
         sourceElement = ius2DTransducerElementListGet(list,i);
         if(sourceElement == IU2DTE_INVALID) continue;

@@ -12,7 +12,7 @@
 struct Ius3DNonParametricSource
 {
     struct IusSource base;
-    int locationCount;
+    int numLocations;
     struct Ius3DPosition *pLocations;
     IUS_BOOL loadedFromFile;
 } ;
@@ -36,7 +36,7 @@ iu3dnps_t ius3DNonParametricSourceCreate
 
     created->loadedFromFile = IUS_FALSE;
     created->base.type = IUS_3D_NON_PARAMETRIC_SOURCE;
-    created->locationCount = numLocations;
+    created->numLocations = numLocations;
     return created;
 }
 
@@ -65,10 +65,10 @@ int ius3DNonParametricSourceCompare
 {
     if (reference == actual ) return IUS_TRUE;
     if (reference == NULL || actual == NULL ) return IUS_FALSE;
-    if (reference->locationCount != actual->locationCount) return IUS_FALSE;
+    if (reference->numLocations != actual->numLocations) return IUS_FALSE;
     if (iusBaseSourceCompare((ius_t)reference, (ius_t)actual) == IUS_FALSE ) return IUS_FALSE;
     int i;
-    for( i = 0; i < reference->locationCount; i++ )
+    for( i = 0; i < reference->numLocations; i++ )
     {
         if( ius3DPositionCompare(&reference->pLocations[i],&actual->pLocations[i]) == IUS_FALSE )
         {
@@ -86,7 +86,7 @@ iu3dp_t ius3DNonParametricSourceGetPosition
 )
 {
     if ( ius3DNonParametricSource == NULL  ) return IU3DP_INVALID;
-    if ( index >= ius3DNonParametricSource->locationCount || index < 0) return IU3DP_INVALID;
+    if ( index >= ius3DNonParametricSource->numLocations || index < 0) return IU3DP_INVALID;
     return &ius3DNonParametricSource->pLocations[index];
 }
 
@@ -100,7 +100,7 @@ int ius3DNonParametricSourceSetPosition
 {
     if (ius3DNonParametricSource == NULL) return IUS_ERR_VALUE;
     if (pos == NULL) return IUS_ERR_VALUE;
-    if (index >= ius3DNonParametricSource->locationCount) return IUS_ERR_VALUE;
+    if (index >= ius3DNonParametricSource->numLocations) return IUS_ERR_VALUE;
 
     ius3DNonParametricSource->pLocations[index] = *pos;
     return IUS_E_OK;
@@ -117,7 +117,7 @@ static int ius3DNonParametricSourceSaveLocations
     char path[IUS_MAX_HDF5_PATH];
     iu3dp_t sourceElement;
 	hid_t locationList_id = H5Gcreate(handle, IUS_INPUTFILE_PATH_SOURCE_LOCATIONLIST, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-    int i, size = pSource->locationCount;
+    int i, size = pSource->numLocations;
     int status = iusHdf5WriteInt(locationList_id, IUS_INPUTFILE_PATH_SOURCE_LISTSIZE, &(size), 1);
 
     // iterate over source list elements and save'em
@@ -146,8 +146,8 @@ static int ius3DNonParametricSourceLoadLocations
     char path[IUS_MAX_HDF5_PATH];
     iu3dp_t pos;
 	hid_t locationList_id = H5Gopen(handle, IUS_INPUTFILE_PATH_SOURCE_LOCATIONLIST, H5P_DEFAULT);
-	status = iusHdf5ReadInt(locationList_id, IUS_INPUTFILE_PATH_SOURCE_LISTSIZE, &(source->locationCount));
-    for (p = 0; p < source->locationCount; p++)
+	status = iusHdf5ReadInt(locationList_id, IUS_INPUTFILE_PATH_SOURCE_LISTSIZE, &(source->numLocations));
+    for (p = 0; p < source->numLocations; p++)
     {
         sprintf(path, IUS_INPUTFILE_PATH_SOURCE_LOCATION, p);
 		hid_t location_id = H5Gopen(locationList_id, path, H5P_DEFAULT);
@@ -185,15 +185,15 @@ iu3dnps_t ius3DNonParametricSourceLoad
     hid_t handle
 )
 {
-    int locationCount;
+    int numLocations;
     iu3dnps_t  source;
 	hid_t locationList_id = H5Gopen(handle, IUS_INPUTFILE_PATH_SOURCE_LOCATIONLIST, H5P_DEFAULT);
-    int status = iusHdf5ReadInt(locationList_id, IUS_INPUTFILE_PATH_SOURCE_LISTSIZE, &(locationCount));
+    int status = iusHdf5ReadInt(locationList_id, IUS_INPUTFILE_PATH_SOURCE_LISTSIZE, &(numLocations));
 	H5Gclose(locationList_id);
     if (status < 0)
         return NULL;
 
-    source = ius3DNonParametricSourceCreate(locationCount);
+    source = ius3DNonParametricSourceCreate(numLocations);
     status = ius3DNonParametricSourceLoadLocations(source, handle);
     source->loadedFromFile = IUS_TRUE;
     if (status <-0)

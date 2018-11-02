@@ -1,6 +1,14 @@
-//
-// Created by Ruijzendaal on 08/03/2018.
-//
+/** ==============================================================================
+ *    COPYRIGHT 2018 PHILIPS RESEARCH
+ *  ==============================================================================
+ *
+ * \file ius.h
+ * \brief Top level header file, include this file to access
+ * all public ius function declarations.
+ *
+ *  ==============================================================================
+ */
+
 
 /**  \mainpage  IUS file IO library V3
 *

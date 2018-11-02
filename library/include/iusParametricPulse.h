@@ -50,7 +50,7 @@ float iusParametricPulseGetPulseAmplitude
     iupp_t pulse                        ///< Returns the amplitude in Hz of this pararmetric pulse
 );
 
-int iusParametricPulseGetCount
+int iusParametricPulseGetNumPulses
 (
     iupp_t transmitPulse                ///< Returns the number of periods that this pararmetric pulse has
 );

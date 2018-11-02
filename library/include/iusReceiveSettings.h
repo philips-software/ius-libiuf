@@ -40,20 +40,10 @@ int iusReceiveSettingsGetNumSamplesPerLine
     iurs_t iusReceiveSettings
 );
 
-int iusReceiveSettingsGetNumDelays
-(
-    iurs_t iusReceiveSettings
-);
 
 int iusReceiveSettingsGetNumTGCentries
 (
     iurs_t iusReceiveSettings
-);
-
-float iusReceiveSettingsGetStartDelay
-(
-    iurs_t iusReceiveSettings,
-    int index
 );
 
 iutgc_t iusReceiveSettingsGetTGC
@@ -61,12 +51,5 @@ iutgc_t iusReceiveSettingsGetTGC
     iurs_t iusReceiveSettings
 );
 
-// Setters
-int iusReceiveSettingsSetStartDelay
-(
-    iurs_t iusReceiveSettings,
-    int index,
-    float delay
-);
 
 #endif //IUSLIBRARY_IUSHLRECEIVESETTINGS_H
