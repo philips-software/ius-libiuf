@@ -36,12 +36,11 @@ TEST(IusReceiveSettingsDict, testIusSetGetDict)
 {
     char *pObjLabel = "bmode";
     float sampleFrequency=4000;
-    int numDelays=10;
     int numSamplesPerLine=10;
     int numTGCentries = 1;
     int status;
 
-    iurs_t obj = iusReceiveSettingsCreate(sampleFrequency, numDelays, numSamplesPerLine, numTGCentries);
+    iurs_t obj = iusReceiveSettingsCreate(sampleFrequency, numSamplesPerLine, numTGCentries);
 
 
     // Create
@@ -68,14 +67,13 @@ TEST(IusReceiveSettingsDict, testIusCompareDict)
     char *pNotherObjLabel = "Another Label for IusReceiveSettingsDict, created in testIusCompareSourceDict";
     char *pDifferentLabel = "Different Label for IusReceiveSettingsDict, created in testIusCompareSourceDict";
     float sampleFrequency=4000;
-    int numDelays=10;
     int numSamplesPerLine=10;
     int numTGCentries = 1;
     int status;
 
-    iurs_t obj = iusReceiveSettingsCreate(sampleFrequency, numDelays, numSamplesPerLine, numTGCentries);
-    iurs_t notherObj = iusReceiveSettingsCreate(sampleFrequency, numDelays, numSamplesPerLine, numTGCentries);
-    iurs_t differentObj = iusReceiveSettingsCreate(sampleFrequency, numDelays, numSamplesPerLine, numTGCentries+1);
+    iurs_t obj = iusReceiveSettingsCreate(sampleFrequency, numSamplesPerLine, numTGCentries);
+    iurs_t notherObj = iusReceiveSettingsCreate(sampleFrequency, numSamplesPerLine, numTGCentries);
+    iurs_t differentObj = iusReceiveSettingsCreate(sampleFrequency, numSamplesPerLine, numTGCentries + 1);
 
     // Create
     iursd_t  dict = iusReceiveSettingsDictCreate();

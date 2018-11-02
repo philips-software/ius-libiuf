@@ -12,7 +12,6 @@ typedef IusReceiveSettings *iurs_t;
 iurs_t iusReceiveSettingsCreate
 (
     float sampleFrequency,
-    int numDelays,
     int numSamplesPerLine,
     int numTGCentries
 );

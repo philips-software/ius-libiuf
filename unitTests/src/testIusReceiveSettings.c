@@ -24,34 +24,30 @@ TEST_TEAR_DOWN(IusReceiveSettings)
 TEST(IusReceiveSettings, testIusReceiveSettingsCreate)
 {
     float sampleFrequency=4000;
-    int numDelays=10;
     int numSamplesPerLine=10;
     int numTGCentries = 1;
-    iurs_t obj = iusReceiveSettingsCreate(sampleFrequency, numDelays, numSamplesPerLine, numTGCentries);
-    iurs_t notherObj = iusReceiveSettingsCreate(sampleFrequency, numDelays, numSamplesPerLine+10, numTGCentries);
+    iurs_t obj = iusReceiveSettingsCreate(sampleFrequency, numSamplesPerLine, numTGCentries);
+    iurs_t notherObj = iusReceiveSettingsCreate(sampleFrequency, numSamplesPerLine + 10, numTGCentries);
     TEST_ASSERT(obj != IURS_INVALID);
     TEST_ASSERT(notherObj != IURS_INVALID);
     iusReceiveSettingsDelete(obj);
     iusReceiveSettingsDelete(notherObj);
 
     // invalid params
-    obj = iusReceiveSettingsCreate((float)-1.0, numDelays, numSamplesPerLine, numTGCentries);
+    obj = iusReceiveSettingsCreate((float) -1.0, numSamplesPerLine, numTGCentries);
     TEST_ASSERT(obj == IURS_INVALID);
-    obj = iusReceiveSettingsCreate(sampleFrequency, 0, numSamplesPerLine, numTGCentries);
+    obj = iusReceiveSettingsCreate(sampleFrequency, -1, numTGCentries);
     TEST_ASSERT(obj == IURS_INVALID);
-    obj = iusReceiveSettingsCreate(sampleFrequency, numDelays, -1, numTGCentries);
-    TEST_ASSERT(obj == IURS_INVALID);
-    obj = iusReceiveSettingsCreate(sampleFrequency, numDelays, numSamplesPerLine, -1);
+    obj = iusReceiveSettingsCreate(sampleFrequency, numSamplesPerLine, -1);
     TEST_ASSERT(obj == IURS_INVALID);
 }
 
 TEST(IusReceiveSettings, testIusReceiveSettingsDelete)
 {
     float sampleFrequency=4000;
-    int numDelays=10;
     int numSamplesPerLine=10;
     int numTGCentries = 1;
-    iurs_t obj = iusReceiveSettingsCreate(sampleFrequency, numDelays, numSamplesPerLine, numTGCentries);
+    iurs_t obj = iusReceiveSettingsCreate(sampleFrequency, numSamplesPerLine, numTGCentries);
     TEST_ASSERT(obj != IURS_INVALID);
     int status = iusReceiveSettingsDelete(obj);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
@@ -67,14 +63,13 @@ TEST(IusReceiveSettings, testIusReceiveSettingsCompare)
 {
     IUS_BOOL equal;
     float sampleFrequency=4000;
-    int numDelays=10;
     int numSamplesPerLine=10;
     int numTGCentries = 1;
     int status;
 
-    iurs_t obj = iusReceiveSettingsCreate(sampleFrequency, numDelays, numSamplesPerLine, numTGCentries);
-    iurs_t notherObj = iusReceiveSettingsCreate(sampleFrequency, numDelays, numSamplesPerLine, numTGCentries);
-    iurs_t differentObj = iusReceiveSettingsCreate(sampleFrequency, numDelays, numSamplesPerLine, numTGCentries+1);
+    iurs_t obj = iusReceiveSettingsCreate(sampleFrequency, numSamplesPerLine, numTGCentries);
+    iurs_t notherObj = iusReceiveSettingsCreate(sampleFrequency, numSamplesPerLine, numTGCentries);
+    iurs_t differentObj = iusReceiveSettingsCreate(sampleFrequency, numSamplesPerLine, numTGCentries + 1);
     TEST_ASSERT(obj != IURS_INVALID);
     TEST_ASSERT(notherObj != IURS_INVALID);
     equal = iusReceiveSettingsCompare(obj,obj);
@@ -118,12 +113,11 @@ TEST(IusReceiveSettings, testIusReceiveSettingsCompare)
 TEST(IusReceiveSettings, testIusReceiveSettingsSetGet)
 {
     float sampleFrequency=4000;
-    int numDelays=10;
     int numSamplesPerLine=10;
     int numTGCentries = 1;
 
     // Constructor injected parameters
-    iurs_t obj = iusReceiveSettingsCreate(sampleFrequency, numDelays, numSamplesPerLine, numTGCentries);
+    iurs_t obj = iusReceiveSettingsCreate(sampleFrequency, numSamplesPerLine, numTGCentries);
     TEST_ASSERT_EQUAL_FLOAT(sampleFrequency,iusReceiveSettingsGetSampleFrequency(obj));
     TEST_ASSERT_EQUAL(numSamplesPerLine,iusReceiveSettingsGetNumSamplesPerLine(obj));
     TEST_ASSERT_EQUAL(numTGCentries,iusReceiveSettingsGetNumTGCentries(obj));
@@ -139,14 +133,13 @@ TEST(IusReceiveSettings, testIusSerialization)
 {
     char *filename = "testIusReceiveSettings.hdf5";
     float sampleFrequency=4000;
-    int numDelays=10;
     int numSamplesPerLine=10;
     int numTGCentries = 2;
     int i;
     int status;
 
     // Create
-    iurs_t obj = iusReceiveSettingsCreate(sampleFrequency, numDelays, numSamplesPerLine, numTGCentries);
+    iurs_t obj = iusReceiveSettingsCreate(sampleFrequency, numSamplesPerLine, numTGCentries);
 
     iutgc_t tgc = iusReceiveSettingsGetTGC(obj);
     for (i=0;i<numTGCentries;i++)
