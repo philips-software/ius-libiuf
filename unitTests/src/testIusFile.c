@@ -25,10 +25,13 @@ TEST(IusFile, testIusInputFileHistoryScenario)
 // As a developer I want to be able get the data history of an ius file.
 // The data history  is organised as a DataHistory Tree.
     int numParents = 0;
+    int numFrames = 10;
+    int numSamplesPerLine = 10;
+    int numChannels = 8;
     char *pFilename = "testIusInputFileHistoryScenario.hdf5";
 
     // Create Input file.
-    iuif_t iusInputFile = dgGenerateInputFile(pFilename, "S5-1", "bmode", 10);
+    iuif_t iusInputFile = dgGenerateInputFile(pFilename, "S5-1", "bmode", numFrames, numSamplesPerLine, numChannels);
     iusInputFileNodeSave(iusInputFile);
     iusInputFileClose(iusInputFile);
 
@@ -56,13 +59,16 @@ TEST(IusFile, testIusCWCFileHistoryScenario)
 // As a developer I want to be able get the data history of an ius file.
 // The data history  is organised as a DataHistory Tree.
     int numParents = 0;
+    int numFrames = 10;
+    int numSamplesPerLine = 10;
+    int numChannels = 8;
     char *pNodeType = IUS_INPUT_TYPE;
     char *pFilename = "testIusCWCFileHistoryScenario.hdf5";
     char *pFilename2 = "testIusCWCFileHistoryScenario2.hdf5";
 
     // --- Generate and Save Input file type
     // Create Input file.
-    iuif_t iusInputFile = dgGenerateInputFile(pFilename2, "S5-1-1", "bmode", 10);
+    iuif_t iusInputFile = dgGenerateInputFile(pFilename2, "S5-1-1", "bmode", numFrames, numSamplesPerLine, numChannels);
     iusInputFileNodeSave(iusInputFile);
     iusInputFileClose(iusInputFile);
 
@@ -80,7 +86,7 @@ TEST(IusFile, testIusCWCFileHistoryScenario)
     // root node type should be equal to file type
     TEST_ASSERT_EQUAL_STRING(iusFileGetType(iusFile),iusHistoryNodeGetType(rootNode));
 
-    iuif_t iusInputFile2 = dgGenerateInputFile(pFilename, "S5-1-0", "bmode", 10);
+    iuif_t iusInputFile2 = dgGenerateInputFile(pFilename, "S5-1-0", "bmode", numFrames, numSamplesPerLine, numChannels);
     iuhn_t cwcParents = iusHistoryNodeCreate(pNodeType);
     iuhnl_t parents = iusHistoryNodeListCreate(1);
     iusHistoryNodeListSet(parents,rootNode,0);

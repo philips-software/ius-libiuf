@@ -37,7 +37,6 @@ iurs_t ncFillReceiveSettings
 )
 {
     float sampleFrequency=4000;
-    int numDelays=10;
     int numSamplesPerLine=10;
     int numTGCentries = 1;
 
@@ -144,7 +143,7 @@ iupald_t ncFillPatternListDict
 {
     // fill list
     iupald_t patternListDict = iusPatternListDictCreate();
-    iupal_t patternList = iusPatternListCreate(1);
+    iupal_t patternList = iusPatternListCreate(1,NULL,NULL);
 
     iupa_t pattern = ncFillPattern( 0.01f, pPulseLabel,
                                     pSourceLabel,

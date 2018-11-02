@@ -121,7 +121,7 @@ TEST(IusReceiveSettingsDict, testIusSerialization)
     //char *ReceiveChannelMapDictPath = "/ReceiveSettingsDict";
 
     // Create and fill
-    iursd_t  dict = dgGenerateReceiveSettingsDict("bmode");
+    iursd_t  dict = dgGenerateReceiveSettingsDict("bmode", 0);
 
     // Save
     hid_t handle = H5Fcreate(filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);

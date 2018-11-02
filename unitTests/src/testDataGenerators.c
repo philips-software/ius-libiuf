@@ -33,11 +33,10 @@ void dgFillData
 
 iurs_t dgGenerateReceiveSettings
 (
-    void
+    int numSamplesPerLine
 )
 {
     float sampleFrequency=4000;
-    int numSamplesPerLine=10;
     int numTGCentries = 1;
     iurs_t obj = iusReceiveSettingsCreate(sampleFrequency, numSamplesPerLine, numTGCentries);
 
@@ -46,7 +45,8 @@ iurs_t dgGenerateReceiveSettings
 
 iursd_t dgGenerateReceiveSettingsDict
 (
-    char *label
+    char *label,
+    int numSamplesPerLine
 )
 {
     int status=0;
@@ -55,7 +55,7 @@ iursd_t dgGenerateReceiveSettingsDict
     iursd_t  dict = iusReceiveSettingsDictCreate();
 
     // Fill
-    iurs_t obj = dgGenerateReceiveSettings();
+    iurs_t obj = dgGenerateReceiveSettings(numSamplesPerLine);
     status |= iusReceiveSettingsDictSet(dict,label,obj);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
     return dict;
@@ -122,7 +122,9 @@ iuif_t dgGenerateInputFile
     char *ptestFileName,
     char *transducerName,
     char *label,
-    int numFrames
+    int numFrames,
+    int numSamplesPerLine,
+    int numChannels
 )
 {
     // create
@@ -134,10 +136,6 @@ iuif_t dgGenerateInputFile
     int status = iusInputFileSetFrameList(inputFile,frameList);
     TEST_ASSERT(status == IUS_E_OK);
 
-    iupald_t patternListDict = dgGeneratePatternListDict(label);
-    status = iusInputFileSetPatternListDict(inputFile,patternListDict);
-    TEST_ASSERT(status == IUS_E_OK);
-
     iupd_t pulseDict = dgGeneratePulseDict();
     status = iusInputFileSetPulseDict(inputFile, pulseDict);
     TEST_ASSERT(status == IUS_E_OK);
@@ -146,7 +144,7 @@ iuif_t dgGenerateInputFile
     status = iusInputFileSetSourceDict(inputFile, sourceDict);
     TEST_ASSERT(status == IUS_E_OK);
 
-    iurcmd_t receiveChannelMapDict = dgGenerateReceiveChannelMapDict(label);
+    iurcmd_t receiveChannelMapDict = dgGenerateReceiveChannelMapDict(label, numChannels);
     status = iusInputFileSetReceiveChannelMapDict(inputFile, receiveChannelMapDict);
     TEST_ASSERT(status == IUS_E_OK);
 
@@ -154,9 +152,13 @@ iuif_t dgGenerateInputFile
     status = iusInputFileSetTransmitApodizationDict(inputFile, transmitApodizationDict);
     TEST_ASSERT(status == IUS_E_OK);
 
-    iursd_t receiveSettingsDict = dgGenerateReceiveSettingsDict(label);
+    iursd_t receiveSettingsDict = dgGenerateReceiveSettingsDict(label, numSamplesPerLine);
     status = iusInputFileSetReceiveSettingsDict(inputFile, receiveSettingsDict);
     TEST_ASSERT_EQUAL(IUS_E_OK, status);
+
+    iupald_t patternListDict = dgGeneratePatternListDict(label,receiveSettingsDict,receiveChannelMapDict);
+    status = iusInputFileSetPatternListDict(inputFile,patternListDict);
+    TEST_ASSERT(status == IUS_E_OK);
 
     // save
     iua_t acquisition = dgGenerateAcquisition();
@@ -176,27 +178,29 @@ iuif_t dgGenerateInputFile
 int dgInputFileAddGeneratedData
 (
     iuif_t inputFile,
-    char *label
+    char *label,
+    int numSamplesPerLine,
+    int numChannels
 )
 {
     // fill
-    iupald_t patternListDict = iusInputFileGetPatternListDict(inputFile);
-    iupal_t patternList = dgGeneratePatternList(8,0.08f);
-    iusPatternListDictSet(patternListDict,label,patternList);
-    int status = iusInputFileSetPatternListDict(inputFile,patternListDict);
-    TEST_ASSERT(status == IUS_E_OK);
-
     iurcmd_t receiveChannelMapDict = iusInputFileGetReceiveChannelMapDict(inputFile);
-    iurcm_t receiveChannelMap = dgGenerateReceiveChannelMap();
+    iurcm_t receiveChannelMap = dgGenerateReceiveChannelMap(numChannels);
     iusReceiveChannelMapDictSet(receiveChannelMapDict,label,receiveChannelMap);
-    status = iusInputFileSetReceiveChannelMapDict(inputFile, receiveChannelMapDict);
+    int status = iusInputFileSetReceiveChannelMapDict(inputFile, receiveChannelMapDict);
     TEST_ASSERT(status == IUS_E_OK);
 
     iursd_t receiveSettingsDict = iusInputFileGetReceiveSettingsDict(inputFile);
-    iurs_t receiveSettings = dgGenerateReceiveSettings();
+    iurs_t receiveSettings = dgGenerateReceiveSettings(numSamplesPerLine);
     iusReceiveSettingsDictSet(receiveSettingsDict,label,receiveSettings);
     status = iusInputFileSetReceiveSettingsDict(inputFile, receiveSettingsDict);
     TEST_ASSERT_EQUAL(IUS_E_OK, status);
+
+    iupald_t patternListDict = iusInputFileGetPatternListDict(inputFile);
+    iupal_t patternList = dgGeneratePatternList(8,0.08f,receiveSettingsDict,receiveChannelMapDict);
+    iusPatternListDictSet(patternListDict,label,patternList);
+    status = iusInputFileSetPatternListDict(inputFile,patternListDict);
+    TEST_ASSERT(status == IUS_E_OK);
 
     return status;
 }
@@ -223,11 +227,13 @@ iufl_t dgGenerateFrameList
 iupal_t dgGeneratePatternList
 (
     int numPatterns,
-    float timeInterval
+    float timeInterval,
+    iursd_t receiveSettingsDict,
+    iurcmd_t receiveChannelMapDict
 )
 {
     int i,status;
-    iupal_t patternList = iusPatternListCreate(numPatterns);
+    iupal_t patternList = iusPatternListCreate(numPatterns,receiveSettingsDict,receiveChannelMapDict);
     TEST_ASSERT_NOT_EQUAL(IUPAL_INVALID, patternList);
 
     for (i=0;i<numPatterns;i++)
@@ -247,14 +253,16 @@ iupal_t dgGeneratePatternList
 
 iupald_t dgGeneratePatternListDict
 (
-    char *label
+    char *label,
+    iursd_t receiveSettingsDict,
+    iurcmd_t receiveChannelMapDict
 )
 {
   int status;
 
   // fill list
   iupald_t patternListDict = iusPatternListDictCreate();
-  iupal_t bmodePatternList = dgGeneratePatternList(1,0.01f);
+  iupal_t bmodePatternList = dgGeneratePatternList(1,0.01f,receiveSettingsDict,receiveChannelMapDict);
   status = iusPatternListDictSet(patternListDict, label, bmodePatternList);
   TEST_ASSERT_EQUAL(IUS_E_OK, status);
   return patternListDict;
@@ -325,11 +333,10 @@ iusd_t dgGenerateSourceDict
 
 iurcm_t dgGenerateReceiveChannelMap
 (
-    void
+    int numChannels
 )
 {
     int status,i;
-    int numChannels = 8;
     int channelMap[8] = {0, 1, 2, 3, 4, 5, 6, 7};
 
     // fill
@@ -356,7 +363,8 @@ iurcm_t dgGenerateReceiveChannelMap
 
 iurcmd_t dgGenerateReceiveChannelMapDict
 (
-    char *label
+    char *label,
+    int numChannels
 )
 {
     int status;
@@ -364,7 +372,7 @@ iurcmd_t dgGenerateReceiveChannelMapDict
     TEST_ASSERT(dict != IURCMD_INVALID);
 
     // fill
-    iurcm_t receiveChannelMap = dgGenerateReceiveChannelMap();
+    iurcm_t receiveChannelMap = dgGenerateReceiveChannelMap(numChannels);
     status = iusReceiveChannelMapDictSet(dict, label, receiveChannelMap);
     TEST_ASSERT(status == IUS_E_OK);
     return dict;

@@ -128,7 +128,7 @@ TEST(IusInputFile, iusInputFileSetGetPatternListDict)
 {
     IUS_BOOL equal;
     int status;
-    iupald_t patternListDict = dgGeneratePatternListDict("mylabel");
+    iupald_t patternListDict = dgGeneratePatternListDict("mylabel",NULL,NULL);
     iuif_t obj = iusInputFileCreate(pFilename);
 
     status = iusInputFileSetPatternListDict(obj, patternListDict);
@@ -244,7 +244,7 @@ TEST(IusInputFile, iusInputFileSetGetReceiveSettingsDict)
 {
     IUS_BOOL equal;
     int status;
-    iursd_t receiveSettingsDict = dgGenerateReceiveSettingsDict("bmode");
+    iursd_t receiveSettingsDict = dgGenerateReceiveSettingsDict("bmode", 0);
     iuif_t obj = iusInputFileCreate(pFilename);
     TEST_ASSERT(obj != IUIF_INVALID);
 
@@ -341,10 +341,13 @@ TEST(IusInputFile, iusInputFileSetGetTransducer)
 
 TEST(IusInputFile, testIusInputFileSerialization)
 {
+    int numFrames = 10;
+    int numSamplesPerLine = 10;
+    int numChannels = 8;
     char *ptestFileName = "testIusInputFileSerialization.hdf5";
 
     // create
-    iuif_t inputFile = dgGenerateInputFile(ptestFileName, "S5-1", "bmode", 10);
+    iuif_t inputFile = dgGenerateInputFile(ptestFileName, "S5-1", "bmode", numFrames, numSamplesPerLine, numChannels);
     TEST_ASSERT(inputFile != IUIF_INVALID);
 
 	// save
@@ -574,12 +577,14 @@ TEST(IusInputFile, testIusInputFileDataIOSaveFrame)
     char *ptestFileName = "testIusInputFileDataIOSaveFrame.hdf5";
     char *pDopplerLabel = "doppler";
     int numFrames = 10;
+    int numSamplesPerLine = 10;
+    int numChannels = 8;
     char *pBmodeLabel = "bmode";
     int status = 0;
 
     // create
-    iuif_t inputFile = dgGenerateInputFile(ptestFileName, "S5-1", pDopplerLabel, numFrames);
-    status = dgInputFileAddGeneratedData(inputFile, pBmodeLabel);
+    iuif_t inputFile = dgGenerateInputFile(ptestFileName, "S5-1", pDopplerLabel, numFrames, numSamplesPerLine, numChannels);
+    status = dgInputFileAddGeneratedData(inputFile, pBmodeLabel, numSamplesPerLine, numChannels);
     TEST_ASSERT_EQUAL(status, IUS_E_OK);
 
     // SaveFrames
@@ -610,12 +615,14 @@ TEST(IusInputFile, testIusInputFileDataIOSaveResponse)
     char *ptestFileName = "testIusInputFileDataIOSaveResponse.hdf5";
     char *pDopplerLabel = "doppler";
     int numFrames = 10;
+    int numSamplesPerLine = 10;
+    int numChannels = 8;
     char *pBmodeLabel = "bmode";
     int status = 0;
 
     // create
-    iuif_t inputFile = dgGenerateInputFile(ptestFileName, "S5-1", pDopplerLabel, numFrames);
-    status = dgInputFileAddGeneratedData(inputFile, pBmodeLabel);
+    iuif_t inputFile = dgGenerateInputFile(ptestFileName, "S5-1", pDopplerLabel, numFrames, numSamplesPerLine, numChannels);
+    status = dgInputFileAddGeneratedData(inputFile, pBmodeLabel, numSamplesPerLine, numChannels);
     TEST_ASSERT_EQUAL(status, IUS_E_OK);
 
 
@@ -647,12 +654,14 @@ TEST(IusInputFile, testIusInputFileDataIOSaveChannel)
     char *ptestFileName = "testIusInputFileDataIOSaveChannel.hdf5";
     char *pDopplerLabel = "doppler";
     int numFrames = 10;
+    int numSamplesPerLine = 10;
+    int numChannels = 8;
     char *pBmodeLabel = "bmode";
     int status = 0;
 
     // create
-    iuif_t inputFile = dgGenerateInputFile(ptestFileName, "S5-1", pDopplerLabel, numFrames);
-    status = dgInputFileAddGeneratedData(inputFile, pBmodeLabel);
+    iuif_t inputFile = dgGenerateInputFile(ptestFileName, "S5-1", pDopplerLabel, numFrames, numSamplesPerLine, numChannels);
+    status = dgInputFileAddGeneratedData(inputFile, pBmodeLabel, numSamplesPerLine, numChannels);
     TEST_ASSERT_EQUAL(status, IUS_E_OK);
 
 

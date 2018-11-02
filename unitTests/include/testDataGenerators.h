@@ -38,15 +38,19 @@ iupad_t dgGenerateParameterDict
 int dgInputFileAddGeneratedData
 (
 	iuif_t inputFile,
-	char *label
+	char *label,
+	int numSamplesPerLine,
+	int numChannels
 );
 
 iuif_t dgGenerateInputFile
 (
-	char *ptestFileName,
-	char *transducerName,
-	char *label,
-	int numFrames
+    char *ptestFileName,
+    char *transducerName,
+    char *label,
+    int numFrames,
+    int numSamplesPerLine,
+    int numChannels
 );
 
 int dgDeleteInputFile
@@ -62,12 +66,16 @@ iufl_t dgGenerateFrameList
 iupal_t dgGeneratePatternList
 (
 	int numPatterns,
-	float timeInterval
+	float timeInterval,
+	iursd_t receiveSettingsDict,
+	iurcmd_t receiveChannelMapDict
 );
 
 iupald_t dgGeneratePatternListDict
 (
-	char *label
+	char *label,
+	iursd_t receiveSettingsDict,
+	iurcmd_t receiveChannelMapDict
 );
 
 iupd_t dgGeneratePulseDict
@@ -82,11 +90,14 @@ iusd_t dgGenerateSourceDict
 
 iurcmd_t dgGenerateReceiveChannelMapDict
 (
-    char *label
+	char *label,
+	int numChannels
 );
 
 iurcm_t dgGenerateReceiveChannelMap
-();
+(
+	int numChannels
+);
 
 iutad_t dgGenerateTransmitApodizationDict
 (
@@ -95,12 +106,13 @@ iutad_t dgGenerateTransmitApodizationDict
 
 iurs_t dgGenerateReceiveSettings
 (
-	void
+	int numSamplesPerLine
 );
 
 iursd_t dgGenerateReceiveSettingsDict
 (
-    char *label
+	char *label,
+	int numSamplesPerLine
 );
 
 iua_t dgGenerateAcquisition

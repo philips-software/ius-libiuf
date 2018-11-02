@@ -48,7 +48,7 @@ TEST(IusPatternListDict, testIusPatternListDictSetGet)
 	TEST_ASSERT_NOT_EQUAL(IUPALD_INVALID, dict);
 
 	// CreatNFill PatternList
-	iupal_t obj = iusPatternListCreate(2);
+	iupal_t obj = iusPatternListCreate(2,NULL,NULL);
 	iusPatternListSet(obj, pattern1, 0);
 	iusPatternListSet(obj, pattern2, 1);
 
@@ -96,8 +96,8 @@ TEST(IusPatternListDict, testIusComparePatternListDict)
 	equal = iusPatternListDictCompare(dict, notherDict);
 	TEST_ASSERT_EQUAL(IUS_TRUE, equal);
 
-	iupal_t patternListDual = iusPatternListCreate(2);
-	iupal_t patternListSingle = iusPatternListCreate(1);
+	iupal_t patternListDual = iusPatternListCreate(2,NULL,NULL);
+	iupal_t patternListSingle = iusPatternListCreate(1,NULL,NULL);
 
 	iusPatternListSet(patternListDual, pattern1, 0);
 	iusPatternListSet(patternListDual, pattern2, 1);
@@ -156,8 +156,8 @@ TEST(IusPatternListDict, testIusSerialization)
 	TEST_ASSERT(dict != IUPALD_INVALID);
 
 	// fill
-	iupal_t bModePatternList = iusPatternListCreate(2);
-	iupal_t dopplerPatternList = iusPatternListCreate(1);
+	iupal_t bModePatternList = iusPatternListCreate(2,NULL,NULL);
+	iupal_t dopplerPatternList = iusPatternListCreate(1,NULL,NULL);
 	
 	status = iusPatternListSet(bModePatternList, pattern1, 0);
 	TEST_ASSERT(status == IUS_E_OK);
