@@ -41,7 +41,7 @@ iurs_t ncFillReceiveSettings
     int numSamplesPerLine=10;
     int numTGCentries = 1;
 
-    iurs_t obj = iusReceiveSettingsCreate(sampleFrequency, numDelays, numSamplesPerLine, numTGCentries);
+    iurs_t obj = iusReceiveSettingsCreate(sampleFrequency, numSamplesPerLine, numTGCentries);
 
     return obj;
 }

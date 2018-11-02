@@ -4,6 +4,7 @@
 
 #ifndef IUSLIBRARY_IUSHLPARAMETRICPULSE_H
 #define IUSLIBRARY_IUSHLPARAMETRICPULSE_H
+#include <iusTypes.h>
 
 // ADT
 typedef struct IusParametricPulse IusParametricPulse;

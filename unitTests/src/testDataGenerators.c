@@ -37,10 +37,9 @@ iurs_t dgGenerateReceiveSettings
 )
 {
     float sampleFrequency=4000;
-    int numDelays=10;
     int numSamplesPerLine=10;
     int numTGCentries = 1;
-    iurs_t obj = iusReceiveSettingsCreate(sampleFrequency, numDelays, numSamplesPerLine, numTGCentries);
+    iurs_t obj = iusReceiveSettingsCreate(sampleFrequency, numSamplesPerLine, numTGCentries);
 
     return obj;
 }

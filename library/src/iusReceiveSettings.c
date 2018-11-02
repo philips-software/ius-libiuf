@@ -30,15 +30,9 @@ iurs_t iusReceiveSettingsCreateWithoutTGC
 }
 
 iurs_t iusReceiveSettingsCreate
-(
-    float sampleFrequency,
-    int numDelays,
-    int numSamplesPerLine,
-    int numTGCentries
-)
+(float sampleFrequency, int numSamplesPerLine, int numTGCentries)
 {
     if( sampleFrequency <= 0.0f ) return IURS_INVALID;
-    if( numDelays <= 0 ) return IURS_INVALID;
     if( numSamplesPerLine < 0 ) return IURS_INVALID;
     if( numTGCentries <= 0 ) return IURS_INVALID;
     iurs_t created = iusReceiveSettingsCreateWithoutTGC(sampleFrequency,numSamplesPerLine);
