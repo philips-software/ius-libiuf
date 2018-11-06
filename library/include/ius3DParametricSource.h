@@ -7,6 +7,9 @@
 
 // ADT
 typedef struct Ius3DParametricSource Ius3DParametricSource;
+/** The 3D parametric sources describes source locations from which a pulse originates simulatanously with a set of parameters. 
+* A 2D array of sources on a spherical 
+*/
 typedef Ius3DParametricSource *iu3dps_t;
 #define  IU3DPS_INVALID (iu3dps_t) NULL
 

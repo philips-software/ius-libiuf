@@ -26,7 +26,7 @@ iu2dt_t ius2DTransducerCreate
 
 int ius2DTransducerDelete
 (
-  iu2dt_t transducer                ///< The 2D trasnducer that will be deleted name of the transducer 
+  iu2dt_t transducer                ///< The 2D transducer that will be deleted name of the transducer 
 );
 
 //todo: move this to private
@@ -36,6 +36,7 @@ int ius2DTransducerDeepDelete
 );
 
 /** \brief Comparing two transducers, return #IUS_TRUE if they are equal and #IUS_FALSE if they differ are in case of an error.
+*  The order of the arguments does no matter
 */
 int ius2DTransducerCompare
 (
@@ -43,25 +44,30 @@ int ius2DTransducerCompare
   iu2dt_t actual      ///< the other 2D transducer 
 );
 
-/** \brief Comparing two transducers, return #IUS_TRUE if they are equal and #IUS_FALSE if they differ are in case of an error.
-*
+/** \brief Return the \p elemntIndex -th transducer element from the \p transducer's element list.
+*  /return the requested 2D element from the transducer's element list.
 */
 iu2dte_t ius2DTransducerGetElement
 (
-  iu2dt_t transducer,
-  int elementIndex
+  iu2dt_t transducer,           ///< the transducer to compare
+  int elementIndex              ///< the element index from the element list
 );
 
+/** \brief Gets the length of the transducer's element list.
+*  /return the size of the element list.
+*/
 int ius2DTransducerGetNumElements
 (
-  iu2dt_t transducer
+  iu2dt_t transducer ///< the referenced transducer
 );
 
-// setters
+/** \brief Set a \p element in the tansducer's element list at position\p elementIndex
+*  /return #IUS_ERR_VALUE is case the element can notbe set or #IUS_E_OK in case od success.
+*/
 int ius2DTransducerSetElement(
-  iu2dt_t transducer,
-  int elementIndex,
-  iu2dte_t element
+  iu2dt_t transducer,           ///< the transducer element
+  int elementIndex,             ///< the osition in the element list
+  iu2dte_t element              ///< the transducer element to be set
 );
 
 #endif //IUSLIBRARY_IUSHL2DTRANSDUCER_H
