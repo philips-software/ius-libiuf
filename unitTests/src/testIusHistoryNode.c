@@ -127,7 +127,7 @@ TEST(IusHistoryNode, testIusHistoryNodeSetGet)
         node = iusHistoryNodeCreate(type);
         TEST_ASSERT_NOT_EQUAL(IUHN_INVALID,node);
         TEST_ASSERT_EQUAL_STRING(IUS_INPUT_TYPE, iusHistoryNodeGetType(node));
-        iuhnl_t parents = iusHistoryNodeListCreate(numParents);
+        parents = iusHistoryNodeListCreate(numParents);
         TEST_ASSERT_EQUAL(IUS_E_OK,iusHistoryNodeSetParents(node,parents));
         TEST_ASSERT_EQUAL(numParents, iusHistoryNodeGetNumParents(node));
         parents = iusHistoryNodeGetParents(node);
