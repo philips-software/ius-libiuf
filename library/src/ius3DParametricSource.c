@@ -222,7 +222,7 @@ int ius3DParametricSourceSave
     status |= iusHdf5WriteFloat( handle, IUS_INPUTFILE_PATH_SOURCE_STARTANGLE, &(source->startAngle), 1);
     status |= iusHdf5WriteFloat( handle, IUS_INPUTFILE_PATH_SOURCE_DELTAPHI, &(source->deltaPhi), 1);
     status |= iusHdf5WriteFloat( handle, IUS_INPUTFILE_PATH_SOURCE_STARTPHI, &(source->startPhi), 1);
-    status |= iusHdf5WriteInt(handle, IUS_INPUTFILE_PATH_SOURCE_LISTSIZE, &(source->numLocations), 1);
+    status |= iusHdf5WriteInt(handle, IUS_INPUTFILE_PATH_SOURCE_NUMSOURCES, &(source->numLocations), 1);
 
 
     return status;
@@ -249,7 +249,7 @@ iu3dps_t ius3DParametricSourceLoad
     status |= iusHdf5ReadFloat( handle, IUS_INPUTFILE_PATH_SOURCE_STARTANGLE, &(startAngle));
     status |= iusHdf5ReadFloat( handle, IUS_INPUTFILE_PATH_SOURCE_DELTAPHI, &(deltaPhi));
     status |= iusHdf5ReadFloat( handle, IUS_INPUTFILE_PATH_SOURCE_STARTPHI, &(startPhi));
-	status |= iusHdf5ReadInt( handle, IUS_INPUTFILE_PATH_SOURCE_LISTSIZE, &(numLocations));
+	status |= iusHdf5ReadInt( handle, IUS_INPUTFILE_PATH_SOURCE_NUMSOURCES, &(numLocations));
     if (status < 0)
         return NULL;
 

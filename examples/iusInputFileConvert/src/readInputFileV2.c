@@ -539,6 +539,10 @@ static 	iupald_t extractPatternListDict
 	{
 		sprintf(apodizationLabel, "pulse[%d]", i); // for each pulse an apodizaion is defined in V2
 		iupa_t pattern = iusPatternCreate(transmitTimes[i], PULSE_LABEL, SOURCE_LABEL, label, apodizationLabel, label);
+		if (pattern == IUPA_INVALID)
+		{
+			return IUPALD_INVALID;
+		}
 		status |= iusPatternListSet(patternList, pattern, i);
 	}
 	free(transmitIndices);

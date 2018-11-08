@@ -212,8 +212,8 @@ ius_t iusSourceLoad
     hid_t handle
 )
 {
-	ius_t base;
-    ius_t source;
+	ius_t base = IUS_INVALID;
+    ius_t source = IUS_INVALID;
 
     base = iusBaseSourceLoad(handle);
 	if (base == NULL) return IUS_INVALID;
