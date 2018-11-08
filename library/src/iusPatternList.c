@@ -14,18 +14,25 @@ struct IusPatternList
     int numPatterns;
     iupa_t *   pPatterns ;
     IUS_BOOL loadedFromFile;
+    iursd_t receiveSettingsDict;
+    iurcmd_t receiveChannelMapDict;
+
 } ;
 
 // ADT
 iupal_t iusPatternListCreate
 (
-    int numPatterns
+    int numPatterns,
+    iursd_t receiveSettingsDict,
+    iurcmd_t receiveChannelMapDict
 )
 {
     iupal_t list = calloc(1, sizeof(IusPatternList));
     if(list!=NULL)
     {
         list->loadedFromFile = IUS_FALSE;
+        list->receiveChannelMapDict = receiveChannelMapDict;
+        list->receiveSettingsDict = receiveSettingsDict;
         list->numPatterns = numPatterns;
         list->pPatterns = (iupa_t *) calloc((size_t)numPatterns, sizeof(iupa_t));
         if( list->pPatterns == NULL )
@@ -116,6 +123,29 @@ IUS_BOOL iusPatternListValidateDimensions
 {
     IUS_UNUSED(list);
     IUS_UNUSED(member);
+    // getSamplesPerLine of first item
+    if( list == NULL ) return IUS_FALSE;
+    char *rsLabel1stItem = (char *) iusPatternGetReceivesettingsLabel(list->pPatterns[0]);
+    iurs_t receiveSettings1stItem = iusReceiveSettingsDictGet(list->receiveSettingsDict,rsLabel1stItem);
+    int numSamplesPerLine1stItem = iusReceiveSettingsGetNumSamplesPerLine(receiveSettings1stItem);
+
+    char *rsLabelNewItem = (char *) iusPatternGetReceivesettingsLabel(member);
+    iurs_t receiveSettingsNewItem = iusReceiveSettingsDictGet(list->receiveSettingsDict,rsLabelNewItem);
+    int numSamplesPerLineNewItem = iusReceiveSettingsGetNumSamplesPerLine(receiveSettingsNewItem);
+    if (numSamplesPerLine1stItem != numSamplesPerLineNewItem)
+        return IUS_FALSE;
+
+
+    char *rcmLabel1stItem = (char *) iusPatternGetChannelMapLabel(list->pPatterns[0]);
+    iurcm_t channelMap1stItem = iusReceiveChannelMapDictGet(list->receiveChannelMapDict,rcmLabel1stItem);
+    int numChannels1stItem = iusReceiveChannelMapGetNumChannels(channelMap1stItem);
+
+    char *rcmLabelNewItem = (char *) iusPatternGetChannelMapLabel(member);
+    iurcm_t channelMapNewItem = iusReceiveChannelMapDictGet(list->receiveChannelMapDict,rcmLabelNewItem);
+    int numChannelsNewItem = iusReceiveChannelMapGetNumChannels(channelMapNewItem);
+    if (numChannels1stItem != numChannelsNewItem)
+        return IUS_FALSE;
+
     return IUS_TRUE;
 }
 
@@ -128,10 +158,13 @@ int iusPatternListSet
 {
     if( index < 0 ) return IUS_ERR_VALUE;
     if( list == NULL || index >= list->numPatterns ) return IUS_ERR_VALUE;
-    IUS_BOOL validDimensions = iusPatternListValidateDimensions(list,member);
-    if( validDimensions == IUS_FALSE )
+    if( index > 0 )
     {
-        return IUS_ERR_VALUE;
+        IUS_BOOL validDimensions = iusPatternListValidateDimensions(list,member);
+        if( validDimensions == IUS_FALSE )
+        {
+            return IUS_ERR_VALUE;
+        }
     }
     list->pPatterns[index] = member;
     return IUS_E_OK;
@@ -149,7 +182,7 @@ iupal_t iusPatternListLoad
     int status = iusHdf5ReadInt(handle, IUS_INPUTFILE_PATH_PATTERNLIST_SIZE, &(numPatterns));
     if(status!=0) return IUPAL_INVALID;
 
-    iupal_t patternList = iusPatternListCreate(numPatterns);
+    iupal_t patternList = iusPatternListCreate(numPatterns,NULL,NULL);
     iupa_t pattern;
 
     // Load patterns

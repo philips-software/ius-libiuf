@@ -9,7 +9,7 @@
 typedef struct Ius2DParametricSource Ius2DParametricSource;
 /** The 2D parametric Sources describes one or multiple point sources from which a pulse originates simulatanously. You can
   * create a source with a predefined number of locations and a paramteric description of where these points are located.
-  * The parameters decribe points on a circlular arc, defined by the fNumber (radius relative to the aperture), a starting 
+  * The parameters decribe points on a circlular arc, defined by the fNumber (radius relative to the aperture), a starting
   * angle and a delta angle (both in radians).
   * ius2DParametricSourceGetPosition() and ius2DParametricSourceGetPosition() respectively. */
 typedef Ius2DParametricSource *iu2dps_t;
@@ -23,10 +23,10 @@ typedef Ius2DParametricSource *iu2dps_t;
  */
 iu2dps_t ius2DParametricSourceCreate
 (
-    int numLocations,   ///< The number of source locations that are triggered simulatenously 
+    int numLocations,   ///< The number of source locations that are triggered simulatenously
     float fNumber,      ///< the fNumber is the Focal depth (radius of the circle where the sources are positions) over the aperture diameter.
     float deltaTheta,   ///< The arc length in radians between sources
-    float startTheta    ///< the angle of the first source 
+    float startTheta    ///< the angle of the first source
 );
 
 /** \brief Delete a 2D parametric source.
@@ -50,7 +50,7 @@ int ius2DParametricSourceCompare
  */
 float ius2DParametricSourceGetFNumber
 (
-    iu2dps_t ius2DParametricSource ///< The source of interest 
+    iu2dps_t ius2DParametricSource ///< The source of interest
 );
 
 /** \brief Returns the angular delta in radians between source points or NAN if the source is invalid.
@@ -67,7 +67,7 @@ float ius2DParametricSourceGetStartAngle
     iu2dps_t ius2DParametricSource ///< The source of interest
 );
 
-/** \brief Sets the fNumber of the parametric sources, return #IUS_E_OK when successful or #IUS_ERR_VALUE in case 
+/** \brief Sets the fNumber of the parametric sources, return #IUS_E_OK when successful or #IUS_ERR_VALUE in case
 * the source is incorrect
 */
 int ius2DParametricSourceSetFNumber
@@ -82,7 +82,7 @@ int ius2DParametricSourceSetFNumber
 int ius2DParametricSourceSetAngularDelta
 (
     iu2dps_t ius2DParametricSource, ///< The source of interest
-    float angularDelta              ///< the value of the delta angle 
+    float angularDelta              ///< the value of the delta angle
 );
 
 int ius2DParametricSourceSetStartAngle

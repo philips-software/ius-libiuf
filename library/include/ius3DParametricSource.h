@@ -63,12 +63,6 @@ float ius3DParametricSourceGetStartPhi
     iu3dps_t ius3DParametricSource
 );
 
-iu3dp_t ius3DParametricSourceGetPosition
-(
-    iu3dps_t ius3DParametricSource,
-    int index
-);
-
 // Setters
 int ius3DParametricSourceSetFNumber
 (
@@ -100,11 +94,5 @@ int ius3DParametricSourceSetStartPhi
     float startPhi
 );
 
-int ius3DParametricSourceSetPosition
-(
-    iu3dps_t ius3DParametricSource,
-    iu3dp_t  pos,
-    int index
-);
 
 #endif //IUSLIBRARY_IUSHL3DPARAMETRICSOURCE_H

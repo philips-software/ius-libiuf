@@ -5,6 +5,8 @@
 #define IUSLIBRARY_IUSHLPATTERNLIST_H
 
 #include <include/iusPattern.h>
+#include <iusReceiveSettingsDict.h>
+#include <iusReceiveChannelMapDict.h>
 
 // ADT
 typedef struct IusPatternList IusPatternList;
@@ -13,7 +15,9 @@ typedef IusPatternList *iupal_t;
 
 iupal_t iusPatternListCreate
 (
-    int numPattern
+    int numPattern,
+    iursd_t receiveSettingsDict,
+    iurcmd_t receiveChannelMapDict
 );
 
 int iusPatternListDelete
