@@ -48,11 +48,6 @@ float ius2DParametricSourceGetStartAngle
     iu2dps_t ius2DParametricSource
 );
 
-iu2dp_t ius2DParametricSourceGetPosition
-(
-    iu2dps_t ius2DParametricSource,
-    int index
-);
 
 // Setters
 int ius2DParametricSourceSetFNumber
@@ -73,10 +68,4 @@ int ius2DParametricSourceSetStartAngle
     float startAngle
 );
 
-int ius2DParametricSourceSetPosition
-(
-    iu2dps_t ius2DParametricSource,
-    iu2dp_t  pos,
-    int index
-);
 #endif //IUSLIBRARY_IUSHL2DPARAMETRICSOURCE_H
