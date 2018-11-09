@@ -8,14 +8,12 @@ if(CMAKE_COMPILER_IS_GNUCC)
     set(COVERAGE_GCOVR_EXCLUDES 'external/CMakeFiles/hashmap.dir/hashmap/src' 'external/CMakeFiles/Unity.dir/Unity/src' 'external/CMakeFiles/Unity.dir/Unity/extras/fixture/src')
 endif()
 #
-#if(MSVC)
-#    # disable the security warnings for sprintf() in bee2.c
-#    add_definitions(/D _CRT_SECURE_NO_WARNINGS /D _CRT_NONSTDC_NO_DEPRECATE)
-#else()
-#    set(CMAKE_CXX_CPPCHECK "cppcheck")
-#endif()
-
-#set (HASHMAP_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/external/hashmap/src")
+if(MSVC)
+    # disable the security warnings for sprintf()
+    add_definitions(/D _CRT_SECURE_NO_WARNINGS /D _CRT_NONSTDC_NO_DEPRECATE)
+else()
+    set(CMAKE_CXX_CPPCHECK "cppcheck")
+endif()
 
 set (IUS_INCLUDE_DIR "${PROJECT_SOURCE_DIR}" "${PROJECT_SOURCE_DIR}/include")
 set (TARGET_GROUP test CACHE STRING "Group to build")
