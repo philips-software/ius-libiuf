@@ -18,6 +18,7 @@ endif()
 
 set (HASHMAP_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/external/hashmap/src")
 set (HASHMAP_SOURCES "${PROJECT_SOURCE_DIR}/external/hashmap/src/hashmap.c")
+FIND_PACKAGE(HDF5 1.8 COMPONENTS C HL REQUIRED)
 
 set (TARGET_GROUP test CACHE STRING "Group to build")
 if(TARGET_GROUP STREQUAL production)
