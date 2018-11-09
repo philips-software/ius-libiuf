@@ -25,7 +25,7 @@ target_include_directories(iusv2tov3 PUBLIC
 set_property(TARGET iusv2tov3 PROPERTY C_STANDARD 99)
 
 if(MSVC)
-    set_target_properties(unitTests PROPERTIES LINK_FLAGS "/ignore:4099")
+    set_target_properties(iusv2tov3 PROPERTIES LINK_FLAGS "/ignore:4099")
     target_compile_options(iusv2tov3 PRIVATE /W4 /WX)
 else()
     set(UUID_LIBRARIES -luuid)
