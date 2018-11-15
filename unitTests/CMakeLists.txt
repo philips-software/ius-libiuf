@@ -60,7 +60,7 @@ endif()
 
 if(MSVC)
     target_compile_options(unitTests PRIVATE /W4 /WX)
-    set_target_properties(unitTests PROPERTIES LINK_FLAGS "/ignore:4099")
+    set_target_properties(unitTests PROPERTIES LINK_FLAGS "/ignore:4099 /ignore:4098")
 else()
     set(UUID_LIBRARIES -luuid)
     target_compile_options(unitTests PRIVATE -Wall -Wextra -pedantic -Werror)

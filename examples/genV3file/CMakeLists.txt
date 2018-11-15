@@ -26,7 +26,7 @@ set_property(TARGET genV3file PROPERTY C_STANDARD 99)
 
 if(MSVC)
     target_compile_options(genV3file PRIVATE /W4 /WX)
-    set_target_properties(genV3file PROPERTIES LINK_FLAGS "/ignore:4099")
+    set_target_properties(genV3file PROPERTIES LINK_FLAGS "/ignore:4099 /ignore:4098")
 else()
     set(UUID_LIBRARIES -luuid)
     target_compile_options(genV3file PRIVATE -Wall -Wextra -pedantic -Werror)

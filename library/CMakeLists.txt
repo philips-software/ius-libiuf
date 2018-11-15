@@ -151,7 +151,7 @@ target_include_directories(ius PUBLIC
 
 if(MSVC)
 	target_compile_options(ius PRIVATE /W4 /WX)
-    set_target_properties(ius PROPERTIES LINK_FLAGS "/ignore:4099")
+    set_target_properties(ius PROPERTIES LINK_FLAGS "/ignore:4099 /ignore:4098")
 else()
 	set(UUID_LIBRARIES -luuid)
 	target_compile_options(ius PRIVATE -Wall -Wextra -pedantic -Werror)
