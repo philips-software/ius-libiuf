@@ -8,7 +8,7 @@ add_executable(iusv2tov3
         )
 
 target_link_libraries(iusv2tov3
-        ius
+        ${IUS_LIBRARIES}
         ${HDF5_LIBRARIES}
         ${HDF5_HL_LIBRARIES}
         ${UUID_LIBRARIES}
@@ -28,7 +28,6 @@ if(MSVC)
     set_target_properties(iusv2tov3 PROPERTIES LINK_FLAGS "/ignore:4099 /ignore:4098")
     target_compile_options(iusv2tov3 PRIVATE /W4 /WX)
 else()
-    set(UUID_LIBRARIES -luuid)
     target_compile_options(iusv2tov3 PRIVATE -Wall -Wextra -pedantic -Werror)
     if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
         target_compile_options(iusv2tov3 PRIVATE -Wall -Wextra -pedantic -Werror)

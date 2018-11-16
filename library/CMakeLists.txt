@@ -1,7 +1,40 @@
 # The version number.
 set (IUS_VERSION_MAJOR 3)
-set (IUS_VERSION_MINOR 0)
 set (CMAKE_C_STANDARD 99)
+
+FIND_PACKAGE(Git)
+IF(GIT_FOUND)
+	# Get the latest abbreviated commit hash of the working branch
+	execute_process(
+			COMMAND git log -1 --format=%h
+			WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+			OUTPUT_VARIABLE GIT_COMMIT_HASH
+			OUTPUT_STRIP_TRAILING_WHITESPACE
+	)
+
+	execute_process(
+			COMMAND git describe --tags --abbrev=0 --exact-match
+			WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+			OUTPUT_VARIABLE GIT_TAG
+			RESULT_VARIABLE GIT_DESCRIBE_RESULT
+			ERROR_VARIABLE GIT_DESCRIBE_ERROR
+			OUTPUT_STRIP_TRAILING_WHITESPACE
+	)
+
+    if(GIT_TAG)
+		# Tag found
+		set (IUS_LIB_VERSION_STRING ${IUS_VERSION_MAJOR}.${GIT_TAG})
+	else()
+		set (IUS_LIB_VERSION_STRING ${IUS_VERSION_MAJOR}.${GIT_COMMIT_HASH})
+	endif()
+	FILE(WRITE ${PROJECT_BINARY_DIR}/library/VERSION "${IUS_LIB_VERSION_STRING}")
+ELSE(GIT_FOUND)
+	FILE(READ ${CMAKE_SOURCE_DIR}/lib/VERSION IUS_LIB_VERSION_STRING)
+ENDIF(GIT_FOUND)
+
+STRING( REGEX REPLACE "([0-9]+).[0-9]+.[0-9]+" "\\1" VERSION_MAJOR ${IUS_LIB_VERSION_STRING} )
+STRING( REGEX REPLACE "[0-9]+.([0-9]+).[0-9]+" "\\1" VERSION_MINOR ${IUS_LIB_VERSION_STRING} )
+STRING( REGEX REPLACE "[0-9]+.[0-9]+.([0-9]+)" "\\1" VERSION_PATCH ${IUS_LIB_VERSION_STRING} )
 
 # configure a header file to pass some of the CMake settings
 # to the source code
@@ -153,7 +186,6 @@ if(MSVC)
 	target_compile_options(ius PRIVATE /W4 /WX)
     set_target_properties(ius PROPERTIES LINK_FLAGS "/ignore:4099 /ignore:4098")
 else()
-	set(UUID_LIBRARIES -luuid)
 	target_compile_options(ius PRIVATE -Wall -Wextra -pedantic -Werror)
 	if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
 		target_compile_options(ius PRIVATE -Wall -Wextra -pedantic -Werror)
@@ -167,9 +199,12 @@ target_link_libraries(
 		${UUID_LIBRARIES}
 )
 
+set_target_properties(ius PROPERTIES OUTPUT_NAME "ius-${IUS_LIB_VERSION_STRING}")
 set_property(TARGET ius PROPERTY C_STANDARD 99)
 
 install(TARGETS ius
 		LIBRARY DESTINATION ${PROJECT_BINARY_DIR}/dist/lib
 		ARCHIVE DESTINATION ${PROJECT_BINARY_DIR}/dist/lib
 		)
+
+install(FILES ${PROJECT_BINARY_DIR}/library/VERSION  DESTINATION ${PROJECT_BINARY_DIR}/dist/lib)

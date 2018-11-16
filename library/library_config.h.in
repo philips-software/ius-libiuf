@@ -1,3 +1,3 @@
-// the configured options and settings for Tutorial
-#define IUS_VERSION_MAJOR @IUS_VERSION_MAJOR@
-#define IUS_VERSION_MINOR @Untitled_VERSION_MINOR@
+#define IUS_VERSION_MAJOR "@VERSION_MAJOR@"
+#define IUS_VERSION_MINOR "@VERSION_MINOR@"
+#define IUS_VERSION_PATCH "@VERSION_PATCH@"

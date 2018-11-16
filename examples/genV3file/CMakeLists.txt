@@ -8,7 +8,7 @@ add_executable(genV3file
         )
 
 target_link_libraries(genV3file
-        ius
+        ${IUS_LIBRARIES}
         ${HDF5_LIBRARIES}
         ${HDF5_HL_LIBRARIES}
         ${UUID_LIBRARIES}
@@ -28,7 +28,6 @@ if(MSVC)
     target_compile_options(genV3file PRIVATE /W4 /WX)
     set_target_properties(genV3file PROPERTIES LINK_FLAGS "/ignore:4099 /ignore:4098")
 else()
-    set(UUID_LIBRARIES -luuid)
     target_compile_options(genV3file PRIVATE -Wall -Wextra -pedantic -Werror)
     if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
         target_compile_options(genV3file PRIVATE -Wall -Wextra -pedantic -Werror)

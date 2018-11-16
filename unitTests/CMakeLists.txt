@@ -62,7 +62,6 @@ if(MSVC)
     target_compile_options(unitTests PRIVATE /W4 /WX)
     set_target_properties(unitTests PROPERTIES LINK_FLAGS "/ignore:4099 /ignore:4098")
 else()
-    set(UUID_LIBRARIES -luuid)
     target_compile_options(unitTests PRIVATE -Wall -Wextra -pedantic -Werror)
     if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
         target_compile_options(unitTests PRIVATE -Wall -Wextra -pedantic -Werror)
@@ -71,13 +70,13 @@ endif()
 
 if(HDF5_USE_STATIC_LIBRARIES)
     target_link_libraries(unitTests
-            ius
+            ${IUS_LIBRARIES}
             Unity
             ${UUID_LIBRARIES}
             )
 else()
     target_link_libraries(unitTests
-            ius
+            ${IUS_LIBRARIES}
             Unity
             ${HDF5_LIBRARIES}
             ${HDF5_HL_LIBRARIES}

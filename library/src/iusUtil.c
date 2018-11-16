@@ -13,8 +13,16 @@ int iusDiagDisable()
     return iusHdf5DisableMessages();
 }
 
-int iusGetVersionMajor(void) {
+char* iusGetVersionMajor(void) {
     return IUS_VERSION_MAJOR;
+}
+
+char* iusGetVersionPatch(void) {
+    return IUS_VERSION_PATCH;
+}
+
+char* iusGetVersionMinor(void) {
+    return IUS_VERSION_MINOR;
 }
 
 IUS_BOOL fileExists(const char *fname)
