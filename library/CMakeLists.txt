@@ -43,7 +43,7 @@ configure_file (
         "${PROJECT_BINARY_DIR}/library_config.h"
 )
 
-FIND_PACKAGE(HDF5 1.8 COMPONENTS C HL REQUIRED)
+#FIND_PACKAGE(HDF5 1.8 COMPONENTS C HL REQUIRED)
 
 include_directories("${PROJECT_BINARY_DIR}")
 include_directories(${HDF5_INCLUDE_DIR})

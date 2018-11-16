@@ -1,4 +1,3 @@
-FIND_PACKAGE(HDF5 COMPONENTS C HL)
 include_directories(${HDF5_INCLUDE_DIR})
 
 link_directories(${CMAKE_SOURCE_DIR}/lib)

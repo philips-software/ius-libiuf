@@ -68,21 +68,13 @@ else()
     endif()
 endif()
 
-if(HDF5_USE_STATIC_LIBRARIES)
-    target_link_libraries(unitTests
-            ${IUS_LIBRARIES}
-            Unity
-            ${UUID_LIBRARIES}
-            )
-else()
-    target_link_libraries(unitTests
-            ${IUS_LIBRARIES}
-            Unity
-            ${HDF5_LIBRARIES}
-            ${HDF5_HL_LIBRARIES}
-            ${UUID_LIBRARIES}
-            )
-endif()
+target_link_libraries(unitTests
+        ${IUS_LIBRARIES}
+        Unity
+        ${HDF5_LIBRARIES}
+        ${HDF5_HL_LIBRARIES}
+        ${UUID_LIBRARIES}
+        )
 
 set_property(TARGET unitTests PROPERTY C_STANDARD 99)
 
