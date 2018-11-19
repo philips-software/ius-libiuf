@@ -479,7 +479,7 @@ static 	iut_t extractTransducer(hid_t inputFile)
 	
 	for (int i = 0; i < numElements && status == IUS_E_OK; i++)
 	{
-		float theta;
+		float theta=0.0;
 		status |= iusHdf5Read2DAngle(elementsHandle, i, &theta); //not very efficient but at least readable code
 		iu2dp_t pos = iusHdf5Read2DPos(elementsHandle, i); 
 		iu2ds_t size = iusHdf5Read2DSize(elementsHandle, i);
@@ -556,7 +556,7 @@ static 	iufl_t extractFrameList(hid_t inputFile, char *label)
 {
 	int status;
 	int numFrames;
-	float frameDuration;
+	float frameDuration=0.0;
 
 	status = iusHdf5ReadInt(inputFile, "numFrames", &numFrames);
 	status |= extractFrameDuration(inputFile, &frameDuration);

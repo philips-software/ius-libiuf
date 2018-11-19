@@ -48,7 +48,7 @@ configure_file (
 include_directories("${PROJECT_BINARY_DIR}")
 include_directories(${HDF5_INCLUDE_DIR})
 include_directories(${HASHMAP_INCLUDE_DIR})
-
+set(CMAKE_DEBUG_POSTFIX d)
 add_library(ius STATIC
 		include/ius2DNonParametricSource.h
 		include/ius2DNonParametricSourcePrivate.h
@@ -201,10 +201,10 @@ target_link_libraries(
 
 set_target_properties(ius PROPERTIES OUTPUT_NAME "ius-${IUS_LIB_VERSION_STRING}")
 set_property(TARGET ius PROPERTY C_STANDARD 99)
-
+set(IUS_INSTALL_PATH ${PROJECT_BINARY_DIR}/dist/library/${CMAKE_SYSTEM_NAME})
 install(TARGETS ius
-		LIBRARY DESTINATION ${PROJECT_BINARY_DIR}/dist/lib
-		ARCHIVE DESTINATION ${PROJECT_BINARY_DIR}/dist/lib
+		LIBRARY DESTINATION ${IUS_INSTALL_PATH}
+		ARCHIVE DESTINATION ${IUS_INSTALL_PATH}
 		)
 
-install(FILES ${PROJECT_BINARY_DIR}/library/VERSION  DESTINATION ${PROJECT_BINARY_DIR}/dist/lib)
+install(FILES ${PROJECT_BINARY_DIR}/library/VERSION  DESTINATION ${IUS_INSTALL_PATH})
