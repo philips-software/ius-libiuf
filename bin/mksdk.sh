@@ -16,7 +16,6 @@ function releaseNumber
     echo -n "$Release"
 }
 
-
 BuildFolder=C_v3/build
 StartFolder=$(pwd)
 DistFolder=${StartFolder}/dist
@@ -46,8 +45,9 @@ mv * ${ReleaseFolder} 2>/dev/null
 echo === Generating documentation
 cd ${DocSource}
 doxygen 2>&1 | grep -iv Warning
-if (( $? == 0 )) && [[ -d html ]]
+if [[ -d html ]]
 then
-    mv html img ${DocFolder}
+    mv html ${DocFolder}
+    cp -r img ${DocFolder}
 fi
 echo === Done
