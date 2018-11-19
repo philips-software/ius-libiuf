@@ -19,7 +19,7 @@ function releaseNumber
 BuildFolder=C_v3/build
 StartFolder=$(pwd)
 DistFolder=${StartFolder}/dist
-IUSRelease="ius-SDK-$(releaseNumber)"
+IUSRelease="IUS-SDK-$(releaseNumber)"
 ReleaseFolder="${DistFolder}/${IUSRelease}"
 DocFolder="${ReleaseFolder}/documentation"
 DocSource="${StartFolder}/C_v3/dox"
