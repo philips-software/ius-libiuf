@@ -2,8 +2,8 @@
 
 ```
 $ docker login gitlab.ta.philips.com:5432
-$ docker build -t gitlab.ta.philips.com:5432/ius/ius/centos-7.4.1708:0.3 .
-$ docker push gitlab.ta.philips.com:5432/ius/ius/centos-7.4.1708:0.3
+$ docker build -t gitlab.ta.philips.com:5432/ius/ius/centos-7.4.1708:0.6 .
+$ docker push gitlab.ta.philips.com:5432/ius/ius/centos-7.4.1708:0.6
 ```
 
 ## Howto use docker image manually
@@ -11,5 +11,5 @@ $ docker push gitlab.ta.philips.com:5432/ius/ius/centos-7.4.1708:0.3
 Open a terminal into your container to use gcc/valgrind.
 
 ```
-$ docker run --rm -it -v $(pwd):/data -w /data gitlab.ta.philips.com:5432/ius/ius/centos-7.4.1708:0.3 bash
+$ docker run --rm -it -v $(pwd):/data -w /data gitlab.ta.philips.com:5432/ius/ius/centos-7.4.1708:0.6 bash
 ```
