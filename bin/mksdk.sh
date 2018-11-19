@@ -9,6 +9,7 @@ do
     [[ ! -d $i/dist ]] && echo "Error: Incomplete distribution for platform ${i##*/}" >&2 && exit 1
     (cd $i; tar cvfz dist.tgz dist)
     (cd $BuildFolder; tar xvfz ${i##*/}/dist.tgz)
-    # rm -rf $i
+    rm -rf $i
 done
+echo === Merging dist in $BuildFolder Done
 exit 0
