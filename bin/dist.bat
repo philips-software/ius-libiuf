@@ -1,5 +1,9 @@
 @echo off
-set BuildFolder=C_v3\build\WindowsX64
+set BinFolder=%~dp0..\
+pushd .
+cd %BinFolder%
+set BuildFolder=%CD%\build\Windows
+popd
 echo === Building ius in %BuildFolder%
 mkdir %BuildFolder% & pushd %BuildFolder%
 cmake ..\..

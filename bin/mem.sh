@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+ScriptPath=$(dirname $(realpath $0))
+BuildFolder=$(realpath ${ScriptPath}/..)/build/$(uname)
+
 which cmake3 >/dev/null 2>&1
 if (( $? == 0 ))
 then
@@ -11,7 +14,6 @@ else
     CTEST=ctest
 fi
 
-BuildFolder=C_v3/build/$(uname)
 echo === UnitTests
 cd $BuildFolder
 $CTEST -T memcheck --verbose

@@ -48,5 +48,7 @@ file(GLOB_RECURSE PRIVATE_HEADERS
         )
 install(FILES ${PRIVATE_HEADERS}  DESTINATION ${PROJECT_BINARY_DIR}/dist/unitTests/include)
 install(FILES package/CMakeLists.txt package/PreLoad.cmake  DESTINATION ${PROJECT_BINARY_DIR}/dist)
+install(DIRECTORY bin DESTINATION ${PROJECT_BINARY_DIR}/dist
+        USE_SOURCE_PERMISSIONS)
 install(DIRECTORY examples DESTINATION ${PROJECT_BINARY_DIR}/dist)
 install(DIRECTORY external DESTINATION ${PROJECT_BINARY_DIR}/dist)

@@ -1,6 +1,6 @@
 include_directories(${HDF5_INCLUDE_DIR})
 
-link_directories(${CMAKE_SOURCE_DIR}/lib)
+link_directories(${CMAKE_SOURCE_DIR}/library/${CMAKE_SYSTEM_NAME})
 add_executable(iusv2tov3
         src/main.c
         src/readInputFileV2.c
