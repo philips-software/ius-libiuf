@@ -16,5 +16,7 @@ fi
 
 echo === UnitTests
 cd $BuildFolder
+$CMAKE -DCMAKE_BUILD_TYPE=Debug ../..
+$CMAKE --build .
 $CTEST --verbose
 
