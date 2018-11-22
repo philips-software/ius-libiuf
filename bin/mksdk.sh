@@ -26,14 +26,23 @@ DocFolder="${ReleaseFolder}/documentation"
 DocSource="${StartFolder}/C_v3/dox"
 
 
+
 # merge dist folders into one
 echo === Merging dist in $BuildFolder
 [[ ! -d ${BuildFolder} ]] && echo "Error: No distribution data found in ${BuildFolder}" >&2 && exit 1
+
+#
+# because this step involves merging files coming
+# from both Windows and Linux based, it is important
+# to restore the executable permissions for
+# the binaries..
+find . -type f -name \*.sh | xargs chmod 755
+
 for i in ${BuildFolder}/*
 do
     echo " - ${i##*/}"
     [[ ! -d $i/dist ]] && echo "Error: Incomplete distribution for platform ${i##*/}" >&2 && exit 1
-    (cd $i; tar cfz dist.tgz dist)
+    (cd $i;tar cfz dist.tgz dist)
     tar xfz $i/dist.tgz
 done
 
