@@ -1,34 +1,15 @@
-### Build instructions for IUS C-V3
+# Instructions for the building and use IUS-SDK Software
+This repository contains the source code of the Interventional Ultrasound Library SDK. 
+This document contains instructions on
+* [How to install the sdk sources](#how-to-install-the-sdk)
+* [Folder structure](#folder-structure)
+* [Build dependencies](#build-dependencies)
+* [How to build and run the examples and unit tests](#how-to-build-and-run-the-examples-and-unit-tests)
+* [How to generate documentation](#how-to-generate-documentation)
 
-#### Introduction
 
-The ius C_v3 library consists of 3 folders:
-- library, contains the code for the library 
-- unitTests, contains unit-tests for the library
-- examples, contains an example of a program using the library
-
-#### Build requirements
-- cmake
-  - tested with 3.10.3 on windows (7/10 pro)
-  - tested with 3.12.1 on Linux (centos:7.4.1708)
-  - tested with 3.10.2 on MacOs (Sierra 10.12.6)
-  
-- hdf5 library
-  - tested with 1.8.20 on windows (7/10 pro)
-  - tested with 1.8.12 on Linux (centos:7.4.1708)
-  - tested with 1.8.20 on MacOs (Sierra 10.12.6)
-
-- gcovr
-  - tested with 4.1 on Linux (centos:7.4.1708)
-  - tested with 4.1 on MacOs (Sierra 10.12.6)
-
-#### Generate API documentation
-```
-    $ cd ius/dox
-    $ doxygen
-```
-
-#### Installation instructions Linux (cluster running centos 7.4)
+## How to install the sdk sources
+### Philips Research specific installation instructions for Linux (cluster running centos 7.4)
 ```
     # login on compute server
     $ ssh llogin
@@ -47,23 +28,114 @@ The ius C_v3 library consists of 3 folders:
     $ cadenv -r 2.7-64 python
 ```
 
+### Checkout code
+```
+    $ git clone https://USERID@bitbucket.atlas.philips.com/scm/ius/ius.git
+    $ cd ius/C_v3
+    $ git checkout develop
+```
+
+## Folder structure
+```
+.
+├── Docker
+├── bin
+├── dox
+│   └── img
+├── examples
+│   ├── genV3file
+│   └── iusInputFileConvert
+├── external
+│   ├── Unity
+│   ├── cmake_modules
+│   ├── hashmap
+│   └── hdf5_local
+├── library
+│   ├── include
+│   └── src
+├── package
+└── unitTests
+    ├── include
+    └── src
+```
+### Docker
+This folder contains the Dockerfile that is is used to build/develop for the Linux platform.
+The resulting docker image is been deployed to [our local GitLab instance](#https://gitlab.ta.philips.com/IUS/ius/container_registry).
+
+### bin
+The bin folder contains convenience scripts that can be used to 
+build, test and gnerate a distribution.
+
+* build.bat - Windows build script
+* build.sh - Linux/MacOs build script
+* cppcheck.sh - Linux/MacOs script calling static linter
+* dist.bat - Windows script generating build distribution 
+* dist.sh - Linux/MacOs script, generating build distribution
+* gcovr.sh - Linux/MacOs script, generating code coverage info base on unit tests
+* mem.sh - Linux/MacOs script performing memory check
+* mksdk.sh - Linux/MacOs script, used to generate
+* ut.bat - Windows script that runs all available unit tests
+* ut.sh - Linux/MacOs script that runs all available unit tests
+* valgrind.sh - Linux/MacOs script that checks for memory leaks
+
+### dox
+The dox folder contains the Doxyfile that can be used to generate the API documentation.
+
+### examples
+The examples folder contains examples that demonstrate the use of the IUS fileio 
+library.
+* iusInputFileConvert - converts the V2 input file to V3 input file
+* genV3file - just a ius file generator, with some arbitrary data
+
+### external
+This folder needs the external dependencies, needed to build the software.
+
+### include
+This folder contains the IUS-SDK header files.
+
+### library
+This folder contains the IUS-SDK platform specific static library files, both 
+compiled for debug and release mode.
+
+### package
+This folder contains files that will be added to the SDK distribution (dist.sh/dist.bat).
+
+### unitTests
+This folder contains the unitTest the library has been tested with. This folder also 
+serves as an inspiration source of the API usage.
+
+## Build requirements
+In order to build and test the code, the required packages need to be installed:
+- compiler
+  - tested with MSVC 19.0.24215.1 on Windows 7
+  - tested with GNU c compiler 4.8.5 on Linux (centos:7.4.1708)
+  - tested with AppleClang 9.0.0.9000039 on MacOS (Sierra 10.12.6)
+  
+- cmake
+  - tested with 3.10.3 on Windows (7/10 pro)
+  - tested with 3.12.1 on Linux (centos:7.4.1708)
+  - tested with 3.10.2 on MacOs (Sierra 10.12.6)
+  
+- hdf5 library
+  - tested with 1.8.20 on Windows (7/10 pro)
+  - tested with 1.8.12 on Linux (centos:7.4.1708)
+  - tested with 1.8.20 on MacOs (Sierra 10.12.6)
+
+- gcovr
+  - tested with 4.1 on Linux (centos:7.4.1708)
+  - tested with 4.1 on MacOs (Sierra 10.12.6)
+
 #### Build instructions for Mac/Linux
 
-- Linux cluster users only: login to compute server as instructed in the
-installation steps
-
-- Checkout and build code
+- Build code
 
     ```
-    $ git clone https://USERID@bitbucket.atlas.philips.com/scm/ius/ius.git
-    $ cd ius
-    $ git checkout feature/IUS-99-input-file-io-test
-    $ C_v3/bin/build.sh
+    $ bin/build.sh
     ```
 - Run unit tests
 
     ```
-    $ C_v3/bin/ut.sh
+    $ bin/ut.sh
     Unity test run 1 of 1
     .......................
     
@@ -73,18 +145,17 @@ installation steps
     
     Process finished with exit code 0
     ```
-
-- The next example will build a dist folder containing 
-the distributable SDK:
+- Generate SDK:
     ```
     $ uname
     Linux
-    $ C_v3/bin/dist.sh
-    $ cd C_v3/build/Linux
+    $ bin/dist.sh
+    $ cd build/Linux
     $ ls -l dist
     
       total 8
       -rw-r--r--  1 dr snuggles 1133 Oct 11 08:49 CMakeLists.txt
+      drwxr-xr-x  3 dr snuggles  102 Oct 11 10:41 bin
       drwxr-xr-x  4 dr snuggles  136 Oct 11 10:41 examples
       drwxr-xr-x  8 dr snuggles  272 Oct 11 10:41 external
       drwxr-xr-x 53 dr snuggles 1802 Oct 11 10:41 include
@@ -100,18 +171,29 @@ the distributable SDK:
 - Checkout and build code
 
     ```
-    c:\proj> git clone https://USERID@bitbucket.atlas.philips.com/scm/ius/ius.git
-    c:\proj> cd ius
-    c:\proj> git checkout feature/IUS-99-input-file-io-test
-    c:\proj> C_v3\bin\build.bat
+    c:\proj\ius> bin\build.bat
     ```
 - Run unit tests
 
     ```
-    c:\proj> C_v3\bin\ut.bat
+    c:\proj\ius> bin\ut.bat
+    Unity test run 1 of 1
+    .......................
+    
+    -----------------------
+    23 Tests 0 Failures 0 Ignored 
+    OK
+    
+    Process finished with exit code 0
     ```
 - Build a dist folder containing the distributable SDK:
 
     ```
-    c:\proj> C_v3\bin\dist.bat
+    c:\proj\ius> bin\dist.bat
     ```
+
+### How to generate documentation
+```
+cd dox
+doxygen
+```
