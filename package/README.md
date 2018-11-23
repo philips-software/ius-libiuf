@@ -48,8 +48,8 @@ build, test and gnerate a distribution.
 * cppcheck.sh - Linux/MacOs script calling static linter
 * gcovr.sh - Linux/MacOs script, generating code coverage info base on unit tests
 * mem.sh - Linux/MacOs script performing memory check
-* ut.bat - Windows script that runs all available unit tests
-* ut.sh - Linux/MacOs script that runs all available unit tests
+* unittests.bat - Windows script that runs all available unit tests
+* unittests.sh - Linux/MacOs script that runs all available unit tests
 * valgrind.sh - Linux/MacOs script that checks for memory leaks
 
 ### documentation
@@ -129,7 +129,7 @@ In order to build and test the code, the required packages need to be installed:
 - Run unit tests
 
     ```
-    $ bin/ut.sh
+    $ bin/unittests.sh
     Unity test run 1 of 1
     .......................
     
@@ -149,7 +149,7 @@ In order to build and test the code, the required packages need to be installed:
 - Run unit tests
 
     ```
-    C:\> bin\ut.bat
+    C:\> bin\unittests.bat
     Unity test run 1 of 1
     .......................
     
