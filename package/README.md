@@ -45,12 +45,11 @@ build, test and gnerate a distribution.
 
 * build.bat - Windows build script
 * build.sh - Linux/MacOs build script
-* cppcheck.sh - Linux/MacOs script calling static linter
-* gcovr.sh - Linux/MacOs script, generating code coverage info base on unit tests
-* mem.sh - Linux/MacOs script performing memory check
+* static_code_analysis.sh - Linux/MacOs script running static code analysis
+* code_coverage.sh - Linux/MacOs script, generating code coverage info base on unit tests
 * unittests.bat - Windows script that runs all available unit tests
 * unittests.sh - Linux/MacOs script that runs all available unit tests
-* valgrind.sh - Linux/MacOs script that checks for memory leaks
+* memory_leak_detection.sh - Linux/MacOs script performing runtime memory leak detection
 
 ### documentation
 The html folder contains the generated API documentation. Main file

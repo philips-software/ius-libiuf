@@ -68,15 +68,14 @@ build, test and gnerate a distribution.
 
 * build.bat - Windows build script
 * build.sh - Linux/MacOs build script
-* cppcheck.sh - Linux/MacOs script calling static linter
-* dist.bat - Windows script generating build distribution 
-* dist.sh - Linux/MacOs script, generating build distribution
-* gcovr.sh - Linux/MacOs script, generating code coverage info base on unit tests
-* mem.sh - Linux/MacOs script performing memory check
-* mksdk.sh - Linux/MacOs script, used to generate
+* static_code_analysis.sh - Linux/MacOs script running static code analysis
+* mk_os_distribution.bat - Windows script generating build distribution 
+* mk_os_distribution.sh - Linux/MacOs script, generating build distribution
+* code_coverage.sh - Linux/MacOs script, generating code coverage info base on unit tests
+* mksdk.sh - Linux/MacOs script, used to collect the artefacts from the mk_os_distribution scripts and generate an SDK folder
 * unittests.bat - Windows script that runs all available unit tests
 * unittests.sh - Linux/MacOs script that runs all available unit tests
-* valgrind.sh - Linux/MacOs script that checks for memory leaks
+* memory_leak_detection.sh - Linux/MacOs script performing runtime memory leak detection
 
 ### dox
 The dox folder contains the Doxyfile that can be used to generate the API documentation.
