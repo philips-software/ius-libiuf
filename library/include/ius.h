@@ -27,7 +27,7 @@
 *    processing paramaters and settings
 *    the history of all previous processing paramaters and settings.
 * Since the meta-data is very small (10s of kBytes) typically compared to the data itself (100s of MBytes), storing all metadata of each 
-* processing step remains relatively little overhead. In order to cope with various processing chain implementations and varsions of each 
+* processing step remains relatively little overhead. In order to cope with various processing chain implementations and versions of each
 * processing step is considered a #IusHistoryNode that has a "history" in the form of parents (a list of #IusHistoryNode s), node 
 * specific properties (identified by the node type and optional algorithm parameters. In the following sections we will describe the implemented 
 * Nodes types.  

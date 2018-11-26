@@ -216,6 +216,11 @@ iurcm_t ncFillReceiveChannelMap
         status |= iusReceiveChannelMapSetStartDelay(receiveChannelMap, i, delay);
     }
 
+    if (status != 0)
+    {
+        iusReceiveChannelMapDelete(receiveChannelMap);
+        return IURCM_INVALID;
+    }
     return receiveChannelMap;
 }
 

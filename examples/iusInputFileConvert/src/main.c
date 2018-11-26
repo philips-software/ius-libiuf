@@ -79,7 +79,7 @@ int main
 	// check input arguments, we expect 2: an inputFile and a target filename 
 	if (argc != 3)
 	{
-		printf("Error: expected 2 arguments: and input filename and an output filename. If the input file is V2 i will be converted to V3 and vice versa \n");
+		printf("Error: expected 2 arguments: and input filename and an output filename. If the input file is V2 it will be converted to V3 and vice versa \n");
 		exit(1);
 	}
 	// we use the ius V3 library, so for V2 we use direct HDF5 reads
