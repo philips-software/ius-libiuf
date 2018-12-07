@@ -21,7 +21,7 @@ typedef struct HashableParameter HashableParameter;
 struct IusParameterDict
 {
     struct hashmap map;
-    IUS_BOOL loadedFromFile;
+    IUS_BOOL deepDelete;
 } ;
 
 /* Declare type-specific blob_hashmap_* functions with this handy macro */
@@ -36,7 +36,7 @@ iupad_t iusParameterDictCreate
     if(dict!=NULL)
     {
         hashmap_init(&dict->map, hashmap_hash_string, hashmap_compare_string, 0);
-        dict->loadedFromFile = IUS_FALSE;
+        dict->deepDelete = IUS_FALSE;
     }
     return dict;
 }
@@ -209,6 +209,6 @@ iupad_t iusParameterDictLoad
         iusHdf5ReadString(handle,memberName, memberValue);
         status = iusParameterDictSet(dict, memberName, memberValue);
     }
-    dict->loadedFromFile = IUS_TRUE;
+    dict->deepDelete = IUS_TRUE;
     return dict;
 }

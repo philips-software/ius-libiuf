@@ -55,16 +55,15 @@ iuf_t iusFileLoad
 {
     if (pFilename == NULL)
     {
-        fprintf(stderr, "iusFileLoad: Input arguments can not be NULL \n");
+        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_FILENAME, "pFilename argument is NULL");
         return IUFI_INVALID;
     }
 
     iuf_t file = calloc(1,sizeof(IusFile));
 
-    // check calloc
     if (file == IUFI_INVALID)
     {
-        fprintf(stderr, "iusFileLoad: calloc of instance failed\n");
+        IUS_ERROR_PUSH(IUS_ERR_MAJ_MEMORY, IUS_ERR_MIN_ALLOC, "unable to allocate IusFile ADT");
         return IUFI_INVALID;
     }
 
@@ -72,7 +71,7 @@ iuf_t iusFileLoad
     file->handle = H5Fopen( pFilename, H5F_ACC_RDONLY, H5P_DEFAULT );
     if (file->handle <=0)
     {
-        fprintf( stderr, "iusFileLoad: could not open file: %s\n", pFilename );
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_FILENAME, "unable to open file '%s'\n", pFilename );
         return IUFI_INVALID;
     }
 

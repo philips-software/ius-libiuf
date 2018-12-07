@@ -21,7 +21,7 @@ typedef struct HashableTransmitApodization HashableTransmitApodization;
 struct IusTransmitApodizationDict
 {
 	struct hashmap map;
-    IUS_BOOL loadedFromFile;
+    IUS_BOOL deepDelete;
 };
 
 /* Declare type-specific blob_hashmap_* functions with this handy macro */
@@ -36,7 +36,7 @@ iutad_t iusTransmitApodizationDictCreate
 	if (dict != NULL)
 	{
 		hashmap_init(&dict->map, hashmap_hash_string, hashmap_compare_string, 0);
-		dict->loadedFromFile = IUS_FALSE;
+		dict->deepDelete = IUS_FALSE;
 	}
 	return dict;
 }
@@ -48,7 +48,7 @@ int iusTransmitApodizationDictDeepDelete
 )
 {
 	if (dict == NULL) return IUS_ERR_VALUE;
-	dict->loadedFromFile = IUS_TRUE;
+	dict->deepDelete = IUS_TRUE;
 	return iusTransmitApodizationDictDelete(dict);
 }
 
@@ -64,7 +64,7 @@ int iusTransmitApodizationDictDelete
 	for (iter = hashmap_iter(&dict->map); iter; iter = hashmap_iter_next(&dict->map, iter))
 	{
 		iterElement = HashableTransmitApodization_hashmap_iter_get_data(iter);
-		if(dict->loadedFromFile==IUS_TRUE)
+		if(dict->deepDelete==IUS_TRUE)
 		    iusTransmitApodizationDelete(iterElement->transmitApodization);
 		free(iterElement);
 	}
@@ -241,7 +241,7 @@ iutad_t iusTransmitApodizationDictLoad
 	{
 		return NULL;
 	}
-    dict->loadedFromFile = IUS_TRUE;
+    dict->deepDelete = IUS_TRUE;
 	return dict;
 }
 

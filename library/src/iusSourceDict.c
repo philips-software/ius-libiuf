@@ -21,7 +21,7 @@ typedef struct HashableSource HashableSource;
 struct IusSourceDict
 {
     struct hashmap map;
-    IUS_BOOL loadedFromFile;
+    IUS_BOOL deepDelete;
 } ;
 
 /* Declare type-specific blob_hashmap_* functions with this handy macro */
@@ -36,7 +36,7 @@ iusd_t iusSourceDictCreate
     if(dict!=NULL)
     {
       hashmap_init(&dict->map, hashmap_hash_string, hashmap_compare_string, 0);
-      dict->loadedFromFile = IUS_FALSE;
+      dict->deepDelete = IUS_FALSE;
     }
     return dict;
 }
@@ -48,7 +48,7 @@ iusd_t dict
 )
 {
     if(dict == NULL) return IUS_ERR_VALUE;
-    dict->loadedFromFile = IUS_TRUE;
+    dict->deepDelete = IUS_TRUE;
     return iusSourceDictDelete(dict);
 }
 
@@ -63,7 +63,7 @@ int iusSourceDictDelete
     /* Free all allocated resources associated with map and reset its state */
     for (iter = hashmap_iter(&dict->map); iter; iter = hashmap_iter_next(&dict->map, iter)) {
         iterElement = HashableSource_hashmap_iter_get_data(iter);
-        if (dict->loadedFromFile==IUS_TRUE)
+        if (dict->deepDelete==IUS_TRUE)
             iusSourceDelete(iterElement->source);
         free(iterElement);
     }
@@ -247,6 +247,6 @@ iusd_t iusSourceDictLoad
     {
         return NULL;
     }
-    dict->loadedFromFile = IUS_TRUE;
+    dict->deepDelete = IUS_TRUE;
     return dict;
 }

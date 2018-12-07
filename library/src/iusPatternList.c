@@ -13,7 +13,7 @@ struct IusPatternList
 {
     int numPatterns;
     iupa_t *   pPatterns ;
-    IUS_BOOL loadedFromFile;
+    IUS_BOOL deepDelete;
     iursd_t receiveSettingsDict;
     iurcmd_t receiveChannelMapDict;
 
@@ -30,7 +30,7 @@ iupal_t iusPatternListCreate
     iupal_t list = calloc(1, sizeof(IusPatternList));
     if(list!=NULL)
     {
-        list->loadedFromFile = IUS_FALSE;
+        list->deepDelete = IUS_FALSE;
         list->receiveChannelMapDict = receiveChannelMapDict;
         list->receiveSettingsDict = receiveSettingsDict;
         list->numPatterns = numPatterns;
@@ -50,7 +50,7 @@ int iusPatternListDeepDelete
 )
 {
     if(list == NULL) return IUS_ERR_VALUE;
-    list->loadedFromFile = IUS_TRUE;
+    list->deepDelete = IUS_TRUE;
     return iusPatternListDelete(list);
 }
 
@@ -62,7 +62,7 @@ int iusPatternListDelete
 {
     int index;
     if(list == NULL) return IUS_ERR_VALUE;
-    if(list->loadedFromFile == IUS_TRUE)
+    if(list->deepDelete == IUS_TRUE)
     {
         for(index = 0 ; index < list->numPatterns ; index++ )
         {
@@ -197,7 +197,7 @@ iupal_t iusPatternListLoad
         }
         iusPatternListSet(patternList,pattern,i);
     }
-    patternList->loadedFromFile = IUS_TRUE;
+    patternList->deepDelete = IUS_TRUE;
     return patternList;
 }
 

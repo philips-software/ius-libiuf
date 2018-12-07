@@ -39,7 +39,7 @@ iu2dt_t ius2DTransducerCreate
     created->baseTransducer.pTransducerName = strdup(name);
     created->baseTransducer.shape = shape;
     created->baseTransducer.centerFrequency = centerFrequency;
-    created->baseTransducer.loadedFromFile = IUS_FALSE;
+    created->baseTransducer.deepDelete = IUS_FALSE;
     return created;
 }
 
@@ -49,7 +49,7 @@ int ius2DTransducerDeepDelete
 )
 {
     if (ius2DTransducer == NULL) return IUS_ERR_VALUE;
-    ius2DTransducer->baseTransducer.loadedFromFile = IUS_TRUE;
+    ius2DTransducer->baseTransducer.deepDelete = IUS_TRUE;
     return ius2DTransducerDelete(ius2DTransducer);
 }
 
@@ -62,7 +62,7 @@ int ius2DTransducerDelete
     int numElements =  ius2DTransducerElementListGetSize(ius2DTransducer->elements);
     if (numElements > 0)
     {
-        if (ius2DTransducer->baseTransducer.loadedFromFile == IUS_TRUE)
+        if (ius2DTransducer->baseTransducer.deepDelete == IUS_TRUE)
         {
             ius2DTransducerElementListDeepDelete(ius2DTransducer->elements);
 
@@ -172,7 +172,7 @@ iu2dt_t ius2DTransducerLoad
                                                   numElements);
 	if (transducer == IU2DT_INVALID) return IU2DT_INVALID;
     ius2DTransducerSetElementList(transducer,elements);
-    transducer->baseTransducer.loadedFromFile = IUS_TRUE;
+    transducer->baseTransducer.deepDelete = IUS_TRUE;
     iusBaseTransducerDelete(baseTransducer);
     return transducer;
 }

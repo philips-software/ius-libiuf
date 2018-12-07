@@ -11,7 +11,7 @@ struct Ius2DTransducerElementList
 {
     int numElements;
     iu2dte_t *   p2DTransducerElements ;
-    IUS_BOOL loadedFromFile;
+    IUS_BOOL deepDelete;
 } ;
 
 // ADT
@@ -24,7 +24,7 @@ iu2dtel_t ius2DTransducerElementListCreate
     iu2dtel_t list = calloc(1, sizeof(Ius2DTransducerElementList));
     if(list!=NULL)
     {
-        list->loadedFromFile = IUS_FALSE;
+        list->deepDelete = IUS_FALSE;
         list->numElements = num2DTransducerElements;
         list->p2DTransducerElements = (iu2dte_t *) calloc((size_t)num2DTransducerElements, sizeof(iu2dte_t));
         if( list->p2DTransducerElements == NULL )
@@ -50,7 +50,7 @@ int ius2DTransducerElementListDeepDelete
 )
 {
     if(list == NULL) return IUS_ERR_VALUE;
-    list->loadedFromFile = IUS_TRUE;
+    list->deepDelete = IUS_TRUE;
     return ius2DTransducerElementListDelete(list);
 }
 
@@ -60,7 +60,7 @@ int ius2DTransducerElementListDelete
 )
 {
     if(list == NULL) return IUS_ERR_VALUE;
-    if(list->loadedFromFile == IUS_TRUE)
+    if(list->deepDelete == IUS_TRUE)
     {
         for (int i = 0 ; i < list->numElements ; i++ )
         {
@@ -183,7 +183,7 @@ iu2dtel_t ius2DTransducerElementListLoad
     }
 
 	H5Gclose(elements_id);
-    elementList->loadedFromFile = IUS_TRUE;
+    elementList->deepDelete = IUS_TRUE;
     if( status == IUS_ERR_VALUE )
     {
         ius2DTransducerElementListDelete(elementList);

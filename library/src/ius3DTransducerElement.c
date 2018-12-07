@@ -16,7 +16,7 @@ struct Ius3DTransducerElement
     iu3dp_t   position; /**< 3D Location of the element */
     iu3da_t      angle;    /**< orientation of the elements */
     iu3ds_t       size;     /**< size of the element */
-    IUS_BOOL loadedFromFile;
+    IUS_BOOL deepDelete;
 } ;
 
 // ADT
@@ -32,7 +32,7 @@ iu3dte_t ius3DTransducerElementCreate
     created->position = pos;
     created->angle = ang;
     created->size = siz;
-    created->loadedFromFile = IUS_FALSE;
+    created->deepDelete = IUS_FALSE;
     return created;
 }
 
@@ -43,7 +43,7 @@ int ius3DTransducerElementDeepDelete
 )
 {
     if (ius3DTransducerElement == NULL) return IUS_ERR_VALUE;
-    ius3DTransducerElement->loadedFromFile = IUS_TRUE;
+    ius3DTransducerElement->deepDelete = IUS_TRUE;
     return ius3DTransducerElementDelete(ius3DTransducerElement);
 }
 
@@ -55,7 +55,7 @@ int ius3DTransducerElementDelete
     int status = IUS_ERR_VALUE;
     if(ius3DTransducerElement != NULL)
     {
-        if(ius3DTransducerElement->loadedFromFile == IUS_TRUE)
+        if(ius3DTransducerElement->deepDelete == IUS_TRUE)
         {
             ius3DPositionDelete(ius3DTransducerElementGetPosition(ius3DTransducerElement));
             ius3DSizeDelete(ius3DTransducerElementGetSize(ius3DTransducerElement));
@@ -123,7 +123,7 @@ iu3dte_t ius3DTransducerElementLoad
         return element;
 
     element = ius3DTransducerElementCreate(elemPos, elemAngle, elemSize);
-    element->loadedFromFile = IUS_TRUE;
+    element->deepDelete = IUS_TRUE;
     return element;
 }
 

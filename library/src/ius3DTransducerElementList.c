@@ -11,7 +11,7 @@ struct Ius3DTransducerElementList
 {
     int numElements;
     iu3dte_t *   p3DTransducerElements ;
-    IUS_BOOL loadedFromFile;
+    IUS_BOOL deepDelete;
 } ;
 
 // ADT
@@ -24,7 +24,7 @@ iu3dtel_t ius3DTransducerElementListCreate
     iu3dtel_t list = calloc(1, sizeof(Ius3DTransducerElementList));
     if(list!=NULL)
     {
-        list->loadedFromFile = IUS_FALSE;
+        list->deepDelete = IUS_FALSE;
         list->numElements = num3DTransducerElements;
         list->p3DTransducerElements = (iu3dte_t *) calloc((size_t)num3DTransducerElements, sizeof(iu3dte_t));
         if( list->p3DTransducerElements == NULL )
@@ -51,7 +51,7 @@ int ius3DTransducerElementListDeepDelete
 )
 {
     if(list == NULL) return IUS_ERR_VALUE;
-    list->loadedFromFile = IUS_TRUE;
+    list->deepDelete = IUS_TRUE;
     return ius3DTransducerElementListDelete(list);
 }
 
@@ -61,7 +61,7 @@ int ius3DTransducerElementListDelete
 )
 {
     if(list == NULL) return IUS_ERR_VALUE;
-    if(list->loadedFromFile == IUS_TRUE)
+    if(list->deepDelete == IUS_TRUE)
     {
         for (int i = 0 ; i < list->numElements ; i++ )
         {
@@ -181,7 +181,7 @@ iu3dtel_t ius3DTransducerElementListLoad
             break;
     }
 
-    elementList->loadedFromFile = IUS_TRUE;
+    elementList->deepDelete = IUS_TRUE;
     if( status == IUS_ERR_VALUE )
     {
         ius3DTransducerElementListDelete(elementList);

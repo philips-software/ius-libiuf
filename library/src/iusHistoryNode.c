@@ -21,7 +21,7 @@ struct IusHistoryNode
     int                 numberOfParameters;
     iupad_t             parameters;
     void *              instanceData;
-    IUS_BOOL            loadedFromFile;
+    IUS_BOOL            deepDelete;
 
 } ;
 
@@ -39,7 +39,7 @@ static iuhn_t iusHistoryNodeCreateWithId
     pIusNode->parents = IUHNL_INVALID;
     pIusNode->parameters = IUPAD_INVALID;
     pIusNode->instanceData = NULL;
-    pIusNode->loadedFromFile = IUS_FALSE;
+    pIusNode->deepDelete = IUS_FALSE;
     return pIusNode;
 }
 
@@ -61,9 +61,9 @@ int iusHistoryNodeDelete
 )
 {
     if ( node == NULL ) return IUS_ERR_VALUE;
-    if(node->numberOfParents!=0 && node->loadedFromFile == IUS_TRUE)
+    if(node->numberOfParents!=0 && node->deepDelete == IUS_TRUE)
         iusHistoryNodeListDelete(node->parents);
-    if(node->numberOfParameters!=0 && node->loadedFromFile == IUS_TRUE)
+    if(node->numberOfParameters!=0 && node->deepDelete == IUS_TRUE)
     {
         iusParameterDictDelete(node->parameters);
     }
@@ -282,7 +282,7 @@ iuhn_t iusHistoryNodeLoad
     // load instance data
     void *instance = iusHistoryNodeLoadInstance(loadedObj,handle);
     iusHistoryNodeSetInstanceData(loadedObj,instance);
-    loadedObj->loadedFromFile = IUS_TRUE;
+    loadedObj->deepDelete = IUS_TRUE;
     return loadedObj;
 }
 

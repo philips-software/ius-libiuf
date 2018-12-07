@@ -36,9 +36,14 @@ int iusReceiveChannelMapDelete
 	if (receiveChannelMap == NULL) return IUS_ERR_VALUE;
 	if (receiveChannelMap->map != NULL)
 	{
-		free(receiveChannelMap->startDelay);
 		free(receiveChannelMap->map);
 	}
+
+	if (receiveChannelMap->startDelay != NULL)
+	{
+		free(receiveChannelMap->startDelay);
+	}
+
 	free(receiveChannelMap);
 	return IUS_E_OK;
 }

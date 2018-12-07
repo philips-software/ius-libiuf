@@ -13,7 +13,7 @@ struct IusFrameList
 {
     int numFrames;
     iufr_t *   pFrames ;
-    IUS_BOOL loadedFromFile;
+    IUS_BOOL deepDelete;
 } ;
 
 // ADT
@@ -26,7 +26,7 @@ iufl_t iusFrameListCreate
     iufl_t list = calloc(1, sizeof(IusFrameList));
     if(list!=NULL)
     {
-        list->loadedFromFile = IUS_FALSE;
+        list->deepDelete = IUS_FALSE;
         list->numFrames = numFrames;
         list->pFrames = (iufr_t *) calloc((size_t)numFrames, sizeof(iufr_t));
         if( list->pFrames == NULL )
@@ -59,7 +59,7 @@ int iusFrameListDeepDelete
 )
 {
     if(list == NULL) return IUS_ERR_VALUE;
-    list->loadedFromFile = IUS_TRUE;
+    list->deepDelete = IUS_TRUE;
     return iusFrameListDelete(list);
 }
 
@@ -69,7 +69,7 @@ int iusFrameListDelete
 )
 {
     if(list == NULL) return IUS_ERR_VALUE;
-    if(list->loadedFromFile == IUS_TRUE)
+    if(list->deepDelete == IUS_TRUE)
         iusFrameListDeleteFrames(list);
     free(list->pFrames);
     free(list);
@@ -160,7 +160,7 @@ iufl_t iusFrameListLoad
         iusFrameListSet(frameList,sourceElement,i);
     }
 	H5Gclose(frameList_id);
-    frameList->loadedFromFile = IUS_TRUE;
+    frameList->deepDelete = IUS_TRUE;
     return frameList;
 }
 

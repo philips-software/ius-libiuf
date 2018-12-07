@@ -21,7 +21,7 @@ typedef struct HashableReceiveSettings HashableReceiveSettings;
 struct IusReceiveSettingsDict
 {
     struct hashmap map;
-    IUS_BOOL loadedFromFile;
+    IUS_BOOL deepDelete;
 } ;
 
 /* Declare type-specific blob_hashmap_* functions with this handy macro */
@@ -36,7 +36,7 @@ iursd_t iusReceiveSettingsDictCreate
     if(dict!=NULL)
     {
       hashmap_init(&dict->map, hashmap_hash_string, hashmap_compare_string, 0);
-      dict->loadedFromFile = IUS_FALSE;
+      dict->deepDelete = IUS_FALSE;
     }
     return dict;
 }
@@ -47,7 +47,7 @@ int iusReceiveSettingsDictDeepDelete
 )
 {
     if (dict == NULL) return IUS_ERR_VALUE;
-    dict->loadedFromFile = IUS_TRUE;
+    dict->deepDelete = IUS_TRUE;
     return iusReceiveSettingsDictDelete(dict);
 }
 
@@ -63,7 +63,7 @@ int iusReceiveSettingsDictDelete
     for (iter = hashmap_iter(&dict->map); iter; iter = hashmap_iter_next(&dict->map, iter))
     {
         iterElement = HashableReceiveSettings_hashmap_iter_get_data(iter);
-        if (dict->loadedFromFile == IUS_TRUE)
+        if (dict->deepDelete == IUS_TRUE)
             iusReceiveSettingsDelete(iterElement->receiveSettings);
         free(iterElement);
     }
@@ -244,6 +244,6 @@ iursd_t iusReceiveSettingsDictLoad
     {
         return NULL;
     }
-    dict->loadedFromFile = IUS_TRUE;
+    dict->deepDelete = IUS_TRUE;
     return dict;
 }

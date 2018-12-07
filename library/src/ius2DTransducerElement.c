@@ -16,7 +16,7 @@ struct Ius2DTransducerElement
   iu2dp_t   position;
   float     theta;
   iu2ds_t   size;
-  IUS_BOOL  loadedFromFile;
+  IUS_BOOL  deepDelete;
 } ;
 
 // ADT
@@ -35,7 +35,7 @@ iu2dte_t ius2DTransducerElementCreate
     created->position = pos;
     created->theta = theta;
     created->size = siz;
-    created->loadedFromFile = IUS_FALSE;
+    created->deepDelete = IUS_FALSE;
     return created;
 }
 
@@ -45,7 +45,7 @@ int ius2DTransducerElementDeepDelete
 )
 {
     if (ius2DTransducerElement == NULL) return IUS_ERR_VALUE;
-    ius2DTransducerElement->loadedFromFile=IUS_TRUE;
+    ius2DTransducerElement->deepDelete=IUS_TRUE;
     return ius2DTransducerElementDelete(ius2DTransducerElement);
 }
 
@@ -55,7 +55,7 @@ int ius2DTransducerElementDelete
 )
 {
     if (ius2DTransducerElement == NULL) return IUS_ERR_VALUE;
-    if (ius2DTransducerElement->loadedFromFile == IUS_TRUE)
+    if (ius2DTransducerElement->deepDelete == IUS_TRUE)
     {
         ius2DPositionDelete(ius2DTransducerElement->position);
         ius2DSizeDelete(ius2DTransducerElement->size);
@@ -116,7 +116,7 @@ iu2dte_t ius2DTransducerElementLoad
     if (status < 0) return IU2DTE_INVALID;
 
     iu2dte_t element = ius2DTransducerElementCreate(elemPos, theta, elemSize);
-    element->loadedFromFile = IUS_TRUE;
+    element->deepDelete = IUS_TRUE;
     return element;
 }
 

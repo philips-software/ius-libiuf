@@ -21,6 +21,7 @@
 extern "C" {
 #endif
 
+#include <ius.h>
 #include <stdio.h>   // fprintf()
 #include <stdlib.h>  // exit()
 
@@ -76,5 +77,48 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
+
+int iusErrorGetCount
+(
+    void
+);
+
+int iusErrorPrint
+(
+    FILE *pFILE
+);
+
+int iusErrorPush
+(
+    const char *pFileName,
+    const char *pFunctionName,
+    int lineNumber,
+    hid_t maj,
+    hid_t min,
+    char *msg
+);
+
+int iusErrorFormatAndPush
+(
+    const char *pFileName,
+    const char *pFunctionName,
+    int lineNumber,
+    hid_t maj,
+    hid_t min,
+    char *msgFormat,
+    ...
+);
+
+extern hid_t  IUS_ERR_MAJ_GENERAL;  //     (100001)   /**< general error */
+extern hid_t  IUS_ERR_MAJ_MEMORY;   //    (100002)    /**< memory error  */
+extern hid_t  IUS_ERR_MAJ_VALUE;    //    (100003)    /**< value error  */
+extern hid_t  IUS_ERR_MAJ_ERROR;
+
+extern hid_t  IUS_ERR_MIN_ARG_FILENAME;  //     (100001)   /**< general error */
+extern hid_t  IUS_ERR_MIN_ALLOC;
+extern hid_t  IUS_ERR_MIN_FORMAT;
+
+#define IUS_ERROR_PUSH(maj,min,msg)     iusErrorPush(__FILE__, __func__, __LINE__, maj, min, msg)
+#define IUS_ERROR_FMT_PUSH(maj,min,fmt,...) iusErrorFormatAndPush(__FILE__, __func__, __LINE__, maj, min, fmt, __VA_ARGS__)
 
 #endif  // _IUSERROR_H

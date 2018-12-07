@@ -144,6 +144,7 @@ add_library(ius STATIC
 		src/iusDataStream.c
 		src/iusDataStreamDict.c
         src/iusAcquisition.c
+		src/iusError.c
 		src/iusFile.c
 		src/iusFrame.c
 		src/iusFrameList.c

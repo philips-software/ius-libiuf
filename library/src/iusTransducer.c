@@ -31,7 +31,7 @@ iut_t iusTransducerCreate
     created->pTransducerName = strdup(name);
     created->shape = shape;
     created->centerFrequency = centerFrequency;
-    created->loadedFromFile = IUS_FALSE;
+    created->deepDelete = IUS_FALSE;
     return created;
 }
 
@@ -42,7 +42,7 @@ int iusTransducerDeepDelete
 {
     int status = IUS_ERR_VALUE;
     if (iusTransducer == NULL) return status;
-    iusTransducer->loadedFromFile = IUS_TRUE;
+    iusTransducer->deepDelete = IUS_TRUE;
     if( iusTransducer->type == IUS_2D_SHAPE )
         return ius2DTransducerDeepDelete((iu2dt_t) iusTransducer);
     if( iusTransducer->type == IUS_3D_SHAPE )
@@ -318,7 +318,7 @@ iut_t iusTransducerLoad
 
 	if( transducer != IUT_INVALID )
     {
-        transducer->loadedFromFile = IUS_TRUE;
+        transducer->deepDelete = IUS_TRUE;
     }
     return transducer;
 }

@@ -12,7 +12,7 @@ struct IusHistoryNodeList
 {
     int numHistoryNodes;
     iuhn_t *   pHistoryNodes ;
-    IUS_BOOL loadedFromFile;
+    IUS_BOOL deepDelete;
 } ;
 
 // ADT
@@ -25,7 +25,7 @@ iuhnl_t iusHistoryNodeListCreate
     iuhnl_t list = calloc(1, sizeof(IusHistoryNodeList));
     if(list!=NULL)
     {
-        list->loadedFromFile = IUS_FALSE;
+        list->deepDelete = IUS_FALSE;
         list->numHistoryNodes = numHistoryNodes;
         list->pHistoryNodes = (iuhn_t *) calloc((size_t)numHistoryNodes, sizeof(iuhn_t));
         if( list->pHistoryNodes == NULL )
@@ -45,7 +45,7 @@ int iusHistoryNodeListDelete
 {
     int i;
     if(list == NULL) return IUS_ERR_VALUE;
-    if(list->loadedFromFile==IUS_TRUE)
+    if(list->deepDelete==IUS_TRUE)
     {
         for (i=0;i<list->numHistoryNodes;i++)
         {
@@ -147,7 +147,7 @@ iuhnl_t iusHistoryNodeListLoad
         iusHistoryNodeListDelete(nodeList);
         nodeList = IUHNL_INVALID;
     }
-    nodeList->loadedFromFile = IUS_TRUE;
+    nodeList->deepDelete = IUS_TRUE;
     return nodeList;
 }
 

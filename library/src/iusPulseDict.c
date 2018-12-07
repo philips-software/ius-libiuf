@@ -24,7 +24,7 @@ typedef struct HashablePulse HashablePulse;
 struct IusPulseDict
 {
     struct hashmap map;
-    IUS_BOOL loadedFromFile;
+    IUS_BOOL deepDelete;
 } ;
 
 /* Declare type-specific blob_hashmap_* functions with this handy macro */
@@ -39,7 +39,7 @@ iupd_t iusPulseDictCreate
     if(dict!=NULL)
     {
       hashmap_init(&dict->map, hashmap_hash_string, hashmap_compare_string, 0);
-      dict->loadedFromFile = IUS_FALSE;
+      dict->deepDelete = IUS_FALSE;
     }
     return dict;
 }
@@ -50,7 +50,7 @@ int iusPulseDictDeepDelete
 )
 {
     if (dict == NULL) return IUS_ERR_VALUE;
-    dict->loadedFromFile = IUS_TRUE;
+    dict->deepDelete = IUS_TRUE;
     return iusPulseDictDelete(dict);
 }
 
@@ -66,7 +66,7 @@ int iusPulseDictDelete
     for (iter = hashmap_iter(&dict->map); iter; iter = hashmap_iter_next(&dict->map, iter))
     {
         iterElement = HashablePulse_hashmap_iter_get_data(iter);
-        if (dict->loadedFromFile == IUS_TRUE)
+        if (dict->deepDelete == IUS_TRUE)
             iusPulseDelete(iterElement->pulse);
         free(iterElement);
     }
@@ -248,6 +248,6 @@ iupd_t iusPulseDictLoad
     {
         return NULL;
     }
-    dict->loadedFromFile = IUS_TRUE;
+    dict->deepDelete = IUS_TRUE;
     return dict;
 }

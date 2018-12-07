@@ -14,7 +14,7 @@ struct Ius3DNonParametricSource
     struct IusSource base;
     int numLocations;
     struct Ius3DPosition *pLocations;
-    IUS_BOOL loadedFromFile;
+    IUS_BOOL deepDelete;
 } ;
 
 // ADT
@@ -34,7 +34,7 @@ iu3dnps_t ius3DNonParametricSourceCreate
         return NULL;
     }
 
-    created->loadedFromFile = IUS_FALSE;
+    created->deepDelete = IUS_FALSE;
     created->base.type = IUS_3D_NON_PARAMETRIC_SOURCE;
     created->numLocations = numLocations;
     return created;
@@ -195,7 +195,7 @@ iu3dnps_t ius3DNonParametricSourceLoad
 
     source = ius3DNonParametricSourceCreate(numLocations);
     status = ius3DNonParametricSourceLoadLocations(source, handle);
-    source->loadedFromFile = IUS_TRUE;
+    source->deepDelete = IUS_TRUE;
     if (status <-0)
         return NULL;
     return source;
