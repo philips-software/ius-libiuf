@@ -4,7 +4,7 @@
 
 #include <stdio.h>
 #include <unity_fixture.h>
-#include <iusUtil.h>
+#include <ius.h>
 
 static void RunAllTests(void)
 {
@@ -51,6 +51,6 @@ static void RunAllTests(void)
 
 int main(int argc, const char * argv[])
 {
-    iusDiagDisable();
+    iusErrorLogDisable();
     return UnityMain(argc, argv, RunAllTests);
 }

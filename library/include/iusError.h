@@ -2,7 +2,7 @@
 //    COPYRIGHT 2017 PHILIPS RESEARCH
 //==============================================================================
 //
-//  Source Name   : iusError.h
+//  Source Name   : iusErrorState.h
 //                  IUS error codes
 //  iusVersion    : 255.255.255.255
 //
@@ -107,6 +107,11 @@ int iusErrorFormatAndPush
     hid_t min,
     char *msgFormat,
     ...
+);
+
+herr_t iusErrorLogDisable
+(
+    void
 );
 
 extern hid_t  IUS_ERR_MAJ_GENERAL;  //     (100001)   /**< general error */

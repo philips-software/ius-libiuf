@@ -60,7 +60,6 @@ iuf_t iusFileLoad
     }
 
     iuf_t file = calloc(1,sizeof(IusFile));
-
     if (file == IUFI_INVALID)
     {
         IUS_ERROR_PUSH(IUS_ERR_MAJ_MEMORY, IUS_ERR_MIN_ALLOC, "unable to allocate IusFile ADT");
@@ -71,7 +70,8 @@ iuf_t iusFileLoad
     file->handle = H5Fopen( pFilename, H5F_ACC_RDONLY, H5P_DEFAULT );
     if (file->handle <=0)
     {
-        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_FILENAME, "unable to open file '%s'\n", pFilename );
+        free(file);
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_FILENAME, "unable to open file '%s'", pFilename );
         return IUFI_INVALID;
     }
 
