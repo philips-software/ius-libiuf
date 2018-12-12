@@ -116,7 +116,7 @@ TEST(IusErrorHandling, testIusErrorLogDisabledScenario)
 
 TEST_GROUP_RUNNER(IusErrorHandling)
 {
-    RUN_TEST_CASE(IusErrorHandling, testIusErrorUsageScenarioStderr);
+//    RUN_TEST_CASE(IusErrorHandling, testIusErrorUsageScenarioStderr);
     RUN_TEST_CASE(IusErrorHandling, testIusErrorUsageScenario);
     RUN_TEST_CASE(IusErrorHandling, testIusErrorLogDisabledScenario);
 }
