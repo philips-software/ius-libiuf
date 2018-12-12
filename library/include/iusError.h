@@ -114,6 +114,11 @@ herr_t iusErrorLogDisable
     void
 );
 
+herr_t iusErrorLogEnable
+(
+    void
+);
+
 extern hid_t  IUS_ERR_MAJ_GENERAL;  //     (100001)   /**< general error */
 extern hid_t  IUS_ERR_MAJ_MEMORY;   //    (100002)    /**< memory error  */
 extern hid_t  IUS_ERR_MAJ_VALUE;    //    (100003)    /**< value error  */

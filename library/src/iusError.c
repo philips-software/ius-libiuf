@@ -155,7 +155,7 @@ int iusErrorPrint
 {
     iue_t state = iusErrorGetState();
     herr_t status = 0;
-    if(state->disabled == IUS_TRUE)
+    if(state->disabled == IUS_FALSE)
     {
         status = H5Eprint2(state->iusErrorStack, pFILE);
     }
@@ -172,3 +172,9 @@ herr_t iusErrorLogDisable()
     return status;
 }
 
+herr_t iusErrorLogEnable()
+{
+    iue_t state = iusErrorGetState();
+    state->disabled = IUS_FALSE;
+    return 0;
+}
