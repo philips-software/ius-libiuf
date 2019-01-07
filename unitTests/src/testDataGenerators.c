@@ -302,20 +302,22 @@ iusd_t dgGenerateSourceDict
     void
 )
 {
-    int numLocations = 5; /**< number of locations */
+    int numLocationsTheta = 5; /**< number of locations */
+	int numLocationsPhi = 5; /**< number of locations */
     float angularDelta = 0.13f;
     float FNumber = -0.955f;
     float startAngle = 3.14f;
     float startPhi = startAngle;
     float deltaPhi = angularDelta;
+	float startTheta = startAngle;
+	float deltaTheta = angularDelta;
     char *_3d_non_parametric_label = "label for 3d non parametric source";
     char *_3d_parametric_label = "label for 3d parametric source";
 
-    iu3dps_t parametricSource = ius3DParametricSourceCreate(numLocations, FNumber,
-                                                              angularDelta, startAngle, deltaPhi, startPhi);
+    iu3dps_t parametricSource = ius3DParametricSourceCreate(numLocationsTheta, numLocationsPhi, FNumber, deltaTheta, startTheta, deltaPhi, startPhi);
 
     TEST_ASSERT(parametricSource != IU3DPS_INVALID);
-    iu3dnps_t nonParametricSource = ius3DNonParametricSourceCreate(numLocations);
+    iu3dnps_t nonParametricSource = ius3DNonParametricSourceCreate(numLocationsTheta*numLocationsPhi);
     TEST_ASSERT(nonParametricSource != IU3DNPS_INVALID);
 
     // create
