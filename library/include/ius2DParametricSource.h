@@ -55,14 +55,14 @@ float ius2DParametricSourceGetFNumber
 
 /** \brief Returns the angular delta in radians between source points or NAN if the source is invalid.
  */
-float ius2DParametricSourceGetAngularDelta
+float ius2DParametricSourceGetDeltaTheta
 (
     iu2dps_t ius2DParametricSource ///< The source of interest
 );
 
 /** \brief Returns the angle of the first source point or NAN if the source is invalid
  */
-float ius2DParametricSourceGetStartAngle
+float ius2DParametricSourceGetStartTheta
 (
     iu2dps_t ius2DParametricSource ///< The source of interest
 );
@@ -79,16 +79,16 @@ int ius2DParametricSourceSetFNumber
 /** \brief Sets the delta between sources, return #IUS_E_OK when successful or #IUS_ERR_VALUE in case
 * the source is incorrect
 */
-int ius2DParametricSourceSetAngularDelta
+int ius2DParametricSourceSetDeltaTheta
 (
     iu2dps_t ius2DParametricSource, ///< The source of interest
-    float angularDelta              ///< the value of the delta angle
+    float deltaTheta                ///< the value of the delta angle
 );
 
-int ius2DParametricSourceSetStartAngle
+int ius2DParametricSourceSetStartTheta
 (
     iu2dps_t ius2DParametricSource, ///< The source of interest
-    float startAngle                ///< the value of the starting angle
+    float startTheta                ///< the value of the starting angle
 );
 
 #endif //IUSLIBRARY_IUSHL2DPARAMETRICSOURCE_H

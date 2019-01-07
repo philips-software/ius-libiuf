@@ -15,8 +15,8 @@ struct Ius2DParametricSource
     struct Ius2DPosition *pLocations;
 
     float fNumber;          /**< distance in [m] of sources to transducer for POLAR */
-    float angularDelta;     /**< angle in [rad] between sources */
-    float startAngle;       /**< angle in [rad] between sources */
+    float deltaTheta;     /**< angle in [rad] between sources */
+    float startTheta;       /**< angle in [rad] between sources */
 } ;
 
 
@@ -25,8 +25,8 @@ iu2dps_t ius2DParametricSourceCreate
 (
     int numLocations,
     float fNumber,
-    float angularDelta,
-    float startAngle
+    float deltaTheta,
+    float startTheta
 )
 {
     if ( numLocations <= 0 ) return  NULL;
@@ -42,8 +42,8 @@ iu2dps_t ius2DParametricSourceCreate
 
     created->base.type = IUS_2D_PARAMETRIC_SOURCE;
     created->numLocations = numLocations;
-    created->angularDelta = angularDelta;
-    created->startAngle = startAngle;
+    created->deltaTheta = deltaTheta;
+    created->startTheta = startTheta;
     created->fNumber = fNumber;
     return created;
 }
@@ -76,8 +76,8 @@ int ius2DParametricSourceCompare
     if (reference->numLocations != actual->numLocations) return IUS_FALSE;
     if (iusBaseSourceCompare((ius_t)reference, (ius_t)actual) == IUS_FALSE ) return IUS_FALSE;
     if (IUS_EQUAL_FLOAT(reference->fNumber, actual->fNumber) == IUS_FALSE ) return IUS_FALSE;
-    if (IUS_EQUAL_FLOAT(reference->startAngle, actual->startAngle) == IUS_FALSE ) return IUS_FALSE;
-    if (IUS_EQUAL_FLOAT(reference->angularDelta, actual->angularDelta) == IUS_FALSE ) return IUS_FALSE;
+    if (IUS_EQUAL_FLOAT(reference->startTheta, actual->startTheta) == IUS_FALSE ) return IUS_FALSE;
+    if (IUS_EQUAL_FLOAT(reference->deltaTheta, actual->deltaTheta) == IUS_FALSE ) return IUS_FALSE;
     int i;
     for( i = 0; i < reference->numLocations; i++ )
     {
@@ -99,22 +99,22 @@ float ius2DParametricSourceGetFNumber
     return ius2DParametricSource->fNumber;
 }
 
-float ius2DParametricSourceGetAngularDelta
+float ius2DParametricSourceGetDeltaTheta
 (
     iu2dps_t ius2DParametricSource
 )
 {
     if( ius2DParametricSource == NULL  ) return NAN;
-    return ius2DParametricSource->angularDelta;
+    return ius2DParametricSource->deltaTheta;
 }
 
-float ius2DParametricSourceGetStartAngle
+float ius2DParametricSourceGetStartTheta
 (
     iu2dps_t ius2DParametricSource
 )
 {
     if( ius2DParametricSource == NULL  ) return NAN;
-    return ius2DParametricSource->startAngle;
+    return ius2DParametricSource->startTheta;
 }
 
 int ius2DParametricSourceSetFNumber
@@ -128,25 +128,25 @@ int ius2DParametricSourceSetFNumber
     return IUS_E_OK;
 }
 
-int ius2DParametricSourceSetAngularDelta
+int ius2DParametricSourceSetDeltaTheta
 (
     iu2dps_t ius2DParametricSource,
-    float angularDelta
+    float deltaTheta
 )
 {
     if (ius2DParametricSource == NULL) return IUS_ERR_VALUE;
-    ius2DParametricSource->angularDelta = angularDelta;
+    ius2DParametricSource->deltaTheta = deltaTheta;
     return IUS_E_OK;
 }
 
-int ius2DParametricSourceSetStartAngle
+int ius2DParametricSourceSetStartTheta
 (
     iu2dps_t ius2DParametricSource,
-    float startAngle
+    float startTheta
 )
 {
     if (ius2DParametricSource == NULL) return IUS_ERR_VALUE;
-    ius2DParametricSource->startAngle = startAngle;
+    ius2DParametricSource->startTheta = startTheta;
     return IUS_E_OK;
 }
 
@@ -165,8 +165,8 @@ int ius2DParametricSourceSave
 
     // Parametric stuff
     status |= iusHdf5WriteFloat( handle, IUS_INPUTFILE_PATH_SOURCE_FNUMBER, &(source->fNumber), 1);
-    status |= iusHdf5WriteFloat( handle, IUS_INPUTFILE_PATH_SOURCE_DELTATHETA, &(source->angularDelta), 1);
-    status |= iusHdf5WriteFloat( handle, IUS_INPUTFILE_PATH_SOURCE_STARTTHETA, &(source->startAngle), 1);
+    status |= iusHdf5WriteFloat( handle, IUS_INPUTFILE_PATH_SOURCE_DELTATHETA, &(source->deltaTheta), 1);
+    status |= iusHdf5WriteFloat( handle, IUS_INPUTFILE_PATH_SOURCE_STARTTHETA, &(source->startTheta), 1);
     status |= iusHdf5WriteInt(handle, IUS_INPUTFILE_PATH_SOURCE_LISTSIZE, &(source->numLocations),1);
     return status;
 }
@@ -180,18 +180,19 @@ iu2dps_t ius2DParametricSourceLoad
     int status = 0;
 
     float fNumber;          /**< distance in [m] of sources to transducer for POLAR */
-    float angularDelta;     /**< angle in [rad] between sources */
-    float startAngle;       /**< angle in [rad] between sources */
+    float deltaTheta;     /**< angle in [rad] between sources */
+    float startTheta;       /**< angle in [rad] between sources */
     int numLocations;
     iu2dps_t  source;
 
     status |= iusHdf5ReadFloat(handle, IUS_INPUTFILE_PATH_SOURCE_FNUMBER, &(fNumber));
-    status |= iusHdf5ReadFloat(handle, IUS_INPUTFILE_PATH_SOURCE_DELTATHETA, &(angularDelta));
-    status |= iusHdf5ReadFloat(handle, IUS_INPUTFILE_PATH_SOURCE_STARTTHETA, &(startAngle));
+    status |= iusHdf5ReadFloat(handle, IUS_INPUTFILE_PATH_SOURCE_DELTATHETA, &(deltaTheta));
+    status |= iusHdf5ReadFloat(handle, IUS_INPUTFILE_PATH_SOURCE_STARTTHETA, &(startTheta));
     status |= iusHdf5ReadInt(handle, IUS_INPUTFILE_PATH_SOURCE_LISTSIZE, &(numLocations));
     if (status < 0)
         return NULL;
 
-    source = ius2DParametricSourceCreate(numLocations,fNumber,angularDelta,startAngle);
+    source = ius2DParametricSourceCreate(numLocations,fNumber,deltaTheta,startTheta);
     return source;
 }
+

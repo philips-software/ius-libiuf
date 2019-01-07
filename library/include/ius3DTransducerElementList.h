@@ -14,12 +14,12 @@ typedef struct Ius3DTransducerElementList Ius3DTransducerElementList;
 typedef Ius3DTransducerElementList *iu3dtel_t;
 #define  IU3DTEL_INVALID (iu3dtel_t) NULL
 
-/** \brief Create an empty list of 3D elements with length \p num3DTransducerElement
+/** \brief Create an empty list of 3D elements with length \p num3DTransducerElements
 * \return Returns the created list or #IU3DTEL_INVALID in case this failed.
 */
 iu3dtel_t ius3DTransducerElementListCreate
 (
-    int num3DTransducerElement ///< the number of elements that will go in the element list
+    int num3DTransducerElements ///< the number of elements that will go in the element list
 );
 
 /** \brief Delete an existing \p list of elements including all its elements individually.

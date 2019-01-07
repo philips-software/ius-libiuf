@@ -53,7 +53,7 @@
 *
 * There is typically no need to define the generic #IusSource Type, instead the API provides functions for each of the four types separately.
 * For example, to define a source in 3D space that approximates a circlular arc (described by startPhi, deltaPhi) 
-* one would use:  #ius3DParametricSourceCreate(int numLocations, float fNumber, float deltaTheta, float startTheta, float deltaPhi, float startPhi).
+* one would use:  #ius3DParametricSourceCreate().
 * Please note that when one wants to compound individual insonifications from each point on the arc (i.e. fire individual pulses from each point source) then a
 * pattern needs to be created for each of these insonifications and therefore also a source for each of these. In such a case each source then just contains a signle point.    
 * A #IusSource is referenced by an #IusPattern using a string as a key in a dictionary.
