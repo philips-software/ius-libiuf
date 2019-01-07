@@ -76,7 +76,7 @@ float ius3DParametricSourceGetDeltaTheta
 */
 float ius3DParametricSourceGetStartTheta
 (
-    iu3dps_t ius3DParametricSource ///< The 3D parametric source that holds the start theta
+    iu3dps_t ius3DParametricSource ///< The 3D parametric source that has the start theta
 );
 
 /** \brief Return the delta angle between two phis of the 3D parametric source
@@ -117,9 +117,9 @@ int ius3DParametricSourceSetDeltaTheta
     float deltaTheta                 ///< The angular delta is the arc-distance in rad between sources  
 );
 
-/** Set the angular offset of sources
+/** Set the angular offset of the source in theta direction
 *
-* \return Returns IUS_E_OK when the delta has been set or IUS_ERR_VALUE when the 3D source is invalid
+* \return Returns IUS_E_OK when the start value has been set or IUS_ERR_VALUE when the 3D source is invalid
 */
 int ius3DParametricSourceSetStartTheta
 (
@@ -133,14 +133,18 @@ int ius3DParametricSourceSetStartTheta
 */
 int ius3DParametricSourceSetDeltaPhi
 (
-    iu3dps_t ius3DParametricSource,  
-    float deltaPhi
+    iu3dps_t ius3DParametricSource,  ///< The 3D parametric source of which the deltaPhi is set 
+    float deltaPhi					 ///< The angular delta is the arc-distance in rad between sources 
 );
 
+/** Set the angular offset of the source in phi direction
+*
+* \return Returns IUS_E_OK when the start value has been set or IUS_ERR_VALUE when the 3D source is invalid
+*/
 int ius3DParametricSourceSetStartPhi
 (
-    iu3dps_t ius3DParametricSource,
-    float startPhi
+    iu3dps_t ius3DParametricSource,  ///< The 3D parametric source of which the startPhi is set
+    float startPhi					 ///< The start angle is the offset in rad of the first source 
 );
 
 

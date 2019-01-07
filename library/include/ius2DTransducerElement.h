@@ -25,12 +25,15 @@ iu2dte_t ius2DTransducerElementCreate
     iu2ds_t size   ///< the size (sx,sz) in meters of the element
 );
 
+/** \brief Removes the 2D element object an its sub-objects.
+* \return #IUS_ERR_VALUE in case something went wrong or #IUS_TRUE when the element has been successfully deleted.
+*/
 int ius2DTransducerElementDeepDelete
 (
     iu2dte_t ius2DTransducerElement
 );
 
-/** \brief Removes the 2D element object
+/** \brief Removes the 2D element object without deleting the position and size sub-objects.
 * \return #IUS_ERR_VALUE in case something went wrong or #IUS_TRUE when the element has been successfully deleted.
 */
 int ius2DTransducerElementDelete
@@ -63,7 +66,7 @@ float ius2DTransducerElementGetAngle
     iu2dte_t ius2DTransducerElement ///<the element of interest
 );
 
-/** \brief returns the 2De of the \p ius2DTransducerElement.
+/** \brief returns the 2D size of the \p ius2DTransducerElement.
 * \return the 2D size of the \p ius2DTransducerElement (sx,sz) in meters.
 */
 iu2ds_t ius2DTransducerElementGetSize

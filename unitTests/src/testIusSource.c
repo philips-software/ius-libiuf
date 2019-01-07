@@ -23,15 +23,18 @@ TEST_TEAR_DOWN(IusSource)
 
 TEST(IusSource, testIusSourceDelete)
 {
-    int numLocations = 5;
+	int numLocationsPhi = 5; /**< number of locations */
+	int numLocationsTheta = 3; /**< number of locations */
 
-    float angularDelta = 0.13f;
-    float FNumber = -0.955f;
-    float startAngle = 3.14f;
-    float startPhi = startAngle;
-    float deltaPhi = angularDelta;
-    ius_t obj = (ius_t) ius3DParametricSourceCreate(numLocations, FNumber,
-                                                              angularDelta, startAngle, deltaPhi, startPhi);
+	float angularDelta = 0.13f;
+	float FNumber = -0.955f;
+	float startAngle = 3.14f;
+	float startPhi = startAngle;
+	float deltaPhi = angularDelta;
+	float startTheta = startAngle;
+	float deltaTheta = angularDelta;
+    ius_t obj = (ius_t) ius3DParametricSourceCreate(numLocationsTheta, numLocationsPhi, FNumber,
+		deltaTheta, startTheta, deltaPhi, startPhi);
     TEST_ASSERT(obj != IUS_INVALID);
 
     int status = iusSourceDelete((ius_t)obj);
@@ -47,25 +50,27 @@ TEST(IusSource, testIusSourceDelete)
 TEST(IusSource, testIusSourceCompare)
 {
     IUS_BOOL equal;
-    int numLocations = 5; /**< number of locations */
+	int numLocationsPhi = 5; /**< number of locations */
+	int numLocationsTheta = 3; /**< number of locations */
 
-    // Happy flow
-    float angularDelta = 0.13f;
-    float FNumber = -0.955f;
-    float startAngle = 3.14f;
-    float startPhi = startAngle;
-    float deltaPhi = angularDelta;
-    ius_t _3dps = (ius_t) ius3DParametricSourceCreate(numLocations, FNumber,
-                                                        angularDelta, startAngle, deltaPhi, startPhi);
-
-    TEST_ASSERT(_3dps != IUS_INVALID);
-    ius_t _nother3dps = (ius_t) ius3DParametricSourceCreate(numLocations, FNumber,
-                                                        angularDelta, startAngle, deltaPhi, startPhi);
+	float angularDelta = 0.13f;
+	float FNumber = -0.955f;
+	float startAngle = 3.14f;
+	float startPhi = startAngle;
+	float deltaPhi = angularDelta;
+	float startTheta = startAngle;
+	float deltaTheta = angularDelta;
+    ius_t _3dps = (ius_t) ius3DParametricSourceCreate(numLocationsTheta, numLocationsPhi, FNumber,
+		deltaTheta, startTheta, deltaPhi, startPhi);
 
     TEST_ASSERT(_3dps != IUS_INVALID);
-    ius_t _3dnps = (ius_t) ius3DNonParametricSourceCreate(numLocations);
+    ius_t _nother3dps = (ius_t) ius3DParametricSourceCreate(numLocationsTheta, numLocationsPhi, FNumber,
+		deltaTheta, startTheta, deltaPhi, startPhi);
+
+    TEST_ASSERT(_3dps != IUS_INVALID);
+    ius_t _3dnps = (ius_t) ius3DNonParametricSourceCreate(numLocationsTheta*numLocationsPhi);
     TEST_ASSERT(_3dnps != IUS_INVALID);
-    ius_t _2dps = (ius_t) ius2DParametricSourceCreate(numLocations, FNumber,
+    ius_t _2dps = (ius_t) ius2DParametricSourceCreate(numLocationsTheta*numLocationsPhi, FNumber,
     angularDelta, startAngle);
     TEST_ASSERT(_2dps != IUS_INVALID);
 
@@ -113,18 +118,21 @@ TEST(IusSource, testIusSerialization)
 {
     // create 4 types of object, save, load compare.
     char *filename = "testIusSourceSerialization.hdf5";
-    int status, numLocations = 50; /**< number of locations */
+	int numLocationsPhi = 5; /**< number of locations */
+	int numLocationsTheta = 3; /**< number of locations */
+	int status;
+	float angularDelta = 0.13f;
+	float FNumber = -0.955f;
+	float startAngle = 3.14f;
+	float startPhi = startAngle;
+	float deltaPhi = angularDelta;
+	float startTheta = startAngle;
+	float deltaTheta = angularDelta;
+    ius_t obj = (ius_t) ius3DParametricSourceCreate(numLocationsTheta, numLocationsPhi, FNumber,
+		deltaTheta, startTheta, deltaPhi, startPhi);
 
-    float angularDelta = 0.13f;
-    float FNumber = -0.955f;
-    float startAngle = 3.14f;
-    float startPhi = startAngle;
-    float deltaPhi = angularDelta;
-    ius_t obj = (ius_t) ius3DParametricSourceCreate(numLocations, FNumber,
-                                                        angularDelta, startAngle, deltaPhi, startPhi);
-
-    ius_t notherObj = (ius_t) ius3DParametricSourceCreate(numLocations+1, FNumber,
-                                                      angularDelta, startAngle, deltaPhi, startPhi);
+    ius_t notherObj = (ius_t) ius3DParametricSourceCreate(numLocationsTheta, numLocationsPhi, FNumber,
+		deltaTheta, startTheta, deltaPhi, startPhi);
     // fill
     hid_t handle = H5Fcreate( filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT );
     TEST_ASSERT(handle > 0);

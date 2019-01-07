@@ -34,7 +34,7 @@ int ius2DTransducerElementListDelete
     iu2dtel_t list ///< the list to be deleted 
 );
 
-/** \brief Check if two lists are identical. the order of the paramters doesn't matter.
+/** \brief Check if two lists are identical. the order of the parameters doesn't matter.
 * \returns #IUS_TRUE in case the list content of the list is th same or #IUS_FALSE when they differ.
 */
 int ius2DTransducerElementListCompare

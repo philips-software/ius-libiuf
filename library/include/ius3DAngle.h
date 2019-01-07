@@ -16,6 +16,7 @@ typedef Ius3DAngle *iu3da_t;
 #define  IU3DA_INVALID (iu3da_t) NULL
 
 /** \brief create a 2-axis rotation in 3D space  
+ * \return returns an allocated and initialized 3D angle
  */
 iu3da_t ius3DAngleCreate
 (

@@ -142,9 +142,9 @@ herr_t iusHdf5ReadString
  */
 herr_t iusHdf5ReadGrid
 (
-    hid_t              handle,
-    const char * const pGridName,
-    IusGrid *          pGrid
+    hid_t         handle,
+    const char *  pGridName,
+    IusGrid *     pGrid
 );
 
 /**

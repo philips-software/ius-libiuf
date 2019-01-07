@@ -178,14 +178,15 @@ iusd_t ncFillSourceDict
     char *sourceLabel
 )
 {
-    int locationCount = 5; /**< number of locations */
-    float angularDelta = 0.13f;
+    int locationCountTheta = 5; /**< number of locations */
+	int locationCountPhi = 3; /**< number of locations */
+    float deltaTheta = 0.13f;
+	float deltaPhi = 0.13f;
     float FNumber = -0.955f;
     float startAngle = 3.14f;
     float startPhi = startAngle;
-    float deltaPhi = angularDelta;
-    iu3dps_t parametricSource = ius3DParametricSourceCreate(locationCount, FNumber,
-                                                            angularDelta, startAngle, deltaPhi, startPhi);
+	float startTheta = startAngle;
+    iu3dps_t parametricSource = ius3DParametricSourceCreate(locationCountTheta, locationCountPhi, FNumber, deltaTheta, startTheta, deltaPhi, startPhi);
 
     // create
     iusd_t dict = iusSourceDictCreate();

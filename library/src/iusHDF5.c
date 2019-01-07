@@ -341,8 +341,8 @@ herr_t iusHdf5WriteLong
 herr_t iusHdf5WriteString
 (
 hid_t              handle,
-const char * const pVariableString,
-const char * const pString
+const char * pVariableString,
+const char * pString
 )
 {
     herr_t returnValue;
