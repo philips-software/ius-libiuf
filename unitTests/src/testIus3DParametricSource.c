@@ -39,9 +39,9 @@ TEST(Ius3DParametricSource, testIus3DParametricSourceCreate)
     ius3DParametricSourceDelete(notherObj);
 
     // invalid params
-    obj = ius3DParametricSourceCreate(0, 0, -1, 2.0f, 0, 0, 0);
+    obj = ius3DParametricSourceCreate(1, 0, -1, 2.0f, 0, 0, 0);
     TEST_ASSERT(obj == IU3DPS_INVALID);
-    obj = ius3DParametricSourceCreate(1, 1, 1, -2.0f, 0, 0, 0);
+    obj = ius3DParametricSourceCreate(-1, 1, 1, -2.0f, 0, 0, 0);
     TEST_ASSERT(obj == IU3DPS_INVALID);
 }
 
@@ -117,7 +117,7 @@ TEST(Ius3DParametricSource, testIus3DParametricSourceSetGet)
 	int numPhiLocations = 5;
 	int numThetaLocations = 3;
 
-    iu3dps_t obj = ius3DParametricSourceCreate(numThetaLocations, numPhiLocations, FNumber + 0.01f, deltaTheta, startTheta, deltaPhi, startPhi);
+    iu3dps_t obj = ius3DParametricSourceCreate(numThetaLocations, numPhiLocations, FNumber, deltaTheta, startTheta, deltaPhi, startPhi);
 
     TEST_ASSERT_EQUAL_FLOAT(FNumber,ius3DParametricSourceGetFNumber(obj));
     TEST_ASSERT_EQUAL_FLOAT(deltaTheta,ius3DParametricSourceGetDeltaTheta(obj));

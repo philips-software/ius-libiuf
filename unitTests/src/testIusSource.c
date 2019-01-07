@@ -131,7 +131,7 @@ TEST(IusSource, testIusSerialization)
     ius_t obj = (ius_t) ius3DParametricSourceCreate(numLocationsTheta, numLocationsPhi, FNumber,
 		deltaTheta, startTheta, deltaPhi, startPhi);
 
-    ius_t notherObj = (ius_t) ius3DParametricSourceCreate(numLocationsTheta, numLocationsPhi, FNumber,
+    ius_t notherObj = (ius_t) ius3DParametricSourceCreate(numLocationsTheta, numLocationsPhi, FNumber+0.01f,
 		deltaTheta, startTheta, deltaPhi, startPhi);
     // fill
     hid_t handle = H5Fcreate( filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT );
