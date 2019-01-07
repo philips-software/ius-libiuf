@@ -4,9 +4,12 @@
 
 // ADT
 typedef struct IusTransducerElement IusTransducerElement;
+/** Abstract type of a transducer's element. The shape of the transducer #IusShape defines if it is 2D or 3D transducer.
+ */
 typedef IusTransducerElement *iute_t;
 #define  IUTE_INVALID (iute_t) NULL
 
+/* Create a single transducer element of a certain shape */
 iute_t iusTransducerElementCreate
 (
     IusShape shape

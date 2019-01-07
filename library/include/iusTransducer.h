@@ -4,7 +4,6 @@
 
 #include <iusTypes.h>
 #include <iusHDF5.h>
-#include <iusTransducerElement.h>
 
 // ADT
 typedef struct IusTransducer IusTransducer;

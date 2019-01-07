@@ -45,31 +45,33 @@ static iuhn_t iusHistoryNodeCreateWithId
 
 iuhn_t iusHistoryNodeCreate
 (
-    char *pNodeType
+    char *nodeType
 )
 {
     char ID[MAX_ID_LENGTH];
-    if ( pNodeType == NULL ) return IUHN_INVALID;
+    if ( nodeType == NULL ) return IUHN_INVALID;
     // Uuid should be generated for it.
     setIusUuidCreate( ID );
-    return iusHistoryNodeCreateWithId(ID,pNodeType);
+    return iusHistoryNodeCreateWithId(ID,nodeType);
 }
 
 int iusHistoryNodeDelete
 (
-    iuhn_t node
+    iuhn_t historyNode
 )
 {
-    if ( node == NULL ) return IUS_ERR_VALUE;
-    if(node->numberOfParents!=0 && node->loadedFromFile == IUS_TRUE)
-        iusHistoryNodeListDelete(node->parents);
-    if(node->numberOfParameters!=0 && node->loadedFromFile == IUS_TRUE)
+    if ( historyNode == NULL ) return IUS_ERR_VALUE;
+    if(historyNode->numberOfParents!=0 && historyNode->loadedFromFile == IUS_TRUE)
     {
-        iusParameterDictDelete(node->parameters);
+        iusHistoryNodeListDelete(historyNode->parents);
     }
-    free(node->pId);
-    free(node->pType);
-    free(node);
+    if(historyNode->numberOfParameters!=0 && historyNode->loadedFromFile == IUS_TRUE)
+    {
+        iusParameterDictDelete(historyNode->parameters);
+    }
+    free(historyNode->pId);
+    free(historyNode->pType);
+    free(historyNode);
     return IUS_E_OK;
 }
 
@@ -122,93 +124,93 @@ IUS_BOOL iusHistoryNodeCompare
 
 int iusHistoryNodeGetNumParents
 (
-    iuhn_t node
+    iuhn_t historyNode
 )
 {
-    if ( node == NULL ) return -1;
-    if ( node->parents == IUHNL_INVALID ) return 0;
-    return iusHistoryNodeListGetSize(node->parents);
+    if ( historyNode == NULL ) return -1;
+    if ( historyNode->parents == IUHNL_INVALID ) return 0;
+    return iusHistoryNodeListGetSize(historyNode->parents);
 }
 
 int iusHistoryNodeGetNumParams
 (
-    iuhn_t node
+    iuhn_t historyNode
 )
 {
-    if ( node == NULL ) return -1;
-    return node->numberOfParameters;
+    if ( historyNode == NULL ) return -1;
+    return historyNode->numberOfParameters;
 }
 
 iupad_t iusHistoryNodeGetParameters
 (
-    iuhn_t node
+    iuhn_t historyNode
 )
 {
-    if ( node == NULL ) return IUPAD_INVALID;
-    return node->parameters;
+    if ( historyNode == NULL ) return IUPAD_INVALID;
+    return historyNode->parameters;
 }
 
-char *iusHistoryNodeGetId(iuhn_t node) {
-    if ( node == NULL ) return NULL;
-    return node->pId;
+char *iusHistoryNodeGetId(iuhn_t historyNode) {
+    if ( historyNode == NULL ) return NULL;
+    return historyNode->pId;
 }
 
-char *iusHistoryNodeGetType(iuhn_t node) {
-    if ( node == NULL ) return NULL;
-    return node->pType;
+char *iusHistoryNodeGetType(iuhn_t historyNode) {
+    if ( historyNode == NULL ) return NULL;
+    return historyNode->pType;
 }
 
 iuhnl_t iusHistoryNodeGetParents
 (
-    iuhn_t node
+    iuhn_t historyNode
 )
 {
-    if ( node == NULL ) return IUHNL_INVALID;
-    return node->parents;
+    if ( historyNode == NULL ) return IUHNL_INVALID;
+    return historyNode->parents;
 }
 
 void *iusHistoryNodeGetInstanceData
 (
-    iuhn_t node
+    iuhn_t historyNode
 )
 {
-    if ( node == NULL ) return IUHNL_INVALID;
-    return node->instanceData;
+    if ( historyNode == NULL ) return IUHNL_INVALID;
+    return historyNode->instanceData;
 }
 
 int iusHistoryNodeSetParents
 (
-    iuhn_t node,
+    iuhn_t historyNode,
     iuhnl_t parents
 )
 {
-    if ( node == NULL ) return IUS_ERR_VALUE;
+    if ( historyNode == NULL ) return IUS_ERR_VALUE;
     if ( parents == NULL ) return IUS_ERR_VALUE;
-    node->parents = parents;
+    historyNode->parents = parents;
     return IUS_E_OK;
 }
 
 int iusHistoryNodeSetParameters
 (
-    iuhn_t node,
+    iuhn_t historyNode,
     iupad_t parameterDict
 )
 {
-    if ( node == NULL ) return IUS_ERR_VALUE;
+    if ( historyNode == NULL ) return IUS_ERR_VALUE;
     if ( parameterDict == NULL ) return IUS_ERR_VALUE;
-    node->parameters = parameterDict;
-    node->numberOfParameters = iusParameterDictGetSize(node->parameters);
+    historyNode->parameters = parameterDict;
+    historyNode->numberOfParameters = iusParameterDictGetSize(historyNode->parameters);
     return IUS_E_OK;
 }
 
 int iusHistoryNodeSetInstanceData
 (
-    iuhn_t node,
+    iuhn_t historyNode,
     void *instanceData
 )
 {
-    if ( node == NULL ) return IUS_ERR_VALUE;
-    node->instanceData = instanceData;
+    if ( historyNode == NULL ) return IUS_ERR_VALUE;
+    historyNode->instanceData = instanceData;
     return IUS_E_OK;
 }
 
@@ -221,12 +223,12 @@ int iusHistoryNodeSetInstanceData
 
 void *iusHistoryNodeLoadInstance
 (
-    iuhn_t node,
+    iuhn_t historyNode,
     hid_t handle
 )
 {
     void *instance = NULL;
-    if ( strcmp(node->pType,IUS_INPUT_TYPE)  == 0 )
+    if ( strcmp(historyNode->pType,IUS_INPUT_TYPE)  == 0 )
     {
         instance = iusInputFileInstanceLoad(handle);
         if (instance == NULL) return NULL;
@@ -304,13 +306,13 @@ iuhn_t iusHistoryNodeLoadAnyType
 
 int iusHistoryNodeSaveInstance
 (
-    iuhn_t node,
+    iuhn_t historyNode,
     hid_t handle
 )
 {
-    if (strcmp(iusHistoryNodeGetType(node),IUS_INPUT_TYPE)==0)
+    if (strcmp(iusHistoryNodeGetType(historyNode),IUS_INPUT_TYPE)==0)
     {
-        iuifi_t instance = (iuifi_t) iusHistoryNodeGetInstanceData(node);
+        iuifi_t instance = (iuifi_t) iusHistoryNodeGetInstanceData(historyNode);
         return iusInputFileSaveInstance(handle, instance);
     }
     return IUS_E_OK;
@@ -318,51 +320,51 @@ int iusHistoryNodeSaveInstance
 
 int iusHistoryNodeSave
 (
-    iuhn_t node,
+    iuhn_t historyNode,
     hid_t handle
 )
 {
     herr_t status = 0;
-    if ( node == NULL ) return IUS_ERR_VALUE;
+    if ( historyNode == NULL ) return IUS_ERR_VALUE;
     if ( handle == H5I_INVALID_HID ) return IUS_ERR_VALUE;
-    status |= iusHdf5WriteString(handle, NODE_ID, node->pId);
-    status |= iusHdf5WriteString(handle, NODE_TYPE, node->pType);
-    status |= iusHdf5WriteInt(handle, NODE_NUMBER_OF_PARENTS, &node->numberOfParents, 1);
-    status |= iusHdf5WriteInt(handle, NODE_NUMBER_OF_PARAMETERS, &node->numberOfParameters, 1);
+    status |= iusHdf5WriteString(handle, NODE_ID, historyNode->pId);
+    status |= iusHdf5WriteString(handle, NODE_TYPE, historyNode->pType);
+    status |= iusHdf5WriteInt(handle, NODE_NUMBER_OF_PARENTS, &historyNode->numberOfParents, 1);
+    status |= iusHdf5WriteInt(handle, NODE_NUMBER_OF_PARAMETERS, &historyNode->numberOfParameters, 1);
 
     // Processing parameters are optional
-    if (node->numberOfParameters != 0)
+    if (historyNode->numberOfParameters != 0)
     {
         hid_t group_id = H5Gcreate(handle, NODE_PARAMETERS, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-        status |= iusParameterDictSave(node->parameters, group_id);
+        status |= iusParameterDictSave(historyNode->parameters, group_id);
         status |= H5Gclose(group_id );
     }
 
-    if (node->numberOfParents != 0)
+    if (historyNode->numberOfParents != 0)
     {
-        status |= iusHistoryNodeListSave(node->parents, handle);
+        status |= iusHistoryNodeListSave(historyNode->parents, handle);
     }
-    status |= iusHistoryNodeSaveInstance(node, handle);
+    status |= iusHistoryNodeSaveInstance(historyNode, handle);
     return status;
 }
 
 int iusHistoryNodeSaveAnyType
 (
-    iuhn_t node,
+    iuhn_t historyNode,
     hid_t handle
 )
 {
     int status;
-    if ( node == NULL ) return IUS_ERR_VALUE;
+    if ( historyNode == NULL ) return IUS_ERR_VALUE;
     if ( handle == H5I_INVALID_HID ) return IUS_ERR_VALUE;
 
     // Save Node
-    status = iusHistoryNodeSave(node,handle);
+    status = iusHistoryNodeSave(historyNode,handle);
 
     // Save instance data
-    if ( strcmp( node->pType, IUS_INPUT_TYPE) == 0 )
+    if ( strcmp( historyNode->pType, IUS_INPUT_TYPE) == 0 )
     {
-        iuifi_t instance = (iuifi_t)iusHistoryNodeGetInstanceData(node);
+        iuifi_t instance = (iuifi_t)iusHistoryNodeGetInstanceData(historyNode);
         status = iusInputFileSaveInstance(handle, instance);
     }
     return status;

@@ -18,7 +18,7 @@ typedef Ius2DTransducerElementList *iu2dtel_t;
 */
 iu2dtel_t ius2DTransducerElementListCreate
 (
-    int num2DTransducerElement ///< the number of elements that will go in the element list
+    int num2DTransducerElements ///< the number of elements that will go in the element list
 );
 
 int ius2DTransducerElementListDeepDelete
@@ -61,7 +61,7 @@ iu2dte_t ius2DTransducerElementListGet
 );
 
 /** \brief Sets the transducer element at the given \p index in the list.
-* \returns #IUS_E_OK when successful or #IUS_ERR_VAL when the function fails.
+* \returns #IUS_E_OK when successful or #IUS_ERR_VALUE when the function fails.
 */
 int ius2DTransducerElementListSet
 (

@@ -32,14 +32,14 @@ iufr_t iusFrameCreate
 
 int iusFrameDelete
 (
-    iufr_t iusFrame
+    iufr_t frame
 )
 {
     int status = IUS_ERR_VALUE;
-    if(iusFrame != NULL)
+    if(frame != NULL)
     {
-        free(iusFrame->patternListLabel);
-        free(iusFrame);
+        free(frame->patternListLabel);
+        free(frame);
         status = IUS_E_OK;
     }
     return status;
@@ -64,29 +64,29 @@ int iusFrameCompare
 // Getters
 float iusFrameGetTime
 (
-    iufr_t iusFrame
+    iufr_t frame
 )
 {
-    if( iusFrame == NULL ) return -1;
-    return iusFrame->time;
+    if( frame == NULL ) return -1;
+    return frame->time;
 }
 
 char *iusFrameGetPatternListLabel
 (
-    iufr_t iusFrame
+    iufr_t frame
 )
 {
-    if( iusFrame == NULL ) return NULL;
-    return iusFrame->patternListLabel;
+    if( frame == NULL ) return NULL;
+    return frame->patternListLabel;
 }
 
 int iusFrameGetDataIndex
 (
-    iufr_t iusFrame
+    iufr_t frame
 )
 {
-    if( iusFrame == NULL ) return -1;
-    return iusFrame->dataIndex;
+    if( frame == NULL ) return -1;
+    return frame->dataIndex;
 }
 
 

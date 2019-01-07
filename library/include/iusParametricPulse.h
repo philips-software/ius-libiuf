@@ -11,7 +11,8 @@ typedef struct IusParametricPulse IusParametricPulse;
 typedef IusParametricPulse *iupp_t;
 #define  IUPP_INVALID (iupp_t) NULL
 
-/** Create the parametric pulse that is described by a sinusoid with the three parameters: frequence, ampltidue and numper of periods
+/** Create the parametric pulse that is described by a sinusoid with the three parameters: frequency, amplitude and 
+ * number of periods
 *
 * /return the created pulse
 */
@@ -19,7 +20,7 @@ iupp_t iusParametricPulseCreate
 (
     float pulseFrequency,				///< The frequency in Hz of the transmitted sinusoid
     float pulseAmplitude,				///< The Amplitude of the pulse in Volt 
-    int pulseCount                      ///< The number of periods the pulse.
+    int numPulses                       ///< The number of periods the pulse.
 );
 
 /** Deletes a parametric pulse 

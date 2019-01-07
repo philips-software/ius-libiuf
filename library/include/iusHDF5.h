@@ -21,105 +21,77 @@ extern "C" {
  * \brief Reads one or an array of floats from file stored in the variable
  * pVariableString
  *
- * In-place:   n.a.
  * \pre         Memory is allocated for pValue, the Hdf5 file has been opened
  * \post        pValue contains the float(s)
- * \param[in]   handle          : the file or group handle containing the
- *                                variable to be read
- * \param[in]   pVariableString : the name of the variable to be read
- * \param[out]  pValue          : the float value or array read from file
  * \return      the HDF5 error status of the reading
  */
 herr_t iusHdf5ReadFloat
 (
-    hid_t        handle,
-    const char * pVariableString,
-    float *      pValue
+    hid_t        handle,              ///< the file or group handle containing the variable to be read
+    const char * pVariableString,     ///< the name of the variable to be read
+    float *      pValue               ///< [out] the float value or array read from file
 );
 
 /** 
  * \brief Reads one or an array of shorts from file stored in the variable
  * pVariableString
  *
- * In-place:   n.a.
  * \pre         Memory is allocated for pValue, the Hdf5 file has been opened
  * \post        pValue contains the int(s)
- * \param[in]   handle          : the file or group handle containing the
- *                                variable to be read
- * \param[in]   pVariableString : the name of the variable to be read
- * \param[out]  pValue          : the short value or array that is read from file
  * \return      the HDF5 error status of the reading
  */
 herr_t iusHdf5ReadShort
 (
-    hid_t        handle,
-    const char * pVariableString,
-    short *        pValue
+    hid_t        handle,            ///< the file or group handle containing the
+    const char * pVariableString,   ///< the name of the variable to be read variable to be read
+    short *      pValue             ///< [out] the short value or array that is read from file
 );
-
-
 
 /** 
  * \brief Reads one or an array of ints from file stored in the variable
  * pVariableString
  *
- * In-place:   n.a.
  * \pre         Memory is allocated for pValue, the Hdf5 file has been opened
  * \post        pValue contains the int(s)
- * \param[in]   handle          : the file or group handle containing the
- *                                variable to be read
- * \param[in]   pVariableString : the name of the variable to be read
- * \param[out]  pValue          : the int value or array that is read from file
  * \return      the HDF5 error status of the reading
  */
 herr_t iusHdf5ReadInt
-    (
-        hid_t        handle,
-        const char * pVariableString,
-        int *        pValue
-    );
+(
+    hid_t        handle,           ///< the file or group handle containing the variable to be read
+    const char * pVariableString,  ///< the name of the variable to be read
+    int *        pValue            ///< [out]> the int value or array that is read from file 
+);
 
 
 /** 
  * \brief Reads one or an array of longs from file stored in the variable
  * pVariableString
  *
- * In-place:   n.a.
  * \pre         Memory is allocated for pValue, the Hdf5 file has been opened
  * \post        pValue contains the long int(s)
- * \param[in]   handle          : the file or group handle containing the
- *                                variable to be read
- * \param[in]   pVariableString : the name of the variable to be read
- * \param[out]  pValue          : the long int value or array that is read from
- *                                file
  * \return      the HDF5 error status of the reading
  */
 herr_t iusHdf5ReadLong
 (
-    hid_t        handle,
-    const char * pVariableString,
-    long int *   pValue
+    hid_t        handle,             ///< the file or group handle containing the variable to be read
+    const char * pVariableString,    ///< the name of the variable to be read
+    long int *   pValue              ///< [out] the long int value or array that is read from file
 );
 
 /** 
  * \brief Reads a string from file stored in the variable pVariableString
  *
- * In-place:   n.a.
  * \pre         The Hdf5 file is opened, no memory is allocated yet for the
  *              return string
  * \post        *ppReturnString contains the string (char *). Its memory is
  *              created and needs to be freed separately
- * \param[in]   handle          : the file or group handle containing the
- *                                variable to be read
- * \param[in]   pVariableString : the name of the variable to be read
- * \param[out]  ppReturnString  : the string (memory is allocated for it)
  * \return      the HDF5 error status of the reading
  */
 herr_t iusHdf5ReadString
 (
-    hid_t        handle,
-    const char * pVariableString,
-    char * ppReturnString
+    hid_t        handle,            ///< the file or group handle containing the variable to be read
+    const char * pVariableString,   ///< the name of the variable to be read
+    char * ppReturnString           ///< [out] the string (memory is allocated for it)
 );
 
 /** 
@@ -128,46 +100,33 @@ herr_t iusHdf5ReadString
  * The grid can be a Polar or Cartesian grid. The grid type is identified by the
  * variable name containing either 'Cartesian' or 'Polar' 
  *
- * In-place:   n.a.
  * \pre         The Hdf5 file is opened, no memory is allocated yet for the grid
  *              arrays, but the grid struct is allocated
  * \post        *pGrid contains the grid data. Its memory is created and needs
  *              to be freed separately
- * \param[in]   handle    : the file or group handle containing the dataset to be
- *                         read
- * \param[in]   pGridName : the name of the variable to be read
- * \param[out]  pGrid     : the grid structure that is filled (memory is
- *                         allocated for its contents)
  * \return     the HDF5 error status of the reading
  */
 herr_t iusHdf5ReadGrid
 (
-    hid_t              handle,
-    const char * const pGridName,
-    IusGrid *          pGrid
+    hid_t              handle,     ///< the file or group handle containing the dataset to be
+    const char * const pGridName,  ///< the name of the variable to be read
+    IusGrid *          pGrid       ///< [out] the grid structure that is filled (memory is allocated for its contents)
 );
 
 /**
  * \brief Writes one or an array of floats to an Hdf5 handle
  *
- * In-place:   n.a.
  * \pre         array with values was allocated and initialized
  * \post        values have been written to Hdf5 handle
- * \param[in]   handle          : the file or group handle for writing
- * \param[in]   pVariableString : the name of the variable to be written
- * \param[out]  pValues         : the float value or array that is to be written
- * \param[in]   numValues       : The length of the pValues array
  * \return      the HDF5 error status of the reading
  */
 herr_t iusHdf5WriteFloat
 (
-    hid_t        handle,
-    const char * pVariableString,
-    float *      pValues,
-    int          numValues
+    hid_t        handle,            ///< the file or group handle for writing
+    const char * pVariableString,   ///< the name of the variable to be written
+    float *      pValues,           ///< the float value or array that is to be written
+    int          numValues          ///< The length of the pValues array
 );
-//return H5LTmake_dataset_float( handle,  "centerFrequency",  1, dims,
-//    &(pInst->centerFrequency));
 
 /**
  * \brief Writes one or an array of int values to an Hdf5 handle
@@ -175,18 +134,14 @@ herr_t iusHdf5WriteFloat
  * In-place:   n.a.
  * \pre         array with values was allocated and initialized
  * \post        values have been written to Hdf5 handle
- * \param[in]   handle          : the file or group handle for writing
- * \param[in]   pVariableString : the name of the variable to be written
- * \param[out]  pValues         : the int value or array that is to be written
- * \param[in]   numValues       : The length of the pValues array
  * \return      the HDF5 error status of the reading
  */
 herr_t iusHdf5WriteInt
 (
-    hid_t        handle,
-    const char * pVariableString,
-    int *        pValues,
-    int          numValues
+    hid_t        handle,            ///< handle          : the file or group handle for writing
+    const char * pVariableString,   ///< the name of the variable to be written
+    int *        pValues,           ///< the int value or array that is to be written
+    int          numValues          ///< The length of the pValues array
 );
 
 /**
@@ -195,18 +150,14 @@ herr_t iusHdf5WriteInt
  * In-place:   n.a.
  * \pre         array with values was allocated and initialized
  * \post        values have been written to Hdf5 handle
- * \param[in]   handle          : the file or group handle for writing
- * \param[in]   pVariableString : the name of the variable to be written
- * \param[out]  pValues         : the long value or array that is to be written
- * \param[in]   numValues       : The length of the pValues array
  * \return      the HDF5 error status of the reading
  */
 herr_t iusHdf5WriteLong
 (
-    hid_t        handle,
-    const char * pVariableString,
-    long *       pValues,
-    int          numValues
+    hid_t        handle,            ///< the file or group handle for writing
+    const char * pVariableString,   ///< the name of the variable to be written
+    long *       pValues,           ///< the long value or array that is to be written
+    int          numValues          ///< the length of the pValues array
 );
 
 /**
@@ -215,16 +166,13 @@ herr_t iusHdf5WriteLong
  * In-place:   n.a.
  * \pre         string was created and initialized
  * \post        string has been written to Hdf5 handle
- * \param[in]   handle          : the file or group handle for writing
- * \param[in]   pVariableString : the name of the string to be written
- * \param[out]  pString         : the actual string itself that is to be written
  * \return      the HDF5 error status of the reading
  */
 herr_t iusHdf5WriteString
 (
-    hid_t        handle,
-    const char * pVariableString,
-    const char * pString
+    hid_t        handle,           ///< the file or group handle for writing
+    const char * pVariableString,  ///< the name of the string to be written
+    const char * pString           ///< the actual string itself that is to be written
 );
 
 /** 
@@ -238,17 +186,13 @@ herr_t iusHdf5WriteString
  *              arrays, but the grid struct is allocated
  * \post        *pGrid contains the grid data. Its memory is created and needs
  *              to be freed separately
- * \param[in]   handle          : the file or group handle containing the dataset to be
- *                         written
- * \param[in]   pVariableString : "PolarGrid" or "CartesianGrid"
- * \param[out]  pGrid           : the grid structure that is filled
  * \return the HDF5 error status of the reading
  */
 herr_t iusHdf5WriteGrid
 (
-    hid_t        handle,
-    const char * pVariableString,
-    IusGrid *    pGrid
+    hid_t        handle,           ///< the file or group handle containing the dataset to be written
+    const char  *pGridName,  ///< "PolarGrid" or "CartesianGrid"
+    IusGrid *    pGrid             ///< the grid structure that will be serialized
 );
 
 herr_t iusHdf5DisableMessages();

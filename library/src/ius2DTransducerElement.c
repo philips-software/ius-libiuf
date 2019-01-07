@@ -24,17 +24,17 @@ iu2dte_t ius2DTransducerElementCreate
 (
     iu2dp_t pos,
     float theta,
-    iu2ds_t siz
+    iu2ds_t size
 )
 {
-    if( pos == NULL || siz == NULL ) return IU2DTE_INVALID;
+    if( pos == NULL || size == NULL ) return IU2DTE_INVALID;
     // According to the IEEE standard, NaN values have the odd property that comparisons involving them are always false.
     // That is, for a float theta, theta != theta will be true only if f is NaN.
     if( theta != theta ) return IU2DTE_INVALID;
     iu2dte_t created = (Ius2DTransducerElement *) calloc(1,sizeof(struct Ius2DTransducerElement));
     created->position = pos;
     created->theta = theta;
-    created->size = siz;
+    created->size = size;
     created->loadedFromFile = IUS_FALSE;
     return created;
 }
