@@ -22,7 +22,7 @@ iu2dte_t ius2DTransducerElementCreate
 (
     iu2dp_t pos,   ///< the 2D position (x,z) in meters
     float theta,   ///< the angle over the y-axis in radians of the element
-    iu2ds_t size   ///< the size (sx,sz) in meters of the element
+    iu2ds_t size    ///< the size (sx,sz) in meters of the element
 );
 
 /** \brief Removes the 2D element object an its sub-objects.

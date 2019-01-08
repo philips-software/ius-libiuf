@@ -70,8 +70,8 @@ iu3dte_t ius3DTransducerElementListGet
 int ius3DTransducerElementListSet
 (
     iu3dtel_t list,    ///< The list that will be updated
-    iu3dte_t member,   ///< 
-    int index
+    iu3dte_t member,   ///< The #IusTransducerElement to add
+    int index          ///< The location in he list
 );
 
 #endif //IUSLIBRARY_IUSHL3DTRANSDUCERELEMENTLIST_H

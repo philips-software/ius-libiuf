@@ -5,6 +5,7 @@
 #include <iusHistoryNodePrivate.h>
 #include <iusInputFilePrivate.h>
 #include <memory.h>
+#include <string.h>
 
 struct IusFile
 {

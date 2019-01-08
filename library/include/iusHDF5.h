@@ -59,7 +59,7 @@ herr_t iusHdf5ReadInt
 (
     hid_t        handle,           ///< the file or group handle containing the variable to be read
     const char * pVariableString,  ///< the name of the variable to be read
-    int *        pValue            ///< [out]> the int value or array that is read from file 
+    int *        pValue            ///< [out] the int value or array that is read from file 
 );
 
 
@@ -109,7 +109,7 @@ herr_t iusHdf5ReadString
 herr_t iusHdf5ReadGrid
 (
     hid_t              handle,     ///< the file or group handle containing the dataset to be
-    const char * const pGridName,  ///< the name of the variable to be read
+    const char *       pGridName,  ///< the name of the variable to be read
     IusGrid *          pGrid       ///< [out] the grid structure that is filled (memory is allocated for its contents)
 );
 
