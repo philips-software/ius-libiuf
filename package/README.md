@@ -1,46 +1,26 @@
 # Instructions for the building and use IUS-SDK Software
-This repository contains the source code of the Interventional Ultrasound Library SDK. 
+
+This distribution contains a cross-platform binary distribution of the Interventional Ultrasound Library SDK. 
 This document contains instructions on
-* [How to install the sdk sources](#how-to-install-the-sdk)
+* [How to install the sdk](#how-to-install-the-sdk)
 * [Folder structure](#folder-structure)
 * [Build dependencies](#build-dependencies)
 * [How to build and run the examples and unit tests](#how-to-build-and-run-the-examples-and-unit-tests)
-* [How to generate documentation](#how-to-generate-documentation)
+* [How to create you own program](#how-to-create-you-own-program)
+* [Where to find SDK documentation](#where-to-find-sdk-documentation)
 
-
-## How to install the sdk sources
-### Philips Research specific installation instructions for Linux (cluster running centos 7.4)
-```
-    # login on compute server
-    $ ssh llogin
-      Welcome to aharna running Linux 3.10.0-693.11.6.el7.x86_64 
-
-    $ hosts $(hostname)
-    login
-
-    $ qsh
-    Started on lato in isar
-
-    $ hosts $(hostname)
-    compute
-    
-    # install gcovr build dependencies using cadenv
-    $ cadenv -r 2.7-64 python
-```
-
-### Checkout code
-```
-    $ git clone https://USERID@bitbucket.atlas.philips.com/scm/ius/ius.git
-    $ cd ius/C_v3
-    $ git checkout develop
-```
+## How to install the sdk
+Easy (:). The SDK comes as a zipped archive. Installation only means 
+unpacking this archive with your favorite unpacking tool.
 
 ## Folder structure
+When installed, the sdk contains a file structure that is similar to:
+
 ```
 .
-├── Docker
 ├── bin
-├── dox
+├── documentation
+│   ├── html
 │   └── img
 ├── examples
 │   ├── genV3file
@@ -50,17 +30,14 @@ This document contains instructions on
 │   ├── cmake_modules
 │   ├── hashmap
 │   └── hdf5_local
+├── include
 ├── library
-│   ├── include
-│   └── src
-├── package
+│   ├── Linux
+│   └── Windows
 └── unitTests
     ├── include
     └── src
 ```
-### Docker
-This folder contains the Dockerfile that is is used to build/develop for the Linux platform.
-The resulting docker image is been deployed to [our local GitLab instance](#https://gitlab.ta.philips.com/IUS/ius/container_registry).
 
 ### bin
 The bin folder contains convenience scripts that can be used to 
@@ -69,16 +46,14 @@ build, test and gnerate a distribution.
 * build.bat - Windows build script
 * build.sh - Linux/MacOs build script
 * static_code_analysis.sh - Linux/MacOs script running static code analysis
-* mk_os_distribution.bat - Windows script generating build distribution 
-* mk_os_distribution.sh - Linux/MacOs script, generating build distribution
 * code_coverage.sh - Linux/MacOs script, generating code coverage info base on unit tests
-* mksdk.sh - Linux/MacOs script, used to collect the artefacts from the mk_os_distribution scripts and generate an SDK folder
 * unittests.bat - Windows script that runs all available unit tests
 * unittests.sh - Linux/MacOs script that runs all available unit tests
 * memory_leak_detection.sh - Linux/MacOs script performing runtime memory leak detection
 
-### dox
-The dox folder contains the Doxyfile that can be used to generate the API documentation.
+### documentation
+The html folder contains the generated API documentation. Main file
+is index.html.
 
 ### examples
 The examples folder contains examples that demonstrate the use of the IUS fileio 
@@ -96,14 +71,12 @@ This folder contains the IUS-SDK header files.
 This folder contains the IUS-SDK platform specific static library files, both 
 compiled for debug and release mode.
 
-### package
-This folder contains files that will be added to the SDK distribution (dist.sh/dist.bat).
-
 ### unitTests
 This folder contains the unitTest the library has been tested with. This folder also 
 serves as an inspiration source of the API usage.
 
-## Build requirements
+## How to build and run the examples and unit tests
+### Build requirements
 In order to build and test the code, the required packages need to be installed:
 - compiler
   - tested with MSVC 19.0.24215.1 on Windows 7
@@ -123,11 +96,32 @@ In order to build and test the code, the required packages need to be installed:
 - gcovr
   - tested with 4.1 on Linux (centos:7.4.1708)
   - tested with 4.1 on MacOs (Sierra 10.12.6)
+ 
+### Philips Research specific installation instructions for Linux (cluster running centos 7.4)
+```
+    # login on compute server
+    $ ssh llogin
+      Welcome to aharna running Linux 3.10.0-693.11.6.el7.x86_64 
 
-#### Build instructions for Mac/Linux
+    $ hosts $(hostname)
+    login
 
+    $ qsh
+    Started on lato in isar
+
+    $ hosts $(hostname)
+    compute
+    
+    # install gcovr build dependencies using cadenv
+    $ cadenv -r 2.7-64 python
+    
+    # extract SDK
+    $ unzip IUS-SDK-3.1.0.zip
+    $ cd dist/IUS-SDK-3.1.0
+```
+
+### Build instructions for Mac/Linux
 - Build code
-
     ```
     $ bin/build.sh
     ```
@@ -144,38 +138,17 @@ In order to build and test the code, the required packages need to be installed:
     
     Process finished with exit code 0
     ```
-- Generate SDK:
+
+### Build instructions for Windows
+
+- Build code
     ```
-    $ uname
-    Linux
-    $ bin/dist.sh
-    $ cd build/Linux
-    $ ls -l dist
-    
-      total 8
-      -rw-r--r--  1 dr snuggles 1133 Oct 11 08:49 CMakeLists.txt
-      drwxr-xr-x  3 dr snuggles  102 Oct 11 10:41 bin
-      drwxr-xr-x  4 dr snuggles  136 Oct 11 10:41 examples
-      drwxr-xr-x  8 dr snuggles  272 Oct 11 10:41 external
-      drwxr-xr-x 53 dr snuggles 1802 Oct 11 10:41 include
-      drwxr-xr-x  3 dr snuggles  102 Oct 11 10:41 lib
-      -rw-r--r--  1 dr snuggles  296 Oct 11 08:49 PreLoad.cmake
-      drwxr-xr-x  5 dr snuggles  170 Oct 11 10:41 unitTests
-
-    ```
-
-
-#### Build instructions for Windows
-
-- Checkout and build code
-
-    ```
-    c:\proj\ius> bin\build.bat
+    c:\> bin\build.bat
     ```
 - Run unit tests
 
     ```
-    c:\proj\ius> bin\unittests.bat
+    C:\> bin\unittests.bat
     Unity test run 1 of 1
     .......................
     
@@ -185,14 +158,15 @@ In order to build and test the code, the required packages need to be installed:
     
     Process finished with exit code 0
     ```
-- Build a dist folder containing the distributable SDK:
 
-    ```
-    c:\proj\ius> bin\dist.bat
-    ```
+## How to create you own program
+The examples folder can be used to integrate you own program into 
+build process. Steps are as follows:
+- Create a new sub-folder of the examples folder, say myIUSapp
+- Add subfolder myIUSapp to the build process by extendig the examples/CmakeLists.txt 
+file with the statement: add_subdirectory(myIUSapp)
+- Create your sources and CMakeLists.txt in the myIUSapp folder, similar to 
+the other examples.
 
-### How to generate documentation
-```
-cd dox
-doxygen
-```
+## Where to find SDK documentation
+Ths SDK API Documentation can be found in documentation/html/index.html

@@ -6,7 +6,7 @@
 #include <unity_fixture.h>
 
 #include <ius.h>
-#include <library/include/iusReceiveChannelMapPrivate.h>
+#include <iusReceiveChannelMapPrivate.h>
 
 TEST_GROUP(IusReceiveChannelMap);
 

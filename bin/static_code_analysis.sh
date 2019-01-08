@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
+ScriptPath=$(dirname $(realpath $0))
+BuildFolder=$(realpath ${ScriptPath}/..)/build/$(uname)
+CppCheckReportFile=cppcheck-report.xml
+
 which cmake3 >/dev/null 2>&1
 if (( $? == 0 ))
 then
@@ -10,9 +14,6 @@ else
     CMAKE=cmake
     CTEST=ctest
 fi
-
-BuildFolder=C_v3/build/$(uname)
-CppCheckReportFile=cppcheck-report.xml
 
 echo === Static code analysis for ius in $BuildFolder
 mkdir -p $BuildFolder

@@ -27,9 +27,9 @@
 *    processing parameters and settings
 *    the history of all previous processing parameters and settings.
 * Since the meta-data is very small (10s of kBytes) typically compared to the data itself (100s of MBytes), storing all metadata of each 
-* processing step remains relatively little overhead. In order to cope with various processing chain implementations and versions of each 
+* processing step remains relatively little overhead. In order to cope with various processing chain implementations and versions of each
 * processing step is considered a #IusHistoryNode that has a "history" in the form of parents (a list of #IusHistoryNode s), node 
-* specific properties (identified by the node type and optional algorithm parameters). In the following sections we will describe the implemented 
+* specific properties (identified by the node type and optional algorithm parameters). In the following sections we will describe the implemented
 * Nodes types.  
 *
 * \section iusInputFile
@@ -44,7 +44,7 @@
 *
 * The data is stored in a 4D block of floats for each #IusPatternList with dimensions:
 * numChannels x numSamplesPerLine x numPulses x numFrames. Note that this implies that these 4 dimension of each pattern in a patternList are constant. 
-* This is checked by the library when constructing a patternList using #iusPatternListCreate() and #iusPatternListSet(). 
+* This is checked by the library when constructing a patternList using #iusPatternListCreate() and #iusPatternListSet().
 * 
 * \subsection IusSourceDict
 * The source dictionary contains a set of source types. A source does not have to contain a single point source, it can also contain multiple point sources, for example 

@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.00)
 project(iusLibrary C)
 
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/external/cmake_modules")
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/external/cmake_modules" ${CMAKE_MODULE_PATH})
 if(CMAKE_COMPILER_IS_GNUCC)
     include(CodeCoverage)
     APPEND_COVERAGE_COMPILER_FLAGS()
@@ -9,14 +9,18 @@ if(CMAKE_COMPILER_IS_GNUCC)
 endif()
 
 if(MSVC)
-    # disable the security warnings for sprintf() in bee2.c
+    # disable the security warnings for sprintf()
     add_definitions(/D _CRT_SECURE_NO_WARNINGS /D _CRT_NONSTDC_NO_DEPRECATE)
+    set(HDF5_USE_STATIC_LIBRARIES "TRUE")
 else()
+    set(UUID_LIBRARIES -luuid)
     set(CMAKE_CXX_CPPCHECK "cppcheck")
 endif()
 
+set (IUS_LIBRARIES ius)
 set (HASHMAP_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/external/hashmap/src")
 set (HASHMAP_SOURCES "${PROJECT_SOURCE_DIR}/external/hashmap/src/hashmap.c")
+FIND_PACKAGE(HDF5 1.8 COMPONENTS C HL REQUIRED)
 
 set (TARGET_GROUP test CACHE STRING "Group to build")
 if(TARGET_GROUP STREQUAL production)
@@ -43,6 +47,12 @@ file(GLOB_RECURSE PRIVATE_HEADERS
         "${PROJECT_SOURCE_DIR}/library/include/*[pP]rivate.h"
         )
 install(FILES ${PRIVATE_HEADERS}  DESTINATION ${PROJECT_BINARY_DIR}/dist/unitTests/include)
-install(FILES package/CMakeLists.txt package/PreLoad.cmake  DESTINATION ${PROJECT_BINARY_DIR}/dist)
+install(FILES package/README.md package/CMakeLists.txt package/PreLoad.cmake  DESTINATION ${PROJECT_BINARY_DIR}/dist)
+install(DIRECTORY bin DESTINATION ${PROJECT_BINARY_DIR}/dist
+        USE_SOURCE_PERMISSIONS
+        PATTERN "bin/dist.*" EXCLUDE
+        PATTERN "bin/mksdk.*" EXCLUDE
+        )
+
 install(DIRECTORY examples DESTINATION ${PROJECT_BINARY_DIR}/dist)
 install(DIRECTORY external DESTINATION ${PROJECT_BINARY_DIR}/dist)

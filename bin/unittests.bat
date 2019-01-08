@@ -7,6 +7,6 @@ popd
 echo === Building ius in %BuildFolder%
 mkdir %BuildFolder% & pushd %BuildFolder%
 cmake ..\..
-cmake --build . --config Release
 cmake --build . --config Debug
+ctest --verbose
 popd

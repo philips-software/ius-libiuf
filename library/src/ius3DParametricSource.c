@@ -29,13 +29,13 @@ struct Ius3DParametricSource
 // ADT
 iu3dps_t ius3DParametricSourceCreate
 (
-	int numThetaLocations,  
-	int numPhiLocations,    
-	float fNumber,          
-	float deltaTheta,       
-	float startTheta,       
-	float deltaPhi,         
-	float startPhi          
+	int numThetaLocations,
+	int numPhiLocations,
+	float fNumber,
+	float deltaTheta,
+	float startTheta,
+	float deltaPhi,
+	float startPhi
 )
 {
 	int numLocations = numThetaLocations * numPhiLocations;

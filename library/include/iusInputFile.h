@@ -19,7 +19,7 @@ typedef struct IusHistoryNode IusInputFile;
 /** The input file is the instance for the "raw" file format. It contains the unprocessed ultrasound aquisition.
  * The instance contains a #IusFrameList, a #IusTransducer definition, #IusAcquisition information and one or more data blocks
  * referering to a patternList. In addition, node history can be added.
- */  
+ */
 typedef IusInputFile *iuif_t;
 
 #define IUIF_INVALID (iuif_t) NULL
@@ -38,12 +38,12 @@ iuif_t iusInputFileCreate
  */
 iud_t iusInputFileFrameCreate
 (
-    iuif_t inputFile,    ///< The #IusInputFile of interest 
+    iuif_t inputFile,    ///< The #IusInputFile of interest
     char *label             ///< The acquisition type
 );
 
-/** \brief Creates a datablock for a response (numSamplesPerLine * numChannels) for the acquisition with 
- * the name \p label. 
+/** \brief Creates a datablock for a response (numSamplesPerLine * numChannels) for the acquisition with
+ * the name \p label.
  * \return Returns an allocated memory block of a "label"-response or IUD_INVALID in case of an error.
  */
 iud_t iusInputFileResponseCreate
@@ -52,8 +52,8 @@ iud_t iusInputFileResponseCreate
     char *label             ///< The acquisition type
 );
 
-/** \brief Creates a datablock for a single channel (i.e. numSamplesPerLine floats) for the acquisition with 
- * the name \p label. 
+/** \brief Creates a datablock for a single channel (i.e. numSamplesPerLine floats) for the acquisition with
+ * the name \p label.
  * \return Returns an allocated memory block of a "label"-channel or IUD_INVALID in case of an error.
  */
 iud_t iusInputFileChannelCreate
@@ -62,8 +62,8 @@ iud_t iusInputFileChannelCreate
     char *label             ///< The acquisition type
 );
 
-/** \brief Creates a datablock for a single channel (i.e. numSamplesPerLine floats) for the acquisition with 
- * the name \p label. 
+/** \brief Creates a datablock for a single channel (i.e. numSamplesPerLine floats) for the acquisition with
+ * the name \p label.
  * \return Returns an allocated memory block of a "label"-channel or IUD_INVALID in case of an error.
  */
 int iusInputFileDelete
@@ -71,15 +71,15 @@ int iusInputFileDelete
     iuif_t inputFile     ///< The #IusInputFile of interest
 );
 
-/** \brief Load an inputFile instance from a file.  
+/** \brief Load an inputFile instance from a file.
  * \return Returns an input file instance or IUIF_INVALID the file could not be read.
  */
 iuif_t iusInputFileNodeLoad
 (
-	const char *pFilename     ///< The filename of the inputFile 
+	const char *pFilename     ///< The filename of the inputFile
 );
 
-/** \brief Save (serialize) the inputFile instance to file.   
+/** \brief Save (serialize) the inputFile instance to file.
  * \return Returns #IUS_E_OK when succesful or #IUS_ERR_VALUE in case of an error
  */
 int iusInputFileNodeSave
@@ -87,7 +87,7 @@ int iusInputFileNodeSave
 	iuif_t inputFile       ///< The #IusInputFile of interest
 );
 
-/** \brief Closes access to the inputFile   
+/** \brief Closes access to the inputFile
  * \return Returns #IUS_E_OK when succesful or #IUS_ERR_VALUE in case of an error
  */
 int iusInputFileClose
@@ -95,7 +95,7 @@ int iusInputFileClose
     iuif_t inputFile        ///< The #IusInputFile of interest
 );
 
-/** \brief Compares two inputFile instances with each other. 
+/** \brief Compares two inputFile instances with each other.
  * \return Returns #IUS_TRUE when the inputFiles are equal and #IUS_FALSE otherwise.
  */
 int iusInputFileCompare
@@ -202,6 +202,17 @@ int iusInputFileGetNumChannels
     char *label                ///< the patternList type
 );
 
+
+/** \brief Gets the number of samples per line for this \p label.
+ * \return Returns the number of channels or -1 in case of an error.
+ */
+int iusInputFileGetSamplesPerLine
+(
+	iuif_t inputFile,       ///< The #IusInputFile of interest
+	char *label             ///< the patternList type
+);
+
+// Setters
 /** \brief Sets the frameList of an inputFile.
  * \return Returns #IUS_E_OK when succesful or #IUS_ERR_VALUE in case of an error.
  */
@@ -324,7 +335,7 @@ int iusInputFileResponseLoad
     iuif_t inputFile,                       ///< The #IusInputFile of interest
     char *label,                            ///< The label of the patternList
     iud_t response,                         ///< The response data to load
-    iuo_t response_offset                   ///< The offset in the datablock 
+    iuo_t response_offset                   ///< The offset in the datablock
 );
 
 /** \brief Saves a frame of data to an inputFile.

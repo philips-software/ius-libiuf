@@ -1,13 +1,11 @@
-
-FIND_PACKAGE(HDF5 COMPONENTS C HL)
-
 include_directories(include)
 include_directories(${HDF5_INCLUDE_DIR})
 include_directories(${CMAKE_SOURCE_DIR})
 include_directories(${CMAKE_SOURCE_DIR}/include)
 include_directories(${CMAKE_CURRENT_LIST_DIR})
 include_directories(${CMAKE_CURRENT_LIST_DIR}/include)
-link_directories(${CMAKE_SOURCE_DIR}/lib)
+link_directories(${CMAKE_SOURCE_DIR}/library/${CMAKE_SYSTEM_NAME})
+
 
 add_executable(unitTests
         include/testDataGenerators.h
@@ -62,8 +60,8 @@ endif()
 
 if(MSVC)
     target_compile_options(unitTests PRIVATE /W4 /WX)
+    set_target_properties(unitTests PROPERTIES LINK_FLAGS "/ignore:4099 /ignore:4098")
 else()
-    set(UUID_LIBRARIES -luuid)
     target_compile_options(unitTests PRIVATE -Wall -Wextra -pedantic -Werror)
     if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
         target_compile_options(unitTests PRIVATE -Wall -Wextra -pedantic -Werror)
@@ -71,7 +69,7 @@ else()
 endif()
 
 target_link_libraries(unitTests
-        ius
+        ${IUS_LIBRARIES}
         Unity
         ${HDF5_LIBRARIES}
         ${HDF5_HL_LIBRARIES}

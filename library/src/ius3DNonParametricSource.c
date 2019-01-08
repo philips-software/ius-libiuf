@@ -118,7 +118,7 @@ static int ius3DNonParametricSourceSaveLocations
     iu3dp_t sourceElement;
 	hid_t locationList_id = H5Gcreate(handle, IUS_INPUTFILE_PATH_SOURCE_LOCATIONLIST, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
     int i, size = pSource->numLocations;
-    int status = iusHdf5WriteInt(locationList_id, IUS_INPUTFILE_PATH_SOURCE_LISTSIZE, &(size), 1);
+    int status = iusHdf5WriteInt(locationList_id, IUS_INPUTFILE_PATH_SOURCE_LOCATIONLISTSIZE, &(size), 1);
 
     // iterate over source list elements and save'em
     for (i=0;i < size;i++)
@@ -146,7 +146,7 @@ static int ius3DNonParametricSourceLoadLocations
     char path[IUS_MAX_HDF5_PATH];
     iu3dp_t pos;
 	hid_t locationList_id = H5Gopen(handle, IUS_INPUTFILE_PATH_SOURCE_LOCATIONLIST, H5P_DEFAULT);
-	status = iusHdf5ReadInt(locationList_id, IUS_INPUTFILE_PATH_SOURCE_LISTSIZE, &(source->numLocations));
+	status = iusHdf5ReadInt(locationList_id, IUS_INPUTFILE_PATH_SOURCE_LOCATIONLISTSIZE, &(source->numLocations));
     for (p = 0; p < source->numLocations; p++)
     {
         sprintf(path, IUS_INPUTFILE_PATH_SOURCE_LOCATION, p);
@@ -188,7 +188,7 @@ iu3dnps_t ius3DNonParametricSourceLoad
     int numLocations;
     iu3dnps_t  source;
 	hid_t locationList_id = H5Gopen(handle, IUS_INPUTFILE_PATH_SOURCE_LOCATIONLIST, H5P_DEFAULT);
-    int status = iusHdf5ReadInt(locationList_id, IUS_INPUTFILE_PATH_SOURCE_LISTSIZE, &(numLocations));
+    int status = iusHdf5ReadInt(locationList_id, IUS_INPUTFILE_PATH_SOURCE_LOCATIONLISTSIZE, &(numLocations));
 	H5Gclose(locationList_id);
     if (status < 0)
         return NULL;

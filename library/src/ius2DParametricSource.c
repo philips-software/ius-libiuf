@@ -167,7 +167,7 @@ int ius2DParametricSourceSave
     status |= iusHdf5WriteFloat( handle, IUS_INPUTFILE_PATH_SOURCE_FNUMBER, &(source->fNumber), 1);
     status |= iusHdf5WriteFloat( handle, IUS_INPUTFILE_PATH_SOURCE_DELTATHETA, &(source->deltaTheta), 1);
     status |= iusHdf5WriteFloat( handle, IUS_INPUTFILE_PATH_SOURCE_STARTTHETA, &(source->startTheta), 1);
-    status |= iusHdf5WriteInt(handle, IUS_INPUTFILE_PATH_SOURCE_LISTSIZE, &(source->numLocations),1);
+    status |= iusHdf5WriteInt(handle, IUS_INPUTFILE_PATH_SOURCE_NUMSOURCES, &(source->numLocations),1);
     return status;
 }
 
@@ -188,7 +188,7 @@ iu2dps_t ius2DParametricSourceLoad
     status |= iusHdf5ReadFloat(handle, IUS_INPUTFILE_PATH_SOURCE_FNUMBER, &(fNumber));
     status |= iusHdf5ReadFloat(handle, IUS_INPUTFILE_PATH_SOURCE_DELTATHETA, &(deltaTheta));
     status |= iusHdf5ReadFloat(handle, IUS_INPUTFILE_PATH_SOURCE_STARTTHETA, &(startTheta));
-    status |= iusHdf5ReadInt(handle, IUS_INPUTFILE_PATH_SOURCE_LISTSIZE, &(numLocations));
+    status |= iusHdf5ReadInt(handle, IUS_INPUTFILE_PATH_SOURCE_NUMSOURCES, &(numLocations));
     if (status < 0)
         return NULL;
 
