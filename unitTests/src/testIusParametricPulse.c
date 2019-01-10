@@ -141,7 +141,7 @@ TEST(IusParametricPulse, testIusSetGetPulse)
     parametricPulse = iusParametricPulseCreate(pulseFrequency, pulseAmplitude, numPulses);
     TEST_ASSERT_EQUAL_FLOAT( iusParametricPulseGetFrequency(parametricPulse), pulseFrequency);
     TEST_ASSERT_EQUAL_FLOAT( iusParametricPulseGetPulseAmplitude(parametricPulse), pulseAmplitude);
-    TEST_ASSERT_EQUAL_FLOAT(iusParametricPulseGetNumPulses(parametricPulse),numPulses);
+    TEST_ASSERT_EQUAL_FLOAT( iusParametricPulseGetNumPulses(parametricPulse),numPulses);
 
     // Invalid operation on nonparametric dta type
     nonParametricPulse = iusNonParametricPulseCreate(numPulseValues);

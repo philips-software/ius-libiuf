@@ -5,14 +5,22 @@
 
 // ADT
 typedef struct IusData IusData;
+/** A datablock is an array of floats.
+ */
 typedef IusData *iud_t;
 #define  IUD_INVALID (iud_t) NULL
 
+/** \brief Creates a datablock of \p size floats 
+ * \return Returns the datablock or IUD_INVALID in case of a failure.
+ */
 iud_t iusDataCreate
 (
-    int size
+    int size  ///< The number of floats to allocate
 );
 
+/** \brief Deletes a datablock of \p size floats 
+ * \return Returns the datablock or IUD_INVALID in case of a failure.
+ */
 int iusDataDelete
 (
     iud_t iusData
@@ -37,3 +45,4 @@ float *iusDataGetPointer
 );
 
 #endif //IUSLIBRARY_IUSDATA_H
+

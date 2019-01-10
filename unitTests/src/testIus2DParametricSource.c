@@ -22,13 +22,13 @@ TEST_TEAR_DOWN(Ius2DParametricSource)
 
 TEST(Ius2DParametricSource, testIus2DParametricSourceCreate)
 {
-    float angularDelta = 0.13f;
+    float deltaTheta = 0.13f;
     float FNumber = -0.955f;
-    float startAngle = 3.14f;
+    float startTheta = 3.14f;
     int numLocations = 5 ;
 
-    iu2dps_t obj = ius2DParametricSourceCreate(numLocations, FNumber, angularDelta, startAngle);
-    iu2dps_t notherObj = ius2DParametricSourceCreate(numLocations, FNumber, angularDelta, startAngle);
+    iu2dps_t obj = ius2DParametricSourceCreate(numLocations, FNumber, deltaTheta, startTheta);
+    iu2dps_t notherObj = ius2DParametricSourceCreate(numLocations, FNumber, deltaTheta, startTheta);
     TEST_ASSERT(obj != IU2DPS_INVALID);
     TEST_ASSERT(notherObj != IU2DPS_INVALID);
     ius2DParametricSourceDelete(obj);
@@ -43,12 +43,12 @@ TEST(Ius2DParametricSource, testIus2DParametricSourceCreate)
 
 TEST(Ius2DParametricSource, testIus2DParametricSourceDelete)
 {
-    float angularDelta = 0.13f;
+    float deltaTheta = 0.13f;
     float FNumber = -0.955f;
-    float startAngle = 3.14f;
+    float startTheta = 3.14f;
     int numLocations = 5;
 
-    iu2dps_t obj = ius2DParametricSourceCreate(numLocations, FNumber, angularDelta, startAngle);
+    iu2dps_t obj = ius2DParametricSourceCreate(numLocations, FNumber, deltaTheta, startTheta);
     TEST_ASSERT(obj != IU2DPS_INVALID);
     int status = ius2DParametricSourceDelete(obj);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
@@ -63,15 +63,15 @@ TEST(Ius2DParametricSource, testIus2DParametricSourceDelete)
 TEST(Ius2DParametricSource, testIus2DParametricSourceCompare)
 {
     IUS_BOOL equal;
-    float angularDelta = 0.13f;
+    float deltaTheta = 0.13f;
     float FNumber = -0.955f;
-    float startAngle = 3.14f;
+    float startTheta = 3.14f;
     int numLocations = 5;
 
-    iu2dps_t obj = ius2DParametricSourceCreate(numLocations, FNumber, angularDelta, startAngle);
-    iu2dps_t notherObj = ius2DParametricSourceCreate(numLocations, FNumber, angularDelta, startAngle);
+    iu2dps_t obj = ius2DParametricSourceCreate(numLocations, FNumber, deltaTheta, startTheta);
+    iu2dps_t notherObj = ius2DParametricSourceCreate(numLocations, FNumber, deltaTheta, startTheta);
     iu2dps_t differentObj =
-    ius2DParametricSourceCreate(numLocations, FNumber + 0.01f, angularDelta, startAngle);
+    ius2DParametricSourceCreate(numLocations, FNumber + 0.01f, deltaTheta, startTheta);
     TEST_ASSERT(obj != IU2DPS_INVALID);
     TEST_ASSERT(notherObj != IU2DPS_INVALID);
     equal = ius2DParametricSourceCompare(obj,obj);
@@ -95,22 +95,22 @@ TEST(Ius2DParametricSource, testIus2DParametricSourceCompare)
 TEST(Ius2DParametricSource, testIus2DParametricSourceSetGet)
 {
     //IUS_BOOL equal;
-    float angularDelta = 0.13f;
+    float deltaTheta = 0.13f;
     float FNumber = -0.955f;
-    float startAngle = 3.14f;
+    float startTheta = 3.14f;
     int numLocations = 5;
 
-    iu2dps_t obj = ius2DParametricSourceCreate(numLocations, FNumber, angularDelta, startAngle);
+    iu2dps_t obj = ius2DParametricSourceCreate(numLocations, FNumber, deltaTheta, startTheta);
 
     TEST_ASSERT_EQUAL_FLOAT(FNumber,ius2DParametricSourceGetFNumber(obj));
-    TEST_ASSERT_EQUAL_FLOAT(angularDelta,ius2DParametricSourceGetAngularDelta(obj));
-    TEST_ASSERT_EQUAL_FLOAT(startAngle,ius2DParametricSourceGetStartAngle(obj));
+    TEST_ASSERT_EQUAL_FLOAT(deltaTheta,ius2DParametricSourceGetDeltaTheta(obj));
+    TEST_ASSERT_EQUAL_FLOAT(startTheta,ius2DParametricSourceGetStartTheta(obj));
 
 
     // invalid param
     TEST_ASSERT_EQUAL_FLOAT(NAN,ius2DParametricSourceGetFNumber(NULL));
-    TEST_ASSERT_EQUAL_FLOAT(NAN,ius2DParametricSourceGetAngularDelta(NULL));
-    TEST_ASSERT_EQUAL_FLOAT(NAN,ius2DParametricSourceGetStartAngle(NULL));
+    TEST_ASSERT_EQUAL_FLOAT(NAN,ius2DParametricSourceGetDeltaTheta(NULL));
+    TEST_ASSERT_EQUAL_FLOAT(NAN,ius2DParametricSourceGetStartTheta(NULL));
 
     ius2DParametricSourceDelete(obj);
 }
@@ -121,20 +121,20 @@ TEST(Ius2DParametricSource, testIus2DParametricSourceSerialization)
     //char *sourcePath =  "/2DParametricSource";
 
     //IUS_BOOL equal;
-    float angularDelta = 0.13f;
+    float deltaTheta = 0.13f;
     float FNumber = -0.955f;
-    float startAngle = 3.14f;
+    float startTheta = 3.14f;
     int numLocations = 5, status;
 
 
     // create
     iu2dps_t
-    obj = ius2DParametricSourceCreate(numLocations, FNumber, angularDelta, startAngle);
+    obj = ius2DParametricSourceCreate(numLocations, FNumber, deltaTheta, startTheta);
 
     // fill
     TEST_ASSERT_EQUAL_FLOAT(FNumber, ius2DParametricSourceGetFNumber(obj));
-    TEST_ASSERT_EQUAL_FLOAT(angularDelta, ius2DParametricSourceGetAngularDelta(obj));
-    TEST_ASSERT_EQUAL_FLOAT(startAngle, ius2DParametricSourceGetStartAngle(obj));
+    TEST_ASSERT_EQUAL_FLOAT(deltaTheta, ius2DParametricSourceGetDeltaTheta(obj));
+    TEST_ASSERT_EQUAL_FLOAT(startTheta, ius2DParametricSourceGetStartTheta(obj));
 
     // save
     hid_t handle = H5Fcreate( filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT );

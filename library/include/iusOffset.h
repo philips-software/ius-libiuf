@@ -13,24 +13,34 @@ typedef struct IusOffset_
 } IusOffset;
 
 typedef IusOffset *iuo_t;
+/* Data is stored in rectangular blocks up to 4 dimensions. The offset structure points to 
+ * a certain {x,y,z,t} point in this data block
+ * */
 #define  IUO_INVALID (iuo_t) NULL
 
+/** \brief Create an offset object initialized at {0,0,0,0}
+ * \return Returns a zero offset object.
+ */
 iuo_t iusOffsetCreate
 (
     void
 );
 
+/** \brief Delete an offset object 
+ * \return Returns #IUS_E_OK in when successful or IUS_ERR_VALUE when the offset is NULL 
+ */
 int iusOffsetDelete
 (
-    iuo_t iusOffset
+    iuo_t iusOffset  ///< the offset that is to be deleted.
 );
 
-
-// operations
+/** \brief Compare two offsets with each other 
+ * \return Returns #IUS_TRUE when the offsets are equal and IUS_FALSE otherwise. 
+*/
 int iusOffsetCompare
 (
-    iuo_t reference,
-    iuo_t actual
+    iuo_t reference,  ///< The offset to compare to
+    iuo_t actual      ///< The offset to compare with
 );
 
 

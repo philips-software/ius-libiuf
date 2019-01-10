@@ -45,12 +45,11 @@ build, test and gnerate a distribution.
 
 * build.bat - Windows build script
 * build.sh - Linux/MacOs build script
-* cppcheck.sh - Linux/MacOs script calling static linter
-* gcovr.sh - Linux/MacOs script, generating code coverage info base on unit tests
-* mem.sh - Linux/MacOs script performing memory check
-* ut.bat - Windows script that runs all available unit tests
-* ut.sh - Linux/MacOs script that runs all available unit tests
-* valgrind.sh - Linux/MacOs script that checks for memory leaks
+* static_code_analysis.sh - Linux/MacOs script running static code analysis
+* code_coverage.sh - Linux/MacOs script, generating code coverage info base on unit tests
+* unittests.bat - Windows script that runs all available unit tests
+* unittests.sh - Linux/MacOs script that runs all available unit tests
+* memory_leak_detection.sh - Linux/MacOs script performing runtime memory leak detection
 
 ### documentation
 The html folder contains the generated API documentation. Main file
@@ -129,7 +128,7 @@ In order to build and test the code, the required packages need to be installed:
 - Run unit tests
 
     ```
-    $ bin/ut.sh
+    $ bin/unittests.sh
     Unity test run 1 of 1
     .......................
     
@@ -149,7 +148,7 @@ In order to build and test the code, the required packages need to be installed:
 - Run unit tests
 
     ```
-    C:\> bin\ut.bat
+    C:\> bin\unittests.bat
     Unity test run 1 of 1
     .......................
     

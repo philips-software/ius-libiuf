@@ -212,7 +212,7 @@ ius_t iusSourceLoad
     hid_t handle
 )
 {
-	ius_t base = IUS_INVALID;
+	ius_t base;
     ius_t source = IUS_INVALID;
 
     base = iusBaseSourceLoad(handle);

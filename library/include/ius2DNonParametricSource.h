@@ -14,7 +14,7 @@
 
 typedef struct Ius2DNonParametricSource Ius2DNonParametricSource;
 /** The 2D Non-Parametric Sources describes a list of locations from which a pulse originates simulatanously. You can 
-  * create a source with a predefined number of locations and the get and set these locations with 
+  * create a source with a predefined number of locations and then get and set these locations with 
   * ius2DNonParametricSourceGetPosition() and ius2DNonParametricSourceGetPosition() respectively. */
 typedef Ius2DNonParametricSource *iu2dnps_t;
 
@@ -39,7 +39,7 @@ int ius2DNonParametricSourceDelete
 );
 
 /** \brief Compares two 2D non-parametric sources.
- * \return #IUS_TRUE if reference and actual are identical sources, and #IUS_FALSE in all other cases.
+ * \return #IUS_TRUE if \p reference and \p actual are identical sources, and #IUS_FALSE in all other cases.
  */
 int ius2DNonParametricSourceCompare
 (
@@ -56,7 +56,7 @@ iu2dp_t ius2DNonParametricSourceGetPosition
     int index							    ///< the index of the position list 
 );
 
-/** \brief Sets the 2D position \p pos on the \p index -th location for the 2D non-parametric source \p ius2DNonParametricSource. 
+/** \brief sets the 2D position \p pos on the \p index -th location for the 2D non-parametric source \p ius2DNonParametricSource. 
  * \return Returns #IUS_E_OK on success or #IUS_ERR_VALUE in case of an error.
  */
 int ius2DNonParametricSourceSetPosition

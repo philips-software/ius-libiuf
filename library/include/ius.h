@@ -24,12 +24,12 @@
 * This library facilitates such processing chains by providing abstract datatypes and functions for file IO.
 * The HDF5 file format is used to store the following meta-data 
 *    acquisition properties and settings
-*    processing paramaters and settings
-*    the history of all previous processing paramaters and settings.
+*    processing parameters and settings
+*    the history of all previous processing parameters and settings.
 * Since the meta-data is very small (10s of kBytes) typically compared to the data itself (100s of MBytes), storing all metadata of each 
-* processing step remains relatively little overhead. In order to cope with various processing chain implementations and varsions of each 
+* processing step remains relatively little overhead. In order to cope with various processing chain implementations and versions of each
 * processing step is considered a #IusHistoryNode that has a "history" in the form of parents (a list of #IusHistoryNode s), node 
-* specific properties (identified by the node type and optional algorithm parameters. In the following sections we will describe the implemented 
+* specific properties (identified by the node type and optional algorithm parameters). In the following sections we will describe the implemented
 * Nodes types.  
 *
 * \section iusInputFile
@@ -40,11 +40,11 @@
 * #IusReceiveSettings, #IusReceiveChannelMap, #IusTransmitApodization and #IusPulse. Together these 5 objects from each
 * dictionary describe the pattern. See the subsections blow.
 *
-* In addition, an #IusInputFile contains a transducer description #IusTransducer and experiment description #IusExperiment.
+* In addition, an #IusInputFile contains a transducer description #IusTransducer and the acquistion method #IusAcquisition.
 *
 * The data is stored in a 4D block of floats for each #IusPatternList with dimensions:
 * numChannels x numSamplesPerLine x numPulses x numFrames. Note that this implies that these 4 dimension of each pattern in a patternList are constant. 
-* This is checked by the library when constructign a patternList using #iusPatternListCreate() and #iusPatternListSet(). 
+* This is checked by the library when constructing a patternList using #iusPatternListCreate() and #iusPatternListSet().
 * 
 * \subsection IusSourceDict
 * The source dictionary contains a set of source types. A source does not have to contain a single point source, it can also contain multiple point sources, for example 
@@ -53,7 +53,7 @@
 *
 * There is typically no need to define the generic #IusSource Type, instead the API provides functions for each of the four types separately.
 * For example, to define a source in 3D space that approximates a circlular arc (described by startPhi, deltaPhi) 
-* one would use:  #ius3DParametricSourceCreate(int numLocations, float fNumber, float deltaTheta, float startTheta, float deltaPhi, float startPhi).
+* one would use:  #ius3DParametricSourceCreate().
 * Please note that when one wants to compound individual insonifications from each point on the arc (i.e. fire individual pulses from each point source) then a
 * pattern needs to be created for each of these insonifications and therefore also a source for each of these. In such a case each source then just contains a signle point.    
 * A #IusSource is referenced by an #IusPattern using a string as a key in a dictionary.

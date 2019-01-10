@@ -5,8 +5,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-
-
 #include <ius.h>
 #include <iusAcquisitionPrivate.h>
 #include <iusDataStreamDictPrivate.h>
@@ -104,15 +102,15 @@ int iusInputFileInstanceDelete
 // ADT
 int iusInputFileDelete
 (
-    iuif_t iusInputFile
+    iuif_t inputFile
 )
 {
     int status = IUS_ERR_VALUE;
-    if(iusInputFile != NULL)
+    if(inputFile != NULL)
     {
-        iuifi_t instance = iusHistoryNodeGetInstanceData(iusInputFile);
+        iuifi_t instance = iusHistoryNodeGetInstanceData(inputFile);
         iusInputFileInstanceDelete(instance);
-        iusHistoryNodeDelete((iuhn_t)iusInputFile);
+        iusHistoryNodeDelete((iuhn_t)inputFile);
         status = IUS_E_OK;
     }
     return status;
@@ -120,10 +118,10 @@ int iusInputFileDelete
 
 iuif_t iusInputFileCreate
 (
-    const char *pFilename
+    const char *filename
 )
 {
-	if (pFilename == NULL)
+	if (filename == NULL)
 	{
 		fprintf(stderr, "iusInputFileAlloc: Input arguments can not be NULL \n");
 		return IUIF_INVALID;
@@ -136,8 +134,8 @@ iuif_t iusInputFileCreate
 		return IUIF_INVALID;
 	}
 
-    instanceData->pFilename = strdup(pFilename);
-    instanceData->handle = H5Fcreate(pFilename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
+    instanceData->pFilename = strdup(filename);
+    instanceData->handle = H5Fcreate(filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
 	if (instanceData->handle == H5I_INVALID_HID)
 	{
         iusInputFileInstanceDelete(instanceData);
@@ -162,12 +160,12 @@ int iusInputFileGetNumFrames
 
 int iusInputFileGetNumChannels
 (
-    iuif_t iusInputFile,
+    iuif_t inputFile,
     char *label
 )
 {
-    if (iusInputFile == NULL) return -1;
-    iurcmd_t receiveChannelMapDict = iusInputFileGetReceiveChannelMapDict(iusInputFile);
+    if (inputFile == NULL) return -1;
+    iurcmd_t receiveChannelMapDict = iusInputFileGetReceiveChannelMapDict(inputFile);
     if (receiveChannelMapDict == IURCMD_INVALID) return -1;
     iurcm_t receiveChannelMap = iusReceiveChannelMapDictGet(receiveChannelMapDict,label);
     if (receiveChannelMap == IURCM_INVALID) return -1;
@@ -177,12 +175,12 @@ int iusInputFileGetNumChannels
 
 int iusInputFileGetSamplesPerLine
 (
-    iuif_t iusInputFile,
+    iuif_t inputFile,
     char *label
 )
 {
-    if (iusInputFile == NULL) return -1;
-    iursd_t receiveSettingsDict = iusInputFileGetReceiveSettingsDict(iusInputFile);
+    if (inputFile == NULL) return -1;
+    iursd_t receiveSettingsDict = iusInputFileGetReceiveSettingsDict(inputFile);
     if (receiveSettingsDict == IURSD_INVALID) return -1;
     iurs_t receiveSettings = iusReceiveSettingsDictGet(receiveSettingsDict,label);
     if (receiveSettings == IURS_INVALID) return -1;
@@ -191,60 +189,57 @@ int iusInputFileGetSamplesPerLine
 
 int iusInputFileGetNumResponses
 (
-    iuif_t iusInputFile,
+    iuif_t inputFile,
     char *label
 )
 {
-    if (iusInputFile == NULL) return -1;
-    iupald_t listDict = iusInputFileGetPatternListDict(iusInputFile);
+    if (inputFile == NULL) return -1;
+    iupald_t listDict = iusInputFileGetPatternListDict(inputFile);
     if (listDict == IUPALD_INVALID) return -1;
     iupal_t patternList = iusPatternListDictGet(listDict,label);
     if (patternList == IUPAL_INVALID) return -1;
     return iusPatternListGetSize(patternList);
 }
 
-//TODO: the label of the patternList decides which labels for the receiveSettings and receivechannelmap are to be used for subfuncions iusInputFileGetNumChannels and iusInputFileGetSamplesPerLine
 iud_t iusInputFileFrameCreate
 (
-    iuif_t iusInputFile,
-    char *patternListLabel
+    iuif_t inputFile,
+    char *label
 )
 {
-    if(iusInputFile == NULL) return IUD_INVALID;
+    if(inputFile == NULL) return IUD_INVALID;
     // calculate frame size:
     // numchannels * numresponses * numsamples = [x*y*z]
-	int numResponses = iusInputFileGetNumResponses(iusInputFile, patternListLabel);
-
-    int numChannels = iusInputFileGetNumChannels(iusInputFile, patternListLabel);   //wrong: get the correct label from the patternlist->receivechennels
-    int numSamples = iusInputFileGetSamplesPerLine(iusInputFile, patternListLabel); //wrong: get the correct label from the patternlist->receiveSettings
-
+    int numChannels = iusInputFileGetNumChannels(inputFile,label);
+    int numResponses = iusInputFileGetNumResponses(inputFile,label);
+    int numSamples = iusInputFileGetSamplesPerLine(inputFile,label);
     int frameSize = numChannels * numSamples * numResponses;
     return iusDataCreate(frameSize);
 }
 
 iud_t iusInputFileResponseCreate
 (
-    iuif_t iusInputFile,
+    iuif_t inputFile,
     char *label
 )
 {
-    if(iusInputFile == NULL) return IUD_INVALID;
+    if(inputFile == NULL) return IUD_INVALID;
 
-    int numChannels = iusInputFileGetNumChannels(iusInputFile,label);
-    int numSamples = iusInputFileGetSamplesPerLine(iusInputFile,label);
+    int numChannels = iusInputFileGetNumChannels(inputFile,label);
+    int numSamples = iusInputFileGetSamplesPerLine(inputFile,label);
     int responseSize = numChannels * numSamples ;
     return iusDataCreate(responseSize);
 }
 
 iud_t iusInputFileChannelCreate
 (
-    iuif_t iusInputFile,
+    iuif_t inputFile,
     char *label
 )
 {
-    if(iusInputFile == NULL) return IUD_INVALID;
+    if(inputFile == NULL) return IUD_INVALID;
 
-    int numSamples = iusInputFileGetSamplesPerLine(iusInputFile,label);
+    int numSamples = iusInputFileGetSamplesPerLine(inputFile,label);
     return iusDataCreate(numSamples);
 }
 
@@ -411,28 +406,28 @@ int iusInputFileSaveInstance
 
 int iusInputFileNodeSave
 (
-iuif_t fileHandle
+    iuif_t inputFile
 )
 {
     herr_t status=0;
-    if( fileHandle == NULL ) return IUS_ERR_VALUE;
+    if( inputFile == NULL ) return IUS_ERR_VALUE;
 
-    iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)fileHandle);
-    status |= iusHistoryNodeSave(fileHandle, instance->handle);
+    iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
+    status |= iusHistoryNodeSave(inputFile, instance->handle);
 	return status;
 }
 
 
 int iusInputFileClose
 (
-    iuif_t fileHandle
+    iuif_t inputFile
 )
 {
     int status=0;
-    if( fileHandle == IUIF_INVALID ) return IUS_FALSE;
-    IUS_ASSERT_MEMORY(fileHandle);
+    if( inputFile == IUIF_INVALID ) return IUS_FALSE;
+    IUS_ASSERT_MEMORY(inputFile);
 
-    iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)fileHandle);
+    iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
 
     // Terminate access to the file.
     if( instance->handle != H5I_INVALID_HID )
@@ -487,12 +482,12 @@ int iusInputFileCompare
 // Getters
 iufl_t iusInputFileGetFrameList
 (
-    iuif_t iusInputFile
+    iuif_t inputFile
 )
 {
-    if ( iusInputFile != NULL )
+    if ( inputFile != NULL )
     {
-        iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)iusInputFile);
+        iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
         return instance->frameList;
     }
     return IUFL_INVALID;
@@ -500,12 +495,12 @@ iufl_t iusInputFileGetFrameList
 
 iupald_t iusInputFileGetPatternListDict
 (
-    iuif_t iusInputFile
+    iuif_t inputFile
 )
 {
-    if ( iusInputFile != NULL )
+    if ( inputFile != NULL )
     {
-        iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)iusInputFile);
+        iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
         return instance->patternListDict;
     }
     return NULL;
@@ -514,12 +509,12 @@ iupald_t iusInputFileGetPatternListDict
 
 iupd_t iusInputFileGetPulseDict
 (
-    iuif_t iusInputFile
+    iuif_t inputFile
 )
 {
-    if ( iusInputFile != NULL )
+    if ( inputFile != NULL )
     {
-        iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)iusInputFile);
+        iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
         return instance->pulseDict;
     }
     return NULL;
@@ -527,12 +522,12 @@ iupd_t iusInputFileGetPulseDict
 
 iusd_t iusInputFileGetSourceDict
 (
-    iuif_t iusInputFile
+    iuif_t inputFile
 )
 {
-    if (iusInputFile != NULL)
+    if (inputFile != NULL)
     {
-        iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)iusInputFile);
+        iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
         return instance->pulseSourceDict;
     }
     return NULL;
@@ -541,12 +536,12 @@ iusd_t iusInputFileGetSourceDict
 
 iurcmd_t iusInputFileGetReceiveChannelMapDict
 (
-    iuif_t iusInputFile
+    iuif_t inputFile
 )
 {
-    if (iusInputFile != NULL)
+    if (inputFile != NULL)
     {
-        iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)iusInputFile);
+        iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
         return instance->receiveChannelMapDict;
     }
     return NULL;
@@ -554,12 +549,12 @@ iurcmd_t iusInputFileGetReceiveChannelMapDict
 
 iutad_t iusInputFileGetTransmitApodizationDict
 (
-    iuif_t iusInputFile
+    iuif_t inputFile
 )
 {
-    if (iusInputFile != NULL)
+    if (inputFile != NULL)
     {
-        iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)iusInputFile);
+        iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
         return instance->transmitApodizationDict;
     }
     return NULL;
@@ -567,12 +562,12 @@ iutad_t iusInputFileGetTransmitApodizationDict
 
 iursd_t iusInputFileGetReceiveSettingsDict
 (
-    iuif_t iusInputFile
+    iuif_t inputFile
 )
 {
-    if (iusInputFile != NULL)
+    if (inputFile != NULL)
     {
-        iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)iusInputFile);
+        iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
         return instance->receiveSettingsDict;
     }
     return NULL;
@@ -580,12 +575,12 @@ iursd_t iusInputFileGetReceiveSettingsDict
 
 iua_t iusInputFileGetAcquisition
 (
-iuif_t iusInputFile
+   iuif_t inputFile
 )
 {
-	if ( iusInputFile != NULL )
+	if ( inputFile != NULL )
 	{
-        iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)iusInputFile);
+        iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
 		return instance->acquisition;
 	}
 	return NULL;
@@ -593,12 +588,12 @@ iuif_t iusInputFile
 
 iut_t iusInputFileGetTransducer
 (
-    iuif_t iusInputFile
+    iuif_t inputFile
 )
 {
-    if ( iusInputFile != NULL )
+    if ( inputFile != NULL )
     {
-        iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)iusInputFile);
+        iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
         return instance->transducer;
     }
     return NULL;
@@ -714,15 +709,15 @@ int iusInputFileSetTransmitApodizationDict
 int iusInputFileSetReceiveSettingsDict
 (
     iuif_t inputFile,
-    iursd_t transmitApreceiveSettingsDict
+    iursd_t receiveSettingsDict
 )
 {
     int status = IUS_ERR_VALUE;
 
-    if(inputFile != NULL && transmitApreceiveSettingsDict != NULL)
+    if(inputFile != NULL && receiveSettingsDict != NULL)
     {
         iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
-        instance->receiveSettingsDict = transmitApreceiveSettingsDict;
+        instance->receiveSettingsDict = receiveSettingsDict;
         status = IUS_E_OK;
     }
     return status;
@@ -1051,8 +1046,8 @@ int iusInputFileResponseLoad
 (
     iuif_t inputFile,
     char *label,
-    iud_t frame,
-    iuo_t frame_offset
+    iud_t response,
+    iuo_t response_offset
 )
 {
     hid_t memspace;
@@ -1066,10 +1061,10 @@ int iusInputFileResponseLoad
     memdim[1] = (hsize_t) iusInputFileGetSamplesPerLine(inputFile,label);
     memspace = H5Screate_simple(2, memdim, NULL);
 
-    offset[0] = (hsize_t) frame_offset->x;
-    offset[1] = (hsize_t) frame_offset->z;
-    offset[2] = (hsize_t) frame_offset->y;
-    offset[3] = (hsize_t) frame_offset->t;
+    offset[0] = (hsize_t) response_offset->x;
+    offset[1] = (hsize_t) response_offset->z;
+    offset[2] = (hsize_t) response_offset->y;
+    offset[3] = (hsize_t) response_offset->t;
 
     count[0] = memdim[0];
     count[1] = memdim[1];
@@ -1080,11 +1075,11 @@ int iusInputFileResponseLoad
     dataspace = iusInputFileGetReadSpace(inputFile, label);
     status = H5Sselect_hyperslab(dataspace, H5S_SELECT_SET, offset, NULL, count, NULL);
 
-    float *pFrame = iusDataGetPointer(frame);
+    float *pResponse = iusDataGetPointer(response);
 
     // Load frame
     iuds_t dataStream = iusDataStreamDictGet(instance->dataStreamDict,label);
-    status |= H5Dread(dataStream->rfDataset, H5T_NATIVE_FLOAT, memspace, dataspace, H5P_DEFAULT, pFrame);
+    status |= H5Dread(dataStream->rfDataset, H5T_NATIVE_FLOAT, memspace, dataspace, H5P_DEFAULT, pResponse);
 
     // Close and release memspace but not (file)dataspace
     status |= H5Sclose(memspace);

@@ -15,27 +15,30 @@
 struct Ius3DParametricSource
 {
     struct IusSource base;
-    int numLocations;
+    int numThetaLocations;
+	int numPhiLocations;
     struct Ius3DPosition *pLocations;
 
     float fNumber;          /**< distance in [m] of sources to transducer for POLAR */
-    float angularDelta;     /**< angle in [rad] between sources */
-    float startAngle;       /**< angle in [rad] between sources */
+    float deltaTheta;       /**< angle in [rad] between sources */
+    float startTheta;       /**< offset angle in [rad] */
     float deltaPhi;         /**< angle in [rad] between sources */
-    float startPhi;         /**< angle in [rad] between sources */
+    float startPhi;         /**< offset angle in [rad] */
 } ;
 
 // ADT
 iu3dps_t ius3DParametricSourceCreate
 (
-    int numLocations,
-    float fNumber,
-    float angularDelta,
-    float startAngle,
-    float deltaPhi,
-    float startPhi
+	int numThetaLocations,
+	int numPhiLocations,
+	float fNumber,
+	float deltaTheta,
+	float startTheta,
+	float deltaPhi,
+	float startPhi
 )
 {
+	int numLocations = numThetaLocations * numPhiLocations;
     if ( numLocations <= 0 ) return  NULL;
     iu3dps_t created = calloc(1,sizeof(Ius3DParametricSource));
     if( created == NULL ) return NULL;
@@ -48,10 +51,11 @@ iu3dps_t ius3DParametricSourceCreate
     }
 
     created->base.type = IUS_3D_PARAMETRIC_SOURCE;
-    created->numLocations = numLocations;
-    created->angularDelta = angularDelta;
-    created->startAngle = startAngle;
-    created->deltaPhi = deltaPhi;
+    created->numThetaLocations = numThetaLocations;
+	created->numPhiLocations = numPhiLocations;
+    created->deltaTheta = deltaTheta;
+	created->deltaPhi   = deltaPhi;
+	created->startTheta = startTheta;
     created->startPhi = startPhi;
     created->fNumber = fNumber;
     return created;
@@ -82,15 +86,16 @@ int ius3DParametricSourceCompare
 {
     if (reference == actual ) return IUS_TRUE;
     if (reference == NULL || actual == NULL ) return IUS_FALSE;
-    if (reference->numLocations != actual->numLocations) return IUS_FALSE;
+    if (reference->numThetaLocations != actual->numThetaLocations) return IUS_FALSE;
+	if (reference->numPhiLocations != actual->numPhiLocations) return IUS_FALSE;
     if (iusBaseSourceCompare((ius_t)reference, (ius_t)actual) == IUS_FALSE ) return IUS_FALSE;
     if (IUS_EQUAL_FLOAT(reference->fNumber, actual->fNumber) == IUS_FALSE ) return IUS_FALSE;
     if (IUS_EQUAL_FLOAT(reference->startPhi, actual->startPhi) == IUS_FALSE ) return IUS_FALSE;
     if (IUS_EQUAL_FLOAT(reference->deltaPhi, actual->deltaPhi) == IUS_FALSE ) return IUS_FALSE;
-    if (IUS_EQUAL_FLOAT(reference->startAngle, actual->startAngle) == IUS_FALSE ) return IUS_FALSE;
-    if (IUS_EQUAL_FLOAT(reference->angularDelta, actual->angularDelta) == IUS_FALSE ) return IUS_FALSE;
+    if (IUS_EQUAL_FLOAT(reference->startTheta, actual->startTheta) == IUS_FALSE ) return IUS_FALSE;
+    if (IUS_EQUAL_FLOAT(reference->deltaTheta, actual->deltaTheta) == IUS_FALSE ) return IUS_FALSE;
     int i;
-    for( i = 0; i < reference->numLocations; i++ )
+    for( i = 0; i < reference->numThetaLocations * reference->numPhiLocations; i++ )
     {
         if( ius3DPositionCompare(&reference->pLocations[i],&actual->pLocations[i]) == IUS_FALSE )
         {
@@ -110,22 +115,22 @@ float ius3DParametricSourceGetFNumber
     return ius3DParametricSource->fNumber;
 }
 
-float ius3DParametricSourceGetAngularDelta
+float ius3DParametricSourceGetDeltaTheta
 (
     iu3dps_t ius3DParametricSource
 )
 {
     if( ius3DParametricSource == NULL  ) return NAN;
-    return ius3DParametricSource->angularDelta;
+    return ius3DParametricSource->deltaTheta;
 }
 
-float ius3DParametricSourceGetStartAngle
+float ius3DParametricSourceGetStartTheta
 (
     iu3dps_t ius3DParametricSource
 )
 {
     if( ius3DParametricSource == NULL  ) return NAN;
-    return ius3DParametricSource->startAngle;
+    return ius3DParametricSource->startTheta;
 }
 
 float ius3DParametricSourceGetDeltaPhi
@@ -157,25 +162,25 @@ int ius3DParametricSourceSetFNumber
     return IUS_E_OK;
 }
 
-int ius3DParametricSourceSetAngularDelta
+int ius3DParametricSourceSetDeltaTheta
 (
     iu3dps_t ius3DParametricSource,
-    float angularDelta
+    float deltaTheta
 )
 {
     if (ius3DParametricSource == NULL) return IUS_ERR_VALUE;
-    ius3DParametricSource->angularDelta = angularDelta;
+    ius3DParametricSource->deltaTheta = deltaTheta;
     return IUS_E_OK;
 }
 
-int ius3DParametricSourceSetStartAngle
+int ius3DParametricSourceSetStartTheta
 (
     iu3dps_t ius3DParametricSource,
-    float startAngle
+    float startTheta
 )
 {
     if (ius3DParametricSource == NULL) return IUS_ERR_VALUE;
-    ius3DParametricSource->startAngle = startAngle;
+    ius3DParametricSource->startTheta = startTheta;
     return IUS_E_OK;
 }
 
@@ -217,13 +222,13 @@ int ius3DParametricSourceSave
     status = iusBaseSourceSave((ius_t)source, handle);
 
     // Parametric stuff
-    status |= iusHdf5WriteFloat( handle, IUS_INPUTFILE_PATH_SOURCE_FNUMBER, &(source->fNumber), 1);
-    status |= iusHdf5WriteFloat( handle, IUS_INPUTFILE_PATH_SOURCE_ANGULARDELTA, &(source->angularDelta), 1);
-    status |= iusHdf5WriteFloat( handle, IUS_INPUTFILE_PATH_SOURCE_STARTANGLE, &(source->startAngle), 1);
-    status |= iusHdf5WriteFloat( handle, IUS_INPUTFILE_PATH_SOURCE_DELTAPHI, &(source->deltaPhi), 1);
-    status |= iusHdf5WriteFloat( handle, IUS_INPUTFILE_PATH_SOURCE_STARTPHI, &(source->startPhi), 1);
-    status |= iusHdf5WriteInt(handle, IUS_INPUTFILE_PATH_SOURCE_NUMSOURCES, &(source->numLocations), 1);
-
+    status |= iusHdf5WriteFloat( handle, IUS_INPUTFILE_PATH_SOURCE_FNUMBER,           &(source->fNumber),           1);
+    status |= iusHdf5WriteFloat( handle, IUS_INPUTFILE_PATH_SOURCE_DELTATHETA,        &(source->deltaTheta),        1);
+    status |= iusHdf5WriteFloat( handle, IUS_INPUTFILE_PATH_SOURCE_STARTTHETA,        &(source->startTheta),        1);
+    status |= iusHdf5WriteFloat( handle, IUS_INPUTFILE_PATH_SOURCE_DELTAPHI,          &(source->deltaPhi),          1);
+    status |= iusHdf5WriteFloat( handle, IUS_INPUTFILE_PATH_SOURCE_STARTPHI,          &(source->startPhi),          1);
+    status |= iusHdf5WriteInt(   handle, IUS_INPUTFILE_PATH_SOURCE_NUMPHILOCATIONS,   &(source->numPhiLocations),   1);
+	status |= iusHdf5WriteInt(   handle, IUS_INPUTFILE_PATH_SOURCE_NUMTHETALOCATIONS, &(source->numThetaLocations), 1);
 
     return status;
 }
@@ -237,22 +242,24 @@ iu3dps_t ius3DParametricSourceLoad
     int status = 0;
 
     float fNumber;          /**< distance in [m] of sources to transducer for POLAR */
-    float angularDelta;     /**< angle in [rad] between sources */
-    float startAngle;       /**< angle in [rad] between sources */
+    float deltaTheta;       /**< angle in [rad] between sources */
+    float startTheta;       /**< angle in [rad] between sources */
     float deltaPhi;         /**< angle in [rad] between sources */
     float startPhi;         /**< angle in [rad] between sources */
-    int numLocations;
+    int numThetaLocations;
+	int numPhiLocations;
     iu3dps_t  source;
 
     status |= iusHdf5ReadFloat( handle, IUS_INPUTFILE_PATH_SOURCE_FNUMBER, &(fNumber));
-    status |= iusHdf5ReadFloat( handle, IUS_INPUTFILE_PATH_SOURCE_ANGULARDELTA, &(angularDelta));
-    status |= iusHdf5ReadFloat( handle, IUS_INPUTFILE_PATH_SOURCE_STARTANGLE, &(startAngle));
+    status |= iusHdf5ReadFloat( handle, IUS_INPUTFILE_PATH_SOURCE_DELTATHETA, &(deltaTheta));
+    status |= iusHdf5ReadFloat( handle, IUS_INPUTFILE_PATH_SOURCE_STARTTHETA, &(startTheta));
     status |= iusHdf5ReadFloat( handle, IUS_INPUTFILE_PATH_SOURCE_DELTAPHI, &(deltaPhi));
     status |= iusHdf5ReadFloat( handle, IUS_INPUTFILE_PATH_SOURCE_STARTPHI, &(startPhi));
-	status |= iusHdf5ReadInt( handle, IUS_INPUTFILE_PATH_SOURCE_NUMSOURCES, &(numLocations));
+	status |= iusHdf5ReadInt( handle, IUS_INPUTFILE_PATH_SOURCE_NUMTHETALOCATIONS, &(numThetaLocations));
+	status |= iusHdf5ReadInt( handle, IUS_INPUTFILE_PATH_SOURCE_NUMPHILOCATIONS, &(numPhiLocations));
     if (status < 0)
         return NULL;
 
-    source = ius3DParametricSourceCreate(numLocations,fNumber,angularDelta,startAngle,deltaPhi,startPhi);
+    source = ius3DParametricSourceCreate(numThetaLocations, numPhiLocations, fNumber, deltaTheta, startTheta, deltaPhi, startPhi);
     return source;
 }

@@ -4,50 +4,72 @@
 
 // ADT
 typedef struct IusTGC IusTGC;
+/** Time Gain Control defines a function of the receiver gain over time. The function is described by \p numTGCValues of 
+ * \p [time,gain] pairs. The time values should be provided and kept in a strictly ascending order.   
+ */
 typedef IusTGC *iutgc_t;
 #define  IUTGC_INVALID (iutgc_t) NULL
 
-
+/** \brief Create an empty TGC function of \p numTGC values 
+ * \return Returns the created TGC object or NULL in case of a failure
+ */
 iutgc_t iusTGCCreate
-(int numTGCValues);
+(
+    int numTGCValues ///< The number of \p [time,gain] pairs to allocate
+);
 
+/** \brief Frees the memory of the TGC object 
+ * \return Returns the created TGC object or NULL in case of a failure
+ */
 int iusTGCDelete
 (
-    iutgc_t iusTGC
+    iutgc_t iusTGC ///< The object to delete
 );
 
-
-// operations
+/** \brief Checks if two TGCs are equal
+ *  \return Returns #IUS_TRUE if the TGCs are equal and #IUS_FALSE otherwise
+ */
 int iusTGCCompare
 (
-    iutgc_t reference,
-    iutgc_t actual
+    iutgc_t reference, ///< The TGC object to compare to
+    iutgc_t actual     ///< The TGC object to compare with
 );
 
-// Getters
+/** \brief Get the number of \p [time,gain] pairs that the TGC function has
+ *  \return Returns the number of \p [time,gain] pairs
+ */
 int iusTGCGetNumValues
 (
-    iutgc_t iusTGC
+    iutgc_t iusTGC ///< The TGC object of interest   
 );
 
+/** \brief Get the \p time value of a point in the TGC function at \p index
+ *  \return The time value
+ */
 float iusTGCGetTime
 (
-    iutgc_t iusTGC,
-    int index
+    iutgc_t iusTGC, ///< THe TGC object of interest
+    int index       ///< The index of the TGC function
 );
 
+/** \brief Get the \p gain value of a point in the TGC function at \p index
+ *  \return The gain value
+ */
 float iusTGCGetGain
 (
-    iutgc_t iusTGC,
-    int index
+    iutgc_t iusTGC, ///< The TGC object of interest
+    int index       ///< The index of the TGC function
 );
 
+/** \brief Set a \p [time,gain] pair of the TGC function at \p index
+ *  \return Returns #IUS_E_OK in case of success or #IUS_ERR_VALUE in case of an error
+ */
 int iusTGCSet
 (
-    iutgc_t iusTGC,
-    int index,
-    float time,
-    float gain
+    iutgc_t iusTGC, ///< The TGC function of interest
+    int index,      ///< The index of the TGC function to replace the time, gain pair 
+    float time,     ///< The time value to set
+    float gain      ///< The gain value to set
 );
 
 #endif //IUSLIBRARY_IUSHLTGC_H
