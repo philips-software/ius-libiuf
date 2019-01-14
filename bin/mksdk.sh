@@ -23,7 +23,7 @@ DistFolder=${StartFolder}/dist
 IUSRelease="IUS-SDK-$(releaseNumber)"
 ReleaseFolder="${DistFolder}/${IUSRelease}"
 DocFolder="${ReleaseFolder}/documentation"
-DocSource="${StartFolder}/C_v3/dox"
+DocSource="${StartFolder}/dox"
 
 
 

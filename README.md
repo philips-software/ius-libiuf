@@ -30,8 +30,8 @@ This document contains instructions on
 
 ### Checkout code
 ```
-    $ git clone https://USERID@bitbucket.atlas.philips.com/scm/ius/ius.git
-    $ cd ius/C_v3
+    $ git clone https://USERID@bitbucket.atlas.philips.com/scm/ius/libius.git
+    $ cd libius
     $ git checkout develop
 ```
 
@@ -170,12 +170,12 @@ In order to build and test the code, the required packages need to be installed:
 - Checkout and build code
 
     ```
-    c:\proj\ius> bin\build.bat
+    c:\proj\libius> bin\build.bat
     ```
 - Run unit tests
 
     ```
-    c:\proj\ius> bin\unittests.bat
+    c:\proj\libius> bin\unittests.bat
     Unity test run 1 of 1
     .......................
     
@@ -188,7 +188,7 @@ In order to build and test the code, the required packages need to be installed:
 - Build a dist folder containing the distributable SDK:
 
     ```
-    c:\proj\ius> bin\dist.bat
+    c:\proj\libius> bin\dist.bat
     ```
 
 ### How to generate documentation
