@@ -166,11 +166,10 @@ In order to build and test the code, the required packages need to be installed:
 
 
 #### Build instructions for Windows
-
 - Checkout and build code
 
     ```
-    c:\proj\ius> bin\build.bat
+    c:\proj\libius> bin\build.bat
     ```
 - Run unit tests
 
