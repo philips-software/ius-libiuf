@@ -1,0 +1,176 @@
+stages:
+  - build
+  - qa
+  - distribution
+  - sdk
+  - sdk_test
+
+building:linux:
+  stage: build
+  image: gitlab.ta.philips.com:5432/forest/docker/centos-ci:latest
+  script:
+    - ./bin/build.sh
+  tags:
+    - docker
+  artifacts:
+    paths:
+      - ./build/*
+
+#sonar:
+#  stage: qa
+#  image: gitlab.ta.philips.com:5432/forest/docker/centos-ci:latest
+#  script:
+#    - ./bin/code_coverage.sh
+#    - ./bin/static_code_analysis.sh
+#    - ./bin/memory_leak_detection.sh xml
+#    - sonar-scanner -Dsonar.login=${SONAR_LOGIN}  -Dsonar.host.url=https://sonar.ta.philips.com/
+#  tags:
+#    - docker
+#  dependencies:
+#    - building:linux
+
+testing_lib:linux:
+  stage: qa
+  image: gitlab.ta.philips.com:5432/forest/docker/centos-ci:latest
+  script:
+    - ./bin/unittests.sh
+  tags:
+    - docker
+  dependencies:
+    - building:linux
+
+distribution:linux:
+  stage: distribution
+  image: gitlab.ta.philips.com:5432/forest/docker/centos-ci:latest
+  script:
+    - ./bin/mk_os_distribution.sh
+  tags:
+    - docker
+  artifacts:
+    paths:
+      - ./build/Linux/dist
+  dependencies:
+    - building:linux
+
+building:windows:
+  stage: build
+  script:
+    - .\bin\build.bat
+  tags:
+    - windows
+  artifacts:
+    paths:
+      - .\build\*
+
+testing_lib:windwows:
+  stage: qa
+  script:
+    - .\bin\unittests.bat
+  tags:
+    - windows
+  dependencies:
+    - building:windows
+
+distribution:windows:
+  stage: distribution
+  script:
+    - .\bin\mk_os_distribution.bat
+  tags:
+    - windows
+  artifacts:
+    paths:
+      - .\build\Windows\dist
+  dependencies:
+    - building:windows
+
+sdk:
+  stage: sdk
+  image: gitlab.ta.philips.com:5432/forest/docker/centos-ci:latest
+  script:
+    - ./bin/mksdk.sh
+  tags:
+    - docker
+  dependencies:
+    - distribution:windows
+    - distribution:linux
+  artifacts:
+    paths:
+      - ./dist
+
+sdk_test:windows:
+  stage: sdk_test
+  script: |
+    cd dist\IUS-SDK*
+    bin\unittests.bat
+
+  tags:
+    - windows
+  dependencies:
+    - sdk
+
+sdk_test:linux:
+  stage: sdk_test
+  image: gitlab.ta.philips.com:5432/forest/docker/centos-ci:latest
+  script: |
+    cd dist/IUS-SDK*
+    bin/unittests.sh
+    
+  tags:
+    - docker
+  dependencies:
+    - sdk
+
+
+# ---------Workbench related tests -------------------------------
+AlgorithmClientsTests:
+  stage: qa
+  script:
+    - nant algorithmTestsOnly
+  tags:
+    - windows
+  artifacts:
+    paths:
+      - .\Build\IUS.Tests-nunit-result.xml
+  only:
+    - develop
+    - master
+
+AlgorithmUnitTests:
+  stage: qa
+  script:
+    - nant algorithmUnitTestsOnly
+  tags:
+    - windows
+  artifacts:
+    paths:
+      - .\Build\IUS.Tests-nunit-result.xml
+  only:
+    - develop
+    - master
+  
+ServerTests:
+  stage: qa
+  script:
+    - nant clusterServerTestsOnly
+  tags:
+    - windows
+  artifacts:
+    paths:
+      - .\Build\IUS.Tests-nunit-result.xml
+  only:
+    - develop
+    - master
+
+
+WorkbenchUnitTests:
+  stage: qa
+  script:
+    - nant workbenchUnitTestsOnly
+  tags:
+    - windows
+  artifacts:
+    paths:
+      - .\Build\IUS.Tests-nunit-result.xml
+  only:
+    - develop
+    - master
