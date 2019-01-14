@@ -30,7 +30,7 @@ This document contains instructions on
 
 ### Checkout code
 ```
-    $ git clone https://USERID@bitbucket.atlas.philips.com/scm/ius/libius.git
+    $ git clone https://bitbucket.atlas.philips.com/scm/ius/libius.git
     $ cd libius
     $ git checkout develop
 ```
