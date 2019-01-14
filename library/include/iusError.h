@@ -109,14 +109,29 @@ int iusErrorFormatAndPush
     ...
 );
 
-herr_t iusErrorLogDisable
+int iusHDF5ErrorLog
+(
+    IUS_BOOL enable
+);
+
+int iusErrorLog
+(
+    IUS_BOOL enable
+);
+
+int iusErrorLogClear
 (
     void
 );
 
-herr_t iusErrorLogEnable
+int iusErrorSetStream
 (
-    void
+    FILE *stream
+);
+
+int iusErrorAutoReport
+(
+    IUS_BOOL enable
 );
 
 extern hid_t  IUS_ERR_MAJ_GENERAL;  //     (100001)   /**< general error */
@@ -127,6 +142,8 @@ extern hid_t  IUS_ERR_MAJ_ERROR;
 extern hid_t  IUS_ERR_MIN_ARG_FILENAME;  //     (100001)   /**< general error */
 extern hid_t  IUS_ERR_MIN_ALLOC;
 extern hid_t  IUS_ERR_MIN_FORMAT;
+extern hid_t  IUS_ERR_MIN_ARG_NULL_VALUE;
+extern hid_t  IUS_ERR_MIN_ARG_DUPLICATE_KEY;
 
 #define IUS_ERROR_PUSH(maj,min,msg)     iusErrorPush(__FILE__, __func__, __LINE__, maj, min, msg)
 #define IUS_ERROR_FMT_PUSH(maj,min,fmt,...) iusErrorFormatAndPush(__FILE__, __func__, __LINE__, maj, min, fmt, __VA_ARGS__)

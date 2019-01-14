@@ -18,9 +18,10 @@ static void RunAllTests(void)
 //    RUN_TEST_GROUP(Ius3DTransducer);
 //    RUN_TEST_GROUP(Ius3DTransducerElement);
 //    RUN_TEST_GROUP(Ius3DTransducerElementList);
+//    RUN_TEST_GROUP(IusAcquisition);
 //    RUN_TEST_GROUP(IusDataStream);
 //    RUN_TEST_GROUP(IusDataStreamDict);
-//    RUN_TEST_GROUP(IusAcquisition);
+    RUN_TEST_GROUP(IusErrorHandling);
 //    RUN_TEST_GROUP(IusFrame);
 //    RUN_TEST_GROUP(IusFrameList);
 //    RUN_TEST_GROUP(IusInputFile);
@@ -44,13 +45,13 @@ static void RunAllTests(void)
 //    RUN_TEST_GROUP(IusTGC);
 //    RUN_TEST_GROUP(IusTransducer);
 //    RUN_TEST_GROUP(IusTransmitApodization);
-//    RUN_TEST_GROUP(IusTransmitApodizationDict);
-    RUN_TEST_GROUP(IusErrorHandling);
+    RUN_TEST_GROUP(IusTransmitApodizationDict);
 }
 
 
 int main(int argc, const char * argv[])
 {
-    iusErrorLogDisable();
+    iusHDF5ErrorLog(IUS_FALSE);
+    iusErrorLog(IUS_FALSE);
     return UnityMain(argc, argv, RunAllTests);
 }

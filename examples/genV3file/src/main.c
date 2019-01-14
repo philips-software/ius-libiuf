@@ -61,7 +61,7 @@ int main
     int version = iusGetVersionMajor();
     int numFrames = 10;
     char *ultrasoundMode = "bmode";
-    iusErrorLogDisable();
+    iusErrorLog(0);
 
     if (argc != 2)
     {

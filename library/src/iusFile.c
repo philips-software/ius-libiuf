@@ -1,3 +1,4 @@
+
 //
 // Created by nlv09165 on 31/08/2018.
 //
@@ -16,22 +17,23 @@ struct IusFile
 // ADT
 int iusFileDelete
 (
-    iuf_t file
+    iuf_t iusFile
 )
 {
-    int status = IUS_ERR_VALUE;
-    if(file != NULL)
+    if (iusFile == NULL)
     {
-        if( strcmp( iusHistoryNodeGetType(file->history), IUS_INPUT_TYPE ) == 0 )
-        {
-            iuifi_t instance = iusHistoryNodeGetInstanceData(file->history);
-            iusInputFileInstanceDelete(instance);
-        }
-        iusHistoryNodeDelete(file->history);
-        free(file);
-        status = IUS_E_OK;
+        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_FILENAME, "iusFile argument is NULL");
+        return IUS_ERR_VALUE;
     }
-    return status;
+
+    if( strcmp( iusHistoryNodeGetType(iusFile->history), IUS_INPUT_TYPE ) == 0 )
+    {
+        iuifi_t instance = iusHistoryNodeGetInstanceData(iusFile->history);
+        iusInputFileInstanceDelete(instance);
+    }
+    iusHistoryNodeDelete(iusFile->history);
+    free(iusFile);
+    return IUS_E_OK;
 }
 
 
@@ -87,32 +89,47 @@ iuf_t iusFileLoad
 // Getters
 iuhn_t iusFileGetHistoryTree
 (
-    iuf_t file
+    iuf_t iusFile
 )
 {
-    if (file == NULL) return IUHN_INVALID;
-    return file->history;
+    if (iusFile == NULL)
+    {
+        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "iusFile");
+        return IUHN_INVALID;
+    }
+    return iusFile->history;
 }
 
 const char *iusFileGetType
 (
-    iuf_t file
+    iuf_t iusFile
 )
 {
-    if (file == NULL) return NULL;
-    return iusHistoryNodeGetType(file->history);
+    if (iusFile == NULL)
+    {
+        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "iusFile");
+    }
+    return iusHistoryNodeGetType(iusFile->history);
 }
 
 // Setters
 int iusFileSetHistoryTree
 (
-    iuf_t file,
+    iuf_t iusFile,
     iuhn_t history
 )
 {
-    if (file == NULL) return IUS_ERR_VALUE;
-    if (history == NULL) return IUS_ERR_VALUE;
-    file->history = history;
+    if (iusFile == NULL)
+    {
+        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "iusFile");
+        return IUS_ERR_VALUE;
+    }
+    if (history == NULL)
+    {
+        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "history");
+        return IUS_ERR_VALUE;
+    }
+
+    iusFile->history = history;
     return IUS_E_OK;
 }
-

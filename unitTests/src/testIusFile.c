@@ -52,6 +52,8 @@ TEST(IusFile, testIusInputFileHistoryScenario)
     TEST_ASSERT_EQUAL(0, numAlgoParams);
     dgDeleteInputFile(iusInputFile);
     iusFileDelete(iusFile);
+    iusFileDelete(NULL);
+
 }
 
 TEST(IusFile, testIusCWCFileHistoryScenario)

@@ -33,11 +33,13 @@ iutad_t iusTransmitApodizationDictCreate
 )
 {
 	iutad_t dict = calloc(1, sizeof(IusTransmitApodizationDict));
-	if (dict != NULL)
+	if (dict == NULL)
 	{
-		hashmap_init(&dict->map, hashmap_hash_string, hashmap_compare_string, 0);
-		dict->deepDelete = IUS_FALSE;
+		IUS_ERROR_PUSH(IUS_ERR_MAJ_MEMORY, IUS_ERR_MIN_ALLOC, "For IusTransmitApodizationDict");
+		return NULL;
 	}
+	hashmap_init(&dict->map, hashmap_hash_string, hashmap_compare_string, 0);
+	dict->deepDelete = IUS_FALSE;
 	return dict;
 }
 
@@ -47,7 +49,11 @@ int iusTransmitApodizationDictDeepDelete
 	iutad_t dict
 )
 {
-	if (dict == NULL) return IUS_ERR_VALUE;
+	if (dict == NULL)
+    {
+        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "dict");
+        return IUS_ERR_VALUE;
+    }
 	dict->deepDelete = IUS_TRUE;
 	return iusTransmitApodizationDictDelete(dict);
 }
@@ -59,7 +65,12 @@ int iusTransmitApodizationDictDelete
 {
 	struct hashmap_iter *iter;
 	HashableTransmitApodization *iterElement;
-	if (dict == NULL) return IUS_ERR_VALUE;
+	if (dict == NULL)
+	{
+        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "dict");
+        return IUS_ERR_VALUE;
+    }
+
 	/* Free all allocated resources associated with map and reset its state */
 	for (iter = hashmap_iter(&dict->map); iter; iter = hashmap_iter_next(&dict->map, iter))
 	{
@@ -125,7 +136,11 @@ size_t iusTransmitApodizationDictGetSize
 	iutad_t dict
 )
 {
-	if (dict == NULL) return 0;
+	if (dict == NULL)
+    {
+        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "dict");
+        return -1;
+    }
 	return hashmap_size(&dict->map);
 }
 
@@ -135,9 +150,19 @@ iuta_t iusTransmitApodizationDictGet
 	char * key
 )
 {
-	if (dict == NULL || key == NULL) return NULL;
-	HashableTransmitApodization *search;
+	if (dict == NULL)
+    {
+        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "dict");
+        return IUTA_INVALID;
+    }
 
+	if (key == NULL)
+    {
+        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "key");
+        return IUTA_INVALID;
+    }
+
+    HashableTransmitApodization *search;
 	search = HashableTransmitApodization_hashmap_get(&dict->map, key);
 	if (search == NULL) return NULL;
 	return search->transmitApodization;
@@ -158,6 +183,7 @@ int iusTransmitApodizationDictSet
 	strcpy(newMember->key, key);
 	if (HashableTransmitApodization_hashmap_put(&dict->map, newMember->key, newMember) != newMember)
 	{
+        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "key");
 		printf("discarding blob with duplicate key: %s\n", newMember->key);
 		free(newMember);
 		return IUS_ERR_VALUE;
