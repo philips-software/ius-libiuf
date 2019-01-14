@@ -7,7 +7,7 @@ stages:
 
 building:linux:
   stage: build
-  image: gitlab.ta.philips.com:5432/forest/docker/centos-ci:latest
+  image: gitlab.ta.philips.com:5432/forest/docker/centos-ci:0.2.0
   script:
     - ./bin/build.sh
   tags:
@@ -31,7 +31,7 @@ building:linux:
 
 testing_lib:linux:
   stage: qa
-  image: gitlab.ta.philips.com:5432/forest/docker/centos-ci:latest
+  image: gitlab.ta.philips.com:5432/forest/docker/centos-ci:0.2.0
   script:
     - ./bin/unittests.sh
   tags:
@@ -41,7 +41,7 @@ testing_lib:linux:
 
 distribution:linux:
   stage: distribution
-  image: gitlab.ta.philips.com:5432/forest/docker/centos-ci:latest
+  image: gitlab.ta.philips.com:5432/forest/docker/centos-ci:0.2.0
   script:
     - ./bin/mk_os_distribution.sh
   tags:
@@ -85,7 +85,7 @@ distribution:windows:
 
 sdk:
   stage: sdk
-  image: gitlab.ta.philips.com:5432/forest/docker/centos-ci:latest
+  image: gitlab.ta.philips.com:5432/forest/docker/centos-ci:0.2.0
   script:
     - ./bin/mksdk.sh
   tags:
@@ -110,7 +110,7 @@ sdk_test:windows:
 
 sdk_test:linux:
   stage: sdk_test
-  image: gitlab.ta.philips.com:5432/forest/docker/centos-ci:latest
+  image: gitlab.ta.philips.com:5432/forest/docker/centos-ci:0.2.0
   script: |
     cd dist/IUS-SDK*
     bin/unittests.sh
