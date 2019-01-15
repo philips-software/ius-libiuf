@@ -4,6 +4,7 @@ stages:
   - distribution
   - sdk
   - sdk_test
+  - pages
 
 building:linux:
   stage: build
@@ -119,3 +120,11 @@ sdk_test:linux:
     - docker
   dependencies:
     - sdk
+
+pages:
+  stage: pages
+  script:
+  - ./ci/bin/generate_documentation.sh
+  artifacts:
+    paths:
+    - public
