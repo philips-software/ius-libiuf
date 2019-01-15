@@ -101,7 +101,7 @@ sdk_test:windows:
   stage: sdk_test
   script: |
     cd dist\IUS-SDK*
-    ci\bin\unittests.bat
+    bin\unittests.bat
 
   tags:
     - windows
@@ -113,7 +113,7 @@ sdk_test:linux:
   image: gitlab.ta.philips.com:5432/forest/docker/centos-ci:0.2.0
   script: |
     cd dist/IUS-SDK*
-    ci/bin/unittests.sh
+    bin/unittests.sh
     
   tags:
     - docker
