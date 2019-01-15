@@ -125,7 +125,7 @@ pages:
   stage: pages
   image: gitlab.ta.philips.com:5432/forest/docker/centos-ci:0.2.0
   script:
-  - ./ci/bin/generate_documentation.sh
+  - ./ci/bin/make_pages.sh
   artifacts:
     paths:
     - public

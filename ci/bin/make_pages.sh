@@ -16,13 +16,19 @@ function releaseNumber
     echo -n "$Release"
 }
 
+Branch=$(git rev-parse --abbrev-ref HEAD)
 ScriptPath=$(dirname $(realpath $0))
 BuildFolder=$(realpath ${ScriptPath}/../..)/build
 StartFolder=$(pwd)
-IUSRelease="IUS-SDK-$(releaseNumber)"
-DocFolder="${StartFolder}/public/${IUSRelease}/documentation"
-DocFolder="${StartFolder}/public"
 DocSource="${StartFolder}/dox"
+
+
+if [[ "$Branch" == "develop" || "$Branch" == "master" ]]
+then
+    DocFolder="${StartFolder}/public/${Branch}"
+else
+    DocFolder="${StartFolder}/public"
+fi
 
 echo === Generating documentation
 
