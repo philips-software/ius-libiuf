@@ -27,12 +27,10 @@ DocSource="${StartFolder}/dox"
 echo === Generating documentation
 
 export PROJECT_NUMBER=$(releaseNumber)
-mkdir -p ${DocFolder}
 cd ${DocSource}
 doxygen 2>&1 | grep -iv Warning
 if [[ -d html ]]
 then
     mv html ${DocFolder}
-    cp -r img ${DocFolder}
 fi
 echo === Done
