@@ -32,6 +32,7 @@ This document contains instructions on
 ```
     $ git clone https://bitbucket.atlas.philips.com/scm/ius/libius.git
     $ cd libius
+    $ git submodule update --init --recursive
     $ git checkout develop
 ```
 
@@ -39,7 +40,8 @@ This document contains instructions on
 ```
 .
 ├── Docker
-├── bin
+├── ci
+│   └── bin
 ├── dox
 │   └── img
 ├── examples
@@ -57,13 +59,14 @@ This document contains instructions on
 └── unitTests
     ├── include
     └── src
+
 ```
 ### Docker
 This folder contains the Dockerfile that is is used to build/develop for the Linux platform.
 The resulting docker image is been deployed to [our local GitLab instance](#https://gitlab.ta.philips.com/IUS/ius/container_registry).
 
-### bin
-The bin folder contains convenience scripts that can be used to 
+### ci
+The ci/bin folder contains convenience scripts that can be used to 
 build, test and gnerate a distribution.
 
 * build.bat - Windows build script
@@ -129,12 +132,12 @@ In order to build and test the code, the required packages need to be installed:
 - Build code
 
     ```
-    $ bin/build.sh
+    $ ci/bin/build.sh
     ```
 - Run unit tests
 
     ```
-    $ bin/unittests.sh
+    $ ci/bin/unittests.sh
     Unity test run 1 of 1
     .......................
     
@@ -148,7 +151,7 @@ In order to build and test the code, the required packages need to be installed:
     ```
     $ uname
     Linux
-    $ bin/dist.sh
+    $ ci/bin/mk_os_distribution.sh
     $ cd build/Linux
     $ ls -l dist
     
@@ -167,15 +170,25 @@ In order to build and test the code, the required packages need to be installed:
 
 #### Build instructions for Windows
 
+- When building for Windows, make sure the Visual Studio runtime version of the hdf5 library matches
+with the installed version of Visual Studio. Visual Studio 2017 for example, 
+[requires version 1.8.20 of the hdf5 library](https://portal.hdfgroup.org/display/support/HDF5+1.8.20#files). 
+
+
+- Also, make sure the x64 version of the hdf5 library is used. (The downloaded filename contains _64 in its name.
+For example [hdf5-1.8.20-Std-win7_64-vs14.zip](https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.8/hdf5-1.8.20/bin/windows/hdf5-1.8.20-Std-win7_64-vs14.zip)).
+Start the Visual Studio x64 command prompt and run h5cc --version. This should show x64 in the Target property.
+If this is not the case, point the PATH environment to the x64 version of hdf5 bin folder and try again.
+
 - Checkout and build code
 
     ```
-    c:\proj\libius> bin\build.bat
+    c:\proj\libius> ci\bin\build.bat
     ```
 - Run unit tests
 
     ```
-    c:\proj\libius> bin\unittests.bat
+    c:\proj\libius> ci\bin\unittests.bat
     Unity test run 1 of 1
     .......................
     
@@ -188,7 +201,7 @@ In order to build and test the code, the required packages need to be installed:
 - Build a dist folder containing the distributable SDK:
 
     ```
-    c:\proj\libius> bin\dist.bat
+    c:\proj\libius> ci\bin\mk_os_distribution.bat
     ```
 
 ### How to generate documentation

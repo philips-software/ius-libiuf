@@ -1,5 +1,5 @@
 @echo off
-set BinFolder=%~dp0..\
+set BinFolder=%~dp0..\..\
 pushd .
 cd %BinFolder%
 set BuildFolder=%CD%\build\Windows

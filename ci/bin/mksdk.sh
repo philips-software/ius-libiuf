@@ -17,7 +17,7 @@ function releaseNumber
 }
 
 ScriptPath=$(dirname $(realpath $0))
-BuildFolder=$(realpath ${ScriptPath}/..)/build
+BuildFolder=$(realpath ${ScriptPath}/../..)/build
 StartFolder=$(pwd)
 DistFolder=${StartFolder}/dist
 IUSRelease="IUS-SDK-$(releaseNumber)"
