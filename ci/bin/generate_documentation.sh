@@ -21,7 +21,7 @@ BuildFolder=$(realpath ${ScriptPath}/../..)/build
 StartFolder=$(pwd)
 IUSRelease="IUS-SDK-$(releaseNumber)"
 DocFolder="${StartFolder}/public/${IUSRelease}/documentation"
-DocFolder="${StartFolder}/public
+DocFolder="${StartFolder}/public"
 DocSource="${StartFolder}/dox"
 
 echo === Generating documentation
