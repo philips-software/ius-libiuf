@@ -1,9 +1,9 @@
 stages:
-  - build
-  - qa
-  - distribution
-  - sdk
-  - sdk_test
+#  - build
+#  - qa
+#  - distribution
+#  - sdk
+#  - sdk_test
   - pages
 
 building:linux:
