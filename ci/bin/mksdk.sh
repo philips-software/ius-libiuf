@@ -54,7 +54,7 @@ mkdir -p ${ReleaseFolder}
 mv ${DistFolder}/* ${ReleaseFolder} 2>/dev/null
 
 echo === Generating documentation
-export PROJECT_NUMBER=$(git describe --always --dirty=" (with uncommitted changes)" --long --tags)
+export PROJECT_NUMBER=$(releaseNumber)
 mkdir -p ${DocFolder}
 cd ${DocSource}
 doxygen 2>&1 | grep -iv Warning
