@@ -526,7 +526,7 @@ static IUS_BOOL validateResponses
     return equal;
 }
 
-
+#if 0
 static IUS_BOOL validateChannels
 (
     iuif_t inputFile,
@@ -571,6 +571,7 @@ static IUS_BOOL validateChannels
     iusOffsetDelete(offset);
     return equal;
 }
+#endif
 
 TEST(IusInputFile, testIusInputFileDataIOSaveFrame)
 {
@@ -679,7 +680,7 @@ TEST(IusInputFile, testIusInputFileDataIOSaveChannel)
     TEST_ASSERT(savedObj != NULL);
     TEST_ASSERT_EQUAL(IUS_TRUE, iusInputFileCompare(inputFile,savedObj));
     // Todo:
-    // Fix Errors in va;idateChannels:
+    // Fix Errors in validateChannels:
 //    TEST_ASSERT_EQUAL(IUS_TRUE, validateChannels(savedObj,pDopplerLabel,numFrames));
 //    TEST_ASSERT_EQUAL(IUS_TRUE, validateChannels(savedObj,pBmodeLabel,numFrames));
 
