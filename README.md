@@ -175,8 +175,16 @@ with the installed version of Visual Studio. Visual Studio 2017 for example,
 
 - Also, make sure the x64 version of the hdf5 library is used. (The downloaded filename contains _64 in its name.
 For example [hdf5-1.8.20-Std-win7_64-vs14.zip](https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.8/hdf5-1.8.20/bin/windows/hdf5-1.8.20-Std-win7_64-vs14.zip)).
-Start the Visual Studio x64 command prompt and run h5cc --version. This should show x64 in the Target property.
+Start the Visual Studio x64 command prompt and run ci\bin\is_hdf5_x64.bat. This should show output similar
+to the text shown below: 
+```
+c:\proj\libius> ci\bin\is_hdf5_x64.bat
+HDF5 lib architecture [C:\Program Files\HDF_Group\HDF5\1.8.20]:
+            8664 machine (x64)
+```
+
 If this is not the case, point the PATH environment to the x64 version of hdf5 bin folder and try again.
+
 
 - Checkout and build code
 
