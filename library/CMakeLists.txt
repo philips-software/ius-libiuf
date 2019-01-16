@@ -90,6 +90,12 @@ add_library(ius STATIC
 		include/iusHDF5.h
 		include/iusInputFile.h
 		include/iusIqFile.h
+		include/iusIqPattern.h
+		include/iusIqPatternPrivate.h
+		include/iusIqPatternList.h
+		include/iusIqPatternListPrivate.h
+		include/iusIqPatternListDict.h
+		include/iusIqPatternListDictPrivate.h
 		include/iusInputFilePrivate.h
 		include/iusNonParametricPulse.h
 		include/iusNonParametricPulsePrivate.h
@@ -155,6 +161,9 @@ add_library(ius STATIC
 		src/iusFrameList.c
 		src/iusInputFile.c
 		src/iusIqFile.c
+		src/iusIqPattern.c
+		src/iusIqPatternList.c
+		src/iusIqPatternListDict.c
 		src/iusHistoryNode.c
 		src/iusHistoryNodeList.c
 		src/iusNonParametricPulse.c
