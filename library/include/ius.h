@@ -128,8 +128,12 @@
 #include <ius3DTransducerElement.h>
 #include <ius3DTransducerElementList.h>
 #include <iusBasicFunctions.h>
+#include <iusCompoundFile.h>
+#include <iusCompoundFileStructure.h>
 #include <iusData.h>
 #include <iusDataStream.h>
+#include <iusDemodulation.h>
+#include <iusDemodulationDict.h>
 #include <iusError.h>
 #include <iusAcquisition.h>
 #include <iusFile.h>
@@ -140,6 +144,8 @@
 #include <iusHistoryNodeList.h>
 #include <iusInputFile.h>
 #include <iusInputFileStructure.h>
+#include <iusIqFile.h>
+#include <iusIqFileStructure.h>
 #include <iusNonParametricPulse.h>
 #include <iusOffset.h>
 #include <iusParameterDict.h>
@@ -147,6 +153,9 @@
 #include <iusPattern.h>
 #include <iusPatternList.h>
 #include <iusPatternListDict.h>
+#include <iusIqPattern.h>
+#include <iusIqPatternList.h>
+#include <iusIqPatternListDict.h>
 #include <iusPosition.h>
 #include <iusPulse.h>
 #include <iusPulseDict.h>
@@ -169,6 +178,8 @@
 #define  IUS_E_OK  0
 #define  IUH_INVALID NULL
 #define  IUS_INPUT_TYPE "IUSINPUTFILETYPE_V3"
+#define  IUS_IQ_TYPE "IUSIQFILETYPE_V3"
+#define  IUS_COMPOUND_TYPE "IUSCOMPOUNDFILETYPE_V3"
 
 int iusGetVersionMajor
 (
