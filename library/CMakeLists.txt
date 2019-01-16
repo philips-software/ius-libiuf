@@ -74,6 +74,9 @@ add_library(ius STATIC
         include/iusData.h
 		include/iusDataStream.h
 		include/iusDataStreamDictPrivate.h
+		include/iusDemodulation.h
+		include/iusDemodulationDict.h
+		include/iusDemodulationDictPrivate.h
         include/iusAcquisition.h
         include/iusAcquisitionPrivate.h
 		include/iusFile.h
@@ -86,6 +89,7 @@ add_library(ius STATIC
 		include/iusHistoryNodeListPrivate.h
 		include/iusHDF5.h
 		include/iusInputFile.h
+		include/iusIqFile.h
 		include/iusInputFilePrivate.h
 		include/iusNonParametricPulse.h
 		include/iusNonParametricPulsePrivate.h
@@ -143,11 +147,14 @@ add_library(ius STATIC
         src/iusData.c
 		src/iusDataStream.c
 		src/iusDataStreamDict.c
+		src/iusDemodulation.c
+		src/iusDemodulationDict.c
         src/iusAcquisition.c
 		src/iusFile.c
 		src/iusFrame.c
 		src/iusFrameList.c
 		src/iusInputFile.c
+		src/iusIqFile.c
 		src/iusHistoryNode.c
 		src/iusHistoryNodeList.c
 		src/iusNonParametricPulse.c
