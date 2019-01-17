@@ -221,7 +221,7 @@ herr_t iusTransmitApodizationDictSave
 
 	if (handle == H5I_INVALID_HID)
 	{
-		IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "handle argument is NULL");
+		IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "handle argument is invalid");
 		return IUS_ERR_VALUE;
 	}
 
@@ -236,7 +236,10 @@ herr_t iusTransmitApodizationDictSave
 	}
 
 	if (group_id == H5I_INVALID_HID)
+	{
+		IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "Error getting handle for path: %s", IUS_INPUTFILE_PATH_TRANSMITAPODIZATIONDICT);
 		return IUS_ERR_VALUE;
+	}
 	status = 0;
 	HashableTransmitApodization *transmitApodizationDictItem;
 
@@ -265,11 +268,20 @@ iutad_t iusTransmitApodizationDictLoad
 	hsize_t i;
 	char memberName[MAX_NAME];
 
-	hid_t groupId = H5Gopen(handle, IUS_INPUTFILE_PATH_TRANSMITAPODIZATIONDICT, H5P_DEFAULT);
-	if (handle == H5I_INVALID_HID || groupId == H5I_INVALID_HID)
+	if (handle == H5I_INVALID_HID)
+	{
+		IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "handle argument is invalid");
 		return NULL;
+	}
 
-	hsize_t nobj;
+	hid_t groupId = H5Gopen(handle, IUS_INPUTFILE_PATH_TRANSMITAPODIZATIONDICT, H5P_DEFAULT);
+	if (groupId == H5I_INVALID_HID)
+	{
+		IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "Error getting handle for path: %s", IUS_INPUTFILE_PATH_TRANSMITAPODIZATIONDICT);
+		return NULL;
+	}
+
+	hsize_t nobj = 0;
 	status = H5Gget_num_objs(groupId, &nobj);
 
 	iutad_t dict = iusTransmitApodizationDictCreate();

@@ -12,6 +12,7 @@ hid_t  IUS_ERR_MAJ_GENERAL;  //     (100001)   /**< general error */
 hid_t  IUS_ERR_MAJ_MEMORY;   //    (100002)    /**< memory error  */
 hid_t  IUS_ERR_MAJ_VALUE;    //    (100003)    /**< value error  */
 hid_t  IUS_ERR_MAJ_ERROR;
+hid_t  IUS_ERR_MAJ_HDF5;
 
 hid_t  IUS_ERR_MIN_ARG_FILENAME;  //     (100001)   /**< general error */
 hid_t  IUS_ERR_MIN_ALLOC;
@@ -19,8 +20,10 @@ hid_t  IUS_ERR_MIN_FORMAT;
 hid_t  IUS_ERR_MIN_ARG_NULL_VALUE;
 hid_t  IUS_ERR_MIN_ARG_DUPLICATE_KEY;
 hid_t  IUS_ERR_MIN_ARG_INVALID_KEY;
+hid_t  IUS_ERR_MIN_HDF5;
 
 #define ERR_CLS_NAME                    "IUS"
+#define IUS_ERR_MAJ_HDF5_MSG            "HDF5 call failed"
 #define IUS_ERR_MAJ_GENERAL_MSG         "General Error"
 #define IUS_ERR_MAJ_MEMORY_MSG          "Memory Error"
 #define IUS_ERR_MAJ_VALUE_MSG           "Value Error"
@@ -35,6 +38,7 @@ hid_t  IUS_ERR_MIN_ARG_INVALID_KEY;
 #define IUS_ERR_MIN_FORMAT_MSG              "Error message formatting failed"
 #define IUS_ERR_MIN_ARG_DUPLICATE_KEY_MSG   "Duplicate key"
 #define IUS_ERR_MIN_ARG_INVALID_KEY_MSG     "Invalid key, lookup failed"
+#define IUS_ERR_MIN_HDF5_MSG                "Turn on HDF5 error log to get error details: iusHDF5ErrorLog(IUS_TRUE)"
 
 struct IusError
 {
@@ -82,6 +86,9 @@ static int iusErrorInit
         return IUS_ERR_VALUE;
     if((IUS_ERR_MAJ_ERROR = H5Ecreate_msg(state->iusErrorClass, H5E_MAJOR, IUS_ERR_MAJ_ERROR_MSG)) < 0)
         return IUS_ERR_VALUE;
+    if((IUS_ERR_MAJ_HDF5 = H5Ecreate_msg(state->iusErrorClass, H5E_MAJOR, IUS_ERR_MAJ_HDF5_MSG)) < 0)
+        return IUS_ERR_VALUE;
+
 
     // Register Minor Message categories
     if((IUS_ERR_MIN_ARG_FILENAME = H5Ecreate_msg(state->iusErrorClass, H5E_MINOR, IUS_ERR_MIN_ARG_FILENAME_MSG)) < 0)
@@ -96,11 +103,13 @@ static int iusErrorInit
         return IUS_ERR_VALUE;
     if((IUS_ERR_MIN_ARG_INVALID_KEY = H5Ecreate_msg(state->iusErrorClass, H5E_MINOR, IUS_ERR_MIN_ARG_INVALID_KEY_MSG)) < 0)
         return IUS_ERR_VALUE;
+    if((IUS_ERR_MIN_HDF5= H5Ecreate_msg(state->iusErrorClass, H5E_MINOR, IUS_ERR_MIN_HDF5_MSG)) < 0)
+        return IUS_ERR_VALUE;
 
 
     state->iusErrorStack = H5Ecreate_stack();
     state->errorStream = stderr;
-//    H5Eget_auto2(H5E_DEFAULT,&state->func,&state->client_data);
+    H5Eget_auto2(H5E_DEFAULT,&state->func,&state->client_data);
     iusHDF5ErrorLog(IUS_FALSE);
     return IUS_E_OK;
 }

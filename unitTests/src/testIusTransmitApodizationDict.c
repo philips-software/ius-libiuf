@@ -8,7 +8,7 @@
 #include <ius.h>
 #include <iusTransmitApodizationDictPrivate.h>
 
-static char *pErrorFilename = "foeps.errlog";
+static char *pErrorFilename = "IusTransmitApodizationDict.errlog";
 FILE *fpErrorLogging = NULL;
 
 TEST_GROUP(IusTransmitApodizationDict);
@@ -25,6 +25,7 @@ TEST_SETUP(IusTransmitApodizationDict)
 TEST_TEAR_DOWN(IusTransmitApodizationDict)
 {
     iusErrorLogClear();
+    iusErrorLog(IUS_FALSE);
     if (fpErrorLogging != NULL)
     	fclose(fpErrorLogging);
 	fpErrorLogging=stderr;
@@ -133,7 +134,6 @@ TEST(IusTransmitApodizationDict, testIusTransmitApodizationDictSerialization)
 	hid_t handle = H5Fcreate(filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
 	TEST_ASSERT(handle > 0);
 
-
 	status = iusTransmitApodizationDictSave(transmitApodizationDict, handle);
 	TEST_ASSERT_EQUAL(IUS_E_OK, status);
 	H5Fclose(handle);
@@ -147,6 +147,21 @@ TEST(IusTransmitApodizationDict, testIusTransmitApodizationDictSerialization)
 	H5Fclose(handle);
 
 	TEST_ASSERT_EQUAL(IUS_TRUE, iusTransmitApodizationDictCompare(transmitApodizationDict, savedDict));
+
+    // invalid params
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
+    status = iusTransmitApodizationDictSave(transmitApodizationDict, -1);
+    TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
+    status = iusTransmitApodizationDictSave(NULL, handle);
+    TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
+    savedDict = iusTransmitApodizationDictLoad(-1);
+    TEST_ASSERT_EQUAL(NULL, savedDict);
+
+    TEST_ASSERT_EQUAL(3,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
+
 	iusTransmitApodizationDelete(obj);
 	iusTransmitApodizationDictDelete(transmitApodizationDict);
 	iusTransmitApodizationDictDelete(savedDict);

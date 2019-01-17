@@ -138,6 +138,7 @@ extern hid_t  IUS_ERR_MAJ_GENERAL;  //     (100001)   /**< general error */
 extern hid_t  IUS_ERR_MAJ_MEMORY;   //    (100002)    /**< memory error  */
 extern hid_t  IUS_ERR_MAJ_VALUE;    //    (100003)    /**< value error  */
 extern hid_t  IUS_ERR_MAJ_ERROR;
+extern hid_t  IUS_ERR_MAJ_HDF5;
 
 extern hid_t  IUS_ERR_MIN_ARG_FILENAME;  //     (100001)   /**< general error */
 extern hid_t  IUS_ERR_MIN_ALLOC;
@@ -145,6 +146,7 @@ extern hid_t  IUS_ERR_MIN_FORMAT;
 extern hid_t  IUS_ERR_MIN_ARG_NULL_VALUE;
 extern hid_t  IUS_ERR_MIN_ARG_DUPLICATE_KEY;
 extern hid_t  IUS_ERR_MIN_ARG_INVALID_KEY;
+extern hid_t  IUS_ERR_MIN_HDF5;
 
 #define IUS_ERROR_PUSH(maj,min,msg)     iusErrorPush(__FILE__, __func__, __LINE__, maj, min, msg)
 #define IUS_ERROR_FMT_PUSH(maj,min,fmt,...) iusErrorFormatAndPush(__FILE__, __func__, __LINE__, maj, min, fmt, __VA_ARGS__)
