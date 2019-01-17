@@ -21,6 +21,7 @@ hid_t  IUS_ERR_MIN_ARG_NULL_VALUE;
 hid_t  IUS_ERR_MIN_ARG_DUPLICATE_KEY;
 hid_t  IUS_ERR_MIN_ARG_INVALID_KEY;
 hid_t  IUS_ERR_MIN_HDF5;
+hid_t  IUS_ERR_MIN_ARG_VALUE;
 
 #define ERR_CLS_NAME                    "IUS"
 #define IUS_ERR_MAJ_HDF5_MSG            "HDF5 call failed"
@@ -32,6 +33,7 @@ hid_t  IUS_ERR_MIN_HDF5;
 #define IUS_VERSION                     IUS_VERSION_MAJOR "." IUS_VERSION_MINOR "." IUS_VERSION_PATCH
 
 
+#define IUS_ERR_MIN_ARG_VALUE_MSG           "Value invalid for argument"
 #define IUS_ERR_MIN_ARG_NULL_VALUE_MSG      "NULL value invalid for argument"
 #define IUS_ERR_MIN_ARG_FILENAME_MSG        "Invalid filename argument"
 #define IUS_ERR_MIN_ALLOC_MSG               "Memory allocation failed"
@@ -98,6 +100,8 @@ static int iusErrorInit
     if((IUS_ERR_MIN_FORMAT = H5Ecreate_msg(state->iusErrorClass, H5E_MINOR, IUS_ERR_MIN_FORMAT_MSG)) < 0)
         return IUS_ERR_VALUE;
     if((IUS_ERR_MIN_ARG_NULL_VALUE = H5Ecreate_msg(state->iusErrorClass, H5E_MINOR, IUS_ERR_MIN_ARG_NULL_VALUE_MSG)) < 0)
+        return IUS_ERR_VALUE;
+    if((IUS_ERR_MIN_ARG_VALUE = H5Ecreate_msg(state->iusErrorClass, H5E_MINOR, IUS_ERR_MIN_ARG_VALUE_MSG)) < 0)
         return IUS_ERR_VALUE;
     if((IUS_ERR_MIN_ARG_DUPLICATE_KEY = H5Ecreate_msg(state->iusErrorClass, H5E_MINOR, IUS_ERR_MIN_ARG_DUPLICATE_KEY_MSG)) < 0)
         return IUS_ERR_VALUE;

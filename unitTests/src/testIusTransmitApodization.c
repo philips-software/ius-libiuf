@@ -8,16 +8,31 @@
 #include <ius.h>
 
 
+
+static char *pErrorFilename = "IusTransmitApodization.errlog";
+static FILE *fpErrorLogging = NULL;
+
 TEST_GROUP(IusTransmitApodization);
 
 TEST_SETUP(IusTransmitApodization)
 {
+	iusErrorLogClear();
+	iusErrorLog(IUS_TRUE);
+	iusErrorAutoReport(IUS_TRUE);
+	fpErrorLogging = fopen(pErrorFilename, "w+");
+	iusErrorSetStream(fpErrorLogging);
 }
 
 TEST_TEAR_DOWN(IusTransmitApodization)
 {
+	iusErrorLogClear();
+	iusErrorLog(IUS_FALSE);
+	if (fpErrorLogging != NULL)
+		fclose(fpErrorLogging);
+	fpErrorLogging=stderr;
+	iusErrorSetStream(fpErrorLogging);
+	remove(pErrorFilename);
 }
-
 
 TEST(IusTransmitApodization, testIusTransmitApodizationCreate)
 {
@@ -30,10 +45,16 @@ TEST(IusTransmitApodization, testIusTransmitApodizationCreate)
 	iusTransmitApodizationDelete(obj);
 
 	// invalid params
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
 	obj = iusTransmitApodizationCreate(0);
 	TEST_ASSERT(obj == IUTA_INVALID);
 	obj = iusTransmitApodizationCreate(-1);
 	TEST_ASSERT(obj == IUTA_INVALID);
+
+    TEST_ASSERT_EQUAL(2,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
 }
 
 TEST(IusTransmitApodization, testIusTransmitApodizationDelete)
@@ -46,8 +67,14 @@ TEST(IusTransmitApodization, testIusTransmitApodizationDelete)
 	TEST_ASSERT_EQUAL(IUS_E_OK, status);
 
 	// invalid params
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
 	status = iusTransmitApodizationDelete(NULL);
 	TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
+
+    TEST_ASSERT_EQUAL(1,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
 }
 
 TEST(IusTransmitApodization, testIusTransmitApodizationCompare)
@@ -74,13 +101,37 @@ TEST(IusTransmitApodization, testIusTransmitApodizationCompare)
 	iusTransmitApodizationDelete(notherObj);
 }
 
-TEST(IusTransmitApodization, testIusTransmitApodizationGet)
+TEST(IusTransmitApodization, testIusTransmitApodizationSetGet)
 {
 	const int numElements = 5;
+	int i;
+    float apod[5] = { 0.4f,0.3f,0.2f,0.1f, 0.0f };
+    iuta_t obj = iusTransmitApodizationCreate(numElements);
+    int status = iusTransmitApodizationSetApodization(obj, apod);
+    TEST_ASSERT_EQUAL(IUS_E_OK, status);
+    for (i=0; i<numElements;i++)
+    {
+        TEST_ASSERT_EQUAL_FLOAT(apod[i], iusTransmitApodizationGetElement(obj, i));
+        iusTransmitApodizationSetElement(obj, i, 0.1+apod[i]);
+        TEST_ASSERT_EQUAL_FLOAT(apod[i]+0.1, iusTransmitApodizationGetElement(obj, i));
+    }
 
-	iuta_t obj = iusTransmitApodizationCreate(numElements);
+	// invalid params
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
 
-	iusTransmitApodizationDelete(obj);
+    TEST_ASSERT_EQUAL_FLOAT(NAN, iusTransmitApodizationGetElement(NULL, 0));
+    TEST_ASSERT_EQUAL_FLOAT(NAN, iusTransmitApodizationGetElement(obj, -1));
+    TEST_ASSERT_EQUAL(IUS_ERR_VALUE, iusTransmitApodizationSetApodization(NULL, apod));
+    TEST_ASSERT_EQUAL(IUS_ERR_VALUE, iusTransmitApodizationSetApodization(obj, NULL));
+    TEST_ASSERT_EQUAL_FLOAT(NAN, iusTransmitApodizationGetElement(NULL, 1));
+    TEST_ASSERT_EQUAL_FLOAT(NAN, iusTransmitApodizationGetElement(obj,-1));
+    TEST_ASSERT_EQUAL_FLOAT(NAN, iusTransmitApodizationGetElement(obj, 6));
+
+    TEST_ASSERT_EQUAL(7,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
+
+    iusTransmitApodizationDelete(obj);
 }
 
 TEST_GROUP_RUNNER(IusTransmitApodization)
@@ -88,5 +139,5 @@ TEST_GROUP_RUNNER(IusTransmitApodization)
 	RUN_TEST_CASE(IusTransmitApodization, testIusTransmitApodizationCreate);
 	RUN_TEST_CASE(IusTransmitApodization, testIusTransmitApodizationDelete);
 	RUN_TEST_CASE(IusTransmitApodization, testIusTransmitApodizationCompare);
-	RUN_TEST_CASE(IusTransmitApodization, testIusTransmitApodizationGet);
+	RUN_TEST_CASE(IusTransmitApodization, testIusTransmitApodizationSetGet);
 }

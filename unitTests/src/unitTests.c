@@ -44,7 +44,7 @@ static void RunAllTests(void)
 //    RUN_TEST_GROUP(IusSourceDict);
 //    RUN_TEST_GROUP(IusTGC);
 //    RUN_TEST_GROUP(IusTransducer);
-//    RUN_TEST_GROUP(IusTransmitApodization);
+    RUN_TEST_GROUP(IusTransmitApodization);
     RUN_TEST_GROUP(IusTransmitApodizationDict);
 }
 
