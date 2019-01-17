@@ -157,6 +157,7 @@ add_library(ius STATIC
 		src/iusDemodulationDict.c
         src/iusAcquisition.c
 		src/iusFile.c
+		src/iusFilter.c
 		src/iusFrame.c
 		src/iusFrameList.c
 		src/iusInputFile.c

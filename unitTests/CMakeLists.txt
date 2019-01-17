@@ -27,6 +27,7 @@ add_executable(unitTests
         src/testIusDemodulationDict.c
         src/testIusAcquisition.c
         src/testIusFile.c
+        src/testIusFilter.c
         src/testIusFrame.c
         src/testIusFrameList.c
         src/testIusInputFile.c
