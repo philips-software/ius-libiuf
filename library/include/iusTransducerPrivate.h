@@ -19,7 +19,7 @@ struct IusTransducer
 
 int iusBaseTransducerDelete
 (
-	iut_t iusTransducer
+	iut_t transducer
 );
 
 int iusBaseTransducerCompare
