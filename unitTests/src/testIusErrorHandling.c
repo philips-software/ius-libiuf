@@ -9,21 +9,23 @@
 #include <memory.h>
 
 #include "ius.h"
-char *pTestFileName = "nonexistingfilename.hdf5";
-char *pErrprFileName = "nonexistingfilename.errlog";
+static char *pTestFileName = "nonexistingfilename.hdf5";
+static char *pErrorFilename = "nonexistingfilename.errlog";
 
 TEST_GROUP(IusErrorHandling);
 
 TEST_SETUP(IusErrorHandling)
 {
     iusErrorLogClear();
+    iusErrorLog(IUS_TRUE);
     iusErrorAutoReport(IUS_TRUE);
 }
 
 TEST_TEAR_DOWN(IusErrorHandling)
 {
     remove(pTestFileName);
-    remove(pErrprFileName);
+    remove(pErrorFilename);
+    iusErrorSetStream(stderr);
 }
 
 
@@ -47,7 +49,7 @@ TEST(IusErrorHandling, testIusErrorManualReportScenario)
     // opening an errorlogfile and
     // checking whether file position has been
     // changed.
-    FILE *fp = fopen(pErrprFileName, "w+");
+    FILE *fp = fopen(pErrorFilename, "w+");
     iusErrorSetStream(fp);
     long filePos = ftell(fp);
     inputFile = iusFileLoad(NULL);
@@ -108,7 +110,7 @@ TEST(IusErrorHandling, testIusErrorLogDisabledEnabledScenario)
     TEST_ASSERT_EQUAL(2,iusErrorGetCount());
 
 
-    FILE *fp = fopen(pErrprFileName, "w+");
+    FILE *fp = fopen(pErrorFilename, "w+");
     long filePos = ftell(fp);
     int status = iusErrorPrint(fp);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
@@ -133,7 +135,8 @@ TEST(IusErrorHandling, testIusErrorLogDisabledEnabledScenario)
 
 TEST(IusErrorHandling, testIusErrorAutoReport)
 {
-    FILE *fp = fopen(pErrprFileName, "w+");
+    iusErrorAutoReport(IUS_TRUE);
+    FILE *fp = fopen(pErrorFilename, "w+");
     long filePos = ftell(fp);
     iusErrorSetStream(fp);
     iuf_t inputFile = iusFileLoad(NULL);

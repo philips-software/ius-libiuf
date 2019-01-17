@@ -8,14 +8,28 @@
 #include <ius.h>
 #include <iusTransmitApodizationDictPrivate.h>
 
+static char *pErrorFilename = "foeps.errlog";
+FILE *fpErrorLogging = NULL;
+
 TEST_GROUP(IusTransmitApodizationDict);
 
 TEST_SETUP(IusTransmitApodizationDict)
 {
+	iusErrorLogClear();
+    iusErrorLog(IUS_TRUE);
+    iusErrorAutoReport(IUS_TRUE);
+	fpErrorLogging = fopen(pErrorFilename, "w+");
+	iusErrorSetStream(fpErrorLogging);
 }
 
 TEST_TEAR_DOWN(IusTransmitApodizationDict)
 {
+    iusErrorLogClear();
+    if (fpErrorLogging != NULL)
+    	fclose(fpErrorLogging);
+	fpErrorLogging=stderr;
+	iusErrorSetStream(fpErrorLogging);
+	remove(pErrorFilename);
 }
 
 
@@ -48,9 +62,13 @@ TEST(IusTransmitApodizationDict, testIusTransmitApodizationDictSetGet)
 	TEST_ASSERT_EQUAL(IUS_TRUE, iusTransmitApodizationCompare(obj, retrievedObj));
 
 	// Invalid params
+	long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
 	TEST_ASSERT_EQUAL(IUTA_INVALID, iusTransmitApodizationDictGet(dict,NULL));
 	TEST_ASSERT_EQUAL(IUTA_INVALID, iusTransmitApodizationDictGet(NULL,pObjLabel));
 	TEST_ASSERT_EQUAL(IUTA_INVALID, iusTransmitApodizationDictGet(dict,"unknownLabel"));
+	TEST_ASSERT_EQUAL(3,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
 	iusTransmitApodizationDelete(obj);
 	iusTransmitApodizationDictDelete(dict);
 }
@@ -133,8 +151,6 @@ TEST(IusTransmitApodizationDict, testIusTransmitApodizationDictSerialization)
 	iusTransmitApodizationDictDelete(transmitApodizationDict);
 	iusTransmitApodizationDictDelete(savedDict);
 }
-
-
 
 TEST_GROUP_RUNNER(IusTransmitApodizationDict)
 {

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 ScriptPath=$(dirname $(realpath $0))
-BuildFolder=$(realpath ${ScriptPath}/..)/build/$(uname)
-CppCheckReportFile=gcovr-report.xml
+BuildFolder=$(realpath ${ScriptPath}/../..)/build/$(uname)
+CppCheckReportFile=cppcheck-report.xml
 
 which cmake3 >/dev/null 2>&1
 if (( $? == 0 ))
@@ -15,9 +15,9 @@ else
     CTEST=ctest
 fi
 
-
-echo === Generating code coverage for unit tests
+echo === Static code analysis for ius in $BuildFolder
 mkdir -p $BuildFolder
 cd $BuildFolder
 $CMAKE -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ../..
-make gcovr-report
+
+cppcheck --enable=style --project=compile_commands.json  --xml-version=2 --xml 2> $CppCheckReportFile

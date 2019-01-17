@@ -21,7 +21,7 @@ static void RunAllTests(void)
 //    RUN_TEST_GROUP(IusAcquisition);
 //    RUN_TEST_GROUP(IusDataStream);
 //    RUN_TEST_GROUP(IusDataStreamDict);
-    RUN_TEST_GROUP(IusErrorHandling);
+//    RUN_TEST_GROUP(IusErrorHandling);
 //    RUN_TEST_GROUP(IusFrame);
 //    RUN_TEST_GROUP(IusFrameList);
 //    RUN_TEST_GROUP(IusInputFile);

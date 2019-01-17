@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 ScriptPath=$(dirname $(realpath $0))
-BuildFolder=$(realpath ${ScriptPath}/..)/build/$(uname)
+BuildFolder=$(realpath ${ScriptPath}/../..)/build/$(uname)
 
 which cmake3 >/dev/null 2>&1
 if (( $? == 0 ))
@@ -16,7 +16,4 @@ fi
 
 echo === UnitTests
 cd $BuildFolder
-$CMAKE -DCMAKE_BUILD_TYPE=Debug ../..
-$CMAKE --build .
-$CTEST --verbose
-
+$CTEST -T memcheck --verbose

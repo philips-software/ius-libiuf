@@ -17,7 +17,8 @@ hid_t  IUS_ERR_MIN_ARG_FILENAME;  //     (100001)   /**< general error */
 hid_t  IUS_ERR_MIN_ALLOC;
 hid_t  IUS_ERR_MIN_FORMAT;
 hid_t  IUS_ERR_MIN_ARG_NULL_VALUE;
-extern hid_t  IUS_ERR_MIN_ARG_DUPLICATE_KEY;
+hid_t  IUS_ERR_MIN_ARG_DUPLICATE_KEY;
+hid_t  IUS_ERR_MIN_ARG_INVALID_KEY;
 
 #define ERR_CLS_NAME                    "IUS"
 #define IUS_ERR_MAJ_GENERAL_MSG         "General Error"
@@ -28,11 +29,12 @@ extern hid_t  IUS_ERR_MIN_ARG_DUPLICATE_KEY;
 #define IUS_VERSION                     IUS_VERSION_MAJOR "." IUS_VERSION_MINOR "." IUS_VERSION_PATCH
 
 
-#define IUS_ERR_MIN_ARG_NULL_VALUE_MSG  "NULL value invalid for argument"
-#define IUS_ERR_MIN_ARG_FILENAME_MSG    "Invalid filename argument"
-#define IUS_ERR_MIN_ALLOC_MSG           "Memory allocation failed"
-#define IUS_ERR_MIN_FORMAT_MSG          "Error message formatting failed"
-
+#define IUS_ERR_MIN_ARG_NULL_VALUE_MSG      "NULL value invalid for argument"
+#define IUS_ERR_MIN_ARG_FILENAME_MSG        "Invalid filename argument"
+#define IUS_ERR_MIN_ALLOC_MSG               "Memory allocation failed"
+#define IUS_ERR_MIN_FORMAT_MSG              "Error message formatting failed"
+#define IUS_ERR_MIN_ARG_DUPLICATE_KEY_MSG   "Duplicate key"
+#define IUS_ERR_MIN_ARG_INVALID_KEY_MSG     "Invalid key, lookup failed"
 
 struct IusError
 {
@@ -57,7 +59,8 @@ static IusError iusErrorState = {
     .enable = IUS_TRUE,
     .autoReport = IUS_TRUE,
     .func = NULL,
-    .client_data = NULL
+    .client_data = NULL,
+    .errorStream = NULL
 };
 
 
@@ -89,10 +92,15 @@ static int iusErrorInit
         return IUS_ERR_VALUE;
     if((IUS_ERR_MIN_ARG_NULL_VALUE = H5Ecreate_msg(state->iusErrorClass, H5E_MINOR, IUS_ERR_MIN_ARG_NULL_VALUE_MSG)) < 0)
         return IUS_ERR_VALUE;
+    if((IUS_ERR_MIN_ARG_DUPLICATE_KEY = H5Ecreate_msg(state->iusErrorClass, H5E_MINOR, IUS_ERR_MIN_ARG_DUPLICATE_KEY_MSG)) < 0)
+        return IUS_ERR_VALUE;
+    if((IUS_ERR_MIN_ARG_INVALID_KEY = H5Ecreate_msg(state->iusErrorClass, H5E_MINOR, IUS_ERR_MIN_ARG_INVALID_KEY_MSG)) < 0)
+        return IUS_ERR_VALUE;
+
 
     state->iusErrorStack = H5Ecreate_stack();
     state->errorStream = stderr;
-    H5Eget_auto2(H5E_DEFAULT,&state->func,&state->client_data);
+//    H5Eget_auto2(H5E_DEFAULT,&state->func,&state->client_data);
     iusHDF5ErrorLog(IUS_FALSE);
     return IUS_E_OK;
 }
@@ -159,6 +167,7 @@ int iusErrorGetCount
     iue_t state = iusErrorGetState();
     return H5Eget_num(state->iusErrorStack);
 }
+
 
 int iusErrorPrint
 (
