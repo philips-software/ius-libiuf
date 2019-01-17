@@ -132,6 +132,13 @@ typedef enum
 } IusShape;
 
 
+typedef enum 
+{
+	IUS_DEMODULATION_QUADRATURE = 0,
+	IUS_DEMODULATION_FOURX,
+	IUS_DEMODULATION_HILBERT
+} IusDemodulationMethod;
+
 /** \brief Possible driving patterns */
 typedef enum
 {

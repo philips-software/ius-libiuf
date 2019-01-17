@@ -6,11 +6,15 @@
 #include <math.h>
 
 #include <ius.h>
+#include <iusFilterPrivate.h>
 #include <iusDemodulationPrivate.h>
 #include <iusTGCPrivate.h>
 
 struct IusDemodulation
 {
+	IusDemodulationMethod method;   /**< How the downsampling has been performed */
+	int      downSampleFactor;      /**< The reduction factor between original sampling and the data rate (i.e. sampleFrequency) */
+	iuff_t   preFilter;             /**< The filter that has been used before downSampling was applied */
 	iutgc_t  TGC;                   /**< TimeGainControl points (time,gain) */
 	float    sampleFrequency;       /**< The sampling frequency that was used */
 	int      numSamplesPerLine;     /**< length of an acquisition line */

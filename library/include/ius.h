@@ -137,6 +137,7 @@
 #include <iusError.h>
 #include <iusAcquisition.h>
 #include <iusFile.h>
+#include <iusFilter.h>
 #include <iusFrame.h>
 #include <iusFrameList.h>
 #include <iusHDF5.h>
