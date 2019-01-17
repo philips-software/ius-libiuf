@@ -80,6 +80,7 @@ add_library(ius STATIC
         include/iusAcquisition.h
         include/iusAcquisitionPrivate.h
 		include/iusFile.h
+		include/iusFilter.h
 		include/iusFrame.h
 		include/iusFrameList.h
 		include/iusFrameListPrivate.h

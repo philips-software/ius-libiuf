@@ -24,19 +24,24 @@ TEST(IusDemodulation, testIusDemodulationCreate)
 	float sampleFrequency = 4000;
 	int numSamplesPerLine = 10;
 	int numTGCentries = 1;
-	iudm_t obj = iusDemodulationCreate(sampleFrequency, numSamplesPerLine, numTGCentries);
-	iudm_t notherObj = iusDemodulationCreate(sampleFrequency, numSamplesPerLine + 10, numTGCentries);
+	int kernelSize = 5;
+	IusDemodulationMethod method = IUS_DEMODULATION_FOURX;
+
+	iudm_t obj = iusDemodulationCreate(method, sampleFrequency, numSamplesPerLine, numTGCentries, kernelSize);
+	iudm_t notherObj = iusDemodulationCreate(method, sampleFrequency, numSamplesPerLine + 10, numTGCentries, kernelSize);
 	TEST_ASSERT(obj != IUDM_INVALID);
 	TEST_ASSERT(notherObj != IUDM_INVALID);
 	iusDemodulationDelete(obj);
 	iusDemodulationDelete(notherObj);
 
 	// invalid params
-	obj = iusDemodulationCreate((float)-1.0, numSamplesPerLine, numTGCentries);
+	obj = iusDemodulationCreate(method, (float)-1.0, numSamplesPerLine, numTGCentries, kernelSize);
 	TEST_ASSERT(obj == IUDM_INVALID);
-	obj = iusDemodulationCreate(sampleFrequency, -1, numTGCentries);
+	obj = iusDemodulationCreate(method, sampleFrequency, -1, numTGCentries, kernelSize);
 	TEST_ASSERT(obj == IUDM_INVALID);
-	obj = iusDemodulationCreate(sampleFrequency, numSamplesPerLine, -1);
+	obj = iusDemodulationCreate(method, sampleFrequency, numSamplesPerLine, -1, kernelSize);
+	TEST_ASSERT(obj == IUDM_INVALID);
+	obj = iusDemodulationCreate(method, sampleFrequency, numSamplesPerLine, numTGCentries, -1);
 	TEST_ASSERT(obj == IUDM_INVALID);
 }
 
@@ -45,7 +50,10 @@ TEST(IusDemodulation, testIusDemodulationDelete)
 	float sampleFrequency = 4000;
 	int numSamplesPerLine = 10;
 	int numTGCentries = 1;
-	iudm_t obj = iusDemodulationCreate(sampleFrequency, numSamplesPerLine, numTGCentries);
+	int kernelSize = 5;
+	IusDemodulationMethod method = IUS_DEMODULATION_FOURX;
+
+	iudm_t obj = iusDemodulationCreate(method, sampleFrequency, numSamplesPerLine, numTGCentries, kernelSize);
 	TEST_ASSERT(obj != IUDM_INVALID);
 	int status = iusDemodulationDelete(obj);
 	TEST_ASSERT_EQUAL(IUS_E_OK, status);
@@ -63,11 +71,14 @@ TEST(IusDemodulation, testIusDemodulationCompare)
 	float sampleFrequency = 4000;
 	int numSamplesPerLine = 10;
 	int numTGCentries = 1;
+	int kernelSize = 5;
+	IusDemodulationMethod method = IUS_DEMODULATION_FOURX;
+
 	int status;
 
-	iudm_t obj = iusDemodulationCreate(sampleFrequency, numSamplesPerLine, numTGCentries);
-	iudm_t notherObj = iusDemodulationCreate(sampleFrequency, numSamplesPerLine, numTGCentries);
-	iudm_t differentObj = iusDemodulationCreate(sampleFrequency, numSamplesPerLine, numTGCentries + 1);
+	iudm_t obj = iusDemodulationCreate(method, sampleFrequency, numSamplesPerLine, numTGCentries, kernelSize);
+	iudm_t notherObj = iusDemodulationCreate(method, sampleFrequency, numSamplesPerLine, numTGCentries, kernelSize);
+	iudm_t differentObj = iusDemodulationCreate(method, sampleFrequency, numSamplesPerLine, numTGCentries + 1, kernelSize);
 	TEST_ASSERT(obj != IUDM_INVALID);
 	TEST_ASSERT(notherObj != IUDM_INVALID);
 	equal = iusDemodulationCompare(obj, obj);
@@ -113,16 +124,23 @@ TEST(IusDemodulation, testIusDemodulationSetGet)
 	float sampleFrequency = 4000;
 	int numSamplesPerLine = 10;
 	int numTGCentries = 1;
+	int kernelSize = 5;
+	IusDemodulationMethod method = IUS_DEMODULATION_FOURX;
 
 	// Constructor injected parameters
-	iudm_t obj = iusDemodulationCreate(sampleFrequency, numSamplesPerLine, numTGCentries);
+	iudm_t obj = iusDemodulationCreate(method, sampleFrequency, numSamplesPerLine, numTGCentries, kernelSize);
 	TEST_ASSERT_EQUAL_FLOAT(sampleFrequency, iusDemodulationGetSampleFrequency(obj));
 	TEST_ASSERT_EQUAL(numSamplesPerLine, iusDemodulationGetNumSamplesPerLine(obj));
 	TEST_ASSERT_EQUAL(numTGCentries, iusDemodulationGetNumTGCentries(obj));
+	TEST_ASSERT_EQUAL(kernelSize, iusDemodulationGetPreFilterKernelSize(obj));
 
 	// TGC
 	iutgc_t tgc = iusDemodulationGetTGC(obj);
 	TEST_ASSERT(tgc != IUTGC_INVALID);
+
+	// PreFilter
+	iuff_t prefilter = iusDemodulationGetPreFilter(obj);
+	TEST_ASSERT(prefilter != IUFIRFILTER_INVALID);
 
 	iusDemodulationDelete(obj);
 }
@@ -133,16 +151,26 @@ TEST(IusDemodulation, testIusSerialization)
 	float sampleFrequency = 4000;
 	int numSamplesPerLine = 10;
 	int numTGCentries = 2;
+	int kernelSize = 5;
+	IusDemodulationMethod method = IUS_DEMODULATION_FOURX;
+
 	int i;
 	int status;
 
 	// Create
-	iudm_t obj = iusDemodulationCreate(sampleFrequency, numSamplesPerLine, numTGCentries);
+	iudm_t obj = iusDemodulationCreate(method, sampleFrequency, numSamplesPerLine, numTGCentries, kernelSize);
 
 	iutgc_t tgc = iusDemodulationGetTGC(obj);
 	for (i = 0; i<numTGCentries; i++)
 	{
 		status = iusTGCSet(tgc, i, i*1.314f, i*2.314f);
+		TEST_ASSERT_EQUAL(IUS_E_OK, status);
+	}
+
+	iuff_t preFilter = iusDemodulationGetPreFilter(obj);
+	for (i = 0; i<kernelSize; i++)
+	{
+		status = iusFirFilterSetCoefficient(preFilter, i, 1.0f/(float)kernelSize);
 		TEST_ASSERT_EQUAL(IUS_E_OK, status);
 	}
 
