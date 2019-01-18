@@ -63,7 +63,8 @@ TEST(IusTransducer, testIusTransducerDelete)
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
 
     TEST_ASSERT_EQUAL(1,iusErrorGetCount());
-    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));}
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
+}
 
 TEST(IusTransducer, testIusTransducerCompare)
 {
