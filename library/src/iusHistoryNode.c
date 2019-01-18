@@ -5,6 +5,7 @@
 
 #include <ius.h>
 #include <iusInputFilePrivate.h>
+#include <iusIqFilePrivate.h>
 #include <iusParameterDictPrivate.h>
 #include <iusHistoryNodeListPrivate.h>
 
@@ -233,6 +234,11 @@ void *iusHistoryNodeLoadInstance
         instance = iusInputFileInstanceLoad(handle);
         if (instance == NULL) return NULL;
     }
+	else if (strcmp(historyNode->pType, IUS_IQ_TYPE) == 0)
+	{
+		instance = iusIqFileInstanceLoad(handle);
+		if (instance == NULL) return NULL;
+	}
     return instance;
 }
 
@@ -301,6 +307,10 @@ iuhn_t iusHistoryNodeLoadAnyType
     {
         node = iusInputFileLoadNode(handle);
     }
+	else if (strcmp(node->pType, IUS_IQ_TYPE) == 0)
+	{
+		node = iusIqFileLoadNode(handle);
+	}
     return node;
 }
 
@@ -315,6 +325,11 @@ int iusHistoryNodeSaveInstance
         iuifi_t instance = (iuifi_t) iusHistoryNodeGetInstanceData(historyNode);
         return iusInputFileSaveInstance(handle, instance);
     }
+	if (strcmp(iusHistoryNodeGetType(historyNode), IUS_IQ_TYPE) == 0)
+	{
+		iuiqfi_t instance = (iuiqfi_t)iusHistoryNodeGetInstanceData(historyNode);
+		return iusIqFileSaveInstance(handle, instance);
+	}
     return IUS_E_OK;
 }
 

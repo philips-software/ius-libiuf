@@ -23,11 +23,15 @@ add_executable(unitTests
         src/testIus3DTransducerElementList.c
         src/testIusDataStream.c
         src/testIusDataStreamDict.c
+		src/testIusDemodulation.c
+        src/testIusDemodulationDict.c
         src/testIusAcquisition.c
         src/testIusFile.c
+        src/testIusFilter.c
         src/testIusFrame.c
         src/testIusFrameList.c
         src/testIusInputFile.c
+		src/testIusIqFile.c
         src/testIusHistoryNode.c
         src/testIusHistoryNodeList.c
         src/testIusNonParametricPulse.c
