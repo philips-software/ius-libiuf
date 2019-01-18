@@ -18,9 +18,24 @@ iut_t iusTransducerCreate
     float centerFrequency
 )
 {
-    if( name == NULL ) return IUT_INVALID;
-    if( shape == IUS_INVALID_TRANSDUCER_SHAPE ) return IUT_INVALID;
-    if( centerFrequency == NAN ) return IUT_INVALID;
+    if (name == NULL)
+    {
+        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "argument name was NULL");
+        return IUT_INVALID;
+    }
+
+    if( shape == IUS_INVALID_TRANSDUCER_SHAPE )
+    {
+        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE, "shape argument was invalid");
+        return IUT_INVALID;
+    }
+
+    if( centerFrequency == NAN )
+    {
+        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE, "centerFrequency argument was invalid");
+        return IUT_INVALID;
+    }
+
     iut_t created = calloc(1,sizeof(IusTransducer));
 
     if(shape == IUS_LINE || shape == IUS_CIRCLE)
@@ -37,17 +52,23 @@ iut_t iusTransducerCreate
 
 int iusTransducerDeepDelete
 (
-    iut_t iusTransducer
+    iut_t transducer
 )
 {
-    int status = IUS_ERR_VALUE;
-    if (iusTransducer == NULL) return status;
-    iusTransducer->deepDelete = IUS_TRUE;
-    if( iusTransducer->type == IUS_2D_SHAPE )
-        return ius2DTransducerDeepDelete((iu2dt_t) iusTransducer);
-    if( iusTransducer->type == IUS_3D_SHAPE )
-        return ius3DTransducerDeepDelete((iu3dt_t) iusTransducer);
-    return status;
+    if (transducer == NULL)
+    {
+        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "argument transducer was NULL");
+        return IUS_ERR_VALUE;
+    }
+
+    transducer->deepDelete = IUS_TRUE;
+    if( transducer->type == IUS_2D_SHAPE )
+        return ius2DTransducerDeepDelete((iu2dt_t) transducer);
+    if( transducer->type == IUS_3D_SHAPE )
+        return ius3DTransducerDeepDelete((iu3dt_t) transducer);
+
+    IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE, "invalid transducer transducer shape: '%d'", transducer->type );
+    return IUS_ERR_VALUE;
 }
 
 
@@ -66,6 +87,8 @@ int iusTransducerDelete
         return ius2DTransducerDelete((iu2dt_t) transducer);
     if( transducer->type == IUS_3D_SHAPE )
         return ius3DTransducerDelete((iu3dt_t) transducer);
+
+    IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE, "invalid transducer transducer shape: '%d'", transducer->type );
     return IUS_ERR_VALUE;
 }
 
@@ -125,7 +148,8 @@ int iusTransducerCompare
 
     if( reference->type == IUS_3D_SHAPE )
         return ius3DTransducerCompare((iu3dt_t) reference,(iu3dt_t) actual);
-    return IUS_FALSE;
+
+    return iusBaseTransducerCompare(reference,actual);
 }
 
 // Getters
@@ -281,7 +305,7 @@ herr_t iusBaseTransducerSave
 
 	if (status != IUS_E_OK)
     {
-        IUS_ERROR_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "during write of shape, name or centerfrequency of transducer");
+        IUS_ERROR_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "during write of shape, name or center frequency of transducer");
     }
 	return status;
 }
@@ -294,23 +318,26 @@ herr_t iusTransducerSave
 )
 {
 	/* write the /Transducer data in "Transducer" */
-	herr_t  status=0;
 	hid_t transducer_id;
-
-	status = H5Gget_objinfo(handle, IUS_INPUTFILE_PATH_TRANSDUCER, 0, NULL);
+    herr_t status = H5Gget_objinfo(handle, IUS_INPUTFILE_PATH_TRANSDUCER, 0, NULL);
 	if (status != 0) // the group does not exist yet
 		transducer_id = H5Gcreate(handle, IUS_INPUTFILE_PATH_TRANSDUCER, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 	else
 		transducer_id = H5Gopen(handle, IUS_INPUTFILE_PATH_TRANSDUCER, H5P_DEFAULT);
-    if (transducer_id == H5I_INVALID_HID) return -1;
+    if (transducer_id == H5I_INVALID_HID)
+    {
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "Error getting handle for path: %s", IUS_INPUTFILE_PATH_TRANSDUCER);
+        return IUS_ERR_VALUE;
+    }
 
-	status = 0;
     if (transducer->type == IUS_3D_SHAPE)
-		status |= ius3DTransducerSave((Ius3DTransducer *) transducer, transducer_id);
+		return ius3DTransducerSave((Ius3DTransducer *) transducer, transducer_id);
 
 	if (transducer->type == IUS_2D_SHAPE)
-		status |= ius2DTransducerSave((Ius2DTransducer *) transducer, transducer_id);
-	return status;
+		return ius2DTransducerSave((Ius2DTransducer *) transducer, transducer_id);
+
+    IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE, "invalid transducer transducer shape: '%d'", transducer->type );
+	return IUS_ERR_VALUE;
 }
 
 static int iusTransducerLoadShape
@@ -339,17 +366,27 @@ iut_t iusBaseTransducerLoad
     hid_t handle
 )
 {
-    int status = 0;
-
+    int status = IUS_E_OK;
     char name[IUS_MAX_HDF5_PATH];
     IusTransducerShape shape;
     float centerFrequency;
 
+    if (handle == H5I_INVALID_HID)
+    {
+        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE, "argument handle was invalid");
+        return IUT_INVALID;
+    }
+
     status |= iusHdf5ReadString(handle, IUS_INPUTFILE_PATH_TRANSDUCER_NAME, name);
     status |= iusHdf5ReadFloat(handle, IUS_INPUTFILE_PATH_TRANSDUCER_CENTERFREQUENCY, &(centerFrequency));
     status |= iusTransducerLoadShape( handle, IUS_INPUTFILE_PATH_TRANSDUCER_SHAPE, &(shape));
-    if( status < 0 )
+
+    if (status != IUS_E_OK)
+    {
+        IUS_ERROR_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "during load of shape, name or center frequency of transducer");
         return IUT_INVALID;
+    }
+
     return iusTransducerCreate(name,shape,centerFrequency);
 }
 

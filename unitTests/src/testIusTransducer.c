@@ -92,10 +92,6 @@ TEST(IusTransducer, testIusTransducerCompare)
     isEqual = iusTransducerCompare(_3dTransducer, _2dTransducer);
     TEST_ASSERT(isEqual == IUS_FALSE);
 
-    // invalid params
-    int status = iusTransducerDelete(NULL);
-    TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
-
     ius2DTransducerDelete((iu2dt_t)_2dTransducer);
     ius3DTransducerDelete((iu3dt_t)_3dTransducer);
     ius3DTransducerDelete((iu3dt_t)_3dTransducerDuplicate);

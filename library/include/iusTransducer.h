@@ -24,7 +24,7 @@ int iusTransducerDelete
 
 int iusTransducerDeepDelete
 (
-    iut_t iusTransducer
+    iut_t transducer
 );
 
 
