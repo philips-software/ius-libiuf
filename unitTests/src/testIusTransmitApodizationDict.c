@@ -9,7 +9,7 @@
 #include <iusTransmitApodizationDictPrivate.h>
 
 static char *pErrorFilename = "IusTransmitApodizationDict.errlog";
-FILE *fpErrorLogging = NULL;
+static FILE *fpErrorLogging = NULL;
 
 TEST_GROUP(IusTransmitApodizationDict);
 
@@ -68,7 +68,12 @@ TEST(IusTransmitApodizationDict, testIusTransmitApodizationDictSetGet)
 	TEST_ASSERT_EQUAL(IUTA_INVALID, iusTransmitApodizationDictGet(dict,NULL));
 	TEST_ASSERT_EQUAL(IUTA_INVALID, iusTransmitApodizationDictGet(NULL,pObjLabel));
 	TEST_ASSERT_EQUAL(IUTA_INVALID, iusTransmitApodizationDictGet(dict,"unknownLabel"));
-	TEST_ASSERT_EQUAL(3,iusErrorGetCount());
+
+	TEST_ASSERT_EQUAL(IUS_ERR_VALUE, iusTransmitApodizationDictSet(dict, pObjLabel, obj));
+	TEST_ASSERT_EQUAL(IUS_ERR_VALUE, iusTransmitApodizationDictSet(NULL, pObjLabel, obj));
+	TEST_ASSERT_EQUAL(IUS_ERR_VALUE, iusTransmitApodizationDictSet(dict, pObjLabel, NULL));
+
+	TEST_ASSERT_EQUAL(6,iusErrorGetCount());
     TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
 	iusTransmitApodizationDelete(obj);
 	iusTransmitApodizationDictDelete(dict);
