@@ -8,14 +8,29 @@
 #include <ius.h>
 #include <iusPulseDictPrivate.h>
 
+static char *pErrorFilename = "IusPulseDict.errlog";
+static FILE *fpErrorLogging = NULL;
+
 TEST_GROUP(IusPulseDict);
 
 TEST_SETUP(IusPulseDict)
 {
+    iusErrorLogClear();
+    iusErrorLog(IUS_TRUE);
+    iusErrorAutoReport(IUS_TRUE);
+    fpErrorLogging = fopen(pErrorFilename, "w+");
+    iusErrorSetStream(fpErrorLogging);
 }
 
 TEST_TEAR_DOWN(IusPulseDict)
 {
+    iusErrorLogClear();
+    iusErrorLog(IUS_FALSE);
+    if (fpErrorLogging != NULL)
+        fclose(fpErrorLogging);
+    fpErrorLogging=stderr;
+    iusErrorSetStream(fpErrorLogging);
+    remove(pErrorFilename);
 }
 
 
@@ -48,9 +63,19 @@ TEST(IusPulseDict, testIusPulseDictSetGet)
     TEST_ASSERT_EQUAL(IUS_TRUE, iusPulseCompare((iup_t)obj, retrievedObj));
 
     // Invalid params
-    TEST_ASSERT_EQUAL(IUP_INVALID, iusPulseDictGet(dict,NULL));
-    TEST_ASSERT_EQUAL(IUP_INVALID, iusPulseDictGet(NULL,pObjLabel));
-    TEST_ASSERT_EQUAL(IUP_INVALID, iusPulseDictGet(dict,"unknownLabel"));
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+    TEST_ASSERT_EQUAL(IUTA_INVALID, iusPulseDictGet(dict,NULL));
+    TEST_ASSERT_EQUAL(IUTA_INVALID, iusPulseDictGet(NULL,pObjLabel));
+    TEST_ASSERT_EQUAL(IUTA_INVALID, iusPulseDictGet(dict,"unknownLabel"));
+
+    TEST_ASSERT_EQUAL(IUS_ERR_VALUE, iusPulseDictSet(dict, pObjLabel, (iup_t) obj));
+    TEST_ASSERT_EQUAL(IUS_ERR_VALUE, iusPulseDictSet(NULL, pObjLabel, (iup_t) obj));
+    TEST_ASSERT_EQUAL(IUS_ERR_VALUE, iusPulseDictSet(dict, pObjLabel, NULL));
+
+    TEST_ASSERT_EQUAL(6,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
+
     iusParametricPulseDelete(obj);
     iusPulseDictDelete(dict);
 }

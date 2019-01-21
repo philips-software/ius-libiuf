@@ -35,7 +35,7 @@ static void RunAllTests(void)
 //    RUN_TEST_GROUP(IusPatternList);
 //    RUN_TEST_GROUP(IusPatternListDict);
 //    RUN_TEST_GROUP(IusPulse);
-//    RUN_TEST_GROUP(IusPulseDict);
+    RUN_TEST_GROUP(IusPulseDict);
     RUN_TEST_GROUP(IusReceiveChannelMap);
     RUN_TEST_GROUP(IusReceiveChannelMapDict);
     RUN_TEST_GROUP(IusReceiveSettings);
