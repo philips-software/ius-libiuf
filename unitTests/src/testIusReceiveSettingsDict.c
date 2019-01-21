@@ -9,15 +9,31 @@
 #include <iusReceiveSettingsDictPrivate.h>
 #include <testDataGenerators.h>
 
+static char *pErrorFilename = "IusReceiveSettingsDict.errlog";
+static FILE *fpErrorLogging = NULL;
+
 TEST_GROUP(IusReceiveSettingsDict);
 
 TEST_SETUP(IusReceiveSettingsDict)
 {
+    iusErrorLogClear();
+    iusErrorLog(IUS_TRUE);
+    iusErrorAutoReport(IUS_TRUE);
+    fpErrorLogging = fopen(pErrorFilename, "w+");
+    iusErrorSetStream(fpErrorLogging);
 }
 
 TEST_TEAR_DOWN(IusReceiveSettingsDict)
 {
+    iusErrorLogClear();
+    iusErrorLog(IUS_FALSE);
+    if (fpErrorLogging != NULL)
+        fclose(fpErrorLogging);
+    fpErrorLogging=stderr;
+    iusErrorSetStream(fpErrorLogging);
+    remove(pErrorFilename);
 }
+
 
 
 TEST(IusReceiveSettingsDict, testIusCreateDict)
@@ -53,9 +69,19 @@ TEST(IusReceiveSettingsDict, testIusSetGetDict)
     TEST_ASSERT_EQUAL(IUS_TRUE, iusReceiveSettingsCompare(obj,retrievedObj));
 
     // Invalid params
-    TEST_ASSERT_EQUAL(IURS_INVALID, iusReceiveSettingsDictGet(dict,NULL));
-    TEST_ASSERT_EQUAL(IURS_INVALID, iusReceiveSettingsDictGet(NULL,pObjLabel));
-    TEST_ASSERT_EQUAL(IURS_INVALID, iusReceiveSettingsDictGet(dict,"unknownLabel"));
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+    TEST_ASSERT_EQUAL(IUTA_INVALID, iusReceiveSettingsDictGet(dict,NULL));
+    TEST_ASSERT_EQUAL(IUTA_INVALID, iusReceiveSettingsDictGet(NULL,pObjLabel));
+    TEST_ASSERT_EQUAL(IUTA_INVALID, iusReceiveSettingsDictGet(dict,"unknownLabel"));
+
+    TEST_ASSERT_EQUAL(IUS_ERR_VALUE, iusReceiveSettingsDictSet(dict, pObjLabel, obj));
+    TEST_ASSERT_EQUAL(IUS_ERR_VALUE, iusReceiveSettingsDictSet(NULL, pObjLabel, obj));
+    TEST_ASSERT_EQUAL(IUS_ERR_VALUE, iusReceiveSettingsDictSet(dict, pObjLabel, NULL));
+
+    TEST_ASSERT_EQUAL(6,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
+
     iusReceiveSettingsDelete(obj);
     iusReceiveSettingsDictDelete(dict);
 }
