@@ -14,10 +14,21 @@ iurcm_t iusReceiveChannelMapCreate
 {
 	int idx;
 	iurcm_t receiveChannelMap = IURCM_INVALID;
-	
-	if (numChannels <= 0) return IURCM_INVALID;
+
+	if (numChannels <= 0)
+	{
+		IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE,
+						   "numChannels argument should be > 0, but was: '%d'", numChannels);
+		return IURCM_INVALID;
+	}
 
 	receiveChannelMap = calloc(1, sizeof(struct IusReceiveChannelMap));
+	if (receiveChannelMap == NULL)
+	{
+		IUS_ERROR_PUSH(IUS_ERR_MAJ_MEMORY, IUS_ERR_MIN_ALLOC, "calloc failed for IusReceiveChannelMap");
+		return IURCM_INVALID;
+	}
+
 	receiveChannelMap->startDelay = (float *) calloc(numChannels, sizeof(float));
 	receiveChannelMap->numChannels = numChannels;
 	receiveChannelMap->map = calloc(numChannels, sizeof(int));
@@ -30,21 +41,26 @@ iurcm_t iusReceiveChannelMapCreate
 
 int iusReceiveChannelMapDelete
 (
-	iurcm_t receiveChannelMap
+	iurcm_t channelMap
 )
 {
-	if (receiveChannelMap == NULL) return IUS_ERR_VALUE;
-	if (receiveChannelMap->map != NULL)
+	if (channelMap == NULL)
 	{
-		free(receiveChannelMap->map);
+		IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "argument channelMap was NULL");
+		return IUS_ERR_VALUE;
 	}
 
-	if (receiveChannelMap->startDelay != NULL)
+	if (channelMap->map != NULL)
 	{
-		free(receiveChannelMap->startDelay);
+		free(channelMap->map);
 	}
 
-	free(receiveChannelMap);
+	if (channelMap->startDelay != NULL)
+	{
+		free(channelMap->startDelay);
+	}
+
+	free(channelMap);
 	return IUS_E_OK;
 }
 
@@ -76,104 +92,198 @@ IUS_BOOL iusReceiveChannelMapCompare
 
 int iusReceiveChannelMapGetNumChannels
 (
-	iurcm_t receiveChannelMap
+	iurcm_t channelMap
 )
 {
-	if (receiveChannelMap == NULL) return  -1;
-	return receiveChannelMap->numChannels;
+	if (channelMap == NULL)
+	{
+		IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "argument channelMap was NULL");
+		return -1;
+	}
+	return channelMap->numChannels;
 }
 
 int iusReceiveChannelMapGetChannel
 (
-	iurcm_t receiveChannelMap,
-	int mapIdx
+	iurcm_t channelMap,
+	int index
 )
 {
-	if (receiveChannelMap == NULL) return  -1;
-	if (mapIdx >= receiveChannelMap->numChannels || mapIdx < 0) return -1;
-	return receiveChannelMap->map[mapIdx];
+	if (channelMap == NULL)
+	{
+		IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "argument channelMap was NULL");
+		return -1;
+	}
+
+	if (index >= channelMap->numChannels || index < 0)
+	{
+		IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE,
+						   "index >= 0 && index < %d (numChannels) but was '%d'", channelMap->numChannels, index);
+		return -1;
+	}
+
+	return channelMap->map[index];
 }
 
 int iusReceiveChannelMapGetNumDelays
 (
-    iurcm_t receiveChannelMap
+    iurcm_t channelMap
 )
 {
-    if(receiveChannelMap == NULL) return -1;
-    return receiveChannelMap->numChannels;
+    if (channelMap == NULL)
+    {
+        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "argument channelMap was NULL");
+        return -1;
+    }
+    return channelMap->numChannels;
 }
 
 float iusReceiveChannelMapGetStartDelay
 (
-    iurcm_t receiveChannelMap,
+    iurcm_t channelMap,
     int index
 )
 {
-    if(receiveChannelMap == NULL) return -1;
-    if(index > receiveChannelMap->numChannels) return NAN;
-    return receiveChannelMap->startDelay[index];
+    if (channelMap == NULL)
+    {
+        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "argument channelMap was NULL");
+        return NAN;
+    }
+
+	if (index >= channelMap->numChannels || index < 0)
+	{
+		IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE,
+						   "index >= 0 && index < %d (numChannels) but was '%d'", channelMap->numChannels, index);
+		return NAN;
+	}
+    return channelMap->startDelay[index];
 }
 
 
 // Setters
 int iusReceiveChannelMapSetStartDelay
 (
-    iurcm_t receiveChannelMap,
+    iurcm_t channelMap,
     int index,
     float delay
 )
 {
-    if(receiveChannelMap == NULL) return IUS_ERR_VALUE;
-    if(index > receiveChannelMap->numChannels) return IUS_ERR_VALUE;
-    receiveChannelMap->startDelay[index] = delay;
+	if (channelMap == NULL)
+	{
+		IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "argument channelMap was NULL");
+		return NAN;
+	}
+
+	if (index >= channelMap->numChannels || index < 0)
+	{
+		IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE,
+						   "index >= 0 && index < %d (numChannels) but was '%d'", channelMap->numChannels, index);
+		return NAN;
+	}
+	channelMap->startDelay[index] = delay;
     return IUS_E_OK;
 }
 
 
 int iusReceiveChannelMapSetChannel
 (
-	iurcm_t receiveChannelMap,
-	int mapIdx,
+	iurcm_t channelMap,
+	int index,
 	int transducerIdx
 )
 {
-	int status = 0;
-	if (receiveChannelMap == NULL) return  -1;
-	if (mapIdx >= receiveChannelMap->numChannels || mapIdx < 0) return -1;
-	if (transducerIdx < 0) return -1;
+	if (channelMap == NULL)
+	{
+		IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "argument channelMap was NULL");
+		return IUS_ERR_VALUE;
+	}
 
-	receiveChannelMap->map[mapIdx] = transducerIdx;
+	if (index >= channelMap->numChannels || index < 0)
+	{
+		IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE,
+						   "index >= 0 && index < %d (numChannels) but was '%d'", channelMap->numChannels, index);
+		return IUS_ERR_VALUE;
+	}
 
-	return status;
+	if (transducerIdx < 0)
+	{
+		IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE,
+						   "transducerIdx should be >= 0,  but was '%d'", transducerIdx);
+		return IUS_ERR_VALUE;
+	}
+
+	channelMap->map[index] = transducerIdx;
+	return IUS_E_OK;
 }
 
 int iusReceiveChannelMapSetMap
 (
-	iurcm_t receiveChannelMap,
+	iurcm_t channelMap,
 	int *map
 )
 {
-	if (receiveChannelMap == NULL || map == NULL) return  -1;
-	if (receiveChannelMap->numChannels <= 0) return -1;
+	if (channelMap == NULL)
+	{
+		IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "argument channelMap was NULL");
+		return IUS_ERR_VALUE;
+	}
 
-	memcpy(receiveChannelMap->map, map, receiveChannelMap->numChannels * sizeof(int));
+	if (map == NULL)
+	{
+		IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "argument map was NULL");
+		return IUS_ERR_VALUE;
+	}
 
-	return (receiveChannelMap->map == NULL);
+    if (channelMap->numChannels <= 0)
+    {
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE,
+                           "numChannels should me  > 0 but was '%d'", channelMap->numChannels);
+        return IUS_ERR_VALUE;
+    }
+
+	memcpy(channelMap->map, map, channelMap->numChannels * sizeof(int));
+    if (channelMap->map == NULL)
+    {
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_MEMORY, IUS_ERR_MIN_MEMCOPY,
+                           "numChannels should me  > 0 but was '%d'", channelMap->numChannels);
+        return IUS_ERR_VALUE;
+    }
+
+	return IUS_E_OK;
 }
 
 int iusReceiveChannelMapSave
 (
-	iurcm_t receiveChannelMap,
+	iurcm_t channelMap,
 	hid_t   group_id
 )
 {
 	/* write the /Receivechannelmap data */
 	herr_t  status;
+	if (channelMap == NULL)
+	{
+		IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "argument channelMap was NULL");
+		return IUS_ERR_VALUE;
+	}
 
-	status = iusHdf5WriteInt(group_id, IUS_INPUTFILE_PATH_RECEIVECHANNELMAP_NUMCHANNELS, &(receiveChannelMap->numChannels), 1);
-	status |= iusHdf5WriteInt(group_id, IUS_INPUTFILE_PATH_RECEIVECHANNELMAP_MAP, receiveChannelMap->map, receiveChannelMap->numChannels);
-    status |= iusHdf5WriteFloat(group_id, IUS_INPUTFILE_PATH_RECEIVESETTINGS_STATRDELAY, receiveChannelMap->startDelay, receiveChannelMap->numChannels);
+	if (group_id == H5I_INVALID_HID)
+	{
+		IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE, "argument group_id was invalid");
+		return IUS_ERR_VALUE;
+	}
 
+	status = iusHdf5WriteInt(group_id, IUS_INPUTFILE_PATH_RECEIVECHANNELMAP_NUMCHANNELS, &(channelMap->numChannels), 1);
+	status |= iusHdf5WriteInt(group_id, IUS_INPUTFILE_PATH_RECEIVECHANNELMAP_MAP, channelMap->map, channelMap->numChannels);
+    status |= iusHdf5WriteFloat(group_id, IUS_INPUTFILE_PATH_RECEIVESETTINGS_STATRDELAY, channelMap->startDelay, channelMap->numChannels);
+
+	if (status != 0)
+	{
+		IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "write failed for %s, %s and/or %s",
+						   IUS_INPUTFILE_PATH_RECEIVECHANNELMAP_NUMCHANNELS,
+						   IUS_INPUTFILE_PATH_RECEIVECHANNELMAP_MAP,
+						   IUS_INPUTFILE_PATH_RECEIVESETTINGS_STATRDELAY);
+		return IUS_ERR_VALUE;
+	}
 	return status;
 }
 
@@ -188,31 +298,56 @@ iurcm_t iusReceiveChannelMapLoad
 	int numChannels=0;
 	int *channelMap;
 
+	if (group_id == H5I_INVALID_HID)
+	{
+		IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE, "argument group_id was invalid");
+		return IURCM_INVALID;
+	}
+
 	status = iusHdf5ReadInt(group_id, IUS_INPUTFILE_PATH_RECEIVECHANNELMAP_NUMCHANNELS, &numChannels);
-	if (status != 0 || numChannels <= 0) return NULL;
+	if (numChannels <= 0)
+	{
+		IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_ARG_VALUE,
+						   "numChannels should me > 0 but was '%d'", numChannels);
+		return IURCM_INVALID;
+	}
 
 	channelMap = (int *)calloc(numChannels, sizeof(int));
+	if (channelMap == NULL)
+	{
+		IUS_ERROR_PUSH(IUS_ERR_MAJ_MEMORY, IUS_ERR_MIN_ALLOC, "calloc failed for numchannels");
+		return IURCM_INVALID;
+	}
+
 	status |= iusHdf5ReadInt(group_id, IUS_INPUTFILE_PATH_RECEIVECHANNELMAP_MAP, channelMap);
-	if (status != 0) return NULL;
-	
+	if (status != 0 )
+	{
+		IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "read failed for %s and/or %s",
+						   IUS_INPUTFILE_PATH_RECEIVECHANNELMAP_NUMCHANNELS,
+						   IUS_INPUTFILE_PATH_RECEIVECHANNELMAP_MAP);
+		free(channelMap);
+		return IURCM_INVALID;
+	}
+
+
 	receiveChannelMap = iusReceiveChannelMapCreate(numChannels);
 	for (idx = 0; idx < numChannels; idx++)
 	{
-		status |= iusReceiveChannelMapSetChannel(receiveChannelMap, idx, channelMap[idx]);
-	}
-	if (status != 0) return NULL;
-
-	if (channelMap != NULL)
-	{
-		free(channelMap);
+		status = iusReceiveChannelMapSetChannel(receiveChannelMap, idx, channelMap[idx]);
+		if (status != 0)
+			break;
 	}
 
-    // Memory allocation for startDelays has been done in iusReceiveSettingsCreate
-    // now, the delays can be read into iusReceiveSettings->startDelay.
+	free(channelMap);
+
+    // Memory allocation for startDelays has been done in iusReceiveChannelMapCreate
+    // now, the delays can be read into iusReceiveChannelMapCreate->startDelay.
     status |= iusHdf5ReadFloat(group_id, IUS_INPUTFILE_PATH_RECEIVESETTINGS_STATRDELAY, receiveChannelMap->startDelay);
-    if ( status != 0 )
+    if (status != 0)
     {
-        iusReceiveChannelMapDelete(receiveChannelMap);
+		IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "read failed for %s",
+						   IUS_INPUTFILE_PATH_RECEIVESETTINGS_STATRDELAY);
+		iusReceiveChannelMapDelete(receiveChannelMap);
         receiveChannelMap = IURCM_INVALID;
     }
 

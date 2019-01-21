@@ -143,6 +143,7 @@ extern hid_t  IUS_ERR_MAJ_HDF5;
 extern hid_t  IUS_ERR_MIN_ARG_VALUE;
 extern hid_t  IUS_ERR_MIN_ARG_FILENAME;  //     (100001)   /**< general error */
 extern hid_t  IUS_ERR_MIN_ALLOC;
+extern hid_t  IUS_ERR_MIN_MEMCOPY;
 extern hid_t  IUS_ERR_MIN_FORMAT;
 extern hid_t  IUS_ERR_MIN_ARG_NULL_VALUE;
 extern hid_t  IUS_ERR_MIN_ARG_DUPLICATE_KEY;

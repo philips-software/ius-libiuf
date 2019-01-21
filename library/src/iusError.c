@@ -16,6 +16,8 @@ hid_t  IUS_ERR_MAJ_HDF5;
 
 hid_t  IUS_ERR_MIN_ARG_FILENAME;  //     (100001)   /**< general error */
 hid_t  IUS_ERR_MIN_ALLOC;
+hid_t  IUS_ERR_MIN_MEMCOPY;
+
 hid_t  IUS_ERR_MIN_FORMAT;
 hid_t  IUS_ERR_MIN_ARG_NULL_VALUE;
 hid_t  IUS_ERR_MIN_ARG_DUPLICATE_KEY;
@@ -37,6 +39,7 @@ hid_t  IUS_ERR_MIN_ARG_VALUE;
 #define IUS_ERR_MIN_ARG_NULL_VALUE_MSG      "NULL value invalid for argument"
 #define IUS_ERR_MIN_ARG_FILENAME_MSG        "Invalid filename argument"
 #define IUS_ERR_MIN_ALLOC_MSG               "Memory allocation failed"
+#define IUS_ERR_MIN_MEMCOPY_MSG             "Memory copy failed"
 #define IUS_ERR_MIN_FORMAT_MSG              "Error message formatting failed"
 #define IUS_ERR_MIN_ARG_DUPLICATE_KEY_MSG   "Duplicate key"
 #define IUS_ERR_MIN_ARG_INVALID_KEY_MSG     "Invalid key, lookup failed"
@@ -96,6 +99,8 @@ static int iusErrorInit
     if((IUS_ERR_MIN_ARG_FILENAME = H5Ecreate_msg(state->iusErrorClass, H5E_MINOR, IUS_ERR_MIN_ARG_FILENAME_MSG)) < 0)
         return IUS_ERR_VALUE;
     if((IUS_ERR_MIN_ALLOC = H5Ecreate_msg(state->iusErrorClass, H5E_MINOR, IUS_ERR_MIN_ALLOC_MSG)) < 0)
+        return IUS_ERR_VALUE;
+    if((IUS_ERR_MIN_MEMCOPY = H5Ecreate_msg(state->iusErrorClass, H5E_MINOR, IUS_ERR_MIN_MEMCOPY_MSG)) < 0)
         return IUS_ERR_VALUE;
     if((IUS_ERR_MIN_FORMAT = H5Ecreate_msg(state->iusErrorClass, H5E_MINOR, IUS_ERR_MIN_FORMAT_MSG)) < 0)
         return IUS_ERR_VALUE;
