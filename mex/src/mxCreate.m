@@ -88,10 +88,18 @@ function [] = mkInputFile( g )
     if (g == 0)
         fprintf( 'creating %s.mexw64 (RELEASE)\n', mxAlgo);
         %mex('-largeArrayDims', inclPath1, inclPath2, hdf5incl, '-output', mxAlgo, mxcAlgo, iuslib, hdf5lib, hdf5_hllib, libzlib, libszip );
-        mex('-largeArrayDims', inclPath1, inclPath2, '-output', mxAlgo, mxcAlgo, iuslib, hdf5lib, hdf5_hllib, libzlib, '-lgcov', '-luuid');
+        if ispc 
+            mex('-largeArrayDims', inclPath1, inclPath2, hdf5incl, '-output', mxAlgo, mxcAlgo, iuslib, hdf5lib, hdf5_hllib, libzlib, '-luuid');
+        else
+            mex('-largeArrayDims', inclPath1, inclPath2, hdf5incl, '-output', mxAlgo, mxcAlgo, iuslib, hdf5lib, hdf5_hllib, libzlib, '-lgcov', '-luuid');
+        end
     else
         fprintf( 'creating %s.mexw64 (DEBUG)\n', mxAlgo);
-        mex('-g', '-largeArrayDims', inclPath1, inclPath2, '-output', mxAlgo, mxcAlgo, iuslib, hdf5lib, hdf5_hllib, libzlib, '-lgcov', '-luuid');
+        if ispc
+            mex('-g', '-largeArrayDims', inclPath1, inclPath2, hdf5incl, '-output', mxAlgo, mxcAlgo, iuslib, hdf5lib, hdf5_hllib, libzlib, '-luuid');
+        else
+            mex('-g', '-largeArrayDims', inclPath1, inclPath2, hdf5incl, '-output', mxAlgo, mxcAlgo, iuslib, hdf5lib, hdf5_hllib, libzlib, '-lgcov', '-luuid');
+        end
     end
 end
 % 
