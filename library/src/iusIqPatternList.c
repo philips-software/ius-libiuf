@@ -1,39 +1,40 @@
+
 //
 // Created by nlv09165 on 18/07/2018.
 //
 #include <stdlib.h>
 
 #include <include/ius.h>
-#include <iusPatternPrivate.h>
-#include <iusPatternListPrivate.h>
+#include <iusIqPatternPrivate.h>
+#include <iusIqPatternListPrivate.h>
 
 // ADT
-struct IusPatternList
+struct IusIqPatternList
 {
 	int numPatterns;
-	iupa_t *   pPatterns;
+	iuiqpa_t *pPatterns;
 	IUS_BOOL loadedFromFile;
-	iursd_t receiveSettingsDict;
+	iudmd_t demodulationDict;
 	iurcmd_t receiveChannelMapDict;
 
 };
 
 // ADT
-iupal_t iusPatternListCreate
+iuiqpal_t iusIqPatternListCreate
 (
 	int numPatterns,
-	iursd_t receiveSettingsDict,
+	iudmd_t demodulationDict,
 	iurcmd_t receiveChannelMapDict
 )
 {
-	iupal_t list = calloc(1, sizeof(IusPatternList));
+	iuiqpal_t list = calloc(1, sizeof(IusIqPatternList));
 	if (list != NULL)
 	{
 		list->loadedFromFile = IUS_FALSE;
 		list->receiveChannelMapDict = receiveChannelMapDict;
-		list->receiveSettingsDict = receiveSettingsDict;
+		list->demodulationDict = demodulationDict;
 		list->numPatterns = numPatterns;
-		list->pPatterns = (iupa_t *)calloc((size_t)numPatterns, sizeof(iupa_t));
+		list->pPatterns = (iuiqpa_t *)calloc((size_t)numPatterns, sizeof(iuiqpa_t));
 		if (list->pPatterns == NULL)
 		{
 			free(list);
@@ -43,20 +44,20 @@ iupal_t iusPatternListCreate
 	return list;
 }
 
-int iusPatternListDeepDelete
+int iusIqPatternListDeepDelete
 (
-	iupal_t list
+	iuiqpal_t list
 )
 {
 	if (list == NULL) return IUS_ERR_VALUE;
 	list->loadedFromFile = IUS_TRUE;
-	return iusPatternListDelete(list);
+	return iusIqPatternListDelete(list);
 }
 
 
-int iusPatternListDelete
+int iusIqPatternListDelete
 (
-	iupal_t list
+	iuiqpal_t list
 )
 {
 	int index;
@@ -65,7 +66,7 @@ int iusPatternListDelete
 	{
 		for (index = 0; index < list->numPatterns; index++)
 		{
-			iusPatternDelete(list->pPatterns[index]);
+			iusIqPatternDelete(list->pPatterns[index]);
 		}
 	}
 	free(list->pPatterns);
@@ -75,10 +76,10 @@ int iusPatternListDelete
 
 
 // operations
-int iusPatternListCompare
+int iusIqPatternListCompare
 (
-	iupal_t reference,
-	iupal_t actual
+	iuiqpal_t reference,
+	iuiqpal_t actual
 )
 {
 	int index;
@@ -87,7 +88,7 @@ int iusPatternListCompare
 	if (reference->numPatterns != actual->numPatterns) return IUS_FALSE;
 	for (index = 0; index < actual->numPatterns; index++)
 	{
-		if (iusPatternCompare(reference->pPatterns[index], actual->pPatterns[index])
+		if (iusIqPatternCompare(reference->pPatterns[index], actual->pPatterns[index])
 			== IUS_FALSE)
 			return IUS_FALSE;
 	}
@@ -95,17 +96,17 @@ int iusPatternListCompare
 }
 
 
-int iusPatternListGetSize
+int iusIqPatternListGetSize
 (
-	iupal_t list
+	iuiqpal_t list
 )
 {
 	return list->numPatterns;
 }
 
-iupa_t iusPatternListGet
+iuiqpa_t iusIqPatternListGet
 (
-	iupal_t list,
+	iuiqpal_t list,
 	int index
 )
 {
@@ -114,32 +115,32 @@ iupa_t iusPatternListGet
 	return list->pPatterns[index];
 }
 
-IUS_BOOL iusPatternListValidateDimensions
+IUS_BOOL iusIqPatternListValidateDimensions
 (
-	iupal_t list,
-	iupa_t member
+	iuiqpal_t list,
+	iuiqpa_t member
 )
 {
 	IUS_UNUSED(list);
 	IUS_UNUSED(member);
 	// getSamplesPerLine of first item
 	if (list == NULL) return IUS_FALSE;
-	char *rsLabel1stItem = (char *)iusPatternGetReceivesettingsLabel(list->pPatterns[0]);
-	iurs_t receiveSettings1stItem = iusReceiveSettingsDictGet(list->receiveSettingsDict, rsLabel1stItem);
-	int numSamplesPerLine1stItem = iusReceiveSettingsGetNumSamplesPerLine(receiveSettings1stItem);
+	char *dmLabel1stItem = (char *)iusIqPatternGetDemodulationLabel(list->pPatterns[0]);
+	iudm_t demodulation1stItem = iusDemodulationDictGet(list->demodulationDict, dmLabel1stItem);
+	int numSamplesPerLine1stItem = iusDemodulationGetNumSamplesPerLine(demodulation1stItem);
 
-	char *rsLabelNewItem = (char *)iusPatternGetReceivesettingsLabel(member);
-	iurs_t receiveSettingsNewItem = iusReceiveSettingsDictGet(list->receiveSettingsDict, rsLabelNewItem);
-	int numSamplesPerLineNewItem = iusReceiveSettingsGetNumSamplesPerLine(receiveSettingsNewItem);
+	char *dmLabelNewItem = (char *)iusIqPatternGetDemodulationLabel(member);
+	iudm_t demodulationNewItem = iusDemodulationDictGet(list->demodulationDict, dmLabelNewItem);
+	int numSamplesPerLineNewItem = iusDemodulationGetNumSamplesPerLine(demodulationNewItem);
 	if (numSamplesPerLine1stItem != numSamplesPerLineNewItem)
 		return IUS_FALSE;
 
 
-	char *rcmLabel1stItem = (char *)iusPatternGetChannelMapLabel(list->pPatterns[0]);
+	char *rcmLabel1stItem = (char *)iusIqPatternGetChannelMapLabel(list->pPatterns[0]);
 	iurcm_t channelMap1stItem = iusReceiveChannelMapDictGet(list->receiveChannelMapDict, rcmLabel1stItem);
 	int numChannels1stItem = iusReceiveChannelMapGetNumChannels(channelMap1stItem);
 
-	char *rcmLabelNewItem = (char *)iusPatternGetChannelMapLabel(member);
+	char *rcmLabelNewItem = (char *)iusIqPatternGetChannelMapLabel(member);
 	iurcm_t channelMapNewItem = iusReceiveChannelMapDictGet(list->receiveChannelMapDict, rcmLabelNewItem);
 	int numChannelsNewItem = iusReceiveChannelMapGetNumChannels(channelMapNewItem);
 	if (numChannels1stItem != numChannelsNewItem)
@@ -148,10 +149,10 @@ IUS_BOOL iusPatternListValidateDimensions
 	return IUS_TRUE;
 }
 
-int iusPatternListSet
+int iusIqPatternListSet
 (
-	iupal_t list,
-	iupa_t member,
+	iuiqpal_t list,
+	iuiqpa_t member,
 	int index
 )
 {
@@ -159,7 +160,7 @@ int iusPatternListSet
 	if (list == NULL || index >= list->numPatterns) return IUS_ERR_VALUE;
 	if (index > 0)
 	{
-		IUS_BOOL validDimensions = iusPatternListValidateDimensions(list, member);
+		IUS_BOOL validDimensions = iusIqPatternListValidateDimensions(list, member);
 		if (validDimensions == IUS_FALSE)
 		{
 			return IUS_ERR_VALUE;
@@ -170,7 +171,7 @@ int iusPatternListSet
 }
 
 
-iupal_t iusPatternListLoad
+iuiqpal_t iusIqPatternListLoad
 (
 	hid_t handle
 )
@@ -178,38 +179,38 @@ iupal_t iusPatternListLoad
 	char path[IUS_MAX_HDF5_PATH];
 	int numPatterns, i;
 
-	int status = iusHdf5ReadInt(handle, IUS_INPUTFILE_PATH_PATTERNLIST_SIZE, &(numPatterns));
-	if (status != 0) return IUPAL_INVALID;
+	int status = iusHdf5ReadInt(handle, IUS_IQFILE_PATH_PATTERNLIST_SIZE, &(numPatterns));
+	if (status != 0) return IUIQPAL_INVALID;
 
-	iupal_t patternList = iusPatternListCreate(numPatterns, NULL, NULL);
-	iupa_t pattern;
+	iuiqpal_t patternList = iusIqPatternListCreate(numPatterns, NULL, NULL);
+	iuiqpa_t pattern;
 
 	// Load patterns
 	for (i = 0; i < numPatterns; i++)
 	{
-		sprintf(path, IUS_INPUTFILE_PATH_PATTERNLIST_PATTERN, i);
+		sprintf(path, IUS_IQFILE_PATH_PATTERNLIST_PATTERN, i);
 		hid_t patternId = H5Gopen(handle, path, H5P_DEFAULT);
-		pattern = iusPatternLoad(patternId);
-		if (pattern == IUPA_INVALID)
+		pattern = iusIqPatternLoad(patternId);
+		if (pattern == IUIQPA_INVALID)
 		{
 			break;
 		}
-		iusPatternListSet(patternList, pattern, i);
+		iusIqPatternListSet(patternList, pattern, i);
 	}
 	patternList->loadedFromFile = IUS_TRUE;
 	return patternList;
 }
 
-IUS_BOOL iusPatternListFull
+IUS_BOOL iusIqPatternListFull
 (
-	iupal_t list
+	iuiqpal_t list
 )
 {
 	IUS_BOOL isFull = IUS_TRUE;
 	int i;
 	for (i = 0; i < list->numPatterns; i++)
 	{
-		if (list->pPatterns[i] == IUPA_INVALID)
+		if (list->pPatterns[i] == IUIQPA_INVALID)
 		{
 			isFull = IUS_FALSE;
 			break;
@@ -218,9 +219,9 @@ IUS_BOOL iusPatternListFull
 	return isFull;
 }
 
-int iusPatternListSave
+int iusIqPatternListSave
 (
-	iupal_t list,
+	iuiqpal_t list,
 	hid_t handle
 )
 {
@@ -232,21 +233,21 @@ int iusPatternListSave
 		return IUS_ERR_VALUE;
 	if (handle == H5I_INVALID_HID)
 		return IUS_ERR_VALUE;
-	if (iusPatternListFull(list) == IUS_FALSE)
+	if (iusIqPatternListFull(list) == IUS_FALSE)
 		return IUS_ERR_VALUE;
 
-	iupa_t pattern;
-	size = iusPatternListGetSize(list);
+	iuiqpa_t pattern;
+	size = iusIqPatternListGetSize(list);
 	status |= iusHdf5WriteInt(handle, IUS_INPUTFILE_PATH_PATTERNLIST_SIZE, &(size), 1);
 
 	// iterate over source list elements and save'em
 	for (i = 0; i < size; i++)
 	{
-		pattern = iusPatternListGet(list, i);
-		if (pattern == IUPA_INVALID) continue;
-		sprintf(path, IUS_INPUTFILE_PATH_PATTERNLIST_PATTERN, i);
+		pattern = iusIqPatternListGet(list, i);
+		if (pattern == IUIQPA_INVALID) continue;
+		sprintf(path, IUS_IQFILE_PATH_PATTERNLIST_PATTERN, i);
 		hid_t pattern_id = H5Gcreate(handle, path, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-		status = iusPatternSave(pattern, pattern_id);
+		status = iusIqPatternSave(pattern, pattern_id);
 		H5Gclose(pattern_id);
 		if (status != IUS_E_OK) break;
 	}
@@ -254,4 +255,5 @@ int iusPatternListSave
 	//status |= H5Gclose(patternList_id);
 	return status;
 }
+
 

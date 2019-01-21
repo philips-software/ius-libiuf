@@ -14,6 +14,7 @@
 #include <include/iusSourceDict.h>
 #include <include/iusTransducer.h>
 #include <include/iusInputFile.h>
+#include <include/iusIqFile.h>
 #include <include/iusParameterDict.h>
 #include <include/iusHistoryNode.h>
 
@@ -43,7 +44,25 @@ int dgInputFileAddGeneratedData
 	int numChannels
 );
 
+int dgIqFileAddGeneratedData
+(
+	iuiqf_t iqFile,
+	char *label,
+	int numSamplesPerLine,
+	int numChannels
+);
+
 iuif_t dgGenerateInputFile
+(
+	char *ptestFileName,
+	char *transducerName,
+	char *label,
+	int numFrames,
+	int numSamplesPerLine,
+	int numChannels
+);
+
+iuiqf_t dgGenerateIqFile
 (
     char *ptestFileName,
     char *transducerName,
@@ -56,6 +75,11 @@ iuif_t dgGenerateInputFile
 int dgDeleteInputFile
 (
 	iuif_t iusInputFile
+);
+
+int dgDeleteIqFile
+(
+	iuiqf_t iusIqFile
 );
 
 iufl_t dgGenerateFrameList
@@ -75,6 +99,21 @@ iupald_t dgGeneratePatternListDict
 (
 	char *label,
 	iursd_t receiveSettingsDict,
+	iurcmd_t receiveChannelMapDict
+);
+
+iuiqpal_t dgGenerateIqPatternList
+(
+	int numPatterns,
+	float timeInterval,
+	iudmd_t demodulationDict,
+	iurcmd_t receiveChannelMapDict
+);
+
+iuiqpald_t dgGenerateIqPatternListDict
+(
+	char *label,
+	iudmd_t demodulationDict,
 	iurcmd_t receiveChannelMapDict
 );
 
@@ -110,6 +149,17 @@ iurs_t dgGenerateReceiveSettings
 );
 
 iursd_t dgGenerateReceiveSettingsDict
+(
+	char *label,
+	int numSamplesPerLine
+);
+
+iudm_t dgGenerateDemodulation
+(
+	int numSamplesPerLine
+);
+
+iudmd_t dgGenerateDemodulationDict
 (
 	char *label,
 	int numSamplesPerLine

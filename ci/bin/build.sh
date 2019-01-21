@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 ScriptPath=$(dirname $(realpath $0))
-BuildFolder=$(realpath ${ScriptPath}/..)/build/$(uname)
-
+BuildFolder=$(realpath ${ScriptPath}/../..)/build/$(uname)
 which cmake3 >/dev/null 2>&1
 if (( $? == 0 ))
 then
@@ -14,6 +13,8 @@ else
     CTEST=ctest
 fi
 
-echo === UnitTests
+echo === Building ius in $BuildFolder
+mkdir -p $BuildFolder
 cd $BuildFolder
-$CTEST -T memcheck --verbose
+$CMAKE -DCMAKE_BUILD_TYPE=Debug ../..
+exec $CMAKE --build .
