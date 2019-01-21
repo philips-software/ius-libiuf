@@ -251,6 +251,11 @@ int iusReceiveSettingsDictSave
 		receiveSettingsDictItem = HashableReceiveSettings_hashmap_iter_get_data(iter);
 		hid_t subgroup_id = H5Gcreate(group_id, receiveSettingsDictItem->key, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
         status = iusReceiveSettingsSave(receiveSettingsDictItem->receiveSettings, subgroup_id);
+        if (subgroup_id <= 0)
+        {
+            H5Gclose(group_id);
+            return IUS_ERR_VALUE;
+        }
 		status |= H5Gclose(subgroup_id);
     }
 
@@ -277,7 +282,7 @@ iursd_t iusReceiveSettingsDictLoad
     hid_t grpid = H5Gopen(handle, IUS_INPUTFILE_PATH_RECEIVESETTINGSDICT, H5P_DEFAULT);
     if (grpid == H5I_INVALID_HID)
     {
-        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "Error getting handle for path: %s", IUS_INPUTFILE_PATH_TRANSMITAPODIZATIONDICT);
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "Error getting handle for path: %s", IUS_INPUTFILE_PATH_RECEIVESETTINGSDICT);
         return NULL;
     }
 

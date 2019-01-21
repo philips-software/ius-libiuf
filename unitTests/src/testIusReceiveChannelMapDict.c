@@ -8,14 +8,29 @@
 #include <ius.h>
 #include <iusReceiveChannelMapDictPrivate.h>
 
+static char *pErrorFilename = "IusReceiveChannelMapDict.errlog";
+static FILE *fpErrorLogging = NULL;
+
 TEST_GROUP(IusReceiveChannelMapDict);
 
 TEST_SETUP(IusReceiveChannelMapDict)
 {
+	iusErrorLogClear();
+	iusErrorLog(IUS_TRUE);
+	iusErrorAutoReport(IUS_TRUE);
+	fpErrorLogging = fopen(pErrorFilename, "w+");
+	iusErrorSetStream(fpErrorLogging);
 }
 
 TEST_TEAR_DOWN(IusReceiveChannelMapDict)
 {
+	iusErrorLogClear();
+	iusErrorLog(IUS_FALSE);
+	if (fpErrorLogging != NULL)
+		fclose(fpErrorLogging);
+	fpErrorLogging=stderr;
+	iusErrorSetStream(fpErrorLogging);
+	remove(pErrorFilename);
 }
 
 
@@ -47,9 +62,19 @@ TEST(IusReceiveChannelMapDict, testIusReceiveChannelMapDictSetGet)
 	TEST_ASSERT_EQUAL(IUS_TRUE, iusReceiveChannelMapCompare(obj,retrievedObj));
 
 	// Invalid params
-	TEST_ASSERT_EQUAL(IURCM_INVALID, iusReceiveChannelMapDictGet(dict,NULL));
-	TEST_ASSERT_EQUAL(IURCM_INVALID, iusReceiveChannelMapDictGet(NULL,pObjLabel));
-	TEST_ASSERT_EQUAL(IURCM_INVALID, iusReceiveChannelMapDictGet(dict,"unknownLabel"));
+	long filePos = ftell(fpErrorLogging);
+	TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+	TEST_ASSERT_EQUAL(IUTA_INVALID, iusReceiveChannelMapDictGet(dict,NULL));
+	TEST_ASSERT_EQUAL(IUTA_INVALID, iusReceiveChannelMapDictGet(NULL,pObjLabel));
+	TEST_ASSERT_EQUAL(IUTA_INVALID, iusReceiveChannelMapDictGet(dict,"unknownLabel"));
+
+	TEST_ASSERT_EQUAL(IUS_ERR_VALUE, iusReceiveChannelMapDictSet(dict, pObjLabel, obj));
+	TEST_ASSERT_EQUAL(IUS_ERR_VALUE, iusReceiveChannelMapDictSet(NULL, pObjLabel, obj));
+	TEST_ASSERT_EQUAL(IUS_ERR_VALUE, iusReceiveChannelMapDictSet(dict, pObjLabel, NULL));
+
+	TEST_ASSERT_EQUAL(6,iusErrorGetCount());
+	TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
+
 	iusReceiveChannelMapDelete(obj);
 	iusReceiveChannelMapDictDelete(dict);
 
