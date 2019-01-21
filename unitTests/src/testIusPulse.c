@@ -10,14 +10,29 @@
 #include <ius.h>
 #include <iusPulsePrivate.h>
 
+static char *pErrorFilename = "IusPulse.errlog";
+static FILE *fpErrorLogging = NULL;
+
 TEST_GROUP(IusPulse);
 
 TEST_SETUP(IusPulse)
 {
+    iusErrorLogClear();
+    iusErrorLog(IUS_TRUE);
+    iusErrorAutoReport(IUS_TRUE);
+    fpErrorLogging = fopen(pErrorFilename, "w+");
+    iusErrorSetStream(fpErrorLogging);
 }
 
 TEST_TEAR_DOWN(IusPulse)
 {
+    iusErrorLogClear();
+    iusErrorLog(IUS_FALSE);
+    if (fpErrorLogging != NULL)
+        fclose(fpErrorLogging);
+    fpErrorLogging=stderr;
+    iusErrorSetStream(fpErrorLogging);
+    remove(pErrorFilename);
 }
 
 
@@ -41,8 +56,14 @@ TEST(IusPulse, testIusPulseDelete)
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
     // invalid params
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
     status = iusPulseDelete(NULL);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
+
+    TEST_ASSERT_EQUAL(1,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
 }
 
 
