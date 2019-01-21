@@ -188,7 +188,7 @@ if(MSVC)
 else()
 	target_compile_options(ius PRIVATE -Wall -Wextra -pedantic -Werror)
 	if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
-		target_compile_options(ius PRIVATE -Wall -Wextra -pedantic -Werror)
+		target_compile_options(ius PRIVATE -Wall -Wextra -pedantic -Werror -fPIC)
 	endif()
 endif()
 
