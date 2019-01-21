@@ -17,7 +17,7 @@ function releaseNumber
 }
 
 ScriptPath=$(dirname $(realpath $0))
-BuildFolder=$(realpath ${ScriptPath}/..)/build
+BuildFolder=$(realpath ${ScriptPath}/../..)/build
 StartFolder=$(pwd)
 DistFolder=${StartFolder}/dist
 IUSRelease="IUS-SDK-$(releaseNumber)"
@@ -54,6 +54,7 @@ mkdir -p ${ReleaseFolder}
 mv ${DistFolder}/* ${ReleaseFolder} 2>/dev/null
 
 echo === Generating documentation
+export PROJECT_NUMBER=$(releaseNumber)
 mkdir -p ${DocFolder}
 cd ${DocSource}
 doxygen 2>&1 | grep -iv Warning
