@@ -39,5 +39,5 @@ This document contains instructions on
 - Windows:
 - Open the 'x64 Native Tools Command Prompt for VS 2017' and run build.bat in the directory ./src/
 
-- Linux (not working yet)
+- Linux
 - Run the command build.sh in the directory ./src/
