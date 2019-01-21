@@ -69,6 +69,7 @@ build, test and gnerate a distribution.
 * build.bat - Windows build script
 * build.sh - Linux/MacOs build script
 * code_coverage.sh - Linux/MacOs script, generating code coverage info base on unit tests
+* is_hdf5_x64 - Windows script to verify whether the correct hdf5 is installed
 * make_pages.sh - Generates GitLab pages documentation 
 * mk_os_distribution.bat - Windows script generating build distribution 
 * mk_os_distribution.sh - Linux/MacOs script, generating build distribution
