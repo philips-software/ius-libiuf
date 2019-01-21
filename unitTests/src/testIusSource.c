@@ -129,10 +129,15 @@ TEST(IusSource, testIusSourceGetSet)
     ius_t obj = (ius_t) ius3DNonParametricSourceCreate(numLocations);
     TEST_ASSERT(obj != IUS_INVALID);
     TEST_ASSERT_EQUAL(IUS_3D_NON_PARAMETRIC_SOURCE,iusSourceGetType(obj));
+    iusSourceDelete(obj);
 
     // invalid param
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
     TEST_ASSERT_EQUAL(IUS_INVALID_SOURCE_TYPE,iusSourceGetType(NULL));
-    iusSourceDelete(obj);
+
+    TEST_ASSERT_EQUAL(1,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
 }
 
 TEST(IusSource, testIusSerialization)
