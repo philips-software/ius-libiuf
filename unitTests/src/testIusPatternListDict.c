@@ -8,14 +8,29 @@
 #include <ius.h>
 #include <iusPatternListDictPrivate.h>
 
+static char *pErrorFilename = "IusPatternListDict.errlog";
+static FILE *fpErrorLogging = NULL;
+
 TEST_GROUP(IusPatternListDict);
 
 TEST_SETUP(IusPatternListDict)
 {
+	iusErrorLogClear();
+	iusErrorLog(IUS_TRUE);
+	iusErrorAutoReport(IUS_TRUE);
+	fpErrorLogging = fopen(pErrorFilename, "w+");
+	iusErrorSetStream(fpErrorLogging);
 }
 
 TEST_TEAR_DOWN(IusPatternListDict)
 {
+	iusErrorLogClear();
+	iusErrorLog(IUS_FALSE);
+	if (fpErrorLogging != NULL)
+		fclose(fpErrorLogging);
+	fpErrorLogging=stderr;
+	iusErrorSetStream(fpErrorLogging);
+	remove(pErrorFilename);
 }
 
 
@@ -58,9 +73,19 @@ TEST(IusPatternListDict, testIusPatternListDictSetGet)
     TEST_ASSERT_EQUAL(IUS_TRUE, iusPatternListCompare(obj,retrievedObj));
 
     // invalid params
-    TEST_ASSERT_EQUAL(IUPAL_INVALID, iusPatternListDictGet(NULL, labelDual));
-    TEST_ASSERT_EQUAL(IUPAL_INVALID, iusPatternListDictGet(dict, NULL));
-    TEST_ASSERT_EQUAL(IUPAL_INVALID, iusPatternListDictGet(dict, "unknownLabe"));
+    iusErrorLogClear();
+	long filePos = ftell(fpErrorLogging);
+	TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+	TEST_ASSERT_EQUAL(IUTA_INVALID, iusPatternListDictGet(dict,NULL));
+	TEST_ASSERT_EQUAL(IUTA_INVALID, iusPatternListDictGet(NULL,labelDual));
+	TEST_ASSERT_EQUAL(IUTA_INVALID, iusPatternListDictGet(dict,"unknownLabel"));
+
+	TEST_ASSERT_EQUAL(IUS_ERR_VALUE, iusPatternListDictSet(dict, NULL, obj));
+	TEST_ASSERT_EQUAL(IUS_ERR_VALUE, iusPatternListDictSet(NULL, labelDual, obj));
+	TEST_ASSERT_EQUAL(IUS_ERR_VALUE, iusPatternListDictSet(dict, labelDual, NULL));
+
+	TEST_ASSERT_EQUAL(6,iusErrorGetCount());
+	TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
 
     iusPatternDelete(pattern1);
     iusPatternDelete(pattern2);
