@@ -28,18 +28,29 @@ iupal_t iusPatternListCreate
 )
 {
     iupal_t list = calloc(1, sizeof(IusPatternList));
-    if(list!=NULL)
+    if (numPatterns <= 0)
     {
-        list->deepDelete = IUS_FALSE;
-        list->receiveChannelMapDict = receiveChannelMapDict;
-        list->receiveSettingsDict = receiveSettingsDict;
-        list->numPatterns = numPatterns;
-        list->pPatterns = (iupa_t *) calloc((size_t)numPatterns, sizeof(iupa_t));
-        if( list->pPatterns == NULL )
-        {
-            free(list);
-            list = NULL;
-        }
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE,
+                           "numPatterns argument should be > 0, but was: '%d'", numPatterns);
+        return IUPAL_INVALID;
+    }
+
+    if (list == NULL)
+    {
+        IUS_ERROR_PUSH(IUS_ERR_MAJ_MEMORY, IUS_ERR_MIN_ALLOC, "calloc failed for IusPatternList");
+        return IUPAL_INVALID;
+    }
+
+    list->deepDelete = IUS_FALSE;
+    list->receiveChannelMapDict = receiveChannelMapDict;
+    list->receiveSettingsDict = receiveSettingsDict;
+    list->numPatterns = numPatterns;
+    list->pPatterns = (iupa_t *) calloc((size_t)numPatterns, sizeof(iupa_t));
+    if (list->pPatterns == NULL)
+    {
+        IUS_ERROR_PUSH(IUS_ERR_MAJ_MEMORY, IUS_ERR_MIN_ALLOC, "calloc failed for numPatterns");
+        free(list);
+        list = IUPAL_INVALID;
     }
     return list;
 }
@@ -49,6 +60,12 @@ int iusPatternListDeepDelete
     iupal_t list
 )
 {
+    if (list == NULL)
+    {
+        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "argument list was NULL");
+        return IUS_ERR_VALUE;
+    }
+
     if(list == NULL) return IUS_ERR_VALUE;
     list->deepDelete = IUS_TRUE;
     return iusPatternListDelete(list);
@@ -61,7 +78,12 @@ int iusPatternListDelete
 )
 {
     int index;
-    if(list == NULL) return IUS_ERR_VALUE;
+    if (list == NULL)
+    {
+        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "argument list was NULL");
+        return IUS_ERR_VALUE;
+    }
+
     if(list->deepDelete == IUS_TRUE)
     {
         for(index = 0 ; index < list->numPatterns ; index++ )
@@ -101,6 +123,11 @@ int iusPatternListGetSize
     iupal_t list
 )
 {
+    if (list == NULL)
+    {
+        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "argument list was NULL");
+        return -1;
+    }
     return list->numPatterns;
 }
 
@@ -110,8 +137,19 @@ iupa_t iusPatternListGet
     int index
 )
 {
-    if( index < 0 ) return NULL;
-    if( list == NULL || index >= list->numPatterns ) return NULL;
+    if (list == NULL)
+    {
+        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "argument list was NULL");
+        return IUPA_INVALID;
+    }
+
+    if (index >= list->numPatterns || index < 0)
+    {
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE,
+                           "index >= 0 && index < %d (numPatterns) but was '%d'", list->numPatterns, index);
+        return IUPA_INVALID;
+    }
+
     return list->pPatterns[index];
 }
 
@@ -133,7 +171,12 @@ IUS_BOOL iusPatternListValidateDimensions
     iurs_t receiveSettingsNewItem = iusReceiveSettingsDictGet(list->receiveSettingsDict,rsLabelNewItem);
     int numSamplesPerLineNewItem = iusReceiveSettingsGetNumSamplesPerLine(receiveSettingsNewItem);
     if (numSamplesPerLine1stItem != numSamplesPerLineNewItem)
+    {
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE,
+                       "Invalid dimensions for member NumSamplesPerLine (%d) != %d",
+                       numSamplesPerLineNewItem, numSamplesPerLine1stItem );
         return IUS_FALSE;
+    }
 
 
     char *rcmLabel1stItem = (char *) iusPatternGetChannelMapLabel(list->pPatterns[0]);
@@ -144,7 +187,12 @@ IUS_BOOL iusPatternListValidateDimensions
     iurcm_t channelMapNewItem = iusReceiveChannelMapDictGet(list->receiveChannelMapDict,rcmLabelNewItem);
     int numChannelsNewItem = iusReceiveChannelMapGetNumChannels(channelMapNewItem);
     if (numChannels1stItem != numChannelsNewItem)
+    {
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE,
+                           "Invalid dimensions for member NumChannels (%d) != %d",
+                           numChannelsNewItem, numChannels1stItem );
         return IUS_FALSE;
+    }
 
     return IUS_TRUE;
 }
@@ -156,8 +204,19 @@ int iusPatternListSet
     int index
 )
 {
-    if( index < 0 ) return IUS_ERR_VALUE;
-    if( list == NULL || index >= list->numPatterns ) return IUS_ERR_VALUE;
+    if (list == NULL)
+    {
+        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "argument list was NULL");
+        return IUS_ERR_VALUE;
+    }
+
+    if (index >= list->numPatterns || index < 0)
+    {
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE,
+                           "index >= 0 && index < %d (numPatterns) but was '%d'", list->numPatterns, index);
+        return IUS_ERR_VALUE;
+    }
+
     if( index > 0 )
     {
         IUS_BOOL validDimensions = iusPatternListValidateDimensions(list,member);
@@ -179,8 +238,19 @@ iupal_t iusPatternListLoad
     char path[IUS_MAX_HDF5_PATH];
     int numPatterns,i;
 
+    if (handle == H5I_INVALID_HID)
+    {
+        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE, "argument handle was invalid");
+        return IUPAL_INVALID;
+    }
+
     int status = iusHdf5ReadInt(handle, IUS_INPUTFILE_PATH_PATTERNLIST_SIZE, &(numPatterns));
-    if(status!=0) return IUPAL_INVALID;
+    if (status != 0)
+    {
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "read failed for %s",
+                           IUS_INPUTFILE_PATH_PATTERNLIST_SIZE);
+        return IUPAL_INVALID;
+    }
 
     iupal_t patternList = iusPatternListCreate(numPatterns,NULL,NULL);
     iupa_t pattern;
@@ -193,7 +263,8 @@ iupal_t iusPatternListLoad
         pattern = iusPatternLoad(patternId);
         if(pattern==IUPA_INVALID)
         {
-            break;
+            iusPatternListDeepDelete(patternList);
+            return IUPAL_INVALID;
         }
         iusPatternListSet(patternList,pattern,i);
     }
@@ -206,8 +277,14 @@ IUS_BOOL iusPatternListFull
     iupal_t list
 )
 {
-    IUS_BOOL isFull = IUS_TRUE;
     int i;
+    IUS_BOOL isFull = IUS_TRUE;
+    if (list == NULL)
+    {
+        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "argument list was NULL");
+        return IUS_FALSE;
+    }
+
     for (i=0;i < list->numPatterns;i++)
     {
         if(list->pPatterns[i] == IUPA_INVALID)
@@ -229,16 +306,33 @@ int iusPatternListSave
     int i,size;
     char path[IUS_MAX_HDF5_PATH];
 
-    if(list == NULL)
+    if (list == NULL)
+    {
+        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "argument list was NULL");
         return IUS_ERR_VALUE;
-    if(handle == H5I_INVALID_HID)
+    }
+
+    if (handle == H5I_INVALID_HID)
+    {
+        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE, "argument handle was invalid");
         return IUS_ERR_VALUE;
+    }
+
     if(iusPatternListFull(list) == IUS_FALSE)
+    {
+        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE, "argument list (pattern list) was not full");
         return IUS_ERR_VALUE;
+    }
 
     iupa_t pattern;
     size = iusPatternListGetSize(list);
-    status |= iusHdf5WriteInt(handle, IUS_INPUTFILE_PATH_PATTERNLIST_SIZE, &(size), 1);
+    status = iusHdf5WriteInt(handle, IUS_INPUTFILE_PATH_PATTERNLIST_SIZE, &(size), 1);
+    if (status != 0)
+    {
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "write failed for %s",
+                           IUS_INPUTFILE_PATH_PATTERNLIST_SIZE);
+        return IUS_ERR_VALUE;
+    }
 
     // iterate over source list elements and save'em
     for (i=0;i < size;i++)
@@ -252,7 +346,6 @@ int iusPatternListSave
         if(status != IUS_E_OK) break;
     }
 
-    //status |= H5Gclose(patternList_id);
     return status;
 }
 

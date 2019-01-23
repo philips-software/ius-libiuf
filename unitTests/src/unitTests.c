@@ -32,7 +32,7 @@ static void RunAllTests(void)
 //    RUN_TEST_GROUP(IusNonParametricPulse);
 //    RUN_TEST_GROUP(IusParametricPulse);
 //    RUN_TEST_GROUP(IusPattern);
-//    RUN_TEST_GROUP(IusPatternList);
+    RUN_TEST_GROUP(IusPatternList);
     RUN_TEST_GROUP(IusPatternListDict);
     RUN_TEST_GROUP(IusPulse);
     RUN_TEST_GROUP(IusPulseDict);

@@ -15,16 +15,31 @@ static const char *pSourceLabel = "sourceLabel";
 static const char *pChannelMapLabel = "channelMapLabel";
 static const char *pApodizationLabel = "apodizationLabel";
 static const char *pReceivesettingsLabel = "receivesettingsLabel";
+static char *pErrorFilename = "IusPatternList.errlog";
+static FILE *fpErrorLogging = NULL;
 
 TEST_GROUP(IusPatternList);
 
 TEST_SETUP(IusPatternList)
 {
+    iusErrorLogClear();
+    iusErrorLog(IUS_TRUE);
+    iusErrorAutoReport(IUS_TRUE);
+    fpErrorLogging = fopen(pErrorFilename, "w+");
+    iusErrorSetStream(fpErrorLogging);
 }
 
 TEST_TEAR_DOWN(IusPatternList)
 {
+    iusErrorLogClear();
+    iusErrorLog(IUS_FALSE);
+    if (fpErrorLogging != NULL)
+        fclose(fpErrorLogging);
+    fpErrorLogging=stderr;
+    iusErrorSetStream(fpErrorLogging);
+    remove(pErrorFilename);
 }
+
 
 TEST(IusPatternList, testIusCreatePatternList)
 {
@@ -35,8 +50,17 @@ TEST(IusPatternList, testIusCreatePatternList)
     TEST_ASSERT_EQUAL(numPatterns, iusPatternListGetSize(patternList));
     iusPatternListDelete(patternList);
 
+
+    iusErrorLogClear();
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
     patternList = iusPatternListCreate(-1,NULL,NULL);
     TEST_ASSERT_EQUAL(IUPAL_INVALID, patternList);
+
+    TEST_ASSERT_EQUAL(1,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
+
 }
 
 
@@ -85,11 +109,16 @@ TEST(IusPatternList, testIusSetPatternList)
     status = iusPatternListSet(patternList, pattern1, 0);
     TEST_ASSERT_EQUAL(IUS_E_OK, status);
     // Different numChannels or samplesper line should not be accepted
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
     status = iusPatternListSet(patternList, pattern3, 2);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
     status = iusPatternListSet(patternList, pattern2, 1);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
 
+    TEST_ASSERT_EQUAL(2,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
 
     iusReceiveSettingsDictDeepDelete(receiveSettingsDict);
     iusReceiveChannelMapDictDeepDelete(receiveChannelMapDict);
