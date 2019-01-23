@@ -29,7 +29,7 @@ iupp_t iusParametricPulseCreate
     IUS_ERR_EVAL_N_RETURN(pulseFrequency < 0.0f, IUPP_INVALID);
 
     pulse = (IusParametricPulse *) calloc (1,sizeof(IusParametricPulse));
-    IUS_ERR_ALLOC_NULL_N_RETURN(pulse, IusReceiveSettingsDict, IUPP_INVALID);
+    IUS_ERR_ALLOC_NULL_N_RETURN(pulse, IusParametricPulse, IUPP_INVALID);
 
     pulse->pulseFrequency = pulseFrequency;
     pulse->pulseAmplitude = pulseAmplitude;
