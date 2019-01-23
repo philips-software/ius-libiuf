@@ -30,7 +30,7 @@ static void RunAllTests(void)
 //    RUN_TEST_GROUP(IusHistoryNode);
 //    RUN_TEST_GROUP(IusParameterDict);
 //    RUN_TEST_GROUP(IusNonParametricPulse);
-//    RUN_TEST_GROUP(IusParametricPulse);
+    RUN_TEST_GROUP(IusParametricPulse);
     RUN_TEST_GROUP(IusPattern);
     RUN_TEST_GROUP(IusPatternList);
     RUN_TEST_GROUP(IusPatternListDict);
