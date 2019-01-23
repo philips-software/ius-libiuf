@@ -1,4 +1,3 @@
-
 //
 // Created by nlv09165 on 13/07/2018.
 //
@@ -19,6 +18,7 @@ struct IusPattern
     const char* pReceiveSettingsLabel;
 } ;
 
+
 // ADT
 iupa_t iusPatternCreate
 (
@@ -30,22 +30,16 @@ iupa_t iusPatternCreate
     const char *pReceiveSettingsLabel
 )
 {
-    if( pPulseLabel == NULL ||
-        pSourceLabel == NULL ||
-        pChannelMapLabel == NULL ||
-        pApodizationLabel == NULL ||
-        pReceiveSettingsLabel == NULL
-    ) return IUPA_INVALID;
+    IUS_ERR_EVAL_N_RETURN(timeInFrame < 0.0f, IUPA_INVALID);
+    IUS_ERR_STRP_NULL_EMPTY(pPulseLabel, IUPA_INVALID);
+    IUS_ERR_STRP_NULL_EMPTY(pSourceLabel, IUPA_INVALID);
+    IUS_ERR_STRP_NULL_EMPTY(pChannelMapLabel, IUPA_INVALID);
+    IUS_ERR_STRP_NULL_EMPTY(pApodizationLabel, IUPA_INVALID);
+    IUS_ERR_STRP_NULL_EMPTY(pReceiveSettingsLabel, IUPA_INVALID);
 
-    if( strcmp(pPulseLabel,"") == 0 ||
-        strcmp(pSourceLabel,"") == 0 ||
-        strcmp(pChannelMapLabel,"") == 0 ||
-        strcmp(pApodizationLabel,"") == 0 ||
-        strcmp(pReceiveSettingsLabel,"") == 0
-    ) return IUPA_INVALID;
-
-    if( timeInFrame < 0.0f ) return IUPA_INVALID;
     iupa_t created = calloc(1, sizeof(IusPattern));
+    IUS_ERR_ALLOC_NULL_N_RETURN(created, IusPattern, IUPA_INVALID);
+
     created->timeInFrame = timeInFrame;
     created->pPulseLabel = strdup(pPulseLabel);
     created->pSourceLabel = strdup(pSourceLabel);
@@ -57,21 +51,17 @@ iupa_t iusPatternCreate
 
 int iusPatternDelete
 (
-    iupa_t iusPattern
+    iupa_t pattern
 )
 {
-    int status = IUS_ERR_VALUE;
-    if(iusPattern != IUPA_INVALID)
-    {
-        free((void *)iusPattern->pApodizationLabel);
-        free((void *)iusPattern->pChannelMapLabel);
-        free((void *)iusPattern->pPulseLabel);
-        free((void *)iusPattern->pSourceLabel);
-        free((void *)iusPattern->pReceiveSettingsLabel);
-        free(iusPattern);
-        status = IUS_E_OK;
-    }
-    return status;
+    IUS_ERR_CHECK_NULL_N_RETURN(pattern, IUS_ERR_VALUE);
+    free((void *)pattern->pApodizationLabel);
+    free((void *)pattern->pChannelMapLabel);
+    free((void *)pattern->pPulseLabel);
+    free((void *)pattern->pSourceLabel);
+    free((void *)pattern->pReceiveSettingsLabel);
+    free(pattern);
+    return IUS_E_OK;
 }
 
 
@@ -103,16 +93,16 @@ int iusPatternSave
     hid_t handle
 )
 {
-  int status=IUS_E_OK;
-  //char path[IUS_MAX_HDF5_PATH];
-
-  status |= iusHdf5WriteString(handle, IUS_INPUTFILE_PATH_PATTERNLIST_PATTERN_PULSELABEL, pattern->pPulseLabel);
-  status |= iusHdf5WriteString(handle, IUS_INPUTFILE_PATH_PATTERNLIST_PATTERN_SOURCELABEL, pattern->pSourceLabel);
-  status |= iusHdf5WriteString(handle, IUS_INPUTFILE_PATH_PATTERNLIST_PATTERN_CHANNELMAPLABEL, pattern->pChannelMapLabel);
-  status |= iusHdf5WriteString(handle, IUS_INPUTFILE_PATH_PATTERNLIST_PATTERN_APODIZATIONLABEL, pattern->pApodizationLabel);
-  status |= iusHdf5WriteString(handle, IUS_INPUTFILE_PATH_PATTERNLIST_PATTERN_RECEIVESETTINGSLABEL, pattern->pReceiveSettingsLabel);
-  status |= iusHdf5WriteFloat(handle,  IUS_INPUTFILE_PATH_PATTERNLIST_PATTERN_TIMEINFRAME, &(pattern->timeInFrame), 1);
-  return status;
+    int status=IUS_E_OK;
+    IUS_ERR_CHECK_NULL_N_RETURN(pattern, IUS_ERR_VALUE);
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUS_ERR_VALUE);
+    status |= iusHdf5WriteString(handle, IUS_INPUTFILE_PATH_PATTERNLIST_PATTERN_PULSELABEL, pattern->pPulseLabel);
+    status |= iusHdf5WriteString(handle, IUS_INPUTFILE_PATH_PATTERNLIST_PATTERN_SOURCELABEL, pattern->pSourceLabel);
+    status |= iusHdf5WriteString(handle, IUS_INPUTFILE_PATH_PATTERNLIST_PATTERN_CHANNELMAPLABEL, pattern->pChannelMapLabel);
+    status |= iusHdf5WriteString(handle, IUS_INPUTFILE_PATH_PATTERNLIST_PATTERN_APODIZATIONLABEL, pattern->pApodizationLabel);
+    status |= iusHdf5WriteString(handle, IUS_INPUTFILE_PATH_PATTERNLIST_PATTERN_RECEIVESETTINGSLABEL, pattern->pReceiveSettingsLabel);
+    status |= iusHdf5WriteFloat(handle,  IUS_INPUTFILE_PATH_PATTERNLIST_PATTERN_TIMEINFRAME, &(pattern->timeInFrame), 1);
+    return status;
 }
 
 
@@ -121,26 +111,27 @@ iupa_t iusPatternLoad
   hid_t handle
 )
 {
-  int status = 0;
+    int status = 0;
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUPA_INVALID);
 
-  float timeInFrame;
-  char pPulseLabel[IUS_MAX_HDF5_PATH];
-  char pSourceLabel[IUS_MAX_HDF5_PATH];
-  char pChannelMapLabel[IUS_MAX_HDF5_PATH];
-  char pApodizationLabel[IUS_MAX_HDF5_PATH];
-  char pReceiveSettingsLabel[IUS_MAX_HDF5_PATH];
+    float timeInFrame;
+    char pPulseLabel[IUS_MAX_HDF5_PATH];
+    char pSourceLabel[IUS_MAX_HDF5_PATH];
+    char pChannelMapLabel[IUS_MAX_HDF5_PATH];
+    char pApodizationLabel[IUS_MAX_HDF5_PATH];
+    char pReceiveSettingsLabel[IUS_MAX_HDF5_PATH];
 
-  status |= iusHdf5ReadString(handle, IUS_INPUTFILE_PATH_PATTERNLIST_PATTERN_PULSELABEL, pPulseLabel);
-  status |= iusHdf5ReadString(handle, IUS_INPUTFILE_PATH_PATTERNLIST_PATTERN_SOURCELABEL, pSourceLabel);
-  status |= iusHdf5ReadString(handle, IUS_INPUTFILE_PATH_PATTERNLIST_PATTERN_CHANNELMAPLABEL, pChannelMapLabel);
-  status |= iusHdf5ReadString(handle, IUS_INPUTFILE_PATH_PATTERNLIST_PATTERN_APODIZATIONLABEL, pApodizationLabel);
-  status |= iusHdf5ReadString(handle, IUS_INPUTFILE_PATH_PATTERNLIST_PATTERN_RECEIVESETTINGSLABEL, pReceiveSettingsLabel);
-  status |= iusHdf5ReadFloat( handle, IUS_INPUTFILE_PATH_PATTERNLIST_PATTERN_TIMEINFRAME, &(timeInFrame));
+    status |= iusHdf5ReadString(handle, IUS_INPUTFILE_PATH_PATTERNLIST_PATTERN_PULSELABEL, pPulseLabel);
+    status |= iusHdf5ReadString(handle, IUS_INPUTFILE_PATH_PATTERNLIST_PATTERN_SOURCELABEL, pSourceLabel);
+    status |= iusHdf5ReadString(handle, IUS_INPUTFILE_PATH_PATTERNLIST_PATTERN_CHANNELMAPLABEL, pChannelMapLabel);
+    status |= iusHdf5ReadString(handle, IUS_INPUTFILE_PATH_PATTERNLIST_PATTERN_APODIZATIONLABEL, pApodizationLabel);
+    status |= iusHdf5ReadString(handle, IUS_INPUTFILE_PATH_PATTERNLIST_PATTERN_RECEIVESETTINGSLABEL, pReceiveSettingsLabel);
+    status |= iusHdf5ReadFloat( handle, IUS_INPUTFILE_PATH_PATTERNLIST_PATTERN_TIMEINFRAME, &(timeInFrame));
 
-  if( status < 0 )
-    return NULL;
+    if( status < 0 )
+        return IUPA_INVALID;
 
-  return iusPatternCreate(timeInFrame,
+    return iusPatternCreate(timeInFrame,
                           pPulseLabel,
                           pSourceLabel,
                           pChannelMapLabel,
@@ -150,55 +141,55 @@ iupa_t iusPatternLoad
 
 const char * iusPatternGetPulseLabel
 (
-    iupa_t iusPattern
+    iupa_t pattern
 )
 {
-    if(iusPattern == IUPA_INVALID) return NULL;
-    return iusPattern->pPulseLabel;
+    IUS_ERR_CHECK_NULL_N_RETURN(pattern, NULL);
+    return pattern->pPulseLabel;
 }
 
 const char * iusPatternGetSourceLabel
 (
-    iupa_t iusPattern
+    iupa_t pattern
 )
 {
-    if(iusPattern == IUPA_INVALID) return NULL;
-    return iusPattern->pSourceLabel;
+    IUS_ERR_CHECK_NULL_N_RETURN(pattern, NULL);
+    return pattern->pSourceLabel;
 }
 
 const char * iusPatternGetChannelMapLabel
 (
-    iupa_t iusPattern
+    iupa_t pattern
 )
 {
-    if(iusPattern == IUPA_INVALID) return NULL;
-    return iusPattern->pChannelMapLabel;
+    IUS_ERR_CHECK_NULL_N_RETURN(pattern, NULL);
+    return pattern->pChannelMapLabel;
 }
 
 const char * iusPatternGetApodizationLabel
 (
-    iupa_t iusPattern
+    iupa_t pattern
 )
 {
-    if(iusPattern == IUPA_INVALID) return NULL;
-    return iusPattern->pApodizationLabel;
+    IUS_ERR_CHECK_NULL_N_RETURN(pattern, NULL);
+    return pattern->pApodizationLabel;
 }
 
 const char * iusPatternGetReceivesettingsLabel
 (
-    iupa_t iusPattern
+    iupa_t pattern
 )
 {
-    if(iusPattern == IUPA_INVALID) return NULL;
-    return iusPattern->pReceiveSettingsLabel;
+    IUS_ERR_CHECK_NULL_N_RETURN(pattern, NULL);
+    return pattern->pReceiveSettingsLabel;
 }
 
 float iusPatternGetTimeInFrame
 (
-    iupa_t iusPattern
+    iupa_t pattern
 )
 {
-    if(iusPattern == IUPA_INVALID) return NAN;
-    return iusPattern->timeInFrame;
+    IUS_ERR_CHECK_NULL_N_RETURN(pattern, NAN);
+    return pattern->timeInFrame;
 }
 

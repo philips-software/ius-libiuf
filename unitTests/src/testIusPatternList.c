@@ -51,7 +51,6 @@ TEST(IusPatternList, testIusCreatePatternList)
     iusPatternListDelete(patternList);
 
 
-    iusErrorLogClear();
     long filePos = ftell(fpErrorLogging);
     TEST_ASSERT_EQUAL(0,iusErrorGetCount());
 

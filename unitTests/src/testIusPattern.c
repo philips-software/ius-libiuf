@@ -17,14 +17,29 @@ static const char *pChannelMapLabel = "channelMapLabel";
 static const char *pApodizationLabel = "apodizationLabel";
 static const char *pReceivesettingsLabel = "receivesettingsLabel";
 
+static char *pErrorFilename = "IusPattern.errlog";
+static FILE *fpErrorLogging = NULL;
+
 TEST_GROUP(IusPattern);
 
 TEST_SETUP(IusPattern)
 {
+    iusErrorLogClear();
+    iusErrorLog(IUS_TRUE);
+    iusErrorAutoReport(IUS_TRUE);
+    fpErrorLogging = fopen(pErrorFilename, "w+");
+    iusErrorSetStream(fpErrorLogging);
 }
 
 TEST_TEAR_DOWN(IusPattern)
 {
+    iusErrorLogClear();
+    iusErrorLog(IUS_FALSE);
+    if (fpErrorLogging != NULL)
+        fclose(fpErrorLogging);
+    fpErrorLogging=stderr;
+    iusErrorSetStream(fpErrorLogging);
+    remove(pErrorFilename);
 }
 
 
@@ -49,6 +64,9 @@ TEST(IusPattern, testIusPatternCreate)
     iusPatternDelete(notherObj);
 
     // invalid params
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
     obj = iusPatternCreate(  0.01f,
                              "",
                              pSourceLabel,
@@ -89,6 +107,9 @@ TEST(IusPattern, testIusPatternCreate)
                                "");
     TEST_ASSERT(obj == IUPA_INVALID);
 
+    TEST_ASSERT_EQUAL(5, iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
+
 }
 
 TEST(IusPattern, testIusPatternDelete)
@@ -104,8 +125,14 @@ TEST(IusPattern, testIusPatternDelete)
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
     // invalid params
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
     status = iusPatternDelete(NULL);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
+
+    TEST_ASSERT_EQUAL(1, iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
 }
 
 
@@ -193,6 +220,9 @@ TEST(IusPattern, testIusPatternSetGet)
     // invalid param
     iusPatternDelete(obj);
     obj = IUPA_INVALID;
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
     TEST_ASSERT_EQUAL(NULL, iusPatternGetPulseLabel(obj));
     TEST_ASSERT_EQUAL(NULL, iusPatternGetSourceLabel(obj));
     TEST_ASSERT_EQUAL(NULL, iusPatternGetChannelMapLabel(obj));
@@ -200,6 +230,8 @@ TEST(IusPattern, testIusPatternSetGet)
     TEST_ASSERT_EQUAL(NULL, iusPatternGetReceivesettingsLabel(obj));
     TEST_ASSERT_EQUAL_FLOAT(NAN, iusPatternGetTimeInFrame(obj) );
 
+    TEST_ASSERT_EQUAL(6, iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
     iusPatternDelete(obj);
 }
 
@@ -224,6 +256,7 @@ TEST(IusPattern, testIusSerialization)
                                         pReceivesettingsLabel);
     // fill
     TEST_ASSERT(obj != IUPA_INVALID);
+    TEST_ASSERT(notherObj != IUPA_INVALID);
 
     hid_t handle = H5Fcreate( filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT );
     TEST_ASSERT(handle > 0);

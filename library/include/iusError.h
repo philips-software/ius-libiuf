@@ -134,14 +134,14 @@ int iusErrorAutoReport
     IUS_BOOL enable
 );
 
-extern hid_t  IUS_ERR_MAJ_GENERAL;  //     (100001)   /**< general error */
-extern hid_t  IUS_ERR_MAJ_MEMORY;   //    (100002)    /**< memory error  */
-extern hid_t  IUS_ERR_MAJ_VALUE;    //    (100003)    /**< value error  */
+extern hid_t  IUS_ERR_MAJ_GENERAL;
+extern hid_t  IUS_ERR_MAJ_MEMORY;
+extern hid_t  IUS_ERR_MAJ_VALUE;
 extern hid_t  IUS_ERR_MAJ_ERROR;
 extern hid_t  IUS_ERR_MAJ_HDF5;
 
 extern hid_t  IUS_ERR_MIN_ARG_VALUE;
-extern hid_t  IUS_ERR_MIN_ARG_FILENAME;  //     (100001)   /**< general error */
+extern hid_t  IUS_ERR_MIN_ARG_FILENAME;
 extern hid_t  IUS_ERR_MIN_ALLOC;
 extern hid_t  IUS_ERR_MIN_MEMCOPY;
 extern hid_t  IUS_ERR_MIN_FORMAT;
@@ -150,7 +150,34 @@ extern hid_t  IUS_ERR_MIN_ARG_DUPLICATE_KEY;
 extern hid_t  IUS_ERR_MIN_ARG_INVALID_KEY;
 extern hid_t  IUS_ERR_MIN_HDF5;
 
+
 #define IUS_ERROR_PUSH(maj,min,msg)     iusErrorPush(__FILE__, __func__, __LINE__, maj, min, msg)
 #define IUS_ERROR_FMT_PUSH(maj,min,fmt,...) iusErrorFormatAndPush(__FILE__, __func__, __LINE__, maj, min, fmt, __VA_ARGS__)
+
+
+// Error handling convenience macro's
+#define IUS_ERR_ALLOC_NULL_N_RETURN(var, adt,  retval) if ((var) == NULL) {                                 \
+        IUS_ERROR_PUSH(IUS_ERR_MAJ_MEMORY, IUS_ERR_MIN_ALLOC, "calloc failed for " #adt);                   \
+        return retval;                                                                                      \
+    }
+
+
+#define IUS_ERR_CHECK_NULL_N_RETURN(var, retval) if ((var) == NULL) {                                       \
+        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "argument "  #var  " was NULL");      \
+        return retval;                                                                                      \
+    }
+
+#define IUS_ERR_CHECK_EMPTYSTR_N_RETURN(var, return_value) if (strcmp((var),"") == 0) {                       \
+        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE, "argument " #var  " was empty");           \
+        return return_value;                                                                                \
+    }
+
+#define IUS_ERR_STRP_NULL_EMPTY(var, retval) IUS_ERR_CHECK_NULL_N_RETURN(var, retval);                      \
+        IUS_ERR_CHECK_EMPTYSTR_N_RETURN(var, retval)
+
+#define IUS_ERR_EVAL_N_RETURN(expr, retval) if (expr) {                                                     \
+        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE, #expr "");                                 \
+        return retval;                                                                                      \
+    }
 
 #endif  // _IUSERROR_H
