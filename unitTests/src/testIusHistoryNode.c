@@ -11,14 +11,30 @@
 #include <testDataGenerators.h>
 #include <iusHistoryNodePrivate.h>
 
+
+static char *pErrorFilename = "IusHistoryNode.errlog";
+static FILE *fpErrorLogging = NULL;
+
 TEST_GROUP(IusHistoryNode);
 
 TEST_SETUP(IusHistoryNode)
 {
+    iusErrorLogClear();
+    iusErrorLog(IUS_TRUE);
+    iusErrorAutoReport(IUS_TRUE);
+    fpErrorLogging = fopen(pErrorFilename, "w+");
+    iusErrorSetStream(fpErrorLogging);
 }
 
 TEST_TEAR_DOWN(IusHistoryNode)
 {
+    iusErrorLogClear();
+    iusErrorLog(IUS_FALSE);
+    if (fpErrorLogging != NULL)
+        fclose(fpErrorLogging);
+    fpErrorLogging=stderr;
+    iusErrorSetStream(fpErrorLogging);
+    remove(pErrorFilename);
 }
 
 TEST(IusHistoryNode, testIusHistoryNodeCreate)
@@ -29,8 +45,14 @@ TEST(IusHistoryNode, testIusHistoryNodeCreate)
     iusHistoryNodeDelete(node);
 
     // invalid params
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
     node = iusHistoryNodeCreate(NULL);
     TEST_ASSERT_EQUAL(IUHN_INVALID,node);
+
+    TEST_ASSERT_EQUAL(1,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
 }
 
 TEST(IusHistoryNode, testIusHistoryNodeDelete)
@@ -42,8 +64,14 @@ TEST(IusHistoryNode, testIusHistoryNodeDelete)
     TEST_ASSERT_EQUAL(IUS_E_OK, status);
 
     // invalid params
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
     status = iusHistoryNodeDelete(NULL);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
+
+    TEST_ASSERT_EQUAL(1,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
 }
 
 
