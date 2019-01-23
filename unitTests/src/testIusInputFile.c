@@ -13,22 +13,29 @@
 static const char *pFilename = "IusInputFile.hdf5";
 static const char *pNotherFilename = "AnotherIusInputFile.hdf5";
 
+static char *pErrorFilename = "IusInputFile.errlog";
+static FILE *fpErrorLogging = NULL;
+
 TEST_GROUP(IusInputFile);
 
 TEST_SETUP(IusInputFile)
 {
+    iusErrorLogClear();
+    iusErrorLog(IUS_TRUE);
+    iusErrorAutoReport(IUS_TRUE);
+    fpErrorLogging = fopen(pErrorFilename, "w+");
+    iusErrorSetStream(fpErrorLogging);
 }
 
 TEST_TEAR_DOWN(IusInputFile)
 {
-    if( fileExists(pFilename) == IUS_TRUE )
-    {
-		remove(pFilename);
-    }
-    if( fileExists(pNotherFilename) == IUS_TRUE )
-    {
-		remove(pNotherFilename);
-    }
+    iusErrorLogClear();
+    iusErrorLog(IUS_FALSE);
+    if (fpErrorLogging != NULL)
+        fclose(fpErrorLogging);
+    fpErrorLogging=stderr;
+    iusErrorSetStream(fpErrorLogging);
+    remove(pErrorFilename);
 }
 
 
@@ -39,6 +46,9 @@ TEST(IusInputFile, testIusInputFileCreate)
 
     iuif_t ifh = iusInputFileCreate(pFilename);
     TEST_ASSERT(ifh != IUIF_INVALID);
+
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
 
     // Create file that is already open should result in error
     iuif_t ifh2 = iusInputFileCreate(pFilename);
@@ -51,6 +61,9 @@ TEST(IusInputFile, testIusInputFileCreate)
     status = iusInputFileClose(ifh);
     iusInputFileDelete(ifh);
     TEST_ASSERT(status != IUS_E_OK);
+
+    TEST_ASSERT_EQUAL(2,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
 
     // Invalid argument should result in error.
     ifh = iusInputFileCreate(pEmptyFilename);
