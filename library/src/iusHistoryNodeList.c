@@ -21,18 +21,17 @@ iuhnl_t iusHistoryNodeListCreate
     int numHistoryNodes
 )
 {
-    if (numHistoryNodes<=0) return IUHNL_INVALID;
+    IUS_ERR_EVAL_N_RETURN(numHistoryNodes<=0, IUHNL_INVALID);
     iuhnl_t list = calloc(1, sizeof(IusHistoryNodeList));
-    if(list!=NULL)
+    IUS_ERR_ALLOC_NULL_N_RETURN(list, IusHistoryNodeList, IUHNL_INVALID);
+    list->deepDelete = IUS_FALSE;
+    list->numHistoryNodes = numHistoryNodes;
+    list->pHistoryNodes = (iuhn_t *) calloc((size_t)numHistoryNodes, sizeof(iuhn_t));
+    if( list->pHistoryNodes == NULL )
     {
-        list->deepDelete = IUS_FALSE;
-        list->numHistoryNodes = numHistoryNodes;
-        list->pHistoryNodes = (iuhn_t *) calloc((size_t)numHistoryNodes, sizeof(iuhn_t));
-        if( list->pHistoryNodes == NULL )
-        {
-            free(list);
-            list = NULL;
-        }
+        IUS_ERROR_PUSH(IUS_ERR_MAJ_MEMORY, IUS_ERR_MIN_ALLOC, "calloc failed for pHistoryNodes member");
+        free(list);
+        list = IUHNL_INVALID;
     }
     return list;
 }
@@ -44,7 +43,7 @@ int iusHistoryNodeListDelete
 )
 {
     int i;
-    if(list == NULL) return IUS_ERR_VALUE;
+    IUS_ERR_CHECK_NULL_N_RETURN(list, IUS_ERR_VALUE);
     if(list->deepDelete==IUS_TRUE)
     {
         for (i=0;i<list->numHistoryNodes;i++)
@@ -85,7 +84,7 @@ int iusHistoryNodeListGetSize
     iuhnl_t list
 )
 {
-    if( list == NULL ) return -1;
+    IUS_ERR_CHECK_NULL_N_RETURN(list, -1);
     return list->numHistoryNodes;
 }
 
@@ -107,8 +106,8 @@ int iusHistoryNodeListSet
     int index
 )
 {
-    if( index < 0 ) return IUS_ERR_VALUE;
-    if( list == NULL   || index >= list->numHistoryNodes ) return IUS_ERR_VALUE;
+    IUS_ERR_CHECK_NULL_N_RETURN(list, IUS_ERR_VALUE);
+    IUS_ERR_EVAL_N_RETURN(index < 0  || index >= list->numHistoryNodes, IUS_ERR_VALUE);
     list->pHistoryNodes[index] = member;
     return IUS_E_OK;
 }
@@ -124,8 +123,7 @@ iuhnl_t iusHistoryNodeListLoad
     iuhn_t node;
     iuhnl_t nodeList = iusHistoryNodeListCreate(numHistoryNodes);
     char parentPath[IUS_MAX_HDF5_PATH];
-    if ( handle == H5I_INVALID_HID ) return IUHNL_INVALID;
-
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUHNL_INVALID);
     for (i=0;i<numHistoryNodes;i++)
     {
         sprintf(parentPath, "parent%d", i);
@@ -179,8 +177,8 @@ int iusHistoryNodeListSave
     int status=0;
     char parentPath[IUS_MAX_HDF5_PATH];
 
-    if( node == NULL ) return IUS_ERR_VALUE;
-    if ( handle == H5I_INVALID_HID ) return IUS_ERR_VALUE;
+    IUS_ERR_CHECK_NULL_N_RETURN(node, IUS_ERR_VALUE);
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUS_ERR_VALUE);
     if(iusHistoryNodeListFull(node) == IUS_FALSE)
         return IUS_ERR_VALUE;
 

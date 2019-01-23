@@ -8,14 +8,30 @@
 #include <ius.h>
 #include <iusHistoryNodeListPrivate.h>
 
+
+static char *pErrorFilename = "IusHistoryNodeList.errlog";
+static FILE *fpErrorLogging = NULL;
+
 TEST_GROUP(IusHistoryNodeList);
 
 TEST_SETUP(IusHistoryNodeList)
 {
+  iusErrorLogClear();
+  iusErrorLog(IUS_TRUE);
+  iusErrorAutoReport(IUS_TRUE);
+  fpErrorLogging = fopen(pErrorFilename, "w+");
+  iusErrorSetStream(fpErrorLogging);
 }
 
 TEST_TEAR_DOWN(IusHistoryNodeList)
 {
+  iusErrorLogClear();
+  iusErrorLog(IUS_FALSE);
+  if (fpErrorLogging != NULL)
+    fclose(fpErrorLogging);
+  fpErrorLogging=stderr;
+  iusErrorSetStream(fpErrorLogging);
+  remove(pErrorFilename);
 }
 
 TEST(IusHistoryNodeList, testIusCreateHistoryNodeList)
@@ -27,10 +43,16 @@ TEST(IusHistoryNodeList, testIusCreateHistoryNodeList)
   TEST_ASSERT_EQUAL(numHistoryNodes, iusHistoryNodeListGetSize(nodeList));
   iusHistoryNodeListDelete(nodeList);
 
+  long filePos = ftell(fpErrorLogging);
+  TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
   nodeList = iusHistoryNodeListCreate(-1);
   TEST_ASSERT_EQUAL(IUHNL_INVALID, nodeList);
   nodeList = iusHistoryNodeListCreate(0);
   TEST_ASSERT_EQUAL(IUHNL_INVALID, nodeList);
+
+  TEST_ASSERT_EQUAL(2,iusErrorGetCount());
+  TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
 }
 
 TEST(IusHistoryNodeList, testIusCompareHistoryNodeList)
