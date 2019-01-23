@@ -140,12 +140,7 @@ iupal_t iusPatternListDictGet
 )
 {
 	IUS_ERR_CHECK_NULL_N_RETURN(dict, IUPAL_INVALID);
-	if (key == NULL)
-	{
-		IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "key argument is NULL");
-		return IUPAL_INVALID;
-	}
-
+	IUS_ERR_CHECK_NULL_N_RETURN(key, IUPAL_INVALID);
 	HashablePatternList * search;
 	search = HashablePatternList_hashmap_get(&dict->map, key);
 	if (search == NULL)
@@ -166,7 +161,6 @@ int iusPatternListDictSet
 {
 	IUS_ERR_CHECK_NULL_N_RETURN(dict, IUS_ERR_VALUE);
 	IUS_ERR_CHECK_NULL_N_RETURN(key, IUS_ERR_VALUE);
-
 	HashablePatternList *newMember = calloc(1, sizeof(HashablePatternList));
 	newMember->patternList = member;
 	strcpy(newMember->key, key);
