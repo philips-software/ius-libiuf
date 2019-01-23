@@ -36,12 +36,7 @@ iupd_t iusPulseDictCreate
 )
 {
     iupd_t dict = calloc(1, sizeof(IusPulseDict));
-    if (dict == NULL)
-    {
-        IUS_ERROR_PUSH(IUS_ERR_MAJ_MEMORY, IUS_ERR_MIN_ALLOC, "calloc failed for IusPulseDict");
-        return NULL;
-    }
-
+    IUS_ERR_ALLOC_NULL_N_RETURN(dict, IusPulseDict, IUPD_INVALID);
     hashmap_init(&dict->map, hashmap_hash_string, hashmap_compare_string, 0);
     dict->deepDelete = IUS_FALSE;
     return dict;
@@ -52,11 +47,7 @@ int iusPulseDictDeepDelete
     iupd_t dict
 )
 {
-    if (dict == NULL)
-    {
-        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "dict argument is NULL");
-        return IUS_ERR_VALUE;
-    }
+    IUS_ERR_CHECK_NULL_N_RETURN(dict, IUS_ERR_VALUE);
     dict->deepDelete = IUS_TRUE;
     return iusPulseDictDelete(dict);
 }
@@ -68,11 +59,7 @@ int iusPulseDictDelete
 {
     struct hashmap_iter *iter;
     HashablePulse *iterElement;
-    if (dict == NULL)
-    {
-        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "dict argument is NULL");
-        return IUS_ERR_VALUE;
-    }
+    IUS_ERR_CHECK_NULL_N_RETURN(dict, IUS_ERR_VALUE);
 
     /* Free all allocated resources associated with map and reset its state */
     for (iter = hashmap_iter(&dict->map); iter; iter = hashmap_iter_next(&dict->map, iter))
@@ -143,11 +130,7 @@ int iusPulseDictGetSize
     iupd_t dict
 )
 {
-    if (dict == NULL)
-    {
-        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "dict argument is NULL");
-        return -1;
-    }
+    IUS_ERR_CHECK_NULL_N_RETURN(dict, -1);
     return (int) hashmap_size(&dict->map);
 }
 
@@ -158,17 +141,8 @@ iup_t iusPulseDictGet
 )
 {
     HashablePulse * search;
-    if (dict == NULL)
-    {
-        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "dict argument is NULL");
-        return IUP_INVALID;
-    }
-
-    if (key == NULL)
-    {
-        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "key argument is NULL");
-        return IUP_INVALID;
-    }
+    IUS_ERR_CHECK_NULL_N_RETURN(dict, IUP_INVALID);
+    IUS_ERR_CHECK_NULL_N_RETURN(key, IUP_INVALID);
     search = HashablePulse_hashmap_get(&dict->map, key);
     if (search == NULL)
     {
@@ -185,17 +159,8 @@ int iusPulseDictSet
     iup_t member
 )
 {
-    if (dict == NULL)
-    {
-        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "dict argument is NULL");
-        return IUS_ERR_VALUE;
-    }
-
-    if (key == NULL)
-    {
-        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "key argument is NULL");
-        return IUS_ERR_VALUE;
-    }
+    IUS_ERR_CHECK_NULL_N_RETURN(dict, IUS_ERR_VALUE);
+    IUS_ERR_CHECK_NULL_N_RETURN(key, IUS_ERR_VALUE);
 
     HashablePulse *newMember = calloc(1, sizeof(HashablePulse));
     newMember->pulse = member;
@@ -220,17 +185,8 @@ int iusPulseDictSave
     int status=0;
     struct hashmap_iter *iter;
 
-    if (dict == NULL)
-    {
-        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "dict argument is NULL");
-        return IUS_ERR_VALUE;
-    }
-
-    if (handle == H5I_INVALID_HID)
-    {
-        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "handle argument is invalid");
-        return IUS_ERR_VALUE;
-    }
+    IUS_ERR_CHECK_NULL_N_RETURN(dict, IUS_ERR_VALUE);
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUS_ERR_VALUE);
 
     hid_t group_id;
 	status = H5Gget_objinfo(handle, IUS_INPUTFILE_PATH_PULSEDICT, 0, NULL);
@@ -282,12 +238,7 @@ iupd_t iusPulseDictLoad
 	//char path[IUS_MAX_HDF5_PATH];
 	char memb_name[MAX_NAME];
 
-    if (handle == H5I_INVALID_HID)
-    {
-        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "handle argument is invalid");
-        return IUPD_INVALID;
-    }
-
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUPD_INVALID);
     hid_t grpid = H5Gopen(handle, IUS_INPUTFILE_PATH_PULSEDICT, H5P_DEFAULT);
     if (grpid == H5I_INVALID_HID)
     {

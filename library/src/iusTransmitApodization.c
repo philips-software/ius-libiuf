@@ -22,6 +22,7 @@ iuta_t iusTransmitApodizationCreate
 	}
 
 	transmitApodization = calloc(1, sizeof(struct IusTransmitApodization));
+	IUS_ERR_ALLOC_NULL_N_RETURN(transmitApodization, IusTransmitApodization, IUTA_INVALID);
 	transmitApodization->numElements = numElements;
 	transmitApodization->apodization = calloc(numElements, sizeof(float));
 	for (idx = 0; idx < numElements; idx++)
@@ -36,12 +37,7 @@ int iusTransmitApodizationDelete
 	iuta_t transmitApodization
 )
 {
-	if (transmitApodization == NULL)
-	{
-		IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "argument transmitApodization was NULL");
-		return IUS_ERR_VALUE;
-	}
-
+	IUS_ERR_CHECK_NULL_N_RETURN(transmitApodization, IUS_ERR_VALUE);
 	if (transmitApodization->apodization != NULL)
 	{
 		free(transmitApodization->apodization);
@@ -78,12 +74,7 @@ float iusTransmitApodizationGetElement
 	int idx
 )
 {
-	if (transmitApodization == NULL)
-	{
-		IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "argument transmitApodization was NULL");
-		return NAN;
-	}
-
+	IUS_ERR_CHECK_NULL_N_RETURN(transmitApodization, NAN);
 	if (idx >= transmitApodization->numElements || idx < 0)
 	{
 		IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE, "idx >= 0 && idx < %d but was '%d'", transmitApodization->numElements, idx);
@@ -100,12 +91,7 @@ int iusTransmitApodizationSetElement
 )
 {
 	int status = 0;
-    if (transmitApodization == NULL)
-    {
-        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "argument transmitApodization was NULL");
-        return IUS_ERR_VALUE;
-    }
-
+	IUS_ERR_CHECK_NULL_N_RETURN(transmitApodization, IUS_ERR_VALUE);
     if (idx >= transmitApodization->numElements || idx < 0)
     {
         IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE, "idx >= 0 && idx < %d but was '%d'", transmitApodization->numElements, idx);
@@ -128,12 +114,7 @@ int iusTransmitApodizationSetApodization
 	float *apodization
 )
 {
-    if (transmitApodization == NULL)
-    {
-        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "argument transmitApodization was NULL");
-        return IUS_ERR_VALUE;
-    }
-
+	IUS_ERR_CHECK_NULL_N_RETURN(transmitApodization, IUS_ERR_VALUE);
     if (apodization == NULL)
     {
         IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "argument apodization was NULL");
@@ -158,18 +139,8 @@ int iusTransmitApodizationSave
 {
 	/* write the /Transducer data */
 	herr_t  status=0;
-    if (transmitApodization == NULL)
-    {
-        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "argument transmitApodization was NULL");
-        return IUS_ERR_VALUE;
-    }
-
-    if (group_id == H5I_INVALID_HID)
-    {
-        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE, "argument group_id was invalid");
-        return IUS_ERR_VALUE;
-    }
-
+	IUS_ERR_CHECK_NULL_N_RETURN(transmitApodization, IUS_ERR_VALUE);
+	IUS_ERR_EVAL_N_RETURN(group_id == H5I_INVALID_HID, IUS_ERR_VALUE);
 	status |= iusHdf5WriteInt(group_id, IUS_INPUTFILE_PATH_TRANSMITAPODIZATION_NUMELEMENTS, &(transmitApodization->numElements), 1);
 	status |= iusHdf5WriteFloat(group_id, IUS_INPUTFILE_PATH_TRANSMITAPODIZATION_APODIZATION, transmitApodization->apodization, transmitApodization->numElements);
     if (status != 0)
@@ -190,12 +161,7 @@ iuta_t iusTransmitApodizationLoad
 	int numElements = 0;
 	float *apodization;
 
-    if (group_id == H5I_INVALID_HID)
-    {
-        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE, "argument group_id was invalid");
-        return IUTA_INVALID;
-    }
-
+	IUS_ERR_EVAL_N_RETURN(group_id == H5I_INVALID_HID, IUTA_INVALID);
 	status = iusHdf5ReadInt(group_id, IUS_INPUTFILE_PATH_TRANSMITAPODIZATION_NUMELEMENTS, &numElements);
 	if (status != 0)
     {

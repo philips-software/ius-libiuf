@@ -33,11 +33,7 @@ iutad_t iusTransmitApodizationDictCreate
 )
 {
 	iutad_t dict = calloc(1, sizeof(IusTransmitApodizationDict));
-	if (dict == NULL)
-	{
-		IUS_ERROR_PUSH(IUS_ERR_MAJ_MEMORY, IUS_ERR_MIN_ALLOC, "calloc failed for IusTransmitApodizationDict");
-		return NULL;
-	}
+	IUS_ERR_ALLOC_NULL_N_RETURN(dict, IusTransmitApodizationDict, IUTAD_INVALID);
 	hashmap_init(&dict->map, hashmap_hash_string, hashmap_compare_string, 0);
 	dict->deepDelete = IUS_FALSE;
 	return dict;
@@ -65,12 +61,7 @@ int iusTransmitApodizationDictDelete
 {
 	struct hashmap_iter *iter;
 	HashableTransmitApodization *iterElement;
-	if (dict == NULL)
-	{
-        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "dict argument is NULL");
-        return IUS_ERR_VALUE;
-    }
-
+	IUS_ERR_CHECK_NULL_N_RETURN(dict, IUS_ERR_VALUE);
 	/* Free all allocated resources associated with map and reset its state */
 	for (iter = hashmap_iter(&dict->map); iter; iter = hashmap_iter_next(&dict->map, iter))
 	{
@@ -136,11 +127,7 @@ size_t iusTransmitApodizationDictGetSize
 	iutad_t dict
 )
 {
-	if (dict == NULL)
-    {
-        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "dict argument is NULL");
-        return -1;
-    }
+	IUS_ERR_CHECK_NULL_N_RETURN(dict, -1);
 	return hashmap_size(&dict->map);
 }
 
@@ -150,19 +137,9 @@ iuta_t iusTransmitApodizationDictGet
 	char * key
 )
 {
-	if (dict == NULL)
-    {
-        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "dict argument is NULL");
-        return IUTA_INVALID;
-    }
-
-	if (key == NULL)
-    {
-        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "key argument is NULL");
-        return IUTA_INVALID;
-    }
-
-    HashableTransmitApodization *search;
+	IUS_ERR_CHECK_NULL_N_RETURN(dict, IUTA_INVALID);
+	IUS_ERR_CHECK_NULL_N_RETURN(key, IUTA_INVALID);
+	HashableTransmitApodization *search;
 	search = HashableTransmitApodization_hashmap_get(&dict->map, key);
 	if (search == NULL)
 	{
@@ -179,18 +156,8 @@ int iusTransmitApodizationDictSet
 	iuta_t member
 )
 {
-	if (dict == NULL)
-	{
-		IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "dict argument is NULL");
-		return IUS_ERR_VALUE;
-	}
-
-	if (key == NULL)
-	{
-		IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "key argument is NULL");
-		return IUS_ERR_VALUE;
-	}
-
+	IUS_ERR_CHECK_NULL_N_RETURN(dict, IUS_ERR_VALUE);
+	IUS_ERR_CHECK_NULL_N_RETURN(key, IUS_ERR_VALUE);
 	HashableTransmitApodization *newMember = calloc(1, sizeof(HashableTransmitApodization));
 	newMember->transmitApodization = member;
 	strcpy(newMember->key, key);
@@ -213,18 +180,8 @@ herr_t iusTransmitApodizationDictSave
 	hid_t group_id;
 	struct hashmap_iter *iter;
 
-	if (dict == NULL)
-	{
-		IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "dict argument is NULL");
-		return IUS_ERR_VALUE;
-	}
-
-	if (handle == H5I_INVALID_HID)
-	{
-		IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "handle argument is invalid");
-		return IUS_ERR_VALUE;
-	}
-
+	IUS_ERR_CHECK_NULL_N_RETURN(dict, IUS_ERR_VALUE);
+	IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUS_ERR_VALUE);
 	status = H5Gget_objinfo(handle, IUS_INPUTFILE_PATH_TRANSMITAPODIZATIONDICT, 0, NULL);
 	if (status != 0) // the group does not exist yet
 	{
@@ -268,17 +225,12 @@ iutad_t iusTransmitApodizationDictLoad
 	hsize_t i;
 	char memberName[MAX_NAME];
 
-	if (handle == H5I_INVALID_HID)
-	{
-		IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "handle argument is invalid");
-		return NULL;
-	}
-
+	IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUTAD_INVALID);
 	hid_t groupId = H5Gopen(handle, IUS_INPUTFILE_PATH_TRANSMITAPODIZATIONDICT, H5P_DEFAULT);
 	if (groupId == H5I_INVALID_HID)
 	{
 		IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "Error getting handle for path: %s", IUS_INPUTFILE_PATH_TRANSMITAPODIZATIONDICT);
-		return NULL;
+		return IUTAD_INVALID;
 	}
 
 	hsize_t nobj = 0;
@@ -297,7 +249,7 @@ iutad_t iusTransmitApodizationDictLoad
 
 	if (status != IUS_E_OK)
 	{
-		return NULL;
+		return IUTAD_INVALID;
 	}
     dict->deepDelete = IUS_TRUE;
 	return dict;

@@ -24,11 +24,7 @@ iurs_t iusReceiveSettingsCreateWithoutTGC
 )
 {
     iurs_t created = calloc(1,sizeof(IusReceiveSettings));
-    if (created == NULL)
-    {
-        IUS_ERROR_PUSH(IUS_ERR_MAJ_MEMORY, IUS_ERR_MIN_ALLOC, "calloc failed for IusReceiveSettings");
-        return IURS_INVALID;
-    }
+    IUS_ERR_ALLOC_NULL_N_RETURN(created, IusReceiveSettings, IURS_INVALID);
     created->sampleFrequency = sampleFrequency;
     created->numSamplesPerLine = numSamplesPerLine;
     return created;
@@ -72,12 +68,7 @@ int iusReceiveSettingsDelete
     iurs_t receiveSettings
 )
 {
-    if (receiveSettings == NULL)
-    {
-        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "argument receiveSettings was NULL");
-        return IUS_ERR_VALUE;
-    }
-
+    IUS_ERR_CHECK_NULL_N_RETURN(receiveSettings, IUS_ERR_VALUE);
     iusTGCDelete(receiveSettings->TGC);
     free(receiveSettings);
     return IUS_E_OK;
@@ -104,11 +95,7 @@ iutgc_t iusReceiveSettingsGetTGC
     iurs_t receiveSettings
 )
 {
-    if (receiveSettings == NULL)
-    {
-        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "argument receiveSettings was NULL");
-        return IUTGC_INVALID;
-    }
+    IUS_ERR_CHECK_NULL_N_RETURN(receiveSettings, IUTGC_INVALID);
     return receiveSettings->TGC;
 }
 
@@ -117,11 +104,7 @@ float iusReceiveSettingsGetSampleFrequency
     iurs_t receiveSettings
 )
 {
-    if(receiveSettings == NULL)
-    {
-        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "argument receiveSettings was NULL");
-        return NAN;
-    }
+    IUS_ERR_CHECK_NULL_N_RETURN(receiveSettings, NAN);
     return receiveSettings->sampleFrequency;
 }
 
@@ -130,11 +113,7 @@ int iusReceiveSettingsGetNumSamplesPerLine
     iurs_t receiveSettings
 )
 {
-    if (receiveSettings == NULL)
-    {
-        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "argument receiveSettings was NULL");
-        return -1;
-    }
+    IUS_ERR_CHECK_NULL_N_RETURN(receiveSettings, IUS_ERR_VALUE);
     return receiveSettings->numSamplesPerLine;
 }
 
@@ -143,11 +122,7 @@ int iusReceiveSettingsGetNumTGCentries
     iurs_t receiveSettings
 )
 {
-    if (receiveSettings == NULL)
-    {
-        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "argument receiveSettings was NULL");
-        return -1;
-    }
+    IUS_ERR_CHECK_NULL_N_RETURN(receiveSettings, IUS_ERR_VALUE);
     return iusTGCGetNumValues(receiveSettings->TGC);
 }
 
@@ -160,18 +135,8 @@ int iusReceiveSettingsSave
 )
 {
 	int status = 0;
-    if (receiveSettings == NULL)
-    {
-        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "argument receiveSettings was NULL");
-        return IUS_ERR_VALUE;
-    }
-
-    if (handle == H5I_INVALID_HID)
-    {
-        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE, "argument handle was invalid");
-        return IUS_ERR_VALUE;
-    }
-
+    IUS_ERR_CHECK_NULL_N_RETURN(receiveSettings, IUS_ERR_VALUE);
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUS_ERR_VALUE);
     status |= iusHdf5WriteFloat(handle, IUS_INPUTFILE_PATH_RECEIVESETTINGS_SAMPLEFREQUENCY, &(receiveSettings->sampleFrequency), 1);
     status |= iusHdf5WriteInt(handle, IUS_INPUTFILE_PATH_RECEIVESETTINGS_NUMSAMPLESPERLINE, &(receiveSettings->numSamplesPerLine), 1);
     if (status != 0)
@@ -200,12 +165,7 @@ iurs_t iusReceiveSettingsLoad
     iutgc_t tgc;
     iurs_t iusReceiveSettings;
 
-    if (handle == H5I_INVALID_HID)
-    {
-        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE, "argument handle was invalid");
-        return IURS_INVALID;
-    }
-
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IURS_INVALID);
     status |= iusHdf5ReadFloat(handle, IUS_INPUTFILE_PATH_RECEIVESETTINGS_SAMPLEFREQUENCY, &sampleFrequency);
     status |= iusHdf5ReadInt(handle, IUS_INPUTFILE_PATH_RECEIVESETTINGS_NUMSAMPLESPERLINE, &numSamplesPerLine);
     if (status != 0)

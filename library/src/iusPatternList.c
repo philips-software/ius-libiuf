@@ -28,16 +28,12 @@ iupal_t iusPatternListCreate
 )
 {
     iupal_t list = calloc(1, sizeof(IusPatternList));
+    IUS_ERR_ALLOC_NULL_N_RETURN(list, IusPatternList, IUPAL_INVALID);
+
     if (numPatterns <= 0)
     {
         IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE,
                            "numPatterns argument should be > 0, but was: '%d'", numPatterns);
-        return IUPAL_INVALID;
-    }
-
-    if (list == NULL)
-    {
-        IUS_ERROR_PUSH(IUS_ERR_MAJ_MEMORY, IUS_ERR_MIN_ALLOC, "calloc failed for IusPatternList");
         return IUPAL_INVALID;
     }
 
@@ -60,13 +56,7 @@ int iusPatternListDeepDelete
     iupal_t list
 )
 {
-    if (list == NULL)
-    {
-        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "argument list was NULL");
-        return IUS_ERR_VALUE;
-    }
-
-    if(list == NULL) return IUS_ERR_VALUE;
+    IUS_ERR_CHECK_NULL_N_RETURN(list, IUS_ERR_VALUE);
     list->deepDelete = IUS_TRUE;
     return iusPatternListDelete(list);
 }
@@ -78,12 +68,7 @@ int iusPatternListDelete
 )
 {
     int index;
-    if (list == NULL)
-    {
-        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "argument list was NULL");
-        return IUS_ERR_VALUE;
-    }
-
+    IUS_ERR_CHECK_NULL_N_RETURN(list, IUS_ERR_VALUE);
     if(list->deepDelete == IUS_TRUE)
     {
         for(index = 0 ; index < list->numPatterns ; index++ )
@@ -123,11 +108,7 @@ int iusPatternListGetSize
     iupal_t list
 )
 {
-    if (list == NULL)
-    {
-        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "argument list was NULL");
-        return -1;
-    }
+    IUS_ERR_CHECK_NULL_N_RETURN(list, -1);
     return list->numPatterns;
 }
 
@@ -137,12 +118,7 @@ iupa_t iusPatternListGet
     int index
 )
 {
-    if (list == NULL)
-    {
-        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "argument list was NULL");
-        return IUPA_INVALID;
-    }
-
+    IUS_ERR_CHECK_NULL_N_RETURN(list, IUPA_INVALID);
     if (index >= list->numPatterns || index < 0)
     {
         IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE,
@@ -159,8 +135,6 @@ IUS_BOOL iusPatternListValidateDimensions
     iupa_t member
 )
 {
-    IUS_UNUSED(list);
-    IUS_UNUSED(member);
     // getSamplesPerLine of first item
     if( list == NULL ) return IUS_FALSE;
     char *rsLabel1stItem = (char *) iusPatternGetReceivesettingsLabel(list->pPatterns[0]);
@@ -204,12 +178,7 @@ int iusPatternListSet
     int index
 )
 {
-    if (list == NULL)
-    {
-        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "argument list was NULL");
-        return IUS_ERR_VALUE;
-    }
-
+    IUS_ERR_CHECK_NULL_N_RETURN(list, IUS_ERR_VALUE);
     if (index >= list->numPatterns || index < 0)
     {
         IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE,
@@ -238,11 +207,7 @@ iupal_t iusPatternListLoad
     char path[IUS_MAX_HDF5_PATH];
     int numPatterns,i;
 
-    if (handle == H5I_INVALID_HID)
-    {
-        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE, "argument handle was invalid");
-        return IUPAL_INVALID;
-    }
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUPAL_INVALID);
 
     int status = iusHdf5ReadInt(handle, IUS_INPUTFILE_PATH_PATTERNLIST_SIZE, &(numPatterns));
     if (status != 0)
@@ -278,22 +243,15 @@ IUS_BOOL iusPatternListFull
 )
 {
     int i;
-    IUS_BOOL isFull = IUS_TRUE;
-    if (list == NULL)
-    {
-        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "argument list was NULL");
-        return IUS_FALSE;
-    }
-
+    IUS_ERR_CHECK_NULL_N_RETURN(list, IUS_FALSE);
     for (i=0;i < list->numPatterns;i++)
     {
         if(list->pPatterns[i] == IUPA_INVALID)
         {
-            isFull = IUS_FALSE;
-            break;
+            return IUS_FALSE;
         }
     }
-    return isFull;
+    return IUS_TRUE;
 }
 
 int iusPatternListSave
@@ -305,19 +263,9 @@ int iusPatternListSave
     int status=0;
     int i,size;
     char path[IUS_MAX_HDF5_PATH];
-
-    if (list == NULL)
-    {
-        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "argument list was NULL");
-        return IUS_ERR_VALUE;
-    }
-
-    if (handle == H5I_INVALID_HID)
-    {
-        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE, "argument handle was invalid");
-        return IUS_ERR_VALUE;
-    }
-
+    IUS_ERR_CHECK_NULL_N_RETURN(list, IUS_ERR_VALUE);
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUS_ERR_VALUE);
+    
     if(iusPatternListFull(list) == IUS_FALSE)
     {
         IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE, "argument list (pattern list) was not full");

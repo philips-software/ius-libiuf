@@ -43,12 +43,7 @@ int iusPulseDelete
     iup_t pulse
 )
 {
-    if( pulse == NULL )
-    {
-        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "pulse argument is NULL");
-        return IUS_ERR_VALUE;
-    }
-
+    IUS_ERR_CHECK_NULL_N_RETURN(pulse, IUS_ERR_VALUE);
     if( pulse->type == IUS_NON_PARAMETRIC_PULSETYPE )
         return iusNonParametricPulseDelete((iunpp_t) pulse);
     if( pulse->type == IUS_PARAMETRIC_PULSETYPE )
@@ -95,11 +90,7 @@ IusPulseType iusPulseGetType
     iup_t pulse
 )
 {
-    if( pulse == NULL )
-    {
-        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "pulse argument is NULL");
-        return IUS_INVALID_PULSETYPE;
-    }
+    IUS_ERR_CHECK_NULL_N_RETURN(pulse, IUS_INVALID_PULSETYPE);
     return pulse->type;
 }
 
@@ -181,11 +172,8 @@ int iusPulseSave
     hid_t handle
 )
 {
-    if( pulse == NULL )
-    {
-        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "pulse argument is NULL");
-        return IUS_INVALID_PULSETYPE;
-    }
+    IUS_ERR_CHECK_NULL_N_RETURN(pulse, IUS_ERR_VALUE);
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUS_ERR_VALUE);
 
     if( pulse->type == IUS_PARAMETRIC_PULSETYPE )
         return iusParametricPulseSave((iupp_t)pulse, handle);
@@ -204,14 +192,13 @@ iup_t iusBasePulseLoad
 {
 	int status = IUS_E_OK;
 	IusPulseType type;
-
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUP_INVALID);
 	status |= iusReadPulseType(handle, IUS_INPUTFILE_PATH_PULSE_PULSETYPE, &(type));
     if (status != IUS_E_OK)
     {
         IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "during load of %s",
                            IUS_INPUTFILE_PATH_PULSE_PULSETYPE);
     }
-
 	return iusPulseCreate(type);
 }
 
@@ -222,6 +209,8 @@ iup_t iusPulseLoad
 {
     int status = IUS_E_OK;
     IusPulseType type;
+
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUP_INVALID);
     status |= iusReadPulseType(handle, IUS_INPUTFILE_PATH_PULSE_PULSETYPE, &(type));
     if (status != IUS_E_OK)
     {

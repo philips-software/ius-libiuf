@@ -33,12 +33,7 @@ iupald_t iusPatternListDictCreate
 )
 {
 	iupald_t dict = calloc(1, sizeof(IusPatternListDict));
-	if (dict == NULL)
-	{
-		IUS_ERROR_PUSH(IUS_ERR_MAJ_MEMORY, IUS_ERR_MIN_ALLOC, "calloc failed for IusReceiveChannelMapDict");
-		return NULL;
-	}
-
+	IUS_ERR_ALLOC_NULL_N_RETURN(dict, IusPatternListDict, IUPALD_INVALID);
 	hashmap_init(&dict->map, hashmap_hash_string, hashmap_compare_string, 0);
 	dict->deepDelete = IUS_FALSE;
 	return dict;
@@ -51,11 +46,7 @@ int iusPatternListDictDeepDelete
     iupald_t dict
 )
 {
-	if (dict == NULL)
-	{
-		IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "dict argument is NULL");
-		return IUS_ERR_VALUE;
-	}
+	IUS_ERR_CHECK_NULL_N_RETURN(dict, IUS_ERR_VALUE);
     dict->deepDelete = IUS_TRUE;
     return iusPatternListDictDelete(dict);
 }
@@ -67,11 +58,8 @@ int iusPatternListDictDelete
 {
     HashablePatternList *iterElement;
     struct hashmap_iter *iter;
-	if (dict == NULL)
-	{
-		IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "dict argument is NULL");
-		return IUS_ERR_VALUE;
-	}
+	IUS_ERR_CHECK_NULL_N_RETURN(dict, IUS_ERR_VALUE);
+
 	/* Free all allocated resources associated with map and reset its state */
     for (iter = hashmap_iter(&dict->map); iter; iter = hashmap_iter_next(&dict->map, iter))
     {
@@ -141,12 +129,7 @@ int iusPatternListDictGetSize
 	iupald_t dict
 )
 {
-	if (dict == NULL)
-	{
-		IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "dict argument is NULL");
-		return -1;
-	}
-
+	IUS_ERR_CHECK_NULL_N_RETURN(dict, -1);
 	return (int)hashmap_size(&dict->map);
 }
 
@@ -156,12 +139,7 @@ iupal_t iusPatternListDictGet
 	char * key
 )
 {
-	if (dict == NULL)
-	{
-		IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "dict argument is NULL");
-		return IUPAL_INVALID;
-	}
-
+	IUS_ERR_CHECK_NULL_N_RETURN(dict, IUPAL_INVALID);
 	if (key == NULL)
 	{
 		IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "key argument is NULL");
@@ -186,17 +164,8 @@ int iusPatternListDictSet
 	iupal_t member
 )
 {
-    if (dict == NULL)
-    {
-        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "dict argument is NULL");
-        return IUS_ERR_VALUE;
-    }
-
-    if (key == NULL)
-    {
-        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "key argument is NULL");
-        return IUS_ERR_VALUE;
-    }
+	IUS_ERR_CHECK_NULL_N_RETURN(dict, IUS_ERR_VALUE);
+	IUS_ERR_CHECK_NULL_N_RETURN(key, IUS_ERR_VALUE);
 
 	HashablePatternList *newMember = calloc(1, sizeof(HashablePatternList));
 	newMember->patternList = member;
@@ -221,17 +190,8 @@ int iusPatternListDictSave
 	int status = 0;
 	struct hashmap_iter *iter;
 
-    if (dict == NULL)
-    {
-        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "dict argument is NULL");
-        return IUS_ERR_VALUE;
-    }
-
-    if (handle == H5I_INVALID_HID)
-    {
-        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "handle argument is invalid");
-        return IUS_ERR_VALUE;
-    }
+	IUS_ERR_CHECK_NULL_N_RETURN(dict, IUS_ERR_VALUE);
+	IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUS_ERR_VALUE);
 
 	hid_t group_id;
 	status = H5Gget_objinfo(handle, IUS_INPUTFILE_PATH_PATTERNLISTDICT, 0, NULL);
@@ -282,12 +242,8 @@ iupald_t iusPatternListDictLoad
     hsize_t i;
 	int status;
 	char memb_name[MAX_NAME];
-    if (handle == H5I_INVALID_HID)
-    {
-        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "handle argument is invalid");
-        return IUPALD_INVALID;
-    }
 
+	IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUPALD_INVALID);
 	hid_t grpid = H5Gopen(handle, IUS_INPUTFILE_PATH_PATTERNLISTDICT, H5P_DEFAULT);
     if (grpid == H5I_INVALID_HID)
     {

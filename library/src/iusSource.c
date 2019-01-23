@@ -105,11 +105,7 @@ IusSourceType iusSourceGetType
     ius_t source
 )
 {
-    if (source == IUS_INVALID)
-    {
-        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "source argument is NULL");
-        return IUS_INVALID_SOURCE_TYPE;
-    }
+    IUS_ERR_CHECK_NULL_N_RETURN(source, IUS_INVALID_SOURCE_TYPE);
     return source->type;
 }
 
@@ -177,12 +173,8 @@ int iusBaseSourceSave
     hid_t handle
 )
 {
-    if (source == IUS_INVALID)
-    {
-        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "source argument is NULL");
-        return IUS_ERR_VALUE;
-    }
-
+    IUS_ERR_CHECK_NULL_N_RETURN(source, IUS_ERR_VALUE);
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUS_ERR_VALUE);
     return iusWriteSourceType(handle, IUS_INPUTFILE_PATH_SOURCE_SOURCETYPE, source->type);
 }
 
@@ -192,11 +184,7 @@ static ius_t iusSourceCreate
 )
 {
     ius_t source = (ius_t) calloc (1,sizeof(ius_t));
-    if(source == NULL)
-    {
-        IUS_ERROR_PUSH(IUS_ERR_MAJ_MEMORY, IUS_ERR_MIN_ALLOC, "calloc failed for IusSource");
-        return IUS_INVALID;
-    }
+    IUS_ERR_ALLOC_NULL_N_RETURN(source, IusSource, IUS_INVALID);
     source->type = type;
     return source;
 }
@@ -208,7 +196,7 @@ ius_t iusBaseSourceLoad
 )
 {
     IusSourceType type;
-    
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUS_INVALID);
     int status = iusReadSourceType(handle, IUS_INPUTFILE_PATH_SOURCE_SOURCETYPE, &(type));
     if (status != IUS_E_OK)
     {
@@ -225,7 +213,8 @@ ius_t iusSourceLoad
 )
 {
 	ius_t base;
-    ius_t source = IUS_INVALID;
+    ius_t source;
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUS_INVALID);
 
     base = iusBaseSourceLoad(handle);
 	if (base == IUS_INVALID) return IUS_INVALID;
