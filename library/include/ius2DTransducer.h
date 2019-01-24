@@ -51,7 +51,7 @@ int ius2DTransducerCompare
 iu2dte_t ius2DTransducerGetElement
 (
   iu2dt_t transducer,           ///< the transducer to compare
-  int elementIndex              ///< the element index from the element list
+  int index              ///< the element index from the element list
 );
 
 /** \brief Gets the length of the transducer's element list.
@@ -67,7 +67,7 @@ int ius2DTransducerGetNumElements
 */
 int ius2DTransducerSetElement(
   iu2dt_t transducer,           ///< the transducer element
-  int elementIndex,             ///< the position in the element list
+  int index,             ///< the position in the element list
   iu2dte_t element              ///< the transducer element to be set
 );
 

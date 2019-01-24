@@ -25,15 +25,17 @@ iu2dt_t ius2DTransducerCreate
     int numElements
 )
 {
-    if ( name == NULL ) return IU2DT_INVALID;
-    if ( shape == IUS_INVALID_TRANSDUCER_SHAPE ) return IU2DT_INVALID;
-    if ( shape != IUS_LINE && shape != IUS_CIRCLE) return IU2DT_INVALID;
+    IUS_ERR_CHECK_NULL_N_RETURN(name, IU2DT_INVALID);
+    IUS_ERR_EVAL_N_RETURN(shape == IUS_INVALID_TRANSDUCER_SHAPE, IU2DT_INVALID);
+    IUS_ERR_EVAL_N_RETURN(shape != IUS_LINE && shape != IUS_CIRCLE, IU2DT_INVALID);
 
     // NAN check
-    if ( centerFrequency != centerFrequency ) return IU2DT_INVALID;
-    if ( numElements < 0 ) return IU2DT_INVALID;
+    IUS_ERR_EVAL_N_RETURN(centerFrequency != centerFrequency, IU2DT_INVALID);
+    IUS_ERR_EVAL_N_RETURN(numElements < 0, IU2DT_INVALID);
 
     iu2dt_t created = calloc(1,sizeof(Ius2DTransducer));
+    IUS_ERR_ALLOC_NULL_N_RETURN(created, Ius2DTransducer, IU2DT_INVALID);
+
     created->elements = ius2DTransducerElementListCreate(numElements);
     created->baseTransducer.type = IUS_2D_SHAPE;
     created->baseTransducer.pTransducerName = strdup(name);
@@ -45,35 +47,35 @@ iu2dt_t ius2DTransducerCreate
 
 int ius2DTransducerDeepDelete
 (
-    iu2dt_t ius2DTransducer
+    iu2dt_t transducer
 )
 {
-    if (ius2DTransducer == NULL) return IUS_ERR_VALUE;
-    ius2DTransducer->baseTransducer.deepDelete = IUS_TRUE;
-    return ius2DTransducerDelete(ius2DTransducer);
+    IUS_ERR_CHECK_NULL_N_RETURN(transducer, IUS_ERR_VALUE);
+    transducer->baseTransducer.deepDelete = IUS_TRUE;
+    return ius2DTransducerDelete(transducer);
 }
 
 int ius2DTransducerDelete
 (
-	iu2dt_t ius2DTransducer
+	iu2dt_t transducer
 )
 {
-    if(ius2DTransducer == NULL) return IUS_ERR_VALUE;
-    int numElements =  ius2DTransducerElementListGetSize(ius2DTransducer->elements);
+    IUS_ERR_CHECK_NULL_N_RETURN(transducer, IUS_ERR_VALUE);
+    int numElements =  ius2DTransducerElementListGetSize(transducer->elements);
     if (numElements > 0)
     {
-        if (ius2DTransducer->baseTransducer.deepDelete == IUS_TRUE)
+        if (transducer->baseTransducer.deepDelete == IUS_TRUE)
         {
-            ius2DTransducerElementListDeepDelete(ius2DTransducer->elements);
+            ius2DTransducerElementListDeepDelete(transducer->elements);
 
         }
         else
         {
-            ius2DTransducerElementListDelete(ius2DTransducer->elements);
+            ius2DTransducerElementListDelete(transducer->elements);
         }
     }
-    free(ius2DTransducer->baseTransducer.pTransducerName);
-    free(ius2DTransducer);
+    free(transducer->baseTransducer.pTransducerName);
+    free(transducer);
     return IUS_E_OK;
 }
 
@@ -94,11 +96,11 @@ int ius2DTransducerCompare
 iu2dte_t ius2DTransducerGetElement
 (
     iu2dt_t transducer,
-    int elementIndex
+    int index
 )
 {
-    if( transducer == NULL ) return IU2DTE_INVALID;
-    return ius2DTransducerElementListGet(transducer->elements,elementIndex);
+    IUS_ERR_CHECK_NULL_N_RETURN(transducer, IU2DTE_INVALID);
+    return ius2DTransducerElementListGet(transducer->elements,index);
 }
 
 int ius2DTransducerGetNumElements
@@ -106,7 +108,7 @@ int ius2DTransducerGetNumElements
 	iu2dt_t transducer
 )
 {
-	if( transducer == NULL ) return -1;
+    IUS_ERR_CHECK_NULL_N_RETURN(transducer, -1);
 	return ius2DTransducerElementListGetSize(transducer->elements);
 }
 
@@ -114,15 +116,15 @@ int ius2DTransducerGetNumElements
 int ius2DTransducerSetElement
 (
     iu2dt_t transducer,
-    int elementIndex,
+    int index,
     iu2dte_t element
 )
 {
-    if( transducer == NULL ) return IUS_ERR_VALUE;
-    if( elementIndex >= ius2DTransducerElementListGetSize(transducer->elements) ) return IUS_ERR_VALUE;
-    if( elementIndex < 0 ) return IUS_ERR_VALUE;
-    if( element == NULL ) return IUS_ERR_VALUE;
-    return ius2DTransducerElementListSet(transducer->elements,element,elementIndex);
+    IUS_ERR_CHECK_NULL_N_RETURN(transducer, IUS_ERR_VALUE);
+    IUS_ERR_CHECK_NULL_N_RETURN(element, IUS_ERR_VALUE);
+    IUS_ERR_EVAL_N_RETURN(index >= ius2DTransducerElementListGetSize(transducer->elements), IUS_ERR_VALUE);
+    IUS_ERR_EVAL_N_RETURN(index < 0, IUS_ERR_VALUE);
+    return ius2DTransducerElementListSet(transducer->elements,element,index);
 }
 
 int ius2DTransducerSetElementList
@@ -131,8 +133,8 @@ int ius2DTransducerSetElementList
     iu2dtel_t elementList
 )
 {
-    if( transducer == NULL ) return IUS_ERR_VALUE;
-    if( elementList == NULL ) return IUS_ERR_VALUE;
+    IUS_ERR_CHECK_NULL_N_RETURN(transducer, IUS_ERR_VALUE);
+    IUS_ERR_CHECK_NULL_N_RETURN(elementList, IUS_ERR_VALUE);
     if( transducer->elements != NULL ) ius2DTransducerElementListDelete(transducer->elements);
     transducer->elements = elementList;
     return IUS_E_OK;
@@ -145,6 +147,8 @@ herr_t ius2DTransducerSave
 )
 {
     herr_t status=0;
+    IUS_ERR_CHECK_NULL_N_RETURN(transducer, IUS_ERR_VALUE);
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUS_ERR_VALUE);
     status = iusBaseTransducerSave((iut_t)transducer, handle);
     if (status != 0)
         return status;
@@ -160,6 +164,7 @@ iu2dt_t ius2DTransducerLoad
     hid_t handle
 )
 {
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IU2DT_INVALID);
 	iut_t baseTransducer = iusBaseTransducerLoad(handle);
     if (baseTransducer == IUT_INVALID) return IU2DT_INVALID;
 

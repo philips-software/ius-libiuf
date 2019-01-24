@@ -55,7 +55,7 @@ int ius3DTransducerCompare
 iu3dte_t ius3DTransducerGetElement
 (
     iu3dt_t transducer,		///< The 3D transducer of interest
-    int elementIndex		///< The index of the element that is requested
+    int index		///< The index of the element that is requested
 );
 
 /** \brief Gets the length of the transducer's element list.

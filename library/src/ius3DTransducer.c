@@ -99,11 +99,11 @@ int ius3DTransducerCompare
 iu3dte_t ius3DTransducerGetElement
 (
   iu3dt_t transducer,
-  int elementIndex
+  int index
 )
 {
   IUS_ERR_CHECK_NULL_N_RETURN(transducer, IU3DTE_INVALID);
-  return ius3DTransducerElementListGet(transducer->elements,elementIndex);
+  return ius3DTransducerElementListGet(transducer->elements,index);
 }
 
 int ius3DTransducerGetNumElements
