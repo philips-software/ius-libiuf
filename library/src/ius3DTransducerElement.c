@@ -27,8 +27,11 @@ iu3dte_t ius3DTransducerElementCreate
     iu3ds_t siz
 )
 {
-    if( pos == NULL || ang == NULL || siz == NULL ) return IU3DTE_INVALID;
+    IUS_ERR_CHECK_NULL_N_RETURN(pos, IU3DTE_INVALID);
+    IUS_ERR_CHECK_NULL_N_RETURN(ang, IU3DTE_INVALID);
+    IUS_ERR_CHECK_NULL_N_RETURN(siz, IU3DTE_INVALID);
     iu3dte_t created = calloc(1,sizeof(Ius3DTransducerElement));
+    IUS_ERR_ALLOC_NULL_N_RETURN(created, Ius3DTransducerElement, IU3DTE_INVALID);
     created->position = pos;
     created->angle = ang;
     created->size = siz;
@@ -39,32 +42,28 @@ iu3dte_t ius3DTransducerElementCreate
 
 int ius3DTransducerElementDeepDelete
 (
-    iu3dte_t ius3DTransducerElement
+    iu3dte_t element
 )
 {
-    if (ius3DTransducerElement == NULL) return IUS_ERR_VALUE;
-    ius3DTransducerElement->deepDelete = IUS_TRUE;
-    return ius3DTransducerElementDelete(ius3DTransducerElement);
+    IUS_ERR_CHECK_NULL_N_RETURN(element, IUS_ERR_VALUE);
+    element->deepDelete = IUS_TRUE;
+    return ius3DTransducerElementDelete(element);
 }
 
 int ius3DTransducerElementDelete
 (
-    iu3dte_t ius3DTransducerElement
+    iu3dte_t element
 )
 {
-    int status = IUS_ERR_VALUE;
-    if(ius3DTransducerElement != NULL)
+    IUS_ERR_CHECK_NULL_N_RETURN(element, IUS_ERR_VALUE);
+    if(element->deepDelete == IUS_TRUE)
     {
-        if(ius3DTransducerElement->deepDelete == IUS_TRUE)
-        {
-            ius3DPositionDelete(ius3DTransducerElementGetPosition(ius3DTransducerElement));
-            ius3DSizeDelete(ius3DTransducerElementGetSize(ius3DTransducerElement));
-            ius3DAngleDelete(ius3DTransducerElementGetAngle(ius3DTransducerElement));
-        }
-        free(ius3DTransducerElement);
-        status = IUS_E_OK;
+        ius3DPositionDelete(ius3DTransducerElementGetPosition(element));
+        ius3DSizeDelete(ius3DTransducerElementGetSize(element));
+        ius3DAngleDelete(ius3DTransducerElementGetAngle(element));
     }
-    return status;
+    free(element);
+    return IUS_E_OK;
 }
 
 
@@ -92,8 +91,8 @@ int ius3DTransducerElementSave
     hid_t handle
 )
 {
-    if( element == IU3DTE_INVALID )
-        return IUS_ERR_VALUE;
+    IUS_ERR_CHECK_NULL_N_RETURN(element, IUS_ERR_VALUE);
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUS_ERR_VALUE);
 
     int status = ius3DSizeSave(element->size, handle);
     status |= ius3DPositionSave(element->position, handle);
@@ -109,20 +108,20 @@ iu3dte_t ius3DTransducerElementLoad
     hid_t handle
 )
 {
-    iu3dte_t element = IU3DTE_INVALID;
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IU3DTE_INVALID);
     iu3dp_t elemPos = ius3DPositionLoad(handle);
     if (elemPos == IU3DP_INVALID)
-        return element;
+        return IU3DTE_INVALID;
 
     iu3ds_t elemSize = ius3DSizeLoad(handle);
     if (elemSize == IU3DS_INVALID)
-        return element;
+        return IU3DTE_INVALID;
 
     iu3da_t elemAngle = ius3DAngleLoad(handle);
     if (elemAngle == IU3DA_INVALID)
-        return element;
+        return IU3DTE_INVALID;
 
-    element = ius3DTransducerElementCreate(elemPos, elemAngle, elemSize);
+    iu3dte_t element = ius3DTransducerElementCreate(elemPos, elemAngle, elemSize);
     element->deepDelete = IUS_TRUE;
     return element;
 }
@@ -132,24 +131,27 @@ iu3dte_t ius3DTransducerElementLoad
 // Getters
 iu3dp_t ius3DTransducerElementGetPosition
 (
-    iu3dte_t ius3DTransducerElement
+    iu3dte_t element
 )
 {
-    return ius3DTransducerElement->position;
+    IUS_ERR_CHECK_NULL_N_RETURN(element, IU3DP_INVALID);
+    return element->position;
 }
 
 iu3da_t ius3DTransducerElementGetAngle
 (
-    iu3dte_t ius3DTransducerElement
+    iu3dte_t element
 )
 {
-    return ius3DTransducerElement->angle;
+    IUS_ERR_CHECK_NULL_N_RETURN(element, IU3DA_INVALID);
+    return element->angle;
 }
 
 iu3ds_t ius3DTransducerElementGetSize
 (
-    iu3dte_t ius3DTransducerElement
+    iu3dte_t element
 )
 {
-    return ius3DTransducerElement->size;
+    IUS_ERR_CHECK_NULL_N_RETURN(element, IU3DS_INVALID);
+    return element->size;
 }

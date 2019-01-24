@@ -10,14 +10,29 @@
 #include <ius.h>
 #include <ius3DTransducerElementPrivate.h>
 
+static char *pErrorFilename = "Ius3DTransducerElement.errlog";
+static FILE *fpErrorLogging = NULL;
+
 TEST_GROUP(Ius3DTransducerElement);
 
 TEST_SETUP(Ius3DTransducerElement)
 {
+    iusErrorLogClear();
+    iusErrorLog(IUS_TRUE);
+    iusErrorAutoReport(IUS_TRUE);
+    fpErrorLogging = fopen(pErrorFilename, "w+");
+    iusErrorSetStream(fpErrorLogging);
 }
 
 TEST_TEAR_DOWN(Ius3DTransducerElement)
 {
+    iusErrorLogClear();
+    iusErrorLog(IUS_FALSE);
+    if (fpErrorLogging != NULL)
+        fclose(fpErrorLogging);
+    fpErrorLogging=stderr;
+    iusErrorSetStream(fpErrorLogging);
+    remove(pErrorFilename);
 }
 
 
@@ -32,12 +47,19 @@ TEST(Ius3DTransducerElement, testIus3DTransducerElementCreate)
     TEST_ASSERT_NOT_EQUAL(IU3DTE_INVALID,element);
 
     //invalid params
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
     iu3dte_t nothereElement = ius3DTransducerElementCreate(elemPos, elemAngle, NULL);
     TEST_ASSERT_EQUAL(IU3DTE_INVALID,nothereElement);
     nothereElement = ius3DTransducerElementCreate(elemPos, NULL, elemSize);
     TEST_ASSERT_EQUAL(IU3DTE_INVALID,nothereElement);
     nothereElement = ius3DTransducerElementCreate(NULL, elemAngle, elemSize);
     TEST_ASSERT_EQUAL(IU3DTE_INVALID,nothereElement);
+
+    TEST_ASSERT_EQUAL(3,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
+
 
     int status = ius3DTransducerElementDelete(element);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
@@ -61,8 +83,15 @@ TEST(Ius3DTransducerElement, testIus3DTransducerElementDelete)
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
     // invalid params
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
     status = ius3DTransducerElementDelete(NULL);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE,status);
+
+    TEST_ASSERT_EQUAL(1,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
+
     ius3DPositionDelete(elemPos);
     ius3DAngleDelete(elemAngle);
     ius3DSizeDelete(elemSize);
