@@ -16,15 +16,16 @@ struct IusFrame
 // ADT
 iufr_t iusFrameCreate
 (
-    char *patternListLabel,
+    char *label,
     int dataIndex,
     float time
 )
 {
-    if( patternListLabel == NULL || dataIndex < 0) return IUF_INVALID;
-	if (strlen(patternListLabel) ==  0) return IUF_INVALID;
+    IUS_ERR_EVAL_N_RETURN(dataIndex <0, IUF_INVALID);
+    IUS_ERR_STRP_NULL_EMPTY(label, IUF_INVALID);
     iufr_t created = calloc(1,sizeof(IusFrame));
-    created->patternListLabel = strdup(patternListLabel);
+    IUS_ERR_ALLOC_NULL_N_RETURN(created, IusFrame, IUF_INVALID);
+    created->patternListLabel = strdup(label);
     created->dataIndex = dataIndex;
     created->time = time;
     return created;
@@ -35,14 +36,10 @@ int iusFrameDelete
     iufr_t frame
 )
 {
-    int status = IUS_ERR_VALUE;
-    if(frame != NULL)
-    {
-        free(frame->patternListLabel);
-        free(frame);
-        status = IUS_E_OK;
-    }
-    return status;
+    IUS_ERR_CHECK_NULL_N_RETURN(frame, IUS_ERR_VALUE);
+    free(frame->patternListLabel);
+    free(frame);
+    return IUS_E_OK;
 }
 
 
@@ -67,7 +64,7 @@ float iusFrameGetTime
     iufr_t frame
 )
 {
-    if( frame == NULL ) return -1;
+    IUS_ERR_CHECK_NULL_N_RETURN(frame, -1);
     return frame->time;
 }
 
@@ -76,7 +73,7 @@ char *iusFrameGetPatternListLabel
     iufr_t frame
 )
 {
-    if( frame == NULL ) return NULL;
+    IUS_ERR_CHECK_NULL_N_RETURN(frame, NULL);
     return frame->patternListLabel;
 }
 
@@ -85,7 +82,7 @@ int iusFrameGetDataIndex
     iufr_t frame
 )
 {
-    if( frame == NULL ) return -1;
+    IUS_ERR_CHECK_NULL_N_RETURN(frame, -1);
     return frame->dataIndex;
 }
 
@@ -97,7 +94,8 @@ int iusFrameSave
 )
 {
     int  status=IUS_E_OK;
- 
+    IUS_ERR_CHECK_NULL_N_RETURN(frame, IUS_ERR_VALUE);
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUS_ERR_VALUE);
     status |= iusHdf5WriteString(handle, IUS_INPUTFILE_PATH_FRAMELIST_FRAME_PATTERNLISTLABEL, frame->patternListLabel);
     status |= iusHdf5WriteInt(handle, IUS_INPUTFILE_PATH_FRAMELIST_FRAME_DATAINDEX, &(frame->dataIndex), 1);
     status |= iusHdf5WriteFloat(handle, IUS_INPUTFILE_PATH_FRAMELIST_FRAME_TIME, &(frame->time), 1);
@@ -114,7 +112,7 @@ iufr_t iusFrameLoad
     char patternListLabel[IUS_MAX_HDF5_PATH];
     int dataIndex;
     float time;
-
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUF_INVALID);
     status |= iusHdf5ReadString( handle, IUS_INPUTFILE_PATH_FRAMELIST_FRAME_PATTERNLISTLABEL, patternListLabel);
     status |= iusHdf5ReadInt( handle, IUS_INPUTFILE_PATH_FRAMELIST_FRAME_DATAINDEX, &(dataIndex));
     status |= iusHdf5ReadFloat( handle, IUS_INPUTFILE_PATH_FRAMELIST_FRAME_TIME, &(time));
