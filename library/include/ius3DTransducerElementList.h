@@ -19,7 +19,7 @@ typedef Ius3DTransducerElementList *iu3dtel_t;
 */
 iu3dtel_t ius3DTransducerElementListCreate
 (
-    int num3DTransducerElements ///< the number of elements that will go in the element list
+    int numElements ///< the number of elements that will go in the element list
 );
 
 /** \brief Delete an existing \p list of elements including all its elements individually.
