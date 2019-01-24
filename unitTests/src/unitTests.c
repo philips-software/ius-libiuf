@@ -15,7 +15,7 @@ static void RunAllTests(void)
 //    RUN_TEST_GROUP(Ius2DTransducerElementList);
 //    RUN_TEST_GROUP(Ius3DNonParametricSource);
 //    RUN_TEST_GROUP(Ius3DParametricSource);
-//    RUN_TEST_GROUP(Ius3DTransducer);
+    RUN_TEST_GROUP(Ius3DTransducer);
     RUN_TEST_GROUP(Ius3DTransducerElement);
     RUN_TEST_GROUP(Ius3DTransducerElementList);
     RUN_TEST_GROUP(IusAcquisition);
