@@ -21,7 +21,7 @@ iuds_t iusDataStreamCreate
 
 int iusDataStreamDelete
 (
-    iuds_t iusDataStream
+    iuds_t dataStream
 );
 
 
