@@ -94,8 +94,8 @@ iuhn_t iusHistoryNodeListGet
     int index
 )
 {
-    if( index < 0 ) return NULL;
-    if( list == NULL || index >= list->numHistoryNodes ) return NULL;
+    IUS_ERR_CHECK_NULL_N_RETURN(list, IUHN_INVALID);
+    IUS_ERR_EVAL_N_RETURN(index < 0  || index >= list->numHistoryNodes, IUHN_INVALID);
     return list->pHistoryNodes[index];
 }
 
@@ -180,7 +180,10 @@ int iusHistoryNodeListSave
     IUS_ERR_CHECK_NULL_N_RETURN(node, IUS_ERR_VALUE);
     IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUS_ERR_VALUE);
     if(iusHistoryNodeListFull(node) == IUS_FALSE)
+    {
+        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE, "argument list (history node list) was not full");
         return IUS_ERR_VALUE;
+    }
 
     for (i=0;i<node->numHistoryNodes;i++)
     {
