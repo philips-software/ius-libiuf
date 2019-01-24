@@ -9,15 +9,31 @@
 #include <ius.h>
 #include <testDataGenerators.h>
 
+static char *pErrorFilename = "IusFile.errlog";
+static FILE *fpErrorLogging = NULL;
+
 TEST_GROUP(IusFile);
 
 TEST_SETUP(IusFile)
 {
+    iusErrorLogClear();
+    iusErrorLog(IUS_TRUE);
+    iusErrorAutoReport(IUS_TRUE);
+    fpErrorLogging = fopen(pErrorFilename, "w+");
+    iusErrorSetStream(fpErrorLogging);
 }
 
 TEST_TEAR_DOWN(IusFile)
 {
+    iusErrorLogClear();
+    iusErrorLog(IUS_FALSE);
+    if (fpErrorLogging != NULL)
+        fclose(fpErrorLogging);
+    fpErrorLogging=stderr;
+    iusErrorSetStream(fpErrorLogging);
+    remove(pErrorFilename);
 }
+
 
 
 TEST(IusFile, testIusInputFileHistoryScenario)
