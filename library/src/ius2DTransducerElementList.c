@@ -17,27 +17,27 @@ struct Ius2DTransducerElementList
 // ADT
 iu2dtel_t ius2DTransducerElementListCreate
 (
-    int num2DTransducerElements
+    int numElements
 )
 {
     int i;
+    IUS_ERR_EVAL_N_RETURN(numElements<=0, IU2DTEL_INVALID);
     iu2dtel_t list = calloc(1, sizeof(Ius2DTransducerElementList));
-    if(list!=NULL)
+    IUS_ERR_ALLOC_NULL_N_RETURN(list, Ius2DTransducerElementList, IU2DTEL_INVALID);
+    list->deepDelete = IUS_FALSE;
+    list->numElements = numElements;
+    list->p2DTransducerElements = (iu2dte_t *) calloc((size_t)numElements, sizeof(iu2dte_t));
+    if( list->p2DTransducerElements == NULL )
     {
-        list->deepDelete = IUS_FALSE;
-        list->numElements = num2DTransducerElements;
-        list->p2DTransducerElements = (iu2dte_t *) calloc((size_t)num2DTransducerElements, sizeof(iu2dte_t));
-        if( list->p2DTransducerElements == NULL )
+        IUS_ERROR_PUSH(IUS_ERR_MAJ_MEMORY, IUS_ERR_MIN_ALLOC, "calloc failed for p2DTransducerElements member");
+        free(list);
+        list = NULL;
+    }
+    else
+    {
+        for(i = 0 ; i < list->numElements ; i++ )
         {
-            free(list);
-            list = NULL;
-        }
-        else
-        {
-            for(i = 0 ; i < list->numElements ; i++ )
-            {
-                ius2DTransducerElementListSet(list,IU2DTE_INVALID,i);
-            }
+            ius2DTransducerElementListSet(list,IU2DTE_INVALID,i);
         }
     }
     return list;
@@ -49,7 +49,7 @@ int ius2DTransducerElementListDeepDelete
     iu2dtel_t list
 )
 {
-    if(list == NULL) return IUS_ERR_VALUE;
+    IUS_ERR_CHECK_NULL_N_RETURN(list, IUS_ERR_VALUE);
     list->deepDelete = IUS_TRUE;
     return ius2DTransducerElementListDelete(list);
 }
@@ -59,7 +59,7 @@ int ius2DTransducerElementListDelete
     iu2dtel_t list
 )
 {
-    if(list == NULL) return IUS_ERR_VALUE;
+    IUS_ERR_CHECK_NULL_N_RETURN(list, IUS_ERR_VALUE);
     if(list->deepDelete == IUS_TRUE)
     {
         for (int i = 0 ; i < list->numElements ; i++ )
@@ -98,7 +98,7 @@ int ius2DTransducerElementListGetSize
     iu2dtel_t list
 )
 {
-    if( list == NULL ) return -1;
+    IUS_ERR_CHECK_NULL_N_RETURN(list, -1);
     return list->numElements;
 }
 
@@ -108,9 +108,8 @@ iu2dte_t ius2DTransducerElementListGet
     int index
 )
 {
-    if( list == NULL ) return NULL;
-    if( index >= list->numElements ) return NULL;
-    if( index < 0 ) return NULL;
+    IUS_ERR_CHECK_NULL_N_RETURN(list, IU2DTE_INVALID);
+    IUS_ERR_EVAL_N_RETURN(index < 0  || index >= list->numElements, IU2DTE_INVALID);
     return list->p2DTransducerElements[index];
 }
 
@@ -121,9 +120,8 @@ int ius2DTransducerElementListSet
     int index
 )
 {
-    if( list == NULL || member == NULL ) return IUS_ERR_VALUE;
-    if( index >= list->numElements ) return IUS_ERR_VALUE;
-    if( index < 0 ) return IUS_ERR_VALUE;
+    IUS_ERR_CHECK_NULL_N_RETURN(list, IUS_ERR_VALUE);
+    IUS_ERR_EVAL_N_RETURN(index < 0  || index >= list->numElements, IUS_ERR_VALUE);
     list->p2DTransducerElements[index] = member;
     return IUS_E_OK;
 }
@@ -155,10 +153,10 @@ iu2dtel_t ius2DTransducerElementListLoad
     int i,size;
 
     if(handle == H5I_INVALID_HID) return IU2DTEL_INVALID;
-	
+
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IU2DTEL_INVALID);
 	hid_t elements_id = H5Gopen(handle, IUS_INPUTFILE_PATH_TRANSDUCER_ELEMENTLIST, H5P_DEFAULT);
-	if (elements_id == H5I_INVALID_HID)
-		return IU2DTEL_INVALID;
+    IUS_ERR_EVAL_N_RETURN(elements_id == H5I_INVALID_HID, IU2DTEL_INVALID);
 
     int status = iusHdf5ReadInt(elements_id, IUS_INPUTFILE_PATH_TRANSDUCER_ELEMENTLIST_SIZE, &(size));
     if(status <0)
@@ -203,12 +201,13 @@ int ius2DTransducerElementListSave
     int i;
     char path[IUS_MAX_HDF5_PATH];
 
-    if(list == NULL)
-        return IUS_ERR_VALUE;
-    if(handle == H5I_INVALID_HID)
-        return IUS_ERR_VALUE;
+    IUS_ERR_CHECK_NULL_N_RETURN(list, IUS_ERR_VALUE);
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUS_ERR_VALUE);
     if(ius2DTransducerElementListFull(list) == IUS_FALSE)
+    {
+        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE, "argument list (2DTransducerElement list) was not full");
         return IUS_ERR_VALUE;
+    }
 
     iu2dte_t sourceElement;
 	hid_t elements_id = H5Gcreate(handle, IUS_INPUTFILE_PATH_TRANSDUCER_ELEMENTLIST, 
