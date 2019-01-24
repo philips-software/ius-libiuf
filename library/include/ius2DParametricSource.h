@@ -34,7 +34,7 @@ iu2dps_t ius2DParametricSourceCreate
  */
 int ius2DParametricSourceDelete
 (
-    iu2dps_t ius2DParametricSource ///< the source that will be deleted
+    iu2dps_t source ///< the source that will be deleted
 );
 
 /** \brief Compares two 2D parametric sources. It does not matter which is the reference and the actual.
@@ -50,21 +50,21 @@ int ius2DParametricSourceCompare
  */
 float ius2DParametricSourceGetFNumber
 (
-    iu2dps_t ius2DParametricSource ///< The source of interest
+    iu2dps_t source ///< The source of interest
 );
 
 /** \brief Returns the angular delta in radians between source points or NAN if the source is invalid.
  */
 float ius2DParametricSourceGetDeltaTheta
 (
-    iu2dps_t ius2DParametricSource ///< The source of interest
+    iu2dps_t source ///< The source of interest
 );
 
 /** \brief Returns the angle of the first source point or NAN if the source is invalid
  */
 float ius2DParametricSourceGetStartTheta
 (
-    iu2dps_t ius2DParametricSource ///< The source of interest
+    iu2dps_t source ///< The source of interest
 );
 
 /** \brief Sets the fNumber of the parametric sources, return #IUS_E_OK when successful or #IUS_ERR_VALUE in case
@@ -72,7 +72,7 @@ float ius2DParametricSourceGetStartTheta
 */
 int ius2DParametricSourceSetFNumber
 (
-    iu2dps_t ius2DParametricSource, ///< The source of interest
+    iu2dps_t source, ///< The source of interest
     float FNumber                   ///< the value of the fNumber
 );
 
@@ -81,13 +81,13 @@ int ius2DParametricSourceSetFNumber
 */
 int ius2DParametricSourceSetDeltaTheta
 (
-    iu2dps_t ius2DParametricSource, ///< The source of interest
+    iu2dps_t source, ///< The source of interest
     float deltaTheta                ///< the value of the delta angle
 );
 
 int ius2DParametricSourceSetStartTheta
 (
-    iu2dps_t ius2DParametricSource, ///< The source of interest
+    iu2dps_t source, ///< The source of interest
     float startTheta                ///< the value of the starting angle
 );
 
