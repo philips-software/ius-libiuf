@@ -9,14 +9,29 @@
 #include <iusDataStreamDictPrivate.h>
 #include <testDataGenerators.h>
 
+static char *pErrorFilename = "IusDataStreamDict.errlog";
+static FILE *fpErrorLogging = NULL;
+
 TEST_GROUP(IusDataStreamDict);
 
 TEST_SETUP(IusDataStreamDict)
 {
+    iusErrorLogClear();
+    iusErrorLog(IUS_TRUE);
+    iusErrorAutoReport(IUS_TRUE);
+    fpErrorLogging = fopen(pErrorFilename, "w+");
+    iusErrorSetStream(fpErrorLogging);
 }
 
 TEST_TEAR_DOWN(IusDataStreamDict)
 {
+    iusErrorLogClear();
+    iusErrorLog(IUS_FALSE);
+    if (fpErrorLogging != NULL)
+        fclose(fpErrorLogging);
+    fpErrorLogging=stderr;
+    iusErrorSetStream(fpErrorLogging);
+    remove(pErrorFilename);
 }
 
 
@@ -41,12 +56,20 @@ TEST(IusDataStreamDict, testIusDataStreamDictSetGet)
     TEST_ASSERT_EQUAL_FLOAT(value->fileChunkConfig,iusDataStreamDictGet(dict, key)->fileChunkConfig);
 
     // invalid args
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, iusDataStreamDictSet(NULL, key, value));
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, iusDataStreamDictSet(dict, NULL, value));
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, iusDataStreamDictSet(dict, key, NULL));
 
     TEST_ASSERT_EQUAL(NULL, iusDataStreamDictGet(dict, NULL));
     TEST_ASSERT_EQUAL(NULL, iusDataStreamDictGet(dict, "unknownKey"));
+    TEST_ASSERT_EQUAL(NULL, iusDataStreamDictGet(NULL, ""));
+
+
+    TEST_ASSERT_EQUAL(6,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
+
 
     iusDataStreamDictDelete(dict);
 }
