@@ -11,14 +11,29 @@
 #include <include/ius.h>
 #include "include/ius2DTransducerElementPrivate.h"
 
+static char *pErrorFilename = "Ius2DTransducerElement.errlog";
+static FILE *fpErrorLogging = NULL;
+
 TEST_GROUP(Ius2DTransducerElement);
 
 TEST_SETUP(Ius2DTransducerElement)
 {
+    iusErrorLogClear();
+    iusErrorLog(IUS_TRUE);
+    iusErrorAutoReport(IUS_TRUE);
+    fpErrorLogging = fopen(pErrorFilename, "w+");
+    iusErrorSetStream(fpErrorLogging);
 }
 
 TEST_TEAR_DOWN(Ius2DTransducerElement)
 {
+    iusErrorLogClear();
+    iusErrorLog(IUS_FALSE);
+    if (fpErrorLogging != NULL)
+        fclose(fpErrorLogging);
+    fpErrorLogging=stderr;
+    iusErrorSetStream(fpErrorLogging);
+    remove(pErrorFilename);
 }
 
 
@@ -33,6 +48,9 @@ TEST(Ius2DTransducerElement, testIus2DTransducerElementCreate)
     TEST_ASSERT_NOT_EQUAL(IU2DTE_INVALID,element);
 
     //invalid params
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
     iu2dte_t notherElement = ius2DTransducerElementCreate(elemPos, theta, NULL);
     TEST_ASSERT_EQUAL(IU2DTE_INVALID,notherElement);
 
@@ -42,6 +60,9 @@ TEST(Ius2DTransducerElement, testIus2DTransducerElementCreate)
 
     notherElement = ius2DTransducerElementCreate(NULL, theta, elemSize);
     TEST_ASSERT_EQUAL(IU2DTE_INVALID,notherElement);
+
+    TEST_ASSERT_EQUAL(3,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
 
     int status = ius2DTransducerElementDelete(element);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
@@ -64,8 +85,14 @@ TEST(Ius2DTransducerElement, testIus2DTransducerElementDelete)
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
     // invalid params
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
     status = ius2DTransducerElementDelete(NULL);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE,status);
+
+    TEST_ASSERT_EQUAL(1,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
     ius2DPositionDelete(elemPos);
     ius2DSizeDelete(elemSize);
 }

@@ -2,6 +2,7 @@
 //
 // Created by nlv09165 on 23/05/2018.
 //
+#include <math.h>
 #include <stdlib.h>
 
 #include <ius.h>
@@ -27,11 +28,13 @@ iu2dte_t ius2DTransducerElementCreate
     iu2ds_t size
 )
 {
-    if( pos == NULL || size == NULL ) return IU2DTE_INVALID;
+    IUS_ERR_CHECK_NULL_N_RETURN(pos, IU2DTE_INVALID);
+    IUS_ERR_CHECK_NULL_N_RETURN(size, IU2DTE_INVALID);
     // According to the IEEE standard, NaN values have the odd property that comparisons involving them are always false.
     // That is, for a float theta, theta != theta will be true only if f is NaN.
-    if( theta != theta ) return IU2DTE_INVALID;
+    IUS_ERR_EVAL_N_RETURN(theta != theta, IU2DTE_INVALID);
     iu2dte_t created = (Ius2DTransducerElement *) calloc(1,sizeof(struct Ius2DTransducerElement));
+    IUS_ERR_ALLOC_NULL_N_RETURN(created, Ius2DTransducerElement, IU2DTE_INVALID);
     created->position = pos;
     created->theta = theta;
     created->size = size;
@@ -41,26 +44,26 @@ iu2dte_t ius2DTransducerElementCreate
 
 int ius2DTransducerElementDeepDelete
 (
-    iu2dte_t ius2DTransducerElement
+    iu2dte_t element
 )
 {
-    if (ius2DTransducerElement == NULL) return IUS_ERR_VALUE;
-    ius2DTransducerElement->deepDelete=IUS_TRUE;
-    return ius2DTransducerElementDelete(ius2DTransducerElement);
+    IUS_ERR_CHECK_NULL_N_RETURN(element, IUS_ERR_VALUE);
+    element->deepDelete=IUS_TRUE;
+    return ius2DTransducerElementDelete(element);
 }
 
 int ius2DTransducerElementDelete
 (
-    iu2dte_t ius2DTransducerElement
+    iu2dte_t element
 )
 {
-    if (ius2DTransducerElement == NULL) return IUS_ERR_VALUE;
-    if (ius2DTransducerElement->deepDelete == IUS_TRUE)
+    IUS_ERR_CHECK_NULL_N_RETURN(element, IUS_ERR_VALUE);
+    if (element->deepDelete == IUS_TRUE)
     {
-        ius2DPositionDelete(ius2DTransducerElement->position);
-        ius2DSizeDelete(ius2DTransducerElement->size);
+        ius2DPositionDelete(element->position);
+        ius2DSizeDelete(element->size);
     }
-    free(ius2DTransducerElement);
+    free(element);
     return IUS_E_OK;
 }
 
@@ -87,8 +90,9 @@ int ius2DTransducerElementSave
     hid_t handle
 )
 {
-    
-    if( element == IU2DTE_INVALID ) return IUS_ERR_VALUE;
+
+    IUS_ERR_CHECK_NULL_N_RETURN(element, IUS_ERR_VALUE);
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUS_ERR_VALUE);
 
     int status = ius2DSizeSave(element->size, handle);
     status |= ius2DPositionSave(element->position, handle);
@@ -105,7 +109,8 @@ iu2dte_t ius2DTransducerElementLoad
 {
     float theta;
     int status;
-	
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IU2DTE_INVALID);
+
     iu2dp_t elemPos = ius2DPositionLoad(handle);
     if (elemPos == IU2DP_INVALID) return IU2DTE_INVALID;
 
@@ -123,24 +128,27 @@ iu2dte_t ius2DTransducerElementLoad
 // Getters
 iu2dp_t ius2DTransducerElementGetPosition
 (
-	iu2dte_t ius2DTransducerElement
+	iu2dte_t element
 )
 {
-	return ius2DTransducerElement->position;
+    IUS_ERR_CHECK_NULL_N_RETURN(element, IU2DP_INVALID);
+	return element->position;
 }
 
 float ius2DTransducerElementGetAngle
 (
-	iu2dte_t ius2DTransducerElement
+	iu2dte_t element
 )
 {
-	return ius2DTransducerElement->theta;
+    IUS_ERR_CHECK_NULL_N_RETURN(element, NAN);
+    return element->theta;
 }
 
 iu2ds_t ius2DTransducerElementGetSize
 (
-	iu2dte_t ius2DTransducerElement
+	iu2dte_t element
 )
 {
-	return ius2DTransducerElement->size;
+    IUS_ERR_CHECK_NULL_N_RETURN(element, IU2DS_INVALID);
+	return element->size;
 }
