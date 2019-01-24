@@ -31,7 +31,7 @@ iu3dnps_t ius3DNonParametricSourceCreate
     {
         IUS_ERROR_PUSH(IUS_ERR_MAJ_MEMORY, IUS_ERR_MIN_ALLOC, "calloc failed for pLocations member");
         free(created);
-        return NULL;
+        return IU3DNPS_INVALID;
     }
 
     created->deepDelete = IUS_FALSE;

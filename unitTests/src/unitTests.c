@@ -8,7 +8,7 @@
 
 static void RunAllTests(void)
 {
-//    RUN_TEST_GROUP(Ius2DNonParametricSource);
+    RUN_TEST_GROUP(Ius2DNonParametricSource);
     RUN_TEST_GROUP(Ius2DParametricSource);
     RUN_TEST_GROUP(Ius2DTransducer);
     RUN_TEST_GROUP(Ius2DTransducerElement);
