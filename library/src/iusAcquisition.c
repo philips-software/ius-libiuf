@@ -24,10 +24,10 @@ iua_t iusAcquisitionCreate
     const char *pDescription  /**< Acquisition notes */
 )
 {
-    if ( speedOfSound < 0.0f ) return IUA_INVALID;
-    if ( date <= 0 ) return IUA_INVALID;
-
+    IUS_ERR_EVAL_N_RETURN(speedOfSound < 0.0f, IUA_INVALID);
+    IUS_ERR_EVAL_N_RETURN(date <= 0, IUA_INVALID);
     IusAcquisition *pAcquisition = (IusAcquisition *) calloc(1, sizeof(IusAcquisition));
+    IUS_ERR_ALLOC_NULL_N_RETURN(pAcquisition, IusAcquisition, IUA_INVALID);
     pAcquisition->speedOfSound = speedOfSound;
     pAcquisition->date = date;
     if( pDescription == NULL )
@@ -42,7 +42,7 @@ int iusAcquisitionDelete
     iua_t acquisition
 )
 {
-    if( acquisition == NULL ) return IUS_ERR_VALUE;
+    IUS_ERR_CHECK_NULL_N_RETURN(acquisition, IUS_ERR_VALUE);
     free(acquisition->pDescription);
     free(acquisition);
     return IUS_E_OK;
@@ -73,7 +73,7 @@ float iusAcquisitionGetSpeedOfSound
     iua_t acquisition
 )
 {
-    if( acquisition == NULL ) return NAN;
+    IUS_ERR_CHECK_NULL_N_RETURN(acquisition, NAN);
     return acquisition->speedOfSound;
 }
 
@@ -82,7 +82,7 @@ int iusAcquisitionGetDate
     iua_t acquisition
 )
 {
-    if( acquisition == NULL ) return -1;
+    IUS_ERR_CHECK_NULL_N_RETURN(acquisition, -1);
     return acquisition->date;
 }
 
@@ -91,34 +91,9 @@ char * iusAcquisitionGetDescription
     iua_t acquisition
 )
 {
-    if( acquisition == NULL ) return NULL;
+    IUS_ERR_CHECK_NULL_N_RETURN(acquisition, NULL);
     return acquisition->pDescription;
 }
-
-#if 0
-// old routines
-int LF_copyAcquisitionData
-(
-    iua_t pDst,
-    iua_t pSrc
-)
-{
-    // speed of sound in m/s
-    // int concatenation of <year><month><day> e.g. 20160123 for 23th Jan 2016
-    pDst->speedOfSound = pSrc->speedOfSound;
-    pDst->date         = pSrc->date;
-
-    pDst->pDescription  =
-        (char *)calloc( strlen( pSrc->pDescription ) + 1, sizeof( char ) );
-    if ( pDst->pDescription == NULL )
-    {
-        return 1;
-    }
-    strcpy( pDst->pDescription, pSrc->pDescription );
-
-    return 0;
-}
-#endif
 
 // serialization
 int iusAcquisitionSave
@@ -128,6 +103,8 @@ int iusAcquisitionSave
 )
 {
     int status=0;
+    IUS_ERR_CHECK_NULL_N_RETURN(acquisition, IUS_ERR_VALUE);
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUS_ERR_VALUE);
 
 	hid_t acquisition_id;
 	status = H5Gget_objinfo(handle, IUS_INPUTFILE_PATH_ACQUISITION, 0, NULL);
@@ -139,8 +116,15 @@ int iusAcquisitionSave
 	{
 		acquisition_id = H5Gopen(handle, IUS_INPUTFILE_PATH_ACQUISITION, H5P_DEFAULT);
 	}
-	if (acquisition_id > 0) status = 0;
-    status |= iusHdf5WriteFloat(acquisition_id, IUS_INPUTFILE_PATH_ACQUISITION_SPEEDOFSOUND, &acquisition->speedOfSound, 1);
+
+	if (acquisition_id == H5I_INVALID_HID)
+    {
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "Error getting handle for path: %s", IUS_INPUTFILE_PATH_ACQUISITION);
+        return IUS_ERR_VALUE;
+    }
+
+
+    status = iusHdf5WriteFloat(acquisition_id, IUS_INPUTFILE_PATH_ACQUISITION_SPEEDOFSOUND, &acquisition->speedOfSound, 1);
     status |= iusHdf5WriteInt(acquisition_id, IUS_INPUTFILE_PATH_ACQUISITION_DATE, &acquisition->date, 1);
     status |= iusHdf5WriteString(acquisition_id, IUS_INPUTFILE_PATH_ACQUISITION_DESCRIPTION, acquisition->pDescription);
 
@@ -159,6 +143,8 @@ iua_t iusAcquisitionLoad
     char description[IUS_MAX_HDF5_PATH];
     iua_t acquisition;
 
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUA_INVALID);
+
 	hid_t acquisition_id = H5Gopen(handle, IUS_INPUTFILE_PATH_ACQUISITION, H5P_DEFAULT);
     status |= iusHdf5ReadFloat(acquisition_id, IUS_INPUTFILE_PATH_ACQUISITION_SPEEDOFSOUND, &(speedOfSound));
     status |= iusHdf5ReadInt(acquisition_id, IUS_INPUTFILE_PATH_ACQUISITION_DATE, &(date));
@@ -166,7 +152,7 @@ iua_t iusAcquisitionLoad
 	
 	H5Gclose(acquisition_id);
     if( status < 0 )
-        return NULL;
+        return IUA_INVALID;
     acquisition = iusAcquisitionCreate(speedOfSound, date, description);
     return acquisition;
 }

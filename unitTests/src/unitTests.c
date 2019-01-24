@@ -18,7 +18,7 @@ static void RunAllTests(void)
 //    RUN_TEST_GROUP(Ius3DTransducer);
 //    RUN_TEST_GROUP(Ius3DTransducerElement);
 //    RUN_TEST_GROUP(Ius3DTransducerElementList);
-//    RUN_TEST_GROUP(IusAcquisition);
+    RUN_TEST_GROUP(IusAcquisition);
     RUN_TEST_GROUP(IusDataStream);
     RUN_TEST_GROUP(IusDataStreamDict);
 //    RUN_TEST_GROUP(IusErrorHandling);

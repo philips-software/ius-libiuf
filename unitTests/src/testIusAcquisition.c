@@ -9,15 +9,31 @@
 #include <ius.h>
 #include <iusAcquisitionPrivate.h>
 
+static char *pErrorFilename = "IusAcquisition.errlog";
+static FILE *fpErrorLogging = NULL;
+
 TEST_GROUP(IusAcquisition);
 
 TEST_SETUP(IusAcquisition)
 {
+    iusErrorLogClear();
+    iusErrorLog(IUS_TRUE);
+    iusErrorAutoReport(IUS_TRUE);
+    fpErrorLogging = fopen(pErrorFilename, "w+");
+    iusErrorSetStream(fpErrorLogging);
 }
 
 TEST_TEAR_DOWN(IusAcquisition)
 {
+    iusErrorLogClear();
+    iusErrorLog(IUS_FALSE);
+    if (fpErrorLogging != NULL)
+        fclose(fpErrorLogging);
+    fpErrorLogging=stderr;
+    iusErrorSetStream(fpErrorLogging);
+    remove(pErrorFilename);
 }
+
 
 TEST(IusAcquisition, testIusCreateAcquisition)
 {
@@ -33,12 +49,18 @@ TEST(IusAcquisition, testIusCreateAcquisition)
     iusAcquisitionDelete(notherObj);
 
     // invalid params
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
     obj = iusAcquisitionCreate(-1.0f, date, pDescription);
     TEST_ASSERT(obj == IUA_INVALID);
     obj = iusAcquisitionCreate(speedOfSound, -1, pDescription);
     TEST_ASSERT(obj == IUA_INVALID);
     obj = iusAcquisitionCreate(speedOfSound, -1, NULL);
     TEST_ASSERT(obj == IUA_INVALID);
+
+    TEST_ASSERT_EQUAL(3,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
 }
 
 TEST(IusAcquisition, testIusDeleteAcquisition)
@@ -52,8 +74,14 @@ TEST(IusAcquisition, testIusDeleteAcquisition)
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
     // invalid params
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
     status = iusAcquisitionDelete(NULL);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
+
+    TEST_ASSERT_EQUAL(1,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
 }
 
 TEST(IusAcquisition, testIusCompareAcquisition)
@@ -101,9 +129,16 @@ TEST(IusAcquisition, testIusGetAcquisition)
     TEST_ASSERT(strcmp(pDescription, iusAcquisitionGetDescription(obj))==0);
 
     // invalid params
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
     TEST_ASSERT_EQUAL_FLOAT(NAN, iusAcquisitionGetSpeedOfSound(NULL));
     TEST_ASSERT_EQUAL(-1, iusAcquisitionGetDate(NULL));
     TEST_ASSERT(iusAcquisitionGetDescription(NULL)==NULL);
+
+    TEST_ASSERT_EQUAL(3,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
+
     iusAcquisitionDelete(obj);
 }
 
