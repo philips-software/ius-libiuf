@@ -15,8 +15,10 @@ iu3da_t ius3DAngleCreate
     float phi
 )
 {
-    if( theta == NAN || phi == NAN ) return IU3DA_INVALID;
+    IUS_ERR_EVAL_N_RETURN(theta == NAN, IU3DA_INVALID);
+    IUS_ERR_EVAL_N_RETURN(phi == NAN, IU3DA_INVALID);
     iu3da_t created = calloc(1,sizeof(Ius3DAngle));
+    IUS_ERR_ALLOC_NULL_N_RETURN(created, Ius3DAngle, IU3DA_INVALID);
     created->theta = theta;
     created->phi = phi;
     return created;
@@ -24,16 +26,12 @@ iu3da_t ius3DAngleCreate
 
 int ius3DAngleDelete
 (
-    iu3da_t ius3DAngle
+    iu3da_t angle
 )
 {
-    int status = IUS_ERR_VALUE;
-    if(ius3DAngle != NULL)
-    {
-        free(ius3DAngle);
-        status = IUS_E_OK;
-    }
-    return status;
+    IUS_ERR_CHECK_NULL_N_RETURN(angle, IUS_ERR_VALUE);
+    free(angle);
+    return IUS_E_OK;
 }
 
 // operations
@@ -57,6 +55,8 @@ int ius3DAngleSave
 )
 {
     int status=0;
+    IUS_ERR_CHECK_NULL_N_RETURN(angle, IUS_ERR_VALUE);
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUS_ERR_VALUE);
     hid_t group_id = H5Gcreate(handle, IUS_INPUTFILE_PATH_ANGLE, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
     status |= iusHdf5WriteFloat(group_id, IUS_INPUTFILE_PATH_ANGLE_THETA, &(angle->theta), 1);
     status |= iusHdf5WriteFloat(group_id, IUS_INPUTFILE_PATH_ANGLE_PHI, &(angle->phi), 1);
@@ -71,7 +71,7 @@ iu3da_t ius3DAngleLoad
 {
     int status=0;
     float theta,phi;
-
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IU3DA_INVALID);
 	hid_t group_id = H5Gopen(handle, IUS_INPUTFILE_PATH_ANGLE, H5P_DEFAULT);
     status = iusHdf5ReadFloat(group_id, IUS_INPUTFILE_PATH_ANGLE_THETA, &theta);
     status |= iusHdf5ReadFloat(group_id, IUS_INPUTFILE_PATH_ANGLE_PHI, &phi);

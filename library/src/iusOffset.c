@@ -12,6 +12,7 @@ iuo_t iusOffsetCreate
 )
 {
     iuo_t created = calloc(1,sizeof(IusOffset));
+    IUS_ERR_ALLOC_NULL_N_RETURN(created, IusOffset, IUO_INVALID);
     created->x = 0;
     created->y = 0;
     created->z = 0;
@@ -21,17 +22,12 @@ iuo_t iusOffsetCreate
 
 int iusOffsetDelete
 (
-    iuo_t iusOffset
+    iuo_t offset
 )
 {
-    int status = IUS_ERR_VALUE;
-    if(iusOffset != NULL)
-    {
-        free(iusOffset);
-        status = IUS_E_OK;
-    }
-    return status;
-}
+    IUS_ERR_CHECK_NULL_N_RETURN(offset, IUS_ERR_VALUE);
+    free(offset);
+    return IUS_E_OK;}
 
 
 // operations

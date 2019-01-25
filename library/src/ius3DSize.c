@@ -16,8 +16,11 @@ iu3ds_t ius3DSizeCreate
     float sz
 )
 {
-    if( sx == NAN || sy == NAN || sz == NAN  ) return IU3DS_INVALID;
+    IUS_ERR_EVAL_N_RETURN(sx == NAN, IU3DS_INVALID);
+    IUS_ERR_EVAL_N_RETURN(sy == NAN, IU3DS_INVALID);
+    IUS_ERR_EVAL_N_RETURN(sz == NAN, IU3DS_INVALID);
     iu3ds_t created = calloc(1,sizeof(Ius3DSize));
+    IUS_ERR_ALLOC_NULL_N_RETURN(created, Ius3DSize, IU3DS_INVALID);
     created->sx = sx;
     created->sy = sy;
     created->sz = sz;
@@ -26,16 +29,12 @@ iu3ds_t ius3DSizeCreate
 
 int ius3DSizeDelete
 (
-    iu3ds_t ius3DSize
+    iu3ds_t size
 )
 {
-    int status = IUS_ERR_VALUE;
-    if(ius3DSize != NULL)
-    {
-        free(ius3DSize);
-        status = IUS_E_OK;
-    }
-    return status;
+    IUS_ERR_CHECK_NULL_N_RETURN(size, IUS_ERR_VALUE);
+    free(size);
+    return IUS_E_OK;
 }
 
 
@@ -61,7 +60,7 @@ iu3ds_t ius3DSizeLoad
 {
     int status=0;
     float sx,sy,sz;
-
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IU3DS_INVALID);
 	hid_t group_id = H5Gopen(handle, IUS_INPUTFILE_PATH_SIZE, H5P_DEFAULT);
     status |= iusHdf5ReadFloat(group_id, IUS_INPUTFILE_PATH_SIZE_X, &(sx));
     status |= iusHdf5ReadFloat(group_id, IUS_INPUTFILE_PATH_SIZE_Y, &(sy));
@@ -78,6 +77,9 @@ int ius3DSizeSave
 )
 {
     int status=0;
+    IUS_ERR_CHECK_NULL_N_RETURN(size, IUS_ERR_VALUE);
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUS_ERR_VALUE);
+
     hid_t group_id = H5Gcreate(handle, IUS_INPUTFILE_PATH_SIZE, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
     status |= iusHdf5WriteFloat(group_id, IUS_INPUTFILE_PATH_SIZE_X, &(size->sx), 1);
     status |= iusHdf5WriteFloat(group_id, IUS_INPUTFILE_PATH_SIZE_Y, &(size->sy), 1);

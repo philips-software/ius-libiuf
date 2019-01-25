@@ -24,6 +24,7 @@ hid_t  IUS_ERR_MIN_ARG_DUPLICATE_KEY;
 hid_t  IUS_ERR_MIN_ARG_INVALID_KEY;
 hid_t  IUS_ERR_MIN_HDF5;
 hid_t  IUS_ERR_MIN_ARG_VALUE;
+hid_t  IUS_ERR_MIN_ASSERT_FAILED;
 
 #define ERR_CLS_NAME                    "IUS"
 #define IUS_ERR_MAJ_HDF5_MSG            "HDF5 call failed"
@@ -44,6 +45,7 @@ hid_t  IUS_ERR_MIN_ARG_VALUE;
 #define IUS_ERR_MIN_ARG_DUPLICATE_KEY_MSG   "Duplicate key"
 #define IUS_ERR_MIN_ARG_INVALID_KEY_MSG     "Invalid key, lookup failed"
 #define IUS_ERR_MIN_HDF5_MSG                "Turn on HDF5 error log to get error details: iusHDF5ErrorLog(IUS_TRUE)"
+#define IUS_ERR_MIN_ASSERT_FAILED_MSG       "Assertion failed"
 
 struct IusError
 {
@@ -66,7 +68,7 @@ static IusError iusErrorState = {
     .iusErrorStack = H5I_INVALID_HID,
     .iusErrorClass = H5I_INVALID_HID,
     .enable = IUS_TRUE,
-    .autoReport = IUS_TRUE,
+    .autoReport = IUS_FALSE,
     .func = NULL,
     .client_data = NULL,
     .errorStream = NULL
@@ -113,6 +115,8 @@ static int iusErrorInit
     if((IUS_ERR_MIN_ARG_INVALID_KEY = H5Ecreate_msg(state->iusErrorClass, H5E_MINOR, IUS_ERR_MIN_ARG_INVALID_KEY_MSG)) < 0)
         return IUS_ERR_VALUE;
     if((IUS_ERR_MIN_HDF5= H5Ecreate_msg(state->iusErrorClass, H5E_MINOR, IUS_ERR_MIN_HDF5_MSG)) < 0)
+        return IUS_ERR_VALUE;
+    if((IUS_ERR_MIN_ASSERT_FAILED= H5Ecreate_msg(state->iusErrorClass, H5E_MINOR, IUS_ERR_MIN_ASSERT_FAILED_MSG)) < 0)
         return IUS_ERR_VALUE;
 
 
@@ -189,14 +193,13 @@ int iusErrorGetCount
 
 int iusErrorPrint
 (
-    FILE *pFILE
 )
 {
     iue_t state = iusErrorGetState();
     herr_t status = 0;
     if(state->enable == IUS_TRUE)
     {
-        status = H5Eprint2(state->iusErrorStack, pFILE);
+        status = H5Eprint2(state->iusErrorStack, state->errorStream);
     }
     return (int) status;
 }

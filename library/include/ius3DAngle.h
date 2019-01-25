@@ -30,7 +30,7 @@ iu3da_t ius3DAngleCreate
  */
 int ius3DAngleDelete
 (
-    iu3da_t ius3DAngle ///< the angle to be removed
+    iu3da_t angle ///< the angle to be removed
 );
 
 /** \brief Compare two 3D angles, the order of arguments does not matter
