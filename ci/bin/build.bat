@@ -9,7 +9,7 @@ mkdir %BuildFolder% & pushd %BuildFolder%
 cmake ..\..
 cmake --build . --config Release
 echo cmake --build . --config Release: %ERRORLEVEL%
-if errorlevel 1 exit 0
+exit 0
 cmake --build . --config Debug
 echo cmake --build . --config Debug  %ERRORLEVEL%
 if errorlevel 1 exit 0
