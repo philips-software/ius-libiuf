@@ -1,4 +1,5 @@
 @echo off
+exit 0
 set BinFolder=%~dp0..\..\
 pushd .
 cd %BinFolder%
