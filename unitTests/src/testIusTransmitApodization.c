@@ -112,7 +112,7 @@ TEST(IusTransmitApodization, testIusTransmitApodizationSetGet)
     for (i=0; i<numElements;i++)
     {
         TEST_ASSERT_EQUAL_FLOAT(apod[i], iusTransmitApodizationGetElement(obj, i));
-        iusTransmitApodizationSetElement(obj, i, 0.1+apod[i]);
+        iusTransmitApodizationSetElement(obj, i, 0.1f+apod[i]);
         TEST_ASSERT_EQUAL_FLOAT(apod[i]+0.1, iusTransmitApodizationGetElement(obj, i));
     }
 
