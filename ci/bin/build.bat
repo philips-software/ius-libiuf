@@ -1,5 +1,4 @@
 @echo off
-exit 1
 set BinFolder=%~dp0..\..\
 pushd .
 cd %BinFolder%
@@ -9,9 +8,7 @@ echo === Building ius in %BuildFolder%
 mkdir %BuildFolder% & pushd %BuildFolder%
 cmake ..\..
 cmake --build . --config Release
-echo cmake --build . --config Release: %ERRORLEVEL%
-exit 0
+if errorlevel 1 exit 1
 cmake --build . --config Debug
-echo cmake --build . --config Debug  %ERRORLEVEL%
-if errorlevel 1 exit 0
+if errorlevel 1 exit 1
 popd
