@@ -127,7 +127,7 @@ size_t iusTransmitApodizationDictGetSize
 	iutad_t dict
 )
 {
-	IUS_ERR_CHECK_NULL_N_RETURN(dict, -1);
+	IUS_ERR_CHECK_NULL_N_RETURN(dict, (size_t) -1);
 	return hashmap_size(&dict->map);
 }
 

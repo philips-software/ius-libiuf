@@ -187,7 +187,7 @@ int iusErrorGetCount
 )
 {
     iue_t state = iusErrorGetState();
-    return H5Eget_num(state->iusErrorStack);
+    return (int) H5Eget_num(state->iusErrorStack);
 }
 
 
