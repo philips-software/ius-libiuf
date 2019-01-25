@@ -53,15 +53,19 @@ function [] = mkInputFile( g )
     here = pwd; idx = strfind(here,[filesep 'mex' filesep ]); here = here(1:idx-1);
     inclPath1 = ['-I' fullfile(here, 'library/include')];
     inclPath2 = ['-I' fullfile(here, 'library')];
+    inclPath3 = ['-I.'];
         
     mxAlgo      = fullfile( '../m', filesep, ['mx' Algo]);
     mxcAlgo     = ['mx' Algo '.c'];
+    mxcDep      = 'mxHandleList.c';
     
+    version = '3.6dd7a4a';
     if isunix  
-        if( g == 0 )
-            iuslib = fullfile(here, 'build/Linux/library/libius-3.1.0.a');
+        
+        if( g == 0 )            
+            iuslib = fullfile(here, sprintf('build/Linux/library/libius-%s.a', version'));
         else
-            iuslib = fullfile(here, 'build/Linux/library/libius-3.1.0d.a');
+            iuslib = fullfile(here, sprintf('build/Linux/library/libius-%sd.a', version));
         end                
         hdf5path = fullfile('/cadappl', 'python', '2.7-64');
         hdf5lib = fullfile(hdf5path, 'lib', 'libhdf5.so');
@@ -72,9 +76,9 @@ function [] = mkInputFile( g )
         
     elseif ispc
         if( g == 0 )
-            iuslib  = fullfile(here, 'build/Windows/library/Release/ius-3.1.0.lib');
+            iuslib  = fullfile(here, sprintf('build/Windows/library/Release/ius-%s.lib',version) );
         else            
-            iuslib  = fullfile(here, 'build/Windows/library/Debug/ius-3.1.0d.lib');
+            iuslib  = fullfile(here, sprintf('build/Windows/library/Debug/ius-%sd.lib', version) );
         end
         hdf5path = fullfile('c:', 'Program Files', 'HDF_Group', 'HDF5', '1.8.20');
         hdf5lib = fullfile(hdf5path, 'lib', 'libhdf5.lib');
@@ -87,18 +91,18 @@ function [] = mkInputFile( g )
        
     if (g == 0)
         fprintf( 'creating %s.mexw64 (RELEASE)\n', mxAlgo);
-        %mex('-largeArrayDims', inclPath1, inclPath2, hdf5incl, '-output', mxAlgo, mxcAlgo, iuslib, hdf5lib, hdf5_hllib, libzlib, libszip );
+        %mex('-largeArrayDims', inclPath1, inclPath2, hdf5incl, '-output', mxAlgo, mxcAlgo, mxcDep, iuslib, hdf5lib, hdf5_hllib, libzlib, libszip );
         if ispc 
-            mex('-largeArrayDims', inclPath1, inclPath2, hdf5incl, '-output', mxAlgo, mxcAlgo, iuslib, hdf5lib, hdf5_hllib, libzlib, '-luuid');
+            mex('-largeArrayDims', inclPath1, inclPath2, inclPath3, hdf5incl, '-output', mxAlgo, mxcAlgo, mxcDep, iuslib, hdf5lib, hdf5_hllib, libzlib, libszip, '-luuid');
         else
-            mex('-largeArrayDims', inclPath1, inclPath2, hdf5incl, '-output', mxAlgo, mxcAlgo, iuslib, hdf5lib, hdf5_hllib, libzlib, '-lgcov', '-luuid');
+            mex('-largeArrayDims', inclPath1, inclPath2, inclPath3, hdf5incl, '-output', mxAlgo, mxcAlgo, mxcDep, iuslib, hdf5lib, hdf5_hllib, libzlib, '-lgcov', '-luuid');
         end
     else
         fprintf( 'creating %s.mexw64 (DEBUG)\n', mxAlgo);
         if ispc
-            mex('-g', '-largeArrayDims', inclPath1, inclPath2, hdf5incl, '-output', mxAlgo, mxcAlgo, iuslib, hdf5lib, hdf5_hllib, libzlib, '-luuid');
+            mex('-g', '-largeArrayDims', inclPath1, inclPath2, inclPath3, hdf5incl, '-output', mxAlgo, mxcAlgo, mxcDep, iuslib, hdf5lib, hdf5_hllib, libzlib, libszip, '-luuid');
         else
-            mex('-g', '-largeArrayDims', inclPath1, inclPath2, hdf5incl, '-output', mxAlgo, mxcAlgo, iuslib, hdf5lib, hdf5_hllib, libzlib, '-lgcov', '-luuid');
+            mex('-g', '-largeArrayDims', inclPath1, inclPath2, inclPath3, hdf5incl, '-output', mxAlgo, mxcAlgo, mxcDep, iuslib, hdf5lib, hdf5_hllib, libzlib, '-lgcov', '-luuid');
         end
     end
 end

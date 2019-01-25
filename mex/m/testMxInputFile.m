@@ -1,3 +1,6 @@
+clear all;
+close all;
+clc;
 
 fnlist = {...
     'create',...
@@ -39,8 +42,22 @@ fnlist = {...
     'frameLoad'...
     };
 
-for c1 = 1:length(fnlist)
-    fn = fnlist{c1};
-    %disp(fn);
-    mxInputFile( fn );
-end
+% for c1 = 1:length(fnlist)
+%     fn = fnlist{c1};
+%     disp(fn);
+%     mxInputFile( fn );
+% end
+clear all
+cd('../src');
+mxCreate
+cd('../m');
+h = mxInputFile('create', 'myInputFile.input')
+h2 = mxInputFile('create', 'myInputFile2.input')
+h3 = mxInputFile('create', 'myInputFile3.input')
+
+%mxInputFile('close', h)
+%mxInputFile('close', h2);
+% mxInputFile('close', h3);
+
+clear all
+
