@@ -37,7 +37,8 @@ struct IusIqFileInstance
     //  state variables
     hid_t               handle;           /**< HDF5 file handle     */
     const char          *pFilename;       /**< the filename         */
-    iudsd_t             dataStreamDict;   /**< Contains dataset administration */
+    iudsd_t             iDataStreamDict;   /**< Contains dataset administration iFrames */
+	iudsd_t             qDataStreamDict;   /**< Contains dataset administration qFrames; should be virtually identical to iDataStreamDict */
     IUS_BOOL            loadedFromFile;
 }  ;
 
@@ -70,7 +71,8 @@ iuiqfi_t iusIqFileInstanceCreate
     instanceData->demodulationDict = IUDMD_INVALID;
     instanceData->transducer = IUT_INVALID;
 	instanceData->acquisition = IUA_INVALID;
-	instanceData->dataStreamDict = iusDataStreamDictCreate();
+	instanceData->iDataStreamDict = iusDataStreamDictCreate();
+	instanceData->qDataStreamDict = iusDataStreamDictCreate();
 	instanceData->loadedFromFile = IUS_FALSE;
     return instanceData;
 }
@@ -81,7 +83,8 @@ int iusIqFileInstanceDelete
 )
 {
     if (instance == NULL) return IUS_ERR_VALUE;
-    iusDataStreamDictDelete(instance->dataStreamDict);
+    iusDataStreamDictDelete(instance->iDataStreamDict);
+	iusDataStreamDictDelete(instance->qDataStreamDict);
     free((void *)instance->pFilename);
     if(instance->loadedFromFile == IUS_TRUE)
     {
@@ -201,46 +204,58 @@ int iusIqFileGetNumResponses
     return iusIqPatternListGetSize(patternList);
 }
 
-iud_t iusIqFileFrameCreate
+IUS_BOOL iusIqFileFrameCreate
 (
     iuiqf_t iqFile,
-    char *label
+    char *label,
+	iud_t *iFrame,
+	iud_t *qFrame
 )
 {
-    if(iqFile == NULL) return IUD_INVALID;
+    if(iqFile == NULL) return IUS_FALSE;
     // calculate frame size:
     // numchannels * numresponses * numsamples = [x*y*z]
     int numChannels = iusIqFileGetNumChannels(iqFile,label);
     int numResponses = iusIqFileGetNumResponses(iqFile,label);
     int numSamples = iusIqFileGetSamplesPerLine(iqFile,label);
     int frameSize = numChannels * numSamples * numResponses;
-    return iusDataCreate(frameSize);
+    *iFrame = iusDataCreate(frameSize);
+	*qFrame = iusDataCreate(frameSize);
+	return (*iFrame != IUD_INVALID) && (*qFrame != IUD_INVALID);
 }
 
-iud_t iusIqFileResponseCreate
+IUS_BOOL iusIqFileResponseCreate
 (
     iuiqf_t iqFile,
-    char *label
+    char *label,
+	iud_t *iResponse,
+	iud_t *qResponse
 )
 {
-    if(iqFile == NULL) return IUD_INVALID;
+    if(iqFile == NULL) return IUS_FALSE;
 
     int numChannels = iusIqFileGetNumChannels(iqFile,label);
     int numSamples = iusIqFileGetSamplesPerLine(iqFile,label);
     int responseSize = numChannels * numSamples ;
-    return iusDataCreate(responseSize);
+    *iResponse = iusDataCreate(responseSize);
+	*qResponse = iusDataCreate(responseSize);
+	return (*iResponse != IUD_INVALID) && (*qResponse != IUD_INVALID);
 }
 
-iud_t iusIqFileChannelCreate
+IUS_BOOL iusIqFileChannelCreate
 (
     iuiqf_t iqFile,
-    char *label
+    char *label,
+	iud_t *iChannel,
+	iud_t *qChannel
 )
 {
-    if(iqFile == NULL) return IUD_INVALID;
+    if(iqFile == NULL) return IUS_FALSE;
 
     int numSamples = iusIqFileGetSamplesPerLine(iqFile,label);
-    return iusDataCreate(numSamples);
+    *iChannel = iusDataCreate(numSamples);
+	*qChannel = iusDataCreate(numSamples);
+	return (*iChannel != IUD_INVALID) && (*qChannel != IUD_INVALID);
 }
 
 
@@ -800,20 +815,25 @@ static void fillChunkDims
     }
 }
 
-hid_t iusIqFileGetWriteSpace
+IUS_BOOL iusIqFileGetWriteSpace
 (
     iuiqf_t iqFile,
     char *label,
-    int numDims
+    int numDims,
+	hid_t *iDataSpace,
+	hid_t *qDataSpace
 )
 {
     hsize_t rfDataDims[4];
     hsize_t chunkDims[4];
     hid_t space, dataChunkConfig;
+	hid_t location;
 
     iuiqfi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)iqFile);
-    iuds_t dataStream = iusDataStreamDictGet(instance->dataStreamDict,label);
-    if ( dataStream == IUDS_INVALID)
+    iuds_t iDataStream = iusDataStreamDictGet(instance->iDataStreamDict,label);
+	iuds_t qDataStream = iusDataStreamDictGet(instance->qDataStreamDict, label);
+	
+    if ( iDataStream == IUDS_INVALID || qDataStream == IUDS_INVALID)
     {
         // Entry does not exist, create
         rfDataDims[0] = (hsize_t) iusIqFileGetNumChannels(iqFile,label);    // colums in memory
@@ -823,36 +843,56 @@ hid_t iusIqFileGetWriteSpace
 
         fillChunkDims(chunkDims,rfDataDims,numDims,4);
 
-        dataStream = iusDataStreamCreate();
+        iDataStream = iusDataStreamCreate();
+		qDataStream = iusDataStreamCreate();
 
         dataChunkConfig = H5Pcreate(H5P_DATASET_CREATE);
         H5Pset_chunk(dataChunkConfig, 4, chunkDims);
-        dataStream->fileChunkConfig = dataChunkConfig;
+        iDataStream->fileChunkConfig = dataChunkConfig;
+		qDataStream->fileChunkConfig = dataChunkConfig;
 
         space = H5Screate_simple(4, rfDataDims, NULL);
-        dataStream->rfDataset = H5Dcreate(instance->handle, label, H5T_NATIVE_FLOAT, space, H5P_DEFAULT, dataChunkConfig, H5P_DEFAULT);
+		location = H5Gcreate(instance->handle, label, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+		if (location < 0) return IUS_FALSE;
+        iDataStream->rfDataset = H5Dcreate(location, "I", H5T_NATIVE_FLOAT, space, H5P_DEFAULT, dataChunkConfig, H5P_DEFAULT);
+		qDataStream->rfDataset = H5Dcreate(location, "Q", H5T_NATIVE_FLOAT, space, H5P_DEFAULT, dataChunkConfig, H5P_DEFAULT);
+		H5Gclose(location);
         H5Sclose(space);
-        iusDataStreamDictSet(instance->dataStreamDict,label,dataStream);
+        iusDataStreamDictSet(instance->iDataStreamDict,label, iDataStream);
+		iusDataStreamDictSet(instance->qDataStreamDict,label, qDataStream);
     }
-    return H5Dget_space(dataStream->rfDataset);
+	*iDataSpace = H5Dget_space(iDataStream->rfDataset);
+	*qDataSpace = H5Dget_space(qDataStream->rfDataset);
+    return (*iDataSpace > 0) && (*qDataSpace > 0);
 }
 
 
-hid_t iusIqFileGetReadSpace
+IUS_BOOL iusIqFileGetReadSpace
 (
     iuiqf_t iqFile,
-    char *label
+    char *label,
+	hid_t *iDataSpace,
+	hid_t *qDataSpace
 )
 {
     iuiqfi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)iqFile);
-    iuds_t dataStream = iusDataStreamDictGet(instance->dataStreamDict,label);
-    if ( dataStream == IUDS_INVALID)
+    iuds_t iDataStream = iusDataStreamDictGet(instance->iDataStreamDict,label);
+	iuds_t qDataStream = iusDataStreamDictGet(instance->qDataStreamDict, label);
+    if ( iDataStream == IUDS_INVALID || qDataStream == IUDS_INVALID)
     {
-        dataStream = iusDataStreamCreate();
-        dataStream->rfDataset = H5Dopen(instance->handle, label, H5P_DEFAULT);
-        iusDataStreamDictSet(instance->dataStreamDict,label,dataStream);
+        iDataStream = iusDataStreamCreate();
+		qDataStream = iusDataStreamCreate();
+		hid_t location = H5Gopen(instance->handle, label, H5P_DEFAULT);
+        iDataStream->rfDataset = H5Dopen(location, "I", H5P_DEFAULT);
+		qDataStream->rfDataset = H5Dopen(location, "Q", H5P_DEFAULT);
+		H5Gclose(location);
+        iusDataStreamDictSet(instance->iDataStreamDict, label, iDataStream);
+		iusDataStreamDictSet(instance->qDataStreamDict, label, qDataStream);
     }
-    return H5Dget_space(dataStream->rfDataset);
+	*iDataSpace = H5Dget_space(iDataStream->rfDataset);
+	*qDataSpace = H5Dget_space(qDataStream->rfDataset);
+	
+	return (*iDataSpace > 0) && (*qDataSpace > 0);
 }
 
 
@@ -860,12 +900,14 @@ int iusIqFileFrameSave
 (
     iuiqf_t iqFile,
     char *label,
-    iud_t frame,
+    iud_t iFrame,
+	iud_t qFrame,
     iuo_t frame_offset
 )
 {
     hid_t memspace;
-    hid_t dataspace;
+    hid_t iDataspace;
+	hid_t qDataspace;
     hsize_t offset[4];
     hsize_t count[4];
     hsize_t memdim[3];
@@ -887,18 +929,23 @@ int iusIqFileFrameSave
     count[3] = 1;
 
     iuiqfi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)iqFile);
-    dataspace = iusIqFileGetWriteSpace(iqFile, label, 3);
-    status = H5Sselect_hyperslab(dataspace, H5S_SELECT_SET, offset, NULL, count, NULL);
+    if (!iusIqFileGetWriteSpace(iqFile, label, 3, &iDataspace, &qDataspace)) return -1;
+    status = H5Sselect_hyperslab(iDataspace, H5S_SELECT_SET, offset, NULL, count, NULL);
+	status |= H5Sselect_hyperslab(qDataspace, H5S_SELECT_SET, offset, NULL, count, NULL);
 
-    float *pFrame = iusDataGetPointer(frame);
+    float *pIFrame = iusDataGetPointer(iFrame);
+	float *pQFrame = iusDataGetPointer(qFrame);
 
     // Save frame
-    iuds_t dataStream = iusDataStreamDictGet(instance->dataStreamDict,label);
-    status |= H5Dwrite(dataStream->rfDataset, H5T_NATIVE_FLOAT, memspace, dataspace, H5P_DEFAULT, pFrame);
+    iuds_t iDataStream = iusDataStreamDictGet(instance->iDataStreamDict,label);
+	iuds_t qDataStream = iusDataStreamDictGet(instance->qDataStreamDict, label);
+    status |= H5Dwrite(iDataStream->rfDataset, H5T_NATIVE_FLOAT, memspace, iDataspace, H5P_DEFAULT, pIFrame);
+	status |= H5Dwrite(qDataStream->rfDataset, H5T_NATIVE_FLOAT, memspace, qDataspace, H5P_DEFAULT, pQFrame);
 
     // Close and release memspace but not (file)dataspace
     status |= H5Sclose(memspace);
-    status |= H5Sclose(dataspace);
+    status |= H5Sclose(iDataspace);
+	status |= H5Sclose(qDataspace);
 
     return status;
 }
@@ -909,12 +956,14 @@ int iusIqFileResponseSave
 (
     iuiqf_t iqFile,
     char *label,
-    iud_t response,
+    iud_t iResponse,
+	iud_t qResponse,
     iuo_t response_offset
 )
 {
     hid_t memspace;
-    hid_t dataspace;
+    hid_t iDataspace;
+	hid_t qDataspace;
     hsize_t offset[4];
     hsize_t count[4];
     hsize_t memdim[2];
@@ -935,18 +984,24 @@ int iusIqFileResponseSave
     count[3] = 1;
 
     iuiqfi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)iqFile);
-    dataspace = iusIqFileGetWriteSpace(iqFile, label, 2);
-    status = H5Sselect_hyperslab(dataspace, H5S_SELECT_SET, offset, NULL, count, NULL);
+    if (!iusIqFileGetWriteSpace(iqFile, label, 2, &iDataspace, &qDataspace)) return -1;
 
-    float *pFrame = iusDataGetPointer(response);
+    status = H5Sselect_hyperslab(iDataspace, H5S_SELECT_SET, offset, NULL, count, NULL);
+	status |= H5Sselect_hyperslab(qDataspace, H5S_SELECT_SET, offset, NULL, count, NULL);
+
+    float *pIFrame = iusDataGetPointer(iResponse);
+	float *pQFrame = iusDataGetPointer(qResponse);
 
     // Save frame
-    iuds_t dataStream = iusDataStreamDictGet(instance->dataStreamDict,label);
-    status |= H5Dwrite(dataStream->rfDataset, H5T_NATIVE_FLOAT, memspace, dataspace, H5P_DEFAULT, pFrame);
+    iuds_t iDataStream = iusDataStreamDictGet(instance->iDataStreamDict,label);
+	iuds_t qDataStream = iusDataStreamDictGet(instance->qDataStreamDict, label);
+    status |= H5Dwrite(iDataStream->rfDataset, H5T_NATIVE_FLOAT, memspace, iDataspace, H5P_DEFAULT, pIFrame);
+	status |= H5Dwrite(qDataStream->rfDataset, H5T_NATIVE_FLOAT, memspace, qDataspace, H5P_DEFAULT, pQFrame);
 
     // Close and release memspace but not (file)dataspace
     status |= H5Sclose(memspace);
-    status |= H5Sclose(dataspace);
+    status |= H5Sclose(iDataspace);
+	status |= H5Sclose(qDataspace);
 
     return status;
 }
@@ -955,12 +1010,14 @@ int iusIqFileChannelSave
 (
     iuiqf_t iqFile,
     char *label,
-    iud_t channel,
+    iud_t iChannel,
+	iud_t qChannel,
     iuo_t channel_offset
 )
 {
     hid_t memspace;
-    hid_t dataspace;
+    hid_t iDataspace;
+	hid_t qDataspace;
     hsize_t offset[4];
     hsize_t count[4];
     hsize_t memdim;
@@ -980,34 +1037,40 @@ int iusIqFileChannelSave
     count[3] = 1;
 
     iuiqfi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)iqFile);
-    dataspace = iusIqFileGetWriteSpace(iqFile, label, 1);
-    status = H5Sselect_hyperslab(dataspace, H5S_SELECT_SET, offset, NULL, count, NULL);
+    if (!iusIqFileGetWriteSpace(iqFile, label, 1, &iDataspace, &qDataspace)) return -1;
+    status = H5Sselect_hyperslab(iDataspace, H5S_SELECT_SET, offset, NULL, count, NULL);
+	status |= H5Sselect_hyperslab(qDataspace, H5S_SELECT_SET, offset, NULL, count, NULL);
 
-    float *pFrame = iusDataGetPointer(channel);
+    float *pIFrame = iusDataGetPointer(iChannel);
+	float *pQFrame = iusDataGetPointer(qChannel);
 
     // Save frame
-    iuds_t dataStream = iusDataStreamDictGet(instance->dataStreamDict,label);
-    status |= H5Dwrite(dataStream->rfDataset, H5T_NATIVE_FLOAT, memspace, dataspace, H5P_DEFAULT, pFrame);
+    iuds_t iDataStream = iusDataStreamDictGet(instance->iDataStreamDict,label);
+	iuds_t qDataStream = iusDataStreamDictGet(instance->qDataStreamDict, label);
+    status |= H5Dwrite(iDataStream->rfDataset, H5T_NATIVE_FLOAT, memspace, iDataspace, H5P_DEFAULT, pIFrame);
+	status |= H5Dwrite(qDataStream->rfDataset, H5T_NATIVE_FLOAT, memspace, qDataspace, H5P_DEFAULT, pQFrame);
 
     // Close and release memspace but not (file)dataspace
     status |= H5Sclose(memspace);
-    status |= H5Sclose(dataspace);
+    status |= H5Sclose(iDataspace);
+	status |= H5Sclose(qDataspace);
 
     return status;
 }
-
 
 
 int iusIqFileFrameLoad
 (
     iuiqf_t iqFile,
     char *label,
-    iud_t frame,
+    iud_t iFrame,
+	iud_t qFrame,
     iuo_t frame_offset
 )
 {
     hid_t memspace;
-    hid_t dataspace;
+    hid_t iDataspace;
+	hid_t qDataspace;
     hsize_t offset[4];
     hsize_t count[4];
     hsize_t memdim[3];
@@ -1029,18 +1092,23 @@ int iusIqFileFrameLoad
     count[3] = 1;
 
     iuiqfi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)iqFile);
-    dataspace = iusIqFileGetReadSpace(iqFile, label);
-    status = H5Sselect_hyperslab(dataspace, H5S_SELECT_SET, offset, NULL, count, NULL);
+    if(!iusIqFileGetReadSpace(iqFile, label, &iDataspace, &qDataspace)) return -1;
+    status = H5Sselect_hyperslab(iDataspace, H5S_SELECT_SET, offset, NULL, count, NULL);
+	status |= H5Sselect_hyperslab(qDataspace, H5S_SELECT_SET, offset, NULL, count, NULL);
 
-    float *pFrame = iusDataGetPointer(frame);
+    float *pIFrame = iusDataGetPointer(iFrame);
+	float *pQFrame = iusDataGetPointer(qFrame);
 
     // Load frame
-    iuds_t dataStream = iusDataStreamDictGet(instance->dataStreamDict,label);
-    status |= H5Dread(dataStream->rfDataset, H5T_NATIVE_FLOAT, memspace, dataspace, H5P_DEFAULT, pFrame);
+    iuds_t iDataStream = iusDataStreamDictGet(instance->iDataStreamDict,label);
+	iuds_t qDataStream = iusDataStreamDictGet(instance->qDataStreamDict, label);
+    status |= H5Dread(iDataStream->rfDataset, H5T_NATIVE_FLOAT, memspace, iDataspace, H5P_DEFAULT, pIFrame);
+	status |= H5Dread(qDataStream->rfDataset, H5T_NATIVE_FLOAT, memspace, qDataspace, H5P_DEFAULT, pQFrame);
 
     // Close and release memspace but not (file)dataspace
     status |= H5Sclose(memspace);
-    status |= H5Sclose(dataspace);
+    status |= H5Sclose(iDataspace);
+	status |= H5Sclose(qDataspace);
 
     return status;
 
@@ -1051,12 +1119,14 @@ int iusIqFileResponseLoad
 (
     iuiqf_t iqFile,
     char *label,
-    iud_t response,
+    iud_t iResponse,
+	iud_t qResponse,
     iuo_t response_offset
 )
 {
     hid_t memspace;
-    hid_t dataspace;
+    hid_t iDataspace;
+	hid_t qDataspace;
     hsize_t offset[4];
     hsize_t count[4];
     hsize_t memdim[2];
@@ -1077,18 +1147,23 @@ int iusIqFileResponseLoad
     count[3] = 1;
 
     iuiqfi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)iqFile);
-    dataspace = iusIqFileGetReadSpace(iqFile, label);
-    status = H5Sselect_hyperslab(dataspace, H5S_SELECT_SET, offset, NULL, count, NULL);
+     if (!iusIqFileGetReadSpace(iqFile, label, &iDataspace, &qDataspace)) return -1;
+    status = H5Sselect_hyperslab(iDataspace, H5S_SELECT_SET, offset, NULL, count, NULL);
+	status |= H5Sselect_hyperslab(qDataspace, H5S_SELECT_SET, offset, NULL, count, NULL);
 
-    float *pResponse = iusDataGetPointer(response);
+    float *pIResponse = iusDataGetPointer(iResponse);
+	float *pQResponse = iusDataGetPointer(qResponse);
 
     // Load frame
-    iuds_t dataStream = iusDataStreamDictGet(instance->dataStreamDict,label);
-    status |= H5Dread(dataStream->rfDataset, H5T_NATIVE_FLOAT, memspace, dataspace, H5P_DEFAULT, pResponse);
+    iuds_t iDataStream = iusDataStreamDictGet(instance->iDataStreamDict,label);
+	iuds_t qDataStream = iusDataStreamDictGet(instance->qDataStreamDict, label);
+    status |= H5Dread(iDataStream->rfDataset, H5T_NATIVE_FLOAT, memspace, iDataspace, H5P_DEFAULT, pIResponse);
+	status |= H5Dread(qDataStream->rfDataset, H5T_NATIVE_FLOAT, memspace, qDataspace, H5P_DEFAULT, pQResponse);
 
     // Close and release memspace but not (file)dataspace
     status |= H5Sclose(memspace);
-    status |= H5Sclose(dataspace);
+    status |= H5Sclose(iDataspace);
+	status |= H5Sclose(qDataspace);
 
     return status;
 
@@ -1099,12 +1174,14 @@ int iusIqFileChannelLoad
 (
     iuiqf_t iqFile,
     char *label,
-    iud_t channel,
+    iud_t iChannel,
+	iud_t qChannel,
     iuo_t channel_offset
 )
 {
     hid_t memspace;
-    hid_t dataspace;
+    hid_t iDataspace;
+	hid_t qDataspace;
     hsize_t offset[4];
     hsize_t count[4];
     hsize_t memdim;
@@ -1124,18 +1201,23 @@ int iusIqFileChannelLoad
     count[3] = 1;
 
     iuiqfi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)iqFile);
-    dataspace = iusIqFileGetReadSpace(iqFile, label);
-    status = H5Sselect_hyperslab(dataspace, H5S_SELECT_SET, offset, NULL, count, NULL);
+	if (iusIqFileGetReadSpace(iqFile, label, &iDataspace, &qDataspace)) return -1;
+    status = H5Sselect_hyperslab(iDataspace, H5S_SELECT_SET, offset, NULL, count, NULL);
+	status |= H5Sselect_hyperslab(qDataspace, H5S_SELECT_SET, offset, NULL, count, NULL);
 
-    float *pFrame = iusDataGetPointer(channel);
+    float *pIFrame = iusDataGetPointer(iChannel);
+	float *pQFrame = iusDataGetPointer(qChannel);
 
     // Load channel
-    iuds_t dataStream = iusDataStreamDictGet(instance->dataStreamDict,label);
-    status |= H5Dread(dataStream->rfDataset, H5T_NATIVE_FLOAT, memspace, dataspace, H5P_DEFAULT, pFrame);
+    iuds_t iDataStream = iusDataStreamDictGet(instance->iDataStreamDict,label);
+	iuds_t qDataStream = iusDataStreamDictGet(instance->qDataStreamDict, label);
+    status |= H5Dread(iDataStream->rfDataset, H5T_NATIVE_FLOAT, memspace, iDataspace, H5P_DEFAULT, pIFrame);
+	status |= H5Dread(qDataStream->rfDataset, H5T_NATIVE_FLOAT, memspace, qDataspace, H5P_DEFAULT, pQFrame);
 
     // Close and release memspace but not (file)dataspace
     status |= H5Sclose(memspace);
-    status |= H5Sclose(dataspace);
+    status |= H5Sclose(iDataspace);
+	status |= H5Sclose(qDataspace);
 
     return status;
 }

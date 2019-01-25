@@ -33,33 +33,39 @@ iuiqf_t iusIqFileCreate
     const char *filename  ///< The filename for the file instance.
 );
 
-/** \brief Creates a datablock for a frame for the acquisition with the name \p label.
- *  \return Returns an allocated memory block of a "label"-frame or IUD_INVALID in case of an error.
+/** \brief Creates the datablocks for a I and Q Frames for the acquisition with the name \p label.
+ *  \return Returns #IUS_TRUE if the allocated of memory blocks were successful or #IUS_FALSE otherwise.
  */
-iud_t iusIqFileFrameCreate
+IUS_BOOL iusIqFileFrameCreate
 (
     iuiqf_t iqFile,    ///< The #IusIqFile of interest
-    char *label             ///< The acquisition type
+    char *label,       ///< The acquisition type
+	iud_t *iFrame,     ///< [out] The I-sample data
+	iud_t *qFrame      ///< [out] The Q-sample data
 );
 
-/** \brief Creates a datablock for a response (numSamplesPerLine * numChannels) for the acquisition with
+/** \brief Creates a datablock for a the I and Q responses (numSamplesPerLine * numChannels) for the acquisition with
  * the name \p label.
- * \return Returns an allocated memory block of a "label"-response or IUD_INVALID in case of an error.
+ * \return Returns #IUS_TRUE. when memory allocated or #IUS_FALSE otherwise
  */
-iud_t iusIqFileResponseCreate
+IUS_BOOL iusIqFileResponseCreate
 (
     iuiqf_t iqFile,    ///< The #IusIqFile of interest
-    char *label             ///< The acquisition type
+    char *label,       ///< The acquisition type
+	iud_t *iResponse,  ///< [out] The I sample data memory
+	iud_t *qResponse   ///< [out] The Q sample data memory
 );
 
-/** \brief Creates a datablock for a single channel (i.e. numSamplesPerLine floats) for the acquisition with
+/** \brief Creates a datablock for a single I and Q channel (i.e. 2x numSamplesPerLine floats) for the acquisition with
  * the name \p label.
- * \return Returns an allocated memory block of a "label"-channel or IUD_INVALID in case of an error.
+ * \return Returns #IUS_TRUE. when memory allocated or #IUS_FALSE otherwise
  */
-iud_t iusIqFileChannelCreate
+IUS_BOOL iusIqFileChannelCreate
 (
     iuiqf_t iqFile,    ///< The #IusIqFile of interest
-    char *label             ///< The acquisition type
+    char *label,       ///< The acquisition type
+	iud_t *iChannel,   ///< [out] The I sample data memory
+	iud_t *qChannel    ///< [out] The Q sample data memory
 );
 
 /** \brief Creates a datablock for a single channel (i.e. numSamplesPerLine floats) for the acquisition with
@@ -294,59 +300,64 @@ int iusIqFileSetTransducer
 	iut_t  transducer                       ///< The #IusTransducer to set
 );
 
-/** \brief Saves a channel of data to an iqFile.
+/** \brief Saves a channel of I- and Q-data to an iqFile.
  * \return Returns #IUS_E_OK when succesful or <0 in case of an error.
  */
 int iusIqFileChannelSave
 (
-    iuiqf_t iqFile,                       ///< The #IusIqFile of interest
+    iuiqf_t iqFile,                         ///< The #IusIqFile of interest
     char *label,                            ///< The label of the patternList
-    iud_t channel,                          ///< The channel data to save
+    iud_t iChannel,                         ///< The channel data to save
+	iud_t qChannel,                         ///< The channel data to save
     iuo_t channel_offset                    ///< The offsets in the datablock
 );
 
-/** \brief Loads a single channel of data from an iqFile.
+/** \brief Loads a single I- and Q-channel of data from an iqFile.
  * \return Returns #IUS_E_OK when succesful or <0 in case of an error.
  */
 int iusIqFileChannelLoad
 (
-    iuiqf_t iqFile,                       ///< The #IusIqFile of interest
+    iuiqf_t iqFile,                         ///< The #IusIqFile of interest
     char *label,                            ///< The label of the patternList
-    iud_t channel,                          ///< The channel data block to be filled
+    iud_t iChannel,                         ///< The I channel data block to fill
+	iud_t qChannel,                         ///< The Q channel data block to fill
     iuo_t channel_offset                    ///< The offset in the datablock
 );
 
-/** \brief Saves a channel of data to an iqFile.
+/** \brief Saves a I and Q-channel of data to an iqFile.
  * \return Returns #IUS_E_OK when succesful or <0 in case of an error.
  */
 int iusIqFileResponseSave
 (
-	iuiqf_t iqFile,                       ///< The #IusIqFile of interest
-	char *label,                            ///< The label of the patternList
-	iud_t response,                         ///< the response data to save
-	iuo_t response_offset                   ///< The offset in the datablock
+	iuiqf_t iqFile,                          ///< The #IusIqFile of interest
+	char *label,                             ///< The label of the patternList
+	iud_t iResponse,                         ///< the response data to save
+	iud_t qResponse,                         ///< the response data to save
+	iuo_t response_offset                    ///< The offset in the datablock
 );
 
-/** \brief Loads a single response of data from an iqFile.
+/** \brief Loads a single I- and Q-response of data from an iqFile.
  * \return Returns #IUS_E_OK when succesful or <0 in case of an error.
  */
 int iusIqFileResponseLoad
 (
-    iuiqf_t iqFile,                       ///< The #IusIqFile of interest
-    char *label,                            ///< The label of the patternList
-    iud_t response,                         ///< The response data to load
-    iuo_t response_offset                   ///< The offset in the datablock
+    iuiqf_t iqFile,                          ///< The #IusIqFile of interest
+    char *label,                             ///< The label of the patternList
+    iud_t iResponse,                         ///< The response data to load
+	iud_t qResponse,                         ///< The response data to load
+    iuo_t response_offset                    ///< The offset in the datablock
 );
 
-/** \brief Saves a frame of data to an iqFile.
+/** \brief Saves a I- and Q-frame of data to an iqFile.
  * \return Returns #IUS_E_OK when succesful or <0 in case of an error.
  */
 int iusIqFileFrameSave
 (
-	iuiqf_t iqFile,                       ///< The #IusIqFile of interest
-	char *label,                            ///< The label of the patternList
-	iud_t frame,                            ///< The frame of data
-	iuo_t frame_offset                            ///< The offset in the datablock
+	iuiqf_t iqFile,                          ///< The #IusIqFile of interest
+	char *label,                             ///< The label of the patternList
+	iud_t iFrame,                            ///< The frame of data
+	iud_t qFrame,                            ///< The frame of data
+	iuo_t frame_offset                       ///< The offset in the datablock
 );
 
 /** \brief Loads a frame of data to an iqFile.
@@ -354,9 +365,10 @@ int iusIqFileFrameSave
  */
 int iusIqFileFrameLoad
 (
-	iuiqf_t iqFile,                       ///< The #IusIqFile of interest
+	iuiqf_t iqFile,                         ///< The #IusIqFile of interest
 	char *label,                            ///< The label of the patternList
-	iud_t frame,                            ///< The frame of data
+	iud_t iFrame,                           ///< The Iframe of data
+	iud_t qFrame,                           ///< The Qframe of data
 	iuo_t frame_offset                      ///< The offset in the datablock
 );
 

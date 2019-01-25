@@ -6,23 +6,21 @@
 #include <string.h>
 
 #include <ius.h>
-#include <iusCompoundFile.h>
-#include <iusCompoundFileStructure.h>
-#include <iusCompoundFileInstance.h>
+#include "iusCompoundFilePrivate.h"
+#include "iusCompoundFrameListPrivate.h"
 #include <iusDataStream.h>
 #include <iusHistoryNodePrivate.h>
 
 struct IusCompoundFileInstance
 {
-	iufl_t frameList;
+	iucfrl_t compoundFrameList;
 	int IusVersion;                       /**< The version of input file format */
 
-
-										  //  state variables
+	//  state variables
 	hid_t               handle;           /**< HDF5 file handle     */
 	const char          *pFilename;       /**< the filename         */
-	iuds_t             dataStream;        /**< Contains dataset administration */
-	IUS_BOOL           loadedFromFile;
+	iuds_t              dataStream;        /**< Contains dataset administration */
+	IUS_BOOL            loadedFromFile;
 };
 
 struct IusCompoundFile

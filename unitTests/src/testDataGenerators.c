@@ -272,7 +272,6 @@ iuiqf_t dgGenerateIqFile
 	status = iusIqFileSetAcquisition(iqFile, acquisition);
 	TEST_ASSERT(status == IUS_E_OK);
 
-
 	iut_t transducer = dgGenerateTransducer(transducerName);
 	status = iusIqFileSetTransducer(iqFile, transducer);
 	TEST_ASSERT(status == IUS_E_OK);

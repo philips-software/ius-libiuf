@@ -240,41 +240,40 @@ TEST(IusIqFile, iusIqFileSetGetTransmitApodizationDict)
     iusTransmitApodizationDictDelete(transmitApodizationDict);
 }
 
-#if 0
-// receiveseting -> demodulation
-TEST(IusIqFile, iusIqFileSetGetReceiveSettingsDict)
+//receiveseting -> demodulation
+TEST(IusIqFile, iusIqFileSetGetDemodulationDict)
 {
     IUS_BOOL equal;
     int status;
-    iursd_t receiveSettingsDict = dgGenerateReceiveSettingsDict("bmode", 0);
+    iudmd_t demodulationDict = dgGenerateDemodulationDict("bmode", 0);
     iuif_t obj = iusIqFileCreate(pFilename);
     TEST_ASSERT(obj != IUIF_INVALID);
 
-    status = iusIqFileSetReceiveSettingsDict(obj, receiveSettingsDict);
+    status = iusIqFileSetDemodulationDict(obj, demodulationDict);
     TEST_ASSERT_EQUAL(IUS_E_OK, status);
 
-    iursd_t gotMeATransmitReceiveSettingsDict = iusIqFileGetReceiveSettingsDict(obj);
-    TEST_ASSERT_NOT_EQUAL(NULL, gotMeATransmitReceiveSettingsDict);
+    iudmd_t gotMeADemodulationDict = iusIqFileGetDemodulationDict(obj);
+    TEST_ASSERT_NOT_EQUAL(NULL, gotMeADemodulationDict);
 
-    equal = iusReceiveSettingsDictCompare(receiveSettingsDict, gotMeATransmitReceiveSettingsDict);
+    equal = iusDemodulationDictCompare(demodulationDict, gotMeADemodulationDict);
     TEST_ASSERT_EQUAL(IUS_TRUE, equal);
 
     // invalid param
-    status = iusIqFileSetReceiveSettingsDict(obj, NULL);
+    status = iusIqFileSetDemodulationDict(obj, NULL);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
 
-    status = iusIqFileSetReceiveSettingsDict(NULL, receiveSettingsDict);
+    status = iusIqFileSetDemodulationDict(NULL, demodulationDict);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
 
-    gotMeATransmitReceiveSettingsDict = iusIqFileGetReceiveSettingsDict(NULL);
-    TEST_ASSERT_EQUAL(IURSD_INVALID, gotMeATransmitReceiveSettingsDict);
+    gotMeADemodulationDict = iusIqFileGetDemodulationDict(NULL);
+    TEST_ASSERT_EQUAL(IUDMD_INVALID, gotMeADemodulationDict);
 
     status = iusIqFileClose(obj);
     TEST_ASSERT(status == IUS_E_OK);
     iusIqFileDelete(obj);
-    iusReceiveSettingsDictDeepDelete(receiveSettingsDict);
+    iusDemodulationDictDeepDelete(demodulationDict);
 }
-#endif
+
 
 TEST(IusIqFile, iusIqFileSetGetAcquisition)
 {
@@ -380,18 +379,23 @@ static int saveFrames
 {
     int status=0;
     int i;
-    iud_t frame = iusIqFileFrameCreate(iqFile, label);
+	iud_t iFrame;
+	iud_t qFrame;
+
+	if (!iusIqFileFrameCreate(iqFile, label, &iFrame, &qFrame)) return -1;
     iuo_t offset = iusOffsetCreate();
 
     for (i=0; i<numFrames; i++)
     {
-        dgFillData(frame, 1 + i * 1.0f);
+        dgFillData(iFrame,  1 + i * 1.0f);
+		dgFillData(qFrame, -1 - i * 1.0f);
         offset->t = i;
-        status |= iusIqFileFrameSave(iqFile, label, frame, offset);
+        status |= iusIqFileFrameSave(iqFile, label, iFrame, qFrame, offset);
     }
 
     iusOffsetDelete(offset);
-    iusDataDelete(frame);
+    iusDataDelete(iFrame);
+	iusDataDelete(qFrame);
     return status;
 }
 
@@ -404,23 +408,28 @@ static int saveResponses
 {
     int status=0;
     int i,j;
-    iud_t response = iusIqFileResponseCreate(iqFile, label);
+	iud_t iResponse;
+	iud_t qResponse;
+
+	if (!iusIqFileResponseCreate(iqFile, label, &iResponse, &qResponse)) return -1;
     iuo_t offset = iusOffsetCreate();
     int numResponses = iusIqFileGetNumResponses(iqFile, label);
 
     for (i=0; i<numFrames; i++)
     {
-        dgFillData(response, 1 + i * 1.0f);
+        dgFillData(iResponse, 1 + i * 1.0f);
+		dgFillData(qResponse, -1 - i * 1.0f);
         // Save Frame in responses
         for (j=0; j<numResponses; j++)
         {
             offset->y = j;
             offset->t = i;
-            status |= iusIqFileResponseSave(iqFile, label, response, offset);
+            status |= iusIqFileResponseSave(iqFile, label, iResponse, qResponse, offset);
         }
     }
 
-    iusDataDelete(response);
+    iusDataDelete(iResponse);
+	iusDataDelete(qResponse);
     iusOffsetDelete(offset);
     return status;
 }
@@ -434,14 +443,18 @@ static int saveChannels
 {
     int status=0;
     int i,j,k;
-    iud_t channel = iusIqFileChannelCreate(iqFile, label);
+	iud_t iChannel;
+	iud_t qChannel;
+	
+	if (!iusIqFileChannelCreate(iqFile, label, &iChannel, &qChannel)) return -1;
     iuo_t offset = iusOffsetCreate();
     int numResponses = iusIqFileGetNumResponses(iqFile, label);
     int numChannels = iusIqFileGetNumChannels(iqFile, label);
 
     for (i=0; i<numFrames; i++)
     {
-        dgFillData(channel, 1 + i * 1.0f);
+        dgFillData(iChannel, 1 + i * 1.0f);
+		dgFillData(qChannel, -1 - i * 1.0f);
         // Save Frame in responses
         for (j=0; j<numResponses; j++)
         {
@@ -450,12 +463,13 @@ static int saveChannels
                 offset->z = k;
                 offset->y = j;
                 offset->t = i;
-                status |= iusIqFileChannelSave(iqFile, label, channel, offset);
+                status |= iusIqFileChannelSave(iqFile, label, iChannel, qChannel, offset);
             }
         }
     }
 
-    iusDataDelete(channel);
+    iusDataDelete(iChannel);
+	iusDataDelete(qChannel);
     iusOffsetDelete(offset);
     return status;
 }
@@ -472,20 +486,30 @@ static IUS_BOOL validateFrames
     int i;
     IUS_BOOL equal = IUS_FALSE;
 
-    iud_t referenceFrame = iusIqFileFrameCreate(iqFile, label);
-    iud_t actualFrame = iusIqFileFrameCreate(iqFile, label);
-    iuo_t offset = iusOffsetCreate();
+	iud_t referenceIFrame;
+	iud_t referenceQFrame;
+	iud_t actualIFrame;
+	iud_t actualQFrame;
+
+	if (!iusIqFileFrameCreate(iqFile, label, &referenceIFrame, &referenceQFrame)) return IUS_FALSE;
+	if (!iusIqFileFrameCreate(iqFile, label, &actualIFrame, &actualQFrame)) return IUS_FALSE;
+
+	iuo_t offset = iusOffsetCreate();
     for (i=0; i<numFrames; i++)
     {
-        dgFillData(referenceFrame, 1 + i * 1.0f);
+        dgFillData(referenceIFrame, 1 + i * 1.0f);
+		dgFillData(referenceQFrame, -1 - i * 1.0f);
         offset->t = i;
-        status |= iusIqFileFrameLoad(iqFile, label, actualFrame, offset);
-        equal = iusDataCompare(referenceFrame,actualFrame);
+        status |= iusIqFileFrameLoad(iqFile, label, actualIFrame, actualQFrame, offset);
+        equal = iusDataCompare(referenceIFrame, actualIFrame);
+		equal &= iusDataCompare(referenceQFrame, actualQFrame);
         if (equal == IUS_FALSE) break;
     }
 
-    iusDataDelete(referenceFrame);
-    iusDataDelete(actualFrame);
+    iusDataDelete(referenceIFrame);
+	iusDataDelete(referenceQFrame);
+    iusDataDelete(actualIFrame);
+	iusDataDelete(actualQFrame);
     iusOffsetDelete(offset);
     return equal;
 }
@@ -502,29 +526,36 @@ static IUS_BOOL validateResponses
     int i,j;
     IUS_BOOL equal = IUS_FALSE;
 
-    iud_t referenceResponse = iusIqFileResponseCreate(iqFile, label);
-    iud_t actualResponse = iusIqFileResponseCreate(iqFile, label);
+	iud_t referenceIResponse;
+	iud_t referenceQResponse;
+	if (!iusIqFileResponseCreate(iqFile, label, &referenceIResponse, &referenceQResponse)) return -1;
+	iud_t actualIResponse;
+	iud_t actualQResponse;
+	if (!iusIqFileResponseCreate(iqFile, label, &actualIResponse, &actualQResponse)) return -1;
+
     iuo_t offset = iusOffsetCreate();
     int numResponses = iusIqFileGetNumResponses(iqFile, label);
 
     for (i=0; i<numFrames; i++)
     {
-        dgFillData(referenceResponse, 1 + i * 1.0f);
+        dgFillData(referenceIResponse, 1 + i * 1.0f);
+		dgFillData(referenceQResponse, -1 - i * 1.0f);
         for (j=0; j<numResponses; j++)
         {
             offset->y = j;
             offset->t = i;
-            status |= iusIqFileResponseLoad(iqFile, label, actualResponse, offset);
-            equal = iusDataCompare(referenceResponse,actualResponse);
+            status |= iusIqFileResponseLoad(iqFile, label, actualIResponse, actualQResponse, offset);
+            equal = iusDataCompare(referenceIResponse,actualIResponse);
+			equal &= iusDataCompare(referenceQResponse, actualQResponse);
             if (equal == IUS_FALSE) break;
         }
         if (equal == IUS_FALSE) break;
     }
 
-
-
-    iusDataDelete(referenceResponse);
-    iusDataDelete(actualResponse);
+    iusDataDelete(referenceIResponse);
+	iusDataDelete(referenceQResponse);
+    iusDataDelete(actualIResponse);
+	iusDataDelete(actualQResponse);
     iusOffsetDelete(offset);
     return equal;
 }

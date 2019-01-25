@@ -79,6 +79,16 @@ add_library(ius STATIC
 		include/iusDemodulationDictPrivate.h
         include/iusAcquisition.h
         include/iusAcquisitionPrivate.h
+		include/iusCompoundFile.h
+		include/iusCompoundFilePrivate.h
+		include/iusCompoundFileInstance.h
+		include/iusCompoundFileStructure.h
+		include/iusCompoundFrame.h
+		include/iusCompoundFrameList.h
+		include/iusCompoundFrameListPrivate.h
+		include/iusCompoundWave.h
+		include/iusCompoundWaveList.h
+		include/iusCompoundWaveListPrivate.h
 		include/iusFile.h
 		include/iusFilter.h
 		include/iusFrame.h
@@ -157,6 +167,7 @@ add_library(ius STATIC
 		src/iusDemodulation.c
 		src/iusDemodulationDict.c
         src/iusAcquisition.c
+        src/iusCompoundFile.c
 		src/iusFile.c
 		src/iusFilter.c
 		src/iusFrame.c
