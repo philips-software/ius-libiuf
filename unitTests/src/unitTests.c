@@ -22,7 +22,7 @@ static void RunAllTests(void)
     //RUN_TEST_GROUP(IusCompoundFile);
     RUN_TEST_GROUP(IusDataStream);
     RUN_TEST_GROUP(IusDataStreamDict);
-//    RUN_TEST_GROUP(IusDemodulation);
+    RUN_TEST_GROUP(IusDemodulation);
 //    RUN_TEST_GROUP(IusDemodulationDict);
 //    RUN_TEST_GROUP(IusErrorHandling);
     RUN_TEST_GROUP(IusFile);

@@ -21,7 +21,7 @@ iudm_t iusDemodulationCreate
 */
 int iusDemodulationDelete
 (
-	iudm_t iusDemodulation     ///< The receive settings of interest.
+	iudm_t demodulation     ///< The receive settings of interest.
 );
 
 /** \brief Compare two demodulation objects with each other, including their TGC function.
@@ -38,7 +38,7 @@ int iusDemodulationCompare
 */
 float iusDemodulationGetSampleFrequency
 (
-	iudm_t iusDemodulation     ///< the receive settings of interest 
+	iudm_t demodulation     ///< the receive settings of interest
 );
 
 /** \brief Returns the number of samples per line
@@ -46,7 +46,7 @@ float iusDemodulationGetSampleFrequency
 */
 int iusDemodulationGetNumSamplesPerLine
 (
-	iudm_t iusDemodulation     ///< the receive settings of interest
+	iudm_t demodulation     ///< the receive settings of interest
 );
 
 /** \brief Gets the number of \p [time,gain] paira that the TGC has
@@ -54,7 +54,7 @@ int iusDemodulationGetNumSamplesPerLine
 */
 int iusDemodulationGetNumTGCentries
 (
-	iudm_t iusDemodulation     ///< the receive settings of interest
+	iudm_t demodulation     ///< the receive settings of interest
 );
 
 /** \brief Gets the TGC object of the receive settings
@@ -62,7 +62,7 @@ int iusDemodulationGetNumTGCentries
 */
 iutgc_t iusDemodulationGetTGC
 (
-	iudm_t iusDemodulation  ///< the receive settings of interest
+	iudm_t demodulation  ///< the receive settings of interest
 );
 
 
