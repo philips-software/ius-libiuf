@@ -17,7 +17,7 @@ struct IusPatternList
     iursd_t receiveSettingsDict;
     iurcmd_t receiveChannelMapDict;
 
-} ;
+};
 
 // ADT
 iupal_t iusPatternListCreate
@@ -89,33 +89,32 @@ int iusPatternListCompare
     iupal_t actual
 )
 {
-    int index;
-    if( reference == actual ) return IUS_TRUE;
-    if( reference == NULL || actual == NULL ) return IUS_FALSE;
-    if( reference->numPatterns != actual->numPatterns ) return IUS_FALSE;
-    for(index = 0 ; index < actual->numPatterns ; index++ )
-    {
-        if( iusPatternCompare( reference->pPatterns[index], actual->pPatterns[index] )
-            == IUS_FALSE )
-            return IUS_FALSE;
-    }
-    return IUS_TRUE;
+	int index;
+	if (reference == actual) return IUS_TRUE;
+	if (reference == NULL || actual == NULL) return IUS_FALSE;
+	if (reference->numPatterns != actual->numPatterns) return IUS_FALSE;
+	for (index = 0; index < actual->numPatterns; index++)
+	{
+		if (iusPatternCompare(reference->pPatterns[index], actual->pPatterns[index])
+			== IUS_FALSE)
+			return IUS_FALSE;
+	}
+	return IUS_TRUE;
 }
 
 
 int iusPatternListGetSize
 (
-    iupal_t list
+	iupal_t list
 )
 {
-    IUS_ERR_CHECK_NULL_N_RETURN(list, -1);
     return list->numPatterns;
 }
 
 iupa_t iusPatternListGet
 (
-    iupal_t list,
-    int index
+	iupal_t list,
+	int index
 )
 {
     IUS_ERR_CHECK_NULL_N_RETURN(list, IUPA_INVALID);
@@ -131,8 +130,8 @@ iupa_t iusPatternListGet
 
 IUS_BOOL iusPatternListValidateDimensions
 (
-    iupal_t list,
-    iupa_t member
+	iupal_t list,
+	iupa_t member
 )
 {
     // getSamplesPerLine of first item
@@ -265,7 +264,7 @@ int iusPatternListSave
     char path[IUS_MAX_HDF5_PATH];
     IUS_ERR_CHECK_NULL_N_RETURN(list, IUS_ERR_VALUE);
     IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUS_ERR_VALUE);
-    
+
     if(iusPatternListFull(list) == IUS_FALSE)
     {
         IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE, "argument list (pattern list) was not full");

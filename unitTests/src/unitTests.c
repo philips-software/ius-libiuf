@@ -19,15 +19,20 @@ static void RunAllTests(void)
     RUN_TEST_GROUP(Ius3DTransducerElement);
     RUN_TEST_GROUP(Ius3DTransducerElementList);
     RUN_TEST_GROUP(IusAcquisition);
+    //RUN_TEST_GROUP(IusCompoundFile);
     RUN_TEST_GROUP(IusDataStream);
     RUN_TEST_GROUP(IusDataStreamDict);
+    RUN_TEST_GROUP(IusDemodulation);
+    RUN_TEST_GROUP(IusDemodulationDict);
 //    RUN_TEST_GROUP(IusErrorHandling);
+    RUN_TEST_GROUP(IusFile);
+	RUN_TEST_GROUP(IusFirFilter);
     RUN_TEST_GROUP(IusFrame);
     RUN_TEST_GROUP(IusFrameList);
-    RUN_TEST_GROUP(IusFile);
+    RUN_TEST_GROUP(IusInputFile);
+	RUN_TEST_GROUP(IusIqFile);
     RUN_TEST_GROUP(IusHistoryNodeList);
     RUN_TEST_GROUP(IusHistoryNode);
-    RUN_TEST_GROUP(IusInputFile);
     RUN_TEST_GROUP(IusParameterDict);
     RUN_TEST_GROUP(IusNonParametricPulse);
     RUN_TEST_GROUP(IusParametricPulse);
@@ -47,7 +52,6 @@ static void RunAllTests(void)
     RUN_TEST_GROUP(IusTransmitApodization);
     RUN_TEST_GROUP(IusTransmitApodizationDict);
 }
-
 
 int main(int argc, const char * argv[])
 {

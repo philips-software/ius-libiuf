@@ -712,7 +712,7 @@ int iusInputFileSetFilename
 }
 
 
-void fillChunkDims
+static void fillChunkDims
 (
     hsize_t *chunkDims,
     hsize_t *rfDataDims,

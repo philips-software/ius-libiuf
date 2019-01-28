@@ -38,7 +38,6 @@ TEST_TEAR_DOWN(IusInputFile)
     remove(pErrorFilename);
 }
 
-
 TEST(IusInputFile, testIusInputFileCreate)
 {
     const char *pEmptyFilename = "";
@@ -352,36 +351,7 @@ TEST(IusInputFile, iusInputFileSetGetTransducer)
     iusTransducerDeepDelete(transducer);
 }
 
-TEST(IusInputFile, testIusInputFileSerialization)
-{
-    int numFrames = 10;
-    int numSamplesPerLine = 10;
-    int numChannels = 8;
-    char *ptestFileName = "testIusInputFileSerialization.hdf5";
-
-    // create
-    iuif_t inputFile = dgGenerateInputFile(ptestFileName, "S5-1", "bmode", numFrames, numSamplesPerLine, numChannels);
-    TEST_ASSERT(inputFile != IUIF_INVALID);
-
-	// save
-    int status = iusInputFileNodeSave(inputFile);
-    TEST_ASSERT_EQUAL(IUS_E_OK,status);
-    status = iusInputFileClose(inputFile);
-    TEST_ASSERT_EQUAL(IUS_E_OK,status);
-
-    // read back
-    iuif_t savedObj = iusInputFileNodeLoad(ptestFileName);
-    TEST_ASSERT(savedObj != NULL);
-    TEST_ASSERT_EQUAL(IUS_TRUE, iusInputFileCompare(inputFile,savedObj));
-
-	status = iusInputFileClose(savedObj);
-	TEST_ASSERT(status == IUS_E_OK);
-
-	dgDeleteInputFile(inputFile);
-    iusInputFileDelete(savedObj);
-}
-
-int saveFrames
+static int saveFrames
 (
     iuif_t inputFile,
     char *label,
@@ -405,7 +375,7 @@ int saveFrames
     return status;
 }
 
-int saveResponses
+static int saveResponses
 (
     iuif_t inputFile,
     char *label,
@@ -435,7 +405,7 @@ int saveResponses
     return status;
 }
 
-int saveChannels
+static int saveChannels
 (
     iuif_t inputFile,
     char *label,
@@ -471,7 +441,7 @@ int saveChannels
 }
 
 
-IUS_BOOL validateFrames
+static IUS_BOOL validateFrames
 (
     iuif_t inputFile,
     char *label,
@@ -501,7 +471,7 @@ IUS_BOOL validateFrames
 }
 
 
-IUS_BOOL validateResponses
+static IUS_BOOL validateResponses
 (
     iuif_t inputFile,
     char *label,
@@ -539,8 +509,8 @@ IUS_BOOL validateResponses
     return equal;
 }
 
-
-IUS_BOOL validateChannels
+#if 0
+static IUS_BOOL validateChannels
 (
     iuif_t inputFile,
     char *label,
@@ -584,6 +554,7 @@ IUS_BOOL validateChannels
     iusOffsetDelete(offset);
     return equal;
 }
+#endif
 
 TEST(IusInputFile, testIusInputFileDataIOSaveFrame)
 {
@@ -692,7 +663,7 @@ TEST(IusInputFile, testIusInputFileDataIOSaveChannel)
     TEST_ASSERT(savedObj != NULL);
     TEST_ASSERT_EQUAL(IUS_TRUE, iusInputFileCompare(inputFile,savedObj));
     // Todo:
-    // Fix Errors in va;idateChannels:
+    // Fix Errors in validateChannels:
 //    TEST_ASSERT_EQUAL(IUS_TRUE, validateChannels(savedObj,pDopplerLabel,numFrames));
 //    TEST_ASSERT_EQUAL(IUS_TRUE, validateChannels(savedObj,pBmodeLabel,numFrames));
 
@@ -701,6 +672,37 @@ TEST(IusInputFile, testIusInputFileDataIOSaveChannel)
     iusInputFileClose(savedObj);
     iusInputFileDelete(savedObj);
     dgDeleteInputFile(inputFile);
+}
+
+
+TEST(IusInputFile, testIusInputFileSerialization)
+{
+    int numFrames = 10;
+    int numSamplesPerLine = 10;
+    int numChannels = 8;
+    char *ptestFileName = "testIusInputFileSerialization.hdf5";
+
+    // create
+    iuif_t inputFile = dgGenerateInputFile(ptestFileName, "S5-1", "bmode", numFrames, numSamplesPerLine, numChannels);
+    TEST_ASSERT(inputFile != IUIF_INVALID);
+
+    // save
+    int status = iusInputFileNodeSave(inputFile);
+    TEST_ASSERT_EQUAL(IUS_E_OK,status);
+    status = iusInputFileClose(inputFile);
+    TEST_ASSERT_EQUAL(IUS_E_OK,status);
+
+    // read back
+    iuif_t savedObj = iusInputFileNodeLoad(ptestFileName);
+    TEST_ASSERT(savedObj != NULL);
+    TEST_ASSERT_EQUAL(IUS_TRUE, iusInputFileCompare(inputFile,savedObj));
+
+    status = iusInputFileClose(savedObj);
+    TEST_ASSERT(status == IUS_E_OK);
+
+    dgDeleteInputFile(inputFile);
+    iusInputFileDelete(savedObj);
+
 }
 
 TEST_GROUP_RUNNER(IusInputFile)
