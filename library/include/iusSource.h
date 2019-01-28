@@ -41,7 +41,7 @@ int iusSourceCompare
 */
 IusSourceType iusSourceGetType
 (
-    ius_t iusSource ///< The source of interest
+    ius_t source ///< The source of interest
 );
 
 #endif //IUSLIBRARY_IUSHLSOURCE_H

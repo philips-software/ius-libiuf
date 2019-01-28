@@ -9,16 +9,30 @@
 #include <ius.h>
 #include <ius3DNonParametricSourcePrivate.h>
 
+static char *pErrorFilename = "Ius3DNonParametricSource.errlog";
+static FILE *fpErrorLogging = NULL;
+
 TEST_GROUP(Ius3DNonParametricSource);
 
 TEST_SETUP(Ius3DNonParametricSource)
 {
+    iusErrorLogClear();
+    iusErrorLog(IUS_TRUE);
+    iusErrorAutoReport(IUS_TRUE);
+    fpErrorLogging = fopen(pErrorFilename, "w+");
+    iusErrorSetStream(fpErrorLogging);
 }
 
 TEST_TEAR_DOWN(Ius3DNonParametricSource)
 {
+    iusErrorLogClear();
+    iusErrorLog(IUS_FALSE);
+    if (fpErrorLogging != NULL)
+        fclose(fpErrorLogging);
+    fpErrorLogging=stderr;
+    iusErrorSetStream(fpErrorLogging);
+    remove(pErrorFilename);
 }
-
 
 TEST(Ius3DNonParametricSource, testIus3DNonParametricSourceCreate)
 {
@@ -32,10 +46,17 @@ TEST(Ius3DNonParametricSource, testIus3DNonParametricSourceCreate)
     ius3DNonParametricSourceDelete(notherObj);
 
     // invalid params
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
     obj = ius3DNonParametricSourceCreate(0);
     TEST_ASSERT(obj == IU3DNPS_INVALID);
     obj = ius3DNonParametricSourceCreate(0);
     TEST_ASSERT(obj == IU3DNPS_INVALID);
+
+    TEST_ASSERT_EQUAL(2,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
+
 }
 
 TEST(Ius3DNonParametricSource, testIus3DNonParametricSourceDelete)
@@ -48,8 +69,15 @@ TEST(Ius3DNonParametricSource, testIus3DNonParametricSourceDelete)
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
     // invalid params
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
     status = ius3DNonParametricSourceDelete(NULL);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
+
+    TEST_ASSERT_EQUAL(1,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
+
 }
 
 
@@ -111,8 +139,15 @@ TEST(Ius3DNonParametricSource, testIus3DNonParametricSourceSetGet)
     }
 
     // invalid param
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
     TEST_ASSERT_EQUAL(IU3DP_INVALID, ius3DNonParametricSourceGetPosition(NULL,0));
     TEST_ASSERT_EQUAL(IU3DP_INVALID, ius3DNonParametricSourceGetPosition(obj,-1));
+
+    TEST_ASSERT_EQUAL(2,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
+
 
     ius3DNonParametricSourceDelete(obj);
 }
@@ -155,7 +190,7 @@ TEST(Ius3DNonParametricSource, testIus3DNonParametricSourceSerialization)
 
 }
 
-    TEST_GROUP_RUNNER(Ius3DNonParametricSource)
+TEST_GROUP_RUNNER(Ius3DNonParametricSource)
 {
     RUN_TEST_CASE(Ius3DNonParametricSource, testIus3DNonParametricSourceCreate);
     RUN_TEST_CASE(Ius3DNonParametricSource, testIus3DNonParametricSourceDelete);

@@ -29,7 +29,7 @@ iu3dt_t ius3DTransducerCreate
 */
 int ius3DTransducerDelete
 (
-    iu3dt_t ius3DTransducer       ///< The 3D transducer object that will be deleted 
+    iu3dt_t transducer       ///< The 3D transducer object that will be deleted
 );
 
 /** \brief Deletes the 3D transducer including the deletion of its elements
@@ -37,7 +37,7 @@ int ius3DTransducerDelete
 */
 int ius3DTransducerDeepDelete
 (
-	iu3dt_t ius3DTransducer      ///< The 3D transducer object that will be deleted 
+	iu3dt_t transducer      ///< The 3D transducer object that will be deleted
 );
 
 /** \brief Comparing two transducers, return #IUS_TRUE if they are equal and #IUS_FALSE if they differ or in case of an error.
@@ -55,7 +55,7 @@ int ius3DTransducerCompare
 iu3dte_t ius3DTransducerGetElement
 (
     iu3dt_t transducer,		///< The 3D transducer of interest
-    int elementIndex		///< The index of the element that is requested
+    int index		///< The index of the element that is requested
 );
 
 /** \brief Gets the length of the transducer's element list.

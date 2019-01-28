@@ -13,24 +13,30 @@
 static const char *pFilename = "IusInputFile.hdf5";
 static const char *pNotherFilename = "AnotherIusInputFile.hdf5";
 
+static char *pErrorFilename = "IusInputFile.errlog";
+static FILE *fpErrorLogging = NULL;
+
 TEST_GROUP(IusInputFile);
 
 TEST_SETUP(IusInputFile)
 {
+    iusErrorLogClear();
+    iusErrorLog(IUS_TRUE);
+    iusErrorAutoReport(IUS_TRUE);
+    fpErrorLogging = fopen(pErrorFilename, "w+");
+    iusErrorSetStream(fpErrorLogging);
 }
 
 TEST_TEAR_DOWN(IusInputFile)
 {
-    if( fileExists(pFilename) == IUS_TRUE )
-    {
-		remove(pFilename);
-    }
-    if( fileExists(pNotherFilename) == IUS_TRUE )
-    {
-		remove(pNotherFilename);
-    }
+    iusErrorLogClear();
+    iusErrorLog(IUS_FALSE);
+    if (fpErrorLogging != NULL)
+        fclose(fpErrorLogging);
+    fpErrorLogging=stderr;
+    iusErrorSetStream(fpErrorLogging);
+    remove(pErrorFilename);
 }
-
 
 TEST(IusInputFile, testIusInputFileCreate)
 {
@@ -39,6 +45,9 @@ TEST(IusInputFile, testIusInputFileCreate)
 
     iuif_t ifh = iusInputFileCreate(pFilename);
     TEST_ASSERT(ifh != IUIF_INVALID);
+
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
 
     // Create file that is already open should result in error
     iuif_t ifh2 = iusInputFileCreate(pFilename);
@@ -57,6 +66,10 @@ TEST(IusInputFile, testIusInputFileCreate)
     TEST_ASSERT(ifh == IUIF_INVALID);
     ifh = iusInputFileCreate(pSpecialCharsFilename);
     TEST_ASSERT(ifh == IUIF_INVALID);
+
+    TEST_ASSERT_EQUAL(4,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
+
 }
 
 TEST(IusInputFile, testIusInputFileDelete)
@@ -71,8 +84,14 @@ TEST(IusInputFile, testIusInputFileDelete)
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
     // invalid params
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
     status = iusInputFileDelete(NULL);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
+
+    TEST_ASSERT_EQUAL(1, iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
 }
 
 
@@ -225,6 +244,9 @@ TEST(IusInputFile, iusInputFileSetGetTransmitApodizationDict)
 	TEST_ASSERT_EQUAL(IUS_TRUE, equal);
 
     // invalid param
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
     status = iusInputFileSetTransmitApodizationDict(obj, NULL);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
 
@@ -233,6 +255,9 @@ TEST(IusInputFile, iusInputFileSetGetTransmitApodizationDict)
 
     gotMeATransmitApodizationDict = iusInputFileGetTransmitApodizationDict(NULL);
     TEST_ASSERT_EQUAL(IUTAD_INVALID, gotMeATransmitApodizationDict);
+
+    TEST_ASSERT_EQUAL(3, iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
 
 	status = iusInputFileClose(obj);
 	TEST_ASSERT(status == IUS_E_OK);
@@ -258,6 +283,9 @@ TEST(IusInputFile, iusInputFileSetGetReceiveSettingsDict)
     TEST_ASSERT_EQUAL(IUS_TRUE, equal);
 
     // invalid param
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
     status = iusInputFileSetReceiveSettingsDict(obj, NULL);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
 
@@ -266,6 +294,10 @@ TEST(IusInputFile, iusInputFileSetGetReceiveSettingsDict)
 
     gotMeATransmitReceiveSettingsDict = iusInputFileGetReceiveSettingsDict(NULL);
     TEST_ASSERT_EQUAL(IURSD_INVALID, gotMeATransmitReceiveSettingsDict);
+
+    TEST_ASSERT_EQUAL(3, iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
+
 
     status = iusInputFileClose(obj);
     TEST_ASSERT(status == IUS_E_OK);
@@ -291,6 +323,9 @@ TEST(IusInputFile, iusInputFileSetGetAcquisition)
     TEST_ASSERT_EQUAL(IUS_TRUE, equal);
 
     // invalid param
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
     status = iusInputFileSetAcquisition(obj, NULL);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
 
@@ -299,6 +334,10 @@ TEST(IusInputFile, iusInputFileSetGetAcquisition)
 
     gotMeAnAcquisition = iusInputFileGetAcquisition(NULL);
     TEST_ASSERT_EQUAL(IURSD_INVALID, gotMeAnAcquisition);
+
+    TEST_ASSERT_EQUAL(3, iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
+
 
     status = iusInputFileClose(obj);
     TEST_ASSERT(status == IUS_E_OK);
@@ -324,6 +363,9 @@ TEST(IusInputFile, iusInputFileSetGetTransducer)
     TEST_ASSERT_EQUAL(IUS_TRUE, equal);
 
     // invalid param
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
     status = iusInputFileSetTransducer(obj, NULL);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
 
@@ -333,39 +375,13 @@ TEST(IusInputFile, iusInputFileSetGetTransducer)
     gotMeATransducer = iusInputFileGetTransducer(NULL);
     TEST_ASSERT_EQUAL(IURSD_INVALID, gotMeATransducer);
 
+    TEST_ASSERT_EQUAL(3, iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
+
     status = iusInputFileClose(obj);
     TEST_ASSERT(status == IUS_E_OK);
     iusInputFileDelete(obj);
     iusTransducerDeepDelete(transducer);
-}
-
-TEST(IusInputFile, testIusInputFileSerialization)
-{
-    int numFrames = 10;
-    int numSamplesPerLine = 10;
-    int numChannels = 8;
-    char *ptestFileName = "testIusInputFileSerialization.hdf5";
-
-    // create
-    iuif_t inputFile = dgGenerateInputFile(ptestFileName, "S5-1", "bmode", numFrames, numSamplesPerLine, numChannels);
-    TEST_ASSERT(inputFile != IUIF_INVALID);
-
-	// save
-    int status = iusInputFileNodeSave(inputFile);
-    TEST_ASSERT_EQUAL(IUS_E_OK,status);
-    status = iusInputFileClose(inputFile);
-    TEST_ASSERT_EQUAL(IUS_E_OK,status);
-
-    // read back
-    iuif_t savedObj = iusInputFileNodeLoad(ptestFileName);
-    TEST_ASSERT(savedObj != NULL);
-    TEST_ASSERT_EQUAL(IUS_TRUE, iusInputFileCompare(inputFile,savedObj));
-
-	status = iusInputFileClose(savedObj);
-	TEST_ASSERT(status == IUS_E_OK);
-
-	dgDeleteInputFile(inputFile);
-    iusInputFileDelete(savedObj);
 }
 
 static int saveFrames
@@ -689,6 +705,37 @@ TEST(IusInputFile, testIusInputFileDataIOSaveChannel)
     iusInputFileClose(savedObj);
     iusInputFileDelete(savedObj);
     dgDeleteInputFile(inputFile);
+}
+
+
+TEST(IusInputFile, testIusInputFileSerialization)
+{
+    int numFrames = 10;
+    int numSamplesPerLine = 10;
+    int numChannels = 8;
+    char *ptestFileName = "testIusInputFileSerialization.hdf5";
+
+    // create
+    iuif_t inputFile = dgGenerateInputFile(ptestFileName, "S5-1", "bmode", numFrames, numSamplesPerLine, numChannels);
+    TEST_ASSERT(inputFile != IUIF_INVALID);
+
+    // save
+    int status = iusInputFileNodeSave(inputFile);
+    TEST_ASSERT_EQUAL(IUS_E_OK,status);
+    status = iusInputFileClose(inputFile);
+    TEST_ASSERT_EQUAL(IUS_E_OK,status);
+
+    // read back
+    iuif_t savedObj = iusInputFileNodeLoad(ptestFileName);
+    TEST_ASSERT(savedObj != NULL);
+    TEST_ASSERT_EQUAL(IUS_TRUE, iusInputFileCompare(inputFile,savedObj));
+
+    status = iusInputFileClose(savedObj);
+    TEST_ASSERT(status == IUS_E_OK);
+
+    dgDeleteInputFile(inputFile);
+    iusInputFileDelete(savedObj);
+
 }
 
 TEST_GROUP_RUNNER(IusInputFile)

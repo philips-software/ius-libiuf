@@ -14,23 +14,19 @@ iute_t iusTransducerElementCreate
 {
     if( shape ==  IUS_INVALID_SHAPE ) return IUTE_INVALID;
     iute_t created = calloc(1,sizeof(IusTransducerElement));
+    IUS_ERR_ALLOC_NULL_N_RETURN(created, IusTransducerElement, IUTE_INVALID);
     created->shape = shape;
     return created;
 }
 
 int iusTransducerElementDelete
 (
-    iute_t iusTransducerElement
+    iute_t transducerElement
 )
 {
-    int status = IUS_ERR_VALUE;
-    if(iusTransducerElement != NULL)
-    {
-        free(iusTransducerElement);
-        iusTransducerElement = NULL;
-        status = IUS_E_OK;
-    }
-    return status;
+    IUS_ERR_CHECK_NULL_N_RETURN(transducerElement, IUS_ERR_VALUE);
+    free(transducerElement);
+    return IUS_E_OK;
 }
 
 
@@ -50,8 +46,9 @@ int iusTransducerElementCompare
 // Getters
 IusShape iusTransducerElementGetShape
 (
-    iute_t element
+    iute_t transducerElement
 )
 {
-    return element->shape;
+    IUS_ERR_CHECK_NULL_N_RETURN(transducerElement, IUS_INVALID_SHAPE);
+    return transducerElement->shape;
 }

@@ -7,20 +7,20 @@
 #include <unity_fixture.h>
 
 #include <ius.h>
-#include <iusPatternListPrivate.h>
+#include <iusIqPatternListPrivate.h>
 #include <testDataGenerators.h>
 
 static const char *pPulseLabel = "pulseLabel";
 static const char *pSourceLabel = "sourceLabel";
 static const char *pChannelMapLabel = "channelMapLabel";
 static const char *pApodizationLabel = "apodizationLabel";
-static const char *pReceivesettingsLabel = "receivesettingsLabel";
-static char *pErrorFilename = "IusPatternList.errlog";
+static const char *pDemodulationLabel = "demodulationLabel";
+static char *pErrorFilename = "IusIqPatternList.errlog";
 static FILE *fpErrorLogging = NULL;
 
-TEST_GROUP(IusPatternList);
+TEST_GROUP(IusIqPatternList);
 
-TEST_SETUP(IusPatternList)
+TEST_SETUP(IusIqPatternList)
 {
     iusErrorLogClear();
     iusErrorLog(IUS_TRUE);
@@ -29,7 +29,7 @@ TEST_SETUP(IusPatternList)
     iusErrorSetStream(fpErrorLogging);
 }
 
-TEST_TEAR_DOWN(IusPatternList)
+TEST_TEAR_DOWN(IusIqPatternList)
 {
     iusErrorLogClear();
     iusErrorLog(IUS_FALSE);
@@ -41,20 +41,20 @@ TEST_TEAR_DOWN(IusPatternList)
 }
 
 
-TEST(IusPatternList, testIusCreatePatternList)
+TEST(IusIqPatternList, testIusCreatePatternList)
 {
     // Put your test code here
     int numPatterns = 100;
-    iupal_t patternList = iusPatternListCreate(numPatterns,NULL,NULL);
-    TEST_ASSERT_NOT_EQUAL(IUPAL_INVALID, patternList);
-    TEST_ASSERT_EQUAL(numPatterns, iusPatternListGetSize(patternList));
-    iusPatternListDelete(patternList);
+    iuiqpal_t patternList = iusIqPatternListCreate(numPatterns,NULL,NULL);
+    TEST_ASSERT_NOT_EQUAL(IUIQPAL_INVALID, patternList);
+    TEST_ASSERT_EQUAL(numPatterns, iusIqPatternListGetSize(patternList));
+    iusIqPatternListDelete(patternList);
 
 
     long filePos = ftell(fpErrorLogging);
     TEST_ASSERT_EQUAL(0,iusErrorGetCount());
 
-    patternList = iusPatternListCreate(-1,NULL,NULL);
+    patternList = iusIqPatternListCreate(-1,NULL,NULL);
     TEST_ASSERT_EQUAL(IUPAL_INVALID, patternList);
 
     TEST_ASSERT_EQUAL(1,iusErrorGetCount());
@@ -63,7 +63,7 @@ TEST(IusPatternList, testIusCreatePatternList)
 }
 
 
-TEST(IusPatternList, testIusSetPatternList)
+TEST(IusIqPatternList, testIusSetPatternList)
 {
     // Put your test code here
     int numPatterns = 100;
@@ -72,32 +72,32 @@ TEST(IusPatternList, testIusSetPatternList)
     int status;
     char *pLabel20SampsPerLine = "pLabel20SampsPerLine";
     char *pLabel6channels = "pLabel6channels";
-    iursd_t receiveSettingsDict = dgGenerateReceiveSettingsDict((char *)pReceivesettingsLabel, numSamplesPerLine);
+    iudmd_t demodulationDict = dgGenerateDemodulationDict((char *)pDemodulationLabel, numSamplesPerLine);
     iurcmd_t receiveChannelMapDict = dgGenerateReceiveChannelMapDict((char *) pChannelMapLabel, numChannels);
-    iurs_t receiveSettings = dgGenerateReceiveSettings(20);
-    iusReceiveSettingsDictSet(receiveSettingsDict,pLabel20SampsPerLine,receiveSettings);
+    iudm_t demodulationSettings = dgGenerateDemodulation(20);
+    iusDemodulationDictSet(demodulationDict, pLabel20SampsPerLine, demodulationSettings);
     iurcm_t receiveChannelMap = dgGenerateReceiveChannelMap(6);
     iusReceiveChannelMapDictSet(receiveChannelMapDict,pLabel6channels,receiveChannelMap);
 
     // Empty lists should be equal
-    iupal_t patternList = iusPatternListCreate(numPatterns,receiveSettingsDict,receiveChannelMapDict);
-    TEST_ASSERT_NOT_EQUAL(IUPAL_INVALID, patternList);
+    iuiqpal_t patternList = iusIqPatternListCreate(numPatterns,demodulationDict,receiveChannelMapDict);
+    TEST_ASSERT_NOT_EQUAL(IUIQPAL_INVALID, patternList);
 
-    iupa_t pattern1 = iusPatternCreate(0.01f,
+    iuiqpa_t pattern1 = iusIqPatternCreate(0.01f,
                                            pPulseLabel,
                                            pSourceLabel,
                                            pChannelMapLabel,
                                            pApodizationLabel,
-                                           pReceivesettingsLabel);
+                                           pDemodulationLabel);
 
-    iupa_t pattern2 = iusPatternCreate(0.01f,
+    iuiqpa_t pattern2 = iusIqPatternCreate(0.01f,
                                        pPulseLabel,
                                        pSourceLabel,
                                        pLabel6channels,
                                        pApodizationLabel,
-                                       pReceivesettingsLabel);
+                                       pDemodulationLabel);
 
-    iupa_t pattern3 = iusPatternCreate(0.01f,
+    iuiqpa_t pattern3 = iusIqPatternCreate(0.01f,
                                              pPulseLabel,
                                              pSourceLabel,
                                              pChannelMapLabel,
@@ -105,29 +105,29 @@ TEST(IusPatternList, testIusSetPatternList)
                                              pLabel20SampsPerLine);
 
     // Allowed
-    status = iusPatternListSet(patternList, pattern1, 0);
+    status = iusIqPatternListSet(patternList, pattern1, 0);
     TEST_ASSERT_EQUAL(IUS_E_OK, status);
     // Different numChannels or samplesper line should not be accepted
     long filePos = ftell(fpErrorLogging);
     TEST_ASSERT_EQUAL(0,iusErrorGetCount());
 
-    status = iusPatternListSet(patternList, pattern3, 2);
+    status = iusIqPatternListSet(patternList, pattern3, 2);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
-    status = iusPatternListSet(patternList, pattern2, 1);
+    status = iusIqPatternListSet(patternList, pattern2, 1);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
 
     TEST_ASSERT_EQUAL(2,iusErrorGetCount());
     TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
 
-    iusReceiveSettingsDictDeepDelete(receiveSettingsDict);
+    iusDemodulationDictDeepDelete(demodulationDict);
     iusReceiveChannelMapDictDeepDelete(receiveChannelMapDict);
-    iusPatternListDelete(patternList);
-    iusPatternDelete(pattern1);
-    iusPatternDelete(pattern2);
-    iusPatternDelete(pattern3);
+    iusIqPatternListDelete(patternList);
+    iusIqPatternDelete(pattern1);
+    iusIqPatternDelete(pattern2);
+    iusIqPatternDelete(pattern3);
 }
 
-TEST(IusPatternList, testIusComparePatternList)
+TEST(IusIqPatternList, testIusComparePatternList)
 {
     // Put your test code here
     int numPatterns = 100;
@@ -135,125 +135,125 @@ TEST(IusPatternList, testIusComparePatternList)
     int numChannels = 8;
     int status;
     IUS_BOOL equal;
-    iursd_t receiveSettingsDict = dgGenerateReceiveSettingsDict((char *)pReceivesettingsLabel, numSamplesPerLine);
+    iudmd_t demodulationDict = dgGenerateDemodulationDict((char *)pDemodulationLabel, numSamplesPerLine);
     iurcmd_t receiveChannelMapDict = dgGenerateReceiveChannelMapDict((char *) pChannelMapLabel, numChannels);
 
     // Empty lists should be equal
-    iupal_t patternList = iusPatternListCreate(numPatterns,receiveSettingsDict,receiveChannelMapDict);
-    TEST_ASSERT_NOT_EQUAL(IUPAL_INVALID, patternList);
-    iupal_t notherPatternList = iusPatternListCreate(numPatterns,receiveSettingsDict,receiveChannelMapDict);
-    TEST_ASSERT_NOT_EQUAL(IUPAL_INVALID, notherPatternList);
-    equal = iusPatternListCompare(patternList, notherPatternList);
+    iuiqpal_t patternList = iusIqPatternListCreate(numPatterns,demodulationDict,receiveChannelMapDict);
+    TEST_ASSERT_NOT_EQUAL(IUIQPAL_INVALID, patternList);
+    iuiqpal_t notherPatternList = iusIqPatternListCreate(numPatterns,demodulationDict,receiveChannelMapDict);
+    TEST_ASSERT_NOT_EQUAL(IUIQPAL_INVALID, notherPatternList);
+    equal = iusIqPatternListCompare(patternList, notherPatternList);
     TEST_ASSERT_EQUAL(IUS_TRUE, equal);
 
-    iupa_t bmodePattern = iusPatternCreate(0.01f,
+    iuiqpa_t bmodePattern = iusIqPatternCreate(0.01f,
                                            pPulseLabel,
                                            pSourceLabel,
                                            pChannelMapLabel,
                                            pApodizationLabel,
-                                           pReceivesettingsLabel);
+                                           pDemodulationLabel);
 
-    iupa_t dopplerPattern = iusPatternCreate(0.01f,
+    iuiqpa_t dopplerPattern = iusIqPatternCreate(0.01f,
                                              pPulseLabel,
                                              pSourceLabel,
                                              pChannelMapLabel,
                                              pApodizationLabel,
-                                             pReceivesettingsLabel);
+                                             pDemodulationLabel);
 
     // Change one list..add bmode
-    status = iusPatternListSet(patternList, bmodePattern, 0);
+    status = iusIqPatternListSet(patternList, bmodePattern, 0);
     TEST_ASSERT_EQUAL(IUS_E_OK, status);
-    equal = iusPatternListCompare(patternList, notherPatternList);
+    equal = iusIqPatternListCompare(patternList, notherPatternList);
     TEST_ASSERT_EQUAL(IUS_FALSE, equal);
 
     // Change other
-    status = iusPatternListSet(notherPatternList, bmodePattern, 0);
+    status = iusIqPatternListSet(notherPatternList, bmodePattern, 0);
     TEST_ASSERT_EQUAL(IUS_E_OK, status);
-    equal = iusPatternListCompare(patternList, notherPatternList);
+    equal = iusIqPatternListCompare(patternList, notherPatternList);
     TEST_ASSERT_EQUAL(IUS_TRUE, equal);
 
 
     // Change one list..add doppler
-    status = iusPatternListSet(patternList, dopplerPattern, 1);
+    status = iusIqPatternListSet(patternList, dopplerPattern, 1);
     TEST_ASSERT_EQUAL(IUS_E_OK, status);
-    equal = iusPatternListCompare(patternList, notherPatternList);
+    equal = iusIqPatternListCompare(patternList, notherPatternList);
     TEST_ASSERT_EQUAL(IUS_FALSE, equal);
 
     // Change other
-    status = iusPatternListSet(notherPatternList, dopplerPattern, 1);
+    status = iusIqPatternListSet(notherPatternList, dopplerPattern, 1);
     TEST_ASSERT_EQUAL(IUS_E_OK, status);
-    equal = iusPatternListCompare(patternList, notherPatternList);
+    equal = iusIqPatternListCompare(patternList, notherPatternList);
     TEST_ASSERT_EQUAL(IUS_TRUE, equal);
 
 
-    iusReceiveSettingsDictDeepDelete(receiveSettingsDict);
+    iusDemodulationDictDeepDelete(demodulationDict);
     iusReceiveChannelMapDictDeepDelete(receiveChannelMapDict);
-    iusPatternListDelete(patternList);
-    iusPatternListDelete(notherPatternList);
-    iusPatternDelete(bmodePattern);
-    iusPatternDelete(dopplerPattern);
+    iusIqPatternListDelete(patternList);
+    iusIqPatternListDelete(notherPatternList);
+    iusIqPatternDelete(bmodePattern);
+    iusIqPatternDelete(dopplerPattern);
 }
 
-TEST(IusPatternList, testIusSerialization)
+TEST(IusIqPatternList, testIusSerialization)
 {
     int numPatterns = 2;
     int status;
     IUS_BOOL equal;
-    char *pFilename = "testIusPatternListSerialization.hdf5";
+    char *pFilename = "testIqIusPatternListSerialization.hdf5";
     //char *pPatternListPath = "/PatternList";
 
     // fill list
-    iupal_t patternList = iusPatternListCreate(numPatterns,NULL,NULL);
-    TEST_ASSERT_NOT_EQUAL(IUPAL_INVALID, patternList);
+    iuiqpal_t patternList = iusIqPatternListCreate(numPatterns,NULL,NULL);
+    TEST_ASSERT_NOT_EQUAL(IUIQPAL_INVALID, patternList);
 
-    iupa_t bmodePattern = iusPatternCreate(0.01f,
+    iuiqpa_t bmodePattern = iusIqPatternCreate(0.01f,
                                            pPulseLabel,
                                            pSourceLabel,
                                            pChannelMapLabel,
                                            pApodizationLabel,
-                                           pReceivesettingsLabel);
+                                           pDemodulationLabel);
 
-    iupa_t dopplerPattern = iusPatternCreate(0.02f,
+    iuiqpa_t dopplerPattern = iusIqPatternCreate(0.02f,
                                              pPulseLabel,
                                              pSourceLabel,
                                              pChannelMapLabel,
                                              pApodizationLabel,
-                                             pReceivesettingsLabel);
-    status = iusPatternListSet(patternList, bmodePattern, 0);
+                                             pDemodulationLabel);
+    status = iusIqPatternListSet(patternList, bmodePattern, 0);
     TEST_ASSERT_EQUAL(IUS_E_OK, status);
-    status = iusPatternListSet(patternList, dopplerPattern, 1);
+    status = iusIqPatternListSet(patternList, dopplerPattern, 1);
     TEST_ASSERT_EQUAL(IUS_E_OK, status);
 
     // save
     hid_t handle = H5Fcreate(pFilename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
     TEST_ASSERT(handle > 0);
-    status = iusPatternListSave(patternList, handle);
+    status = iusIqPatternListSave(patternList, handle);
     TEST_ASSERT_EQUAL(IUS_E_OK, status);
     status = H5Fclose(handle);
     TEST_ASSERT_EQUAL(IUS_E_OK, status);
 
     // read back
     handle = H5Fopen(pFilename, H5F_ACC_RDONLY, H5P_DEFAULT);
-    iupal_t savedPatternList = iusPatternListLoad(handle);
-    TEST_ASSERT_NOT_EQUAL(IUPAL_INVALID, savedPatternList);
+    iuiqpal_t savedPatternList = iusIqPatternListLoad(handle);
+    TEST_ASSERT_NOT_EQUAL(IUIQPAL_INVALID, savedPatternList);
     status |= H5Fclose(handle);
     TEST_ASSERT_EQUAL(IUS_E_OK, status);
 
     // compare
-    equal = iusPatternListCompare(patternList, savedPatternList);
+    equal = iusIqPatternListCompare(patternList, savedPatternList);
     TEST_ASSERT_EQUAL(IUS_TRUE, equal);
 
-    iusPatternListDelete(patternList);
-    iusPatternListDelete(savedPatternList);
-    iusPatternDelete(bmodePattern);
-    iusPatternDelete(dopplerPattern);
+    iusIqPatternListDelete(patternList);
+    iusIqPatternListDelete(savedPatternList);
+    iusIqPatternDelete(bmodePattern);
+    iusIqPatternDelete(dopplerPattern);
 
 }
 
-TEST_GROUP_RUNNER(IusPatternList)
+TEST_GROUP_RUNNER(IusIqPatternList)
 {
-    RUN_TEST_CASE(IusPatternList, testIusCreatePatternList);
-    RUN_TEST_CASE(IusPatternList, testIusComparePatternList);
-    RUN_TEST_CASE(IusPatternList, testIusSetPatternList);
-    RUN_TEST_CASE(IusPatternList, testIusSerialization);
+    RUN_TEST_CASE(IusIqPatternList, testIusCreatePatternList);
+    RUN_TEST_CASE(IusIqPatternList, testIusComparePatternList);
+    RUN_TEST_CASE(IusIqPatternList, testIusSetPatternList);
+    RUN_TEST_CASE(IusIqPatternList, testIusSerialization);
 }

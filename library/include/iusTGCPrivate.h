@@ -11,7 +11,7 @@
 
 int iusTGCSave
 (
-    iutgc_t iusTGC,
+    iutgc_t tgc,
     hid_t handle
 );
 

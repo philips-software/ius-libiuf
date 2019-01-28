@@ -30,7 +30,7 @@ iu2dte_t ius2DTransducerElementCreate
 */
 int ius2DTransducerElementDeepDelete
 (
-    iu2dte_t ius2DTransducerElement
+    iu2dte_t element
 );
 
 /** \brief Removes the 2D element object without deleting the position and size sub-objects.
@@ -38,7 +38,7 @@ int ius2DTransducerElementDeepDelete
 */
 int ius2DTransducerElementDelete
 (
-    iu2dte_t ius2DTransducerElement
+    iu2dte_t element
 );
 
 /** \brief Compares the values of 2 transducer elements. the order of the arguments don't matter.
@@ -55,7 +55,7 @@ int ius2DTransducerElementCompare
 */
 iu2dp_t ius2DTransducerElementGetPosition
 (
-    iu2dte_t ius2DTransducerElement ///<the element of interest
+    iu2dte_t element ///<the element of interest
 );
 
 /** \brief returns the angle of the \p ius2DTransducerElement.
@@ -63,7 +63,7 @@ iu2dp_t ius2DTransducerElementGetPosition
 */
 float ius2DTransducerElementGetAngle
 (
-    iu2dte_t ius2DTransducerElement ///<the element of interest
+    iu2dte_t element ///<the element of interest
 );
 
 /** \brief returns the 2D size of the \p ius2DTransducerElement.
@@ -71,7 +71,7 @@ float ius2DTransducerElementGetAngle
 */
 iu2ds_t ius2DTransducerElementGetSize
 (
-    iu2dte_t ius2DTransducerElement ///<the element of interest
+    iu2dte_t element ///<the element of interest
 );
 
 #endif //IUSLIBRARY_IUSHL2DTRANSDUCERELEMENT_H

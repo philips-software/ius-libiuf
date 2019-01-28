@@ -8,27 +8,53 @@
 #include <ius.h>
 #include <iusFrameListPrivate.h>
 
+static char *pErrorFilename = "IusFrameList.errlog";
+static FILE *fpErrorLogging = NULL;
+
 TEST_GROUP(IusFrameList);
 
 TEST_SETUP(IusFrameList)
 {
+  iusErrorLogClear();
+  iusErrorLog(IUS_TRUE);
+  iusErrorAutoReport(IUS_TRUE);
+  fpErrorLogging = fopen(pErrorFilename, "w+");
+  iusErrorSetStream(fpErrorLogging);
 }
 
 TEST_TEAR_DOWN(IusFrameList)
 {
+  iusErrorLogClear();
+  iusErrorLog(IUS_FALSE);
+  if (fpErrorLogging != NULL)
+    fclose(fpErrorLogging);
+  fpErrorLogging=stderr;
+  iusErrorSetStream(fpErrorLogging);
+  remove(pErrorFilename);
 }
 
 TEST(IusFrameList, testIusCreateFrameList)
 {
   // Put your test code here
   int numFrames = 100;
-  iufl_t patternList = iusFrameListCreate(numFrames);
-  TEST_ASSERT_NOT_EQUAL(IUFL_INVALID, patternList);
-  TEST_ASSERT_EQUAL(numFrames, iusFrameListGetSize(patternList));
-  iusFrameListDelete(patternList);
+  iufl_t frameList = iusFrameListCreate(numFrames);
+  TEST_ASSERT_NOT_EQUAL(IUFL_INVALID, frameList);
+  TEST_ASSERT_EQUAL(numFrames, iusFrameListGetSize(frameList));
+  iusFrameListDelete(frameList);
 
-  patternList = iusFrameListCreate(-1);
-  TEST_ASSERT_EQUAL(IUFL_INVALID, patternList);
+
+  long filePos = ftell(fpErrorLogging);
+  TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
+  frameList = iusFrameListCreate(-1);
+  TEST_ASSERT_EQUAL(IUFL_INVALID, frameList);
+  frameList = iusFrameListCreate(0);
+  TEST_ASSERT_EQUAL(IUFL_INVALID, frameList);
+  
+  TEST_ASSERT_EQUAL(2,iusErrorGetCount());
+  TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
+  
+
 }
 
 TEST(IusFrameList, testIusCompareFrameList)

@@ -75,25 +75,27 @@ int main
 	int iusVersion = 0;
 	int status;
 	iuif_t ifh = IUIF_INVALID; //fileHandle for version 3
+    iusErrorLog(IUS_TRUE);
 
 	// check input arguments, we expect 2: an inputFile and a target filename 
 	if (argc != 3)
 	{
-		printf("Error: expected 2 arguments: and input filename and an output filename. If the input file is V2 it will be converted to V3 and vice versa \n");
-		exit(1);
+        IUS_ERROR_PRINT(IUS_ERR_MAJ_GENERAL, IUS_ERR_MIN_ARG_VALUE,
+                "expected 2 arguments: and input filename and an output filename. If the input file is V2 it will be converted to V3 and vice versa");
+		exit(-1);
 	}
 	// we use the ius V3 library, so for V2 we use direct HDF5 reads
 	hid_t inputHandle = H5Fopen(argv[1], H5F_ACC_RDONLY, H5P_DEFAULT);
 	if (inputHandle < 0)
 	{
-		printf("Error: input file does not seem to be a HD5F file \n");
-		exit(1);
+        IUS_ERROR_PRINT(IUS_ERR_MAJ_GENERAL, IUS_ERR_MIN_ARG_FILENAME, "input file does not seem to be a HD5F file");
+		exit(-1);
 	}
 	status = iusHdf5ReadInt(inputHandle, "IUSVersion", &iusVersion);
 	if (status != IUS_E_OK)
-	{ 
-		printf("Error: could not find a version number in the file \n");
-		exit(1);
+	{
+        IUS_ERROR_PRINT(IUS_ERR_MAJ_GENERAL, IUS_ERR_MIN_ARG_VALUE, "could not find a version number in the file");
+		exit(-11);
 	}
 
 	char *mode = "bmode";
@@ -107,7 +109,7 @@ int main
 		status = iusInputFileNodeSave(ifh);
 		if (status != IUS_E_OK)
 		{
-			printf("Error saving File.\n");
+            IUS_ERROR_PRINT(IUS_ERR_MAJ_GENERAL, IUS_ERR_MIN_HDF5, "saving file");
 		}
 		else
 		{
@@ -124,5 +126,5 @@ int main
     // Create Meta data in Node
     iusInputFileClose(ifh);
     iusInputFileDelete(ifh);
-    return 0;
+    return status;
 }

@@ -24,6 +24,7 @@ iurs_t iusReceiveSettingsCreateWithoutTGC
 )
 {
     iurs_t created = calloc(1,sizeof(IusReceiveSettings));
+    IUS_ERR_ALLOC_NULL_N_RETURN(created, IusReceiveSettings, IURS_INVALID);
     created->sampleFrequency = sampleFrequency;
     created->numSamplesPerLine = numSamplesPerLine;
     return created;
@@ -36,9 +37,27 @@ iurs_t iusReceiveSettingsCreate
     int numTGCentries
 )
 {
-    if( sampleFrequency <= 0.0f ) return IURS_INVALID;
-    if( numSamplesPerLine < 0 ) return IURS_INVALID;
-    if( numTGCentries <= 0 ) return IURS_INVALID;
+    if( sampleFrequency <= 0.0f )
+    {
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE,
+        "sampleFrequency argument should be > 0.0, but was: '%f'", sampleFrequency);
+        return IURS_INVALID;
+    }
+
+    if( numSamplesPerLine < 0 )
+    {
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE,
+                           "numSamplesPerLine argument should be >= 0, but was: '%d'", numSamplesPerLine);
+        return IURS_INVALID;
+    }
+
+    if( numTGCentries <= 0 )
+    {
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE,
+                           "numTGCentries argument should be > 0, but was: '%d'", numTGCentries);
+        return IURS_INVALID;
+    }
+
     iurs_t created = iusReceiveSettingsCreateWithoutTGC(sampleFrequency,numSamplesPerLine);
     created->TGC = iusTGCCreate(numTGCentries);
     return created;
@@ -46,17 +65,13 @@ iurs_t iusReceiveSettingsCreate
 
 int iusReceiveSettingsDelete
 (
-    iurs_t iusReceiveSettings
+    iurs_t receiveSettings
 )
 {
-    int status = IUS_ERR_VALUE;
-    if(iusReceiveSettings != NULL)
-    {
-        iusTGCDelete(iusReceiveSettings->TGC);
-        free(iusReceiveSettings);
-        status = IUS_E_OK;
-    }
-    return status;
+    IUS_ERR_CHECK_NULL_N_RETURN(receiveSettings, IUS_ERR_VALUE);
+    iusTGCDelete(receiveSettings->TGC);
+    free(receiveSettings);
+    return IUS_E_OK;
 }
 
 
@@ -77,57 +92,64 @@ int iusReceiveSettingsCompare
 // Getters
 iutgc_t iusReceiveSettingsGetTGC
 (
-    iurs_t iusReceiveSettings
+    iurs_t receiveSettings
 )
 {
-    if(iusReceiveSettings == NULL) return IUTGC_INVALID;
-    return iusReceiveSettings->TGC;
+    IUS_ERR_CHECK_NULL_N_RETURN(receiveSettings, IUTGC_INVALID);
+    return receiveSettings->TGC;
 }
 
 float iusReceiveSettingsGetSampleFrequency
 (
-    iurs_t iusReceiveSettings
+    iurs_t receiveSettings
 )
 {
-    if(iusReceiveSettings == NULL) return NAN;
-    return iusReceiveSettings->sampleFrequency;
+    IUS_ERR_CHECK_NULL_N_RETURN(receiveSettings, NAN);
+    return receiveSettings->sampleFrequency;
 }
 
 int iusReceiveSettingsGetNumSamplesPerLine
 (
-    iurs_t iusReceiveSettings
+    iurs_t receiveSettings
 )
 {
-    if(iusReceiveSettings == NULL) return -1;
-    return iusReceiveSettings->numSamplesPerLine;
+    IUS_ERR_CHECK_NULL_N_RETURN(receiveSettings, IUS_ERR_VALUE);
+    return receiveSettings->numSamplesPerLine;
 }
 
 int iusReceiveSettingsGetNumTGCentries
 (
-    iurs_t iusReceiveSettings
+    iurs_t receiveSettings
 )
 {
-    if(iusReceiveSettings == NULL) return -1;
-    return iusTGCGetNumValues(iusReceiveSettings->TGC);
+    IUS_ERR_CHECK_NULL_N_RETURN(receiveSettings, IUS_ERR_VALUE);
+    return iusTGCGetNumValues(receiveSettings->TGC);
 }
 
 
 
 int iusReceiveSettingsSave
 (
-    iurs_t iusReceiveSettings,
+    iurs_t receiveSettings,
     hid_t handle
 )
 {
 	int status = 0;
+    IUS_ERR_CHECK_NULL_N_RETURN(receiveSettings, IUS_ERR_VALUE);
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUS_ERR_VALUE);
+    status |= iusHdf5WriteFloat(handle, IUS_INPUTFILE_PATH_RECEIVESETTINGS_SAMPLEFREQUENCY, &(receiveSettings->sampleFrequency), 1);
+    status |= iusHdf5WriteInt(handle, IUS_INPUTFILE_PATH_RECEIVESETTINGS_NUMSAMPLESPERLINE, &(receiveSettings->numSamplesPerLine), 1);
+    if (status != 0)
+    {
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "write failed for %s and/or %s",
+                           IUS_INPUTFILE_PATH_RECEIVESETTINGS_SAMPLEFREQUENCY,
+                           IUS_INPUTFILE_PATH_RECEIVESETTINGS_NUMSAMPLESPERLINE);
+        return IUS_ERR_VALUE;
+    }
 
-    status |= iusHdf5WriteFloat(handle, IUS_INPUTFILE_PATH_RECEIVESETTINGS_SAMPLEFREQUENCY, &(iusReceiveSettings->sampleFrequency), 1);
-    status |= iusHdf5WriteInt(handle, IUS_INPUTFILE_PATH_RECEIVESETTINGS_NUMSAMPLESPERLINE, &(iusReceiveSettings->numSamplesPerLine), 1);
-
-	hid_t tgc_id = H5Gcreate(handle, IUS_INPUTFILE_PATH_RECEIVESETTINGS_TGC, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-    status |= iusTGCSave( iusReceiveSettings->TGC, tgc_id);
+    hid_t tgc_id = H5Gcreate(handle, IUS_INPUTFILE_PATH_RECEIVESETTINGS_TGC, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+    status |= iusTGCSave( receiveSettings->TGC, tgc_id);
 	H5Gclose(tgc_id);
-    
     return status;
 }
 
@@ -142,10 +164,17 @@ iurs_t iusReceiveSettingsLoad
 
     iutgc_t tgc;
     iurs_t iusReceiveSettings;
-	
+
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IURS_INVALID);
     status |= iusHdf5ReadFloat(handle, IUS_INPUTFILE_PATH_RECEIVESETTINGS_SAMPLEFREQUENCY, &sampleFrequency);
     status |= iusHdf5ReadInt(handle, IUS_INPUTFILE_PATH_RECEIVESETTINGS_NUMSAMPLESPERLINE, &numSamplesPerLine);
-    if ( status != 0 ) return IURS_INVALID;
+    if (status != 0)
+    {
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "read failed for %s or %s",
+        IUS_INPUTFILE_PATH_RECEIVESETTINGS_SAMPLEFREQUENCY,
+        IUS_INPUTFILE_PATH_RECEIVESETTINGS_NUMSAMPLESPERLINE);
+        return IURS_INVALID;
+    }
 
 	hid_t tgc_id = H5Gopen(handle, IUS_INPUTFILE_PATH_RECEIVESETTINGS_TGC, H5P_DEFAULT);
     tgc = iusTGCLoad(tgc_id);

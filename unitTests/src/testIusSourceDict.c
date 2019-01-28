@@ -8,15 +8,31 @@
 #include <ius.h>
 #include <iusSourceDictPrivate.h>
 
+static char *pErrorFilename = "IusSourceDict.errlog";
+static FILE *fpErrorLogging = NULL;
+
 TEST_GROUP(IusSourceDict);
 
 TEST_SETUP(IusSourceDict)
 {
+    iusErrorLogClear();
+    iusErrorLog(IUS_TRUE);
+    iusErrorAutoReport(IUS_TRUE);
+    fpErrorLogging = fopen(pErrorFilename, "w+");
+    iusErrorSetStream(fpErrorLogging);
 }
 
 TEST_TEAR_DOWN(IusSourceDict)
 {
+    iusErrorLogClear();
+    iusErrorLog(IUS_FALSE);
+    if (fpErrorLogging != NULL)
+        fclose(fpErrorLogging);
+    fpErrorLogging=stderr;
+    iusErrorSetStream(fpErrorLogging);
+    remove(pErrorFilename);
 }
+
 
 
 TEST(IusSourceDict, testIusCreateSourceDict)
@@ -55,9 +71,20 @@ TEST(IusSourceDict, testIusSourceDictSetGet)
     TEST_ASSERT_EQUAL(IUS_TRUE, ius3DParametricSourceCompare(obj, (iu3dps_t) retrievedObj));
 
     // Invalid params
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
     TEST_ASSERT_EQUAL(IUS_INVALID, iusSourceDictGet(dict,NULL));
     TEST_ASSERT_EQUAL(IUS_INVALID, iusSourceDictGet(NULL,pObjLabel));
     TEST_ASSERT_EQUAL(IUS_INVALID, iusSourceDictGet(dict,"unknownLabel"));
+
+    TEST_ASSERT_EQUAL(IUS_ERR_VALUE, iusSourceDictSet(dict, pObjLabel, (ius_t) obj));
+    TEST_ASSERT_EQUAL(IUS_ERR_VALUE, iusSourceDictSet(NULL, pObjLabel, (ius_t) obj));
+    TEST_ASSERT_EQUAL(IUS_ERR_VALUE, iusSourceDictSet(dict, pObjLabel, NULL));
+
+    TEST_ASSERT_EQUAL(6,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
+
     ius3DParametricSourceDelete(obj);
     iusSourceDictDelete(dict);
 

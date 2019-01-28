@@ -8,14 +8,29 @@
 #include <ius.h>
 #include <iusFramePrivate.h>
 
+static char *pErrorFilename = "IusFrame.errlog";
+static FILE *fpErrorLogging = NULL;
+
 TEST_GROUP(IusFrame);
 
 TEST_SETUP(IusFrame)
 {
+    iusErrorLogClear();
+    iusErrorLog(IUS_TRUE);
+    iusErrorAutoReport(IUS_TRUE);
+    fpErrorLogging = fopen(pErrorFilename, "w+");
+    iusErrorSetStream(fpErrorLogging);
 }
 
 TEST_TEAR_DOWN(IusFrame)
 {
+    iusErrorLogClear();
+    iusErrorLog(IUS_FALSE);
+    if (fpErrorLogging != NULL)
+        fclose(fpErrorLogging);
+    fpErrorLogging=stderr;
+    iusErrorSetStream(fpErrorLogging);
+    remove(pErrorFilename);
 }
 
 TEST(IusFrame, testIusFrameCreate)
@@ -28,12 +43,18 @@ TEST(IusFrame, testIusFrameCreate)
     iusFrameDelete(notherObj);
 
     // invalid params
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
     obj = iusFrameCreate(NULL, 1, 1.0f);
     TEST_ASSERT(obj == IUF_INVALID);
-	obj = iusFrameCreate("", 1, 1.0f);
-	TEST_ASSERT(obj == IUF_INVALID);
+    obj = iusFrameCreate("", 1, 1.0f);
+    TEST_ASSERT(obj == IUF_INVALID);
     obj = iusFrameCreate("test",-2, 1.0f);
     TEST_ASSERT(obj == IUF_INVALID);
+
+    TEST_ASSERT_EQUAL(3,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
 }
 
 TEST(IusFrame, testIusFrameDelete)
@@ -44,8 +65,14 @@ TEST(IusFrame, testIusFrameDelete)
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
     // invalid params
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
     status = iusFrameDelete(NULL);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
+
+    TEST_ASSERT_EQUAL(1,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
 }
 
 TEST(IusFrame, testIusFrameCompare)
@@ -90,8 +117,15 @@ TEST(IusFrame, testIusFrameSetGet)
     TEST_ASSERT_EQUAL_FLOAT(0.03f,iusFrameGetTime(notherObj));
 
     // invalid param
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
     TEST_ASSERT_EQUAL(NULL,iusFrameGetPatternListLabel(NULL));
     TEST_ASSERT_EQUAL(-1,iusFrameGetDataIndex(NULL));
+
+    TEST_ASSERT_EQUAL(2,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
+
     iusFrameDelete(obj);
     iusFrameDelete(notherObj);
 }

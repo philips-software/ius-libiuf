@@ -7,15 +7,29 @@
 
 #include <ius.h>
 #include <iusReceiveChannelMapPrivate.h>
+static char *pErrorFilename = "IusReceiveChannelMap.errlog";
+static FILE *fpErrorLogging = NULL;
 
 TEST_GROUP(IusReceiveChannelMap);
 
 TEST_SETUP(IusReceiveChannelMap)
 {
+	iusErrorLogClear();
+	iusErrorLog(IUS_TRUE);
+	iusErrorAutoReport(IUS_TRUE);
+	fpErrorLogging = fopen(pErrorFilename, "w+");
+	iusErrorSetStream(fpErrorLogging);
 }
 
 TEST_TEAR_DOWN(IusReceiveChannelMap)
 {
+	iusErrorLogClear();
+	iusErrorLog(IUS_FALSE);
+	if (fpErrorLogging != NULL)
+		fclose(fpErrorLogging);
+	fpErrorLogging=stderr;
+	iusErrorSetStream(fpErrorLogging);
+	remove(pErrorFilename);
 }
 
 
@@ -30,10 +44,16 @@ TEST(IusReceiveChannelMap, testIusReceiveChannelMapCreate)
 	iusReceiveChannelMapDelete(obj);
 	
 	// invalid params
+	long filePos = ftell(fpErrorLogging);
+	TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
 	obj = iusReceiveChannelMapCreate(0);
 	TEST_ASSERT(obj == IURCM_INVALID);
 	obj = iusReceiveChannelMapCreate(-1);
 	TEST_ASSERT(obj == IURCM_INVALID);
+
+	TEST_ASSERT_EQUAL(2,iusErrorGetCount());
+	TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
 }
 
 TEST(IusReceiveChannelMap, testIusReceiveChannelMapDelete)

@@ -21,7 +21,7 @@ typedef struct HashableParameter HashableParameter;
 struct IusParameterDict
 {
     struct hashmap map;
-    IUS_BOOL loadedFromFile;
+    IUS_BOOL deepDelete;
 } ;
 
 /* Declare type-specific blob_hashmap_* functions with this handy macro */
@@ -33,11 +33,9 @@ iupad_t iusParameterDictCreate
 )
 {
     iupad_t dict = calloc(1, sizeof(IusParameterDict));
-    if(dict!=NULL)
-    {
-        hashmap_init(&dict->map, hashmap_hash_string, hashmap_compare_string, 0);
-        dict->loadedFromFile = IUS_FALSE;
-    }
+    IUS_ERR_ALLOC_NULL_N_RETURN(dict, IusParameterDict, IUPAD_INVALID);
+    hashmap_init(&dict->map, hashmap_hash_string, hashmap_compare_string, 0);
+    dict->deepDelete = IUS_FALSE;
     return dict;
 }
 
@@ -46,7 +44,7 @@ int iusParameterDictDelete
     iupad_t dict
 )
 {
-    if(dict == NULL) return IUS_ERR_VALUE;
+    IUS_ERR_CHECK_NULL_N_RETURN(dict, IUS_ERR_VALUE);
     /* Free all allocated resources associated with map and reset its state */
     HashableParameter *iterElement;
     struct hashmap_iter *iter;
@@ -120,8 +118,7 @@ int iusParameterDictGetSize
     iupad_t dict
 )
 {
-    if( dict == NULL )
-        return -1;
+    IUS_ERR_CHECK_NULL_N_RETURN(dict, -1);
     return (int) hashmap_size(&dict->map);
 }
 
@@ -132,11 +129,15 @@ char * iusParameterDictGet
 )
 {
     HashableParameter * search;
-    if (dict == NULL || key == NULL) return NULL;
+    IUS_ERR_CHECK_NULL_N_RETURN(dict, NULL);
+    IUS_ERR_CHECK_NULL_N_RETURN(key, NULL);
 
     search = HashableParameter_hashmap_get(&dict->map, key);
-    if( search == NULL )
+    if (search == NULL)
+    {
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_INVALID_KEY, "for key '%s'", key);
         return NULL;
+    }
     return search->value;
 }
 
@@ -147,10 +148,9 @@ int iusParameterDictSet
     char * value
 )
 {
-    if( dict == NULL ) return IUS_ERR_VALUE;
-    if( key == NULL ) return IUS_ERR_VALUE;
-    if( value == NULL ) return IUS_ERR_VALUE;
-
+    IUS_ERR_CHECK_NULL_N_RETURN(dict, IUS_ERR_VALUE);
+    IUS_ERR_CHECK_NULL_N_RETURN(key, IUS_ERR_VALUE);
+    IUS_ERR_CHECK_NULL_N_RETURN(value, IUS_ERR_VALUE);
     HashableParameter *newMember = calloc(1, sizeof(HashableParameter));
     newMember->key = strdup(key);
     newMember->value = strdup(value);
@@ -177,9 +177,8 @@ int iusParameterDictSave
     struct hashmap_iter *iter;
     herr_t returnValue=0;
 
-    if( dict == NULL ) return IUS_ERR_VALUE;
-    if( handle == H5I_INVALID_HID ) return IUS_ERR_VALUE;
-
+    IUS_ERR_CHECK_NULL_N_RETURN(dict, IUS_ERR_VALUE);
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUS_ERR_VALUE);
     // iterate over source list elements using the hash double linked list
     for (iter = hashmap_iter(&dict->map); iter; iter = hashmap_iter_next(&dict->map, iter)) {
         iterElement = HashableParameter_hashmap_iter_get_data(iter);
@@ -199,7 +198,7 @@ iupad_t iusParameterDictLoad
     int status = H5Gget_num_objs(handle, &nobj);
     char memberName[IUS_MAX_HDF5_PATH];
     char memberValue[IUS_MAX_HDF5_PATH];
-    if( handle == H5I_INVALID_HID ) return IUPAD_INVALID;
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUPAD_INVALID);
 
     iupad_t dict = iusParameterDictCreate();
     if (dict == IUPAD_INVALID) return IUPAD_INVALID;
@@ -209,6 +208,6 @@ iupad_t iusParameterDictLoad
         iusHdf5ReadString(handle,memberName, memberValue);
         status = iusParameterDictSet(dict, memberName, memberValue);
     }
-    dict->loadedFromFile = IUS_TRUE;
+    dict->deepDelete = IUS_TRUE;
     return dict;
 }

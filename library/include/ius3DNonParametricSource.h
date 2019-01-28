@@ -24,7 +24,7 @@ iu3dnps_t ius3DNonParametricSourceCreate
  */
 int ius3DNonParametricSourceDelete
 (
-    iu3dnps_t ius3DNonParametricSource		///< The source that is deleted
+    iu3dnps_t source		///< The source that is deleted
 );
 
 /** \brief Compares two 3D non-parametric sources.
@@ -41,7 +41,7 @@ int ius3DNonParametricSourceCompare
  */
 iu3dp_t ius3DNonParametricSourceGetPosition
 (
-    iu3dnps_t ius3DNonParametricSource,		///< 3D non-parametric source with positions
+    iu3dnps_t source,		///< 3D non-parametric source with positions
     int index								///< the index of the position list 
 );
 
@@ -50,7 +50,7 @@ iu3dp_t ius3DNonParametricSourceGetPosition
  */
 int ius3DNonParametricSourceSetPosition
 (
-    iu3dnps_t ius3DNonParametricSource,		///< the 3D non-parametric source
+    iu3dnps_t source,		///< the 3D non-parametric source
     iu3dp_t  pos,							///< the 3D position to be set 
     int index								///< the index of the position
 );

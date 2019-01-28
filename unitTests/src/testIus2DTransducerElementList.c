@@ -9,14 +9,29 @@
 #include <include/ius.h>
 #include <ius2DTransducerElementListPrivate.h>
 
+static char *pErrorFilename = "Ius2DTransducerElementList.errlog";
+static FILE *fpErrorLogging = NULL;
+
 TEST_GROUP(Ius2DTransducerElementList);
 
 TEST_SETUP(Ius2DTransducerElementList)
 {
+    iusErrorLogClear();
+    iusErrorLog(IUS_TRUE);
+    iusErrorAutoReport(IUS_TRUE);
+    fpErrorLogging = fopen(pErrorFilename, "w+");
+    iusErrorSetStream(fpErrorLogging);
 }
 
 TEST_TEAR_DOWN(Ius2DTransducerElementList)
 {
+    iusErrorLogClear();
+    iusErrorLog(IUS_FALSE);
+    if (fpErrorLogging != NULL)
+        fclose(fpErrorLogging);
+    fpErrorLogging=stderr;
+    iusErrorSetStream(fpErrorLogging);
+    remove(pErrorFilename);
 }
 
 TEST(Ius2DTransducerElementList, testIus2DTransducerElementListCreate)
@@ -28,9 +43,14 @@ TEST(Ius2DTransducerElementList, testIus2DTransducerElementListCreate)
     TEST_ASSERT_EQUAL(num2DTransducerElements, ius2DTransducerElementListGetSize(_2dTransducerElementList));
     ius2DTransducerElementListDelete(_2dTransducerElementList);
 
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
     _2dTransducerElementList = ius2DTransducerElementListCreate(-1);
     TEST_ASSERT_EQUAL(IU2DTEL_INVALID, _2dTransducerElementList);
-    ius2DTransducerElementListDelete(_2dTransducerElementList);
+
+    TEST_ASSERT_EQUAL(1,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
 }
 
 
@@ -42,8 +62,15 @@ TEST(Ius2DTransducerElementList, testIus2DTransducerElementListDelete)
     TEST_ASSERT_NOT_EQUAL(IU2DTEL_INVALID, _2dTransducerElementList);
     int status = ius2DTransducerElementListDelete(_2dTransducerElementList);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
+
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
     status = ius2DTransducerElementListDelete(NULL);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE,status);
+
+    TEST_ASSERT_EQUAL(1,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
 
 }
 
@@ -106,11 +133,17 @@ TEST(Ius2DTransducerElementList, testIus2DTransducerElementListSetGet)
     iu2dtel_t _2dTransducerElementList = ius2DTransducerElementListCreate(num2DTransducerElements);
     status = ius2DTransducerElementListSet(_2dTransducerElementList,element,0);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
+
     // invalid params
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, ius2DTransducerElementListSet(NULL,element,0));
-    TEST_ASSERT_EQUAL(IUS_ERR_VALUE, ius2DTransducerElementListSet(_2dTransducerElementList,NULL,0));
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, ius2DTransducerElementListSet(_2dTransducerElementList,element,-1));
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, ius2DTransducerElementListSet(_2dTransducerElementList,element,num2DTransducerElements));
+
+    TEST_ASSERT_EQUAL(3,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
 
     ius2DTransducerElementListDelete(_2dTransducerElementList);
     ius2DTransducerElementDelete(element);

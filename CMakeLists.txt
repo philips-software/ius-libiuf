@@ -48,7 +48,7 @@ file(GLOB_RECURSE PRIVATE_HEADERS
         )
 install(FILES ${PRIVATE_HEADERS}  DESTINATION ${PROJECT_BINARY_DIR}/dist/unitTests/include)
 install(FILES package/README.md package/CMakeLists.txt package/PreLoad.cmake  DESTINATION ${PROJECT_BINARY_DIR}/dist)
-install(DIRECTORY ci/bin DESTINATION ${PROJECT_BINARY_DIR}/dist
+install(DIRECTORY ci DESTINATION ${PROJECT_BINARY_DIR}/dist
         USE_SOURCE_PERMISSIONS
         PATTERN "ci/bin/dist.*" EXCLUDE
         PATTERN "ci/bin/mksdk.*" EXCLUDE

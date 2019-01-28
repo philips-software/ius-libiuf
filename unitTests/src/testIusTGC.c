@@ -10,14 +10,31 @@
 #include <ius.h>
 #include <iusTGCPrivate.h>
 
+
+static char *pErrorFilename = "IusTGC.errlog";
+static FILE *fpErrorLogging = NULL;
+
+
 TEST_GROUP(IusTGC);
 
 TEST_SETUP(IusTGC)
 {
+    iusErrorLogClear();
+    iusErrorLog(IUS_TRUE);
+    iusErrorAutoReport(IUS_TRUE);
+    fpErrorLogging = fopen(pErrorFilename, "w+");
+    iusErrorSetStream(fpErrorLogging);
 }
 
 TEST_TEAR_DOWN(IusTGC)
 {
+    iusErrorLogClear();
+    iusErrorLog(IUS_FALSE);
+    if (fpErrorLogging != NULL)
+        fclose(fpErrorLogging);
+    fpErrorLogging=stderr;
+    iusErrorSetStream(fpErrorLogging);
+    remove(pErrorFilename);
 }
 
 
@@ -31,8 +48,16 @@ TEST(IusTGC, testIusTGCCreate)
     tgc = iusTGCCreate(numTGCValues);
     TEST_ASSERT(tgc != IUTGC_INVALID);
 
+
     // Invalid operation on nonparametric dta type
+    // invalid params
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
     TEST_ASSERT_EQUAL(NULL, iusTGCCreate(-1));
+
+    TEST_ASSERT_EQUAL(1,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
 
     status = iusTGCDelete(tgc);
     TEST_ASSERT(status == IUS_E_OK);
@@ -47,8 +72,14 @@ TEST(IusTGC, testIusTGCDelete)
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
     // invalid params
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
     status = iusTGCDelete(NULL);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
+
+    TEST_ASSERT_EQUAL(1,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
 }
 
 
@@ -84,7 +115,7 @@ TEST(IusTGC, testIusTGCCompare)
     TEST_ASSERT_EQUAL(IUS_FALSE,equal);
     equal = iusTGCCompare(NULL,obj);
     TEST_ASSERT_EQUAL(IUS_FALSE,equal);
-    
+
     iusTGCDelete(obj);
     iusTGCDelete(sameObj);
     iusTGCDelete(notherObj);
@@ -104,10 +135,17 @@ TEST(IusTGC, testIusTGCSetGet)
 
 
     // invalid param
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
     TEST_ASSERT_EQUAL_FLOAT(NAN, iusTGCGetTime(NULL, 1));
     TEST_ASSERT_EQUAL_FLOAT(NAN, iusTGCGetGain(NULL, 1));
     TEST_ASSERT_EQUAL_FLOAT(NAN, iusTGCGetTime(NULL, 0));
     TEST_ASSERT_EQUAL_FLOAT(NAN, iusTGCGetGain(NULL, 0));
+
+    TEST_ASSERT_EQUAL(4,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
+
     iusTGCDelete(obj);
 }
 

@@ -8,14 +8,29 @@
 #include <ius.h>
 #include <iusFilterPrivate.h>
 
+static char *pErrorFilename = "IusFirFilter.errlog";
+static FILE *fpErrorLogging = NULL;
+
 TEST_GROUP(IusFirFilter);
 
 TEST_SETUP(IusFirFilter)
 {
+    iusErrorLogClear();
+    iusErrorLog(IUS_TRUE);
+    iusErrorAutoReport(IUS_TRUE);
+    fpErrorLogging = fopen(pErrorFilename, "w+");
+    iusErrorSetStream(fpErrorLogging);
 }
 
 TEST_TEAR_DOWN(IusFirFilter)
 {
+    iusErrorLogClear();
+    iusErrorLog(IUS_FALSE);
+    if (fpErrorLogging != NULL)
+        fclose(fpErrorLogging);
+    fpErrorLogging=stderr;
+    iusErrorSetStream(fpErrorLogging);
+    remove(pErrorFilename);
 }
 
 
@@ -30,7 +45,13 @@ TEST(IusFirFilter, testIusFirFilterCreate)
 	TEST_ASSERT(firFilter != IUFIRFILTER_INVALID);
 
 	// Invalid operation on nonparametric dta type
-	TEST_ASSERT_EQUAL(NULL, iusFirFilterCreate(-1));
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
+    TEST_ASSERT_EQUAL(NULL, iusFirFilterCreate(-1));
+
+    TEST_ASSERT_EQUAL(1,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
 
 	status = iusFirFilterDelete(firFilter);
 	TEST_ASSERT(status == IUS_E_OK);
@@ -45,8 +66,14 @@ TEST(IusFirFilter, testIusFirFilterDelete)
 	TEST_ASSERT_EQUAL(IUS_E_OK, status);
 
 	// invalid params
-	status = iusFirFilterDelete(NULL);
-	TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
+    status = iusFirFilterDelete(NULL);
+    TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
+
+    TEST_ASSERT_EQUAL(1,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
 }
 
 
@@ -101,8 +128,14 @@ TEST(IusFirFilter, testIusFirFilterSetGet)
 
 
 	// invalid param
-	TEST_ASSERT_EQUAL_FLOAT(NAN, iusFirFilterGetCoefficient(NULL, 1));
-	TEST_ASSERT_EQUAL_FLOAT(NAN, iusFirFilterGetCoefficient(obj, kernelSize)); //out of bounds
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
+    TEST_ASSERT_EQUAL_FLOAT(NAN, iusFirFilterGetCoefficient(NULL, 1));
+    TEST_ASSERT_EQUAL_FLOAT(NAN, iusFirFilterGetCoefficient(obj, kernelSize)); //out of bounds
+
+    TEST_ASSERT_EQUAL(2,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
 	iusFirFilterDelete(obj);
 }
 

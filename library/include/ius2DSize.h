@@ -23,7 +23,7 @@ iu2ds_t ius2DSizeCreate
 /** \brief Delete a 2D size object */
 int ius2DSizeDelete
 (
-    iu2ds_t ius2DSize  ///< THe object that will be deleted
+    iu2ds_t size  ///< THe object that will be deleted
 );
 
 

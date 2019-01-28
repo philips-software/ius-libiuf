@@ -21,7 +21,7 @@ typedef struct HashableReceiveSettings HashableReceiveSettings;
 struct IusReceiveSettingsDict
 {
     struct hashmap map;
-    IUS_BOOL loadedFromFile;
+    IUS_BOOL deepDelete;
 } ;
 
 /* Declare type-specific blob_hashmap_* functions with this handy macro */
@@ -33,11 +33,9 @@ iursd_t iusReceiveSettingsDictCreate
 )
 {
     iursd_t dict = calloc(1, sizeof(IusReceiveSettingsDict));
-    if(dict!=NULL)
-    {
-      hashmap_init(&dict->map, hashmap_hash_string, hashmap_compare_string, 0);
-      dict->loadedFromFile = IUS_FALSE;
-    }
+    IUS_ERR_ALLOC_NULL_N_RETURN(dict, IusReceiveSettingsDict, IURSD_INVALID);
+    hashmap_init(&dict->map, hashmap_hash_string, hashmap_compare_string, 0);
+    dict->deepDelete = IUS_FALSE;
     return dict;
 }
 
@@ -46,8 +44,8 @@ int iusReceiveSettingsDictDeepDelete
     iursd_t dict
 )
 {
-    if (dict == NULL) return IUS_ERR_VALUE;
-    dict->loadedFromFile = IUS_TRUE;
+    IUS_ERR_CHECK_NULL_N_RETURN(dict, IUS_ERR_VALUE);
+    dict->deepDelete = IUS_TRUE;
     return iusReceiveSettingsDictDelete(dict);
 }
 
@@ -59,11 +57,11 @@ int iusReceiveSettingsDictDelete
     HashableReceiveSettings *iterElement;
     struct hashmap_iter *iter;
 
-    if (dict == NULL) return IUS_ERR_VALUE;
+    IUS_ERR_CHECK_NULL_N_RETURN(dict, IUS_ERR_VALUE);
     for (iter = hashmap_iter(&dict->map); iter; iter = hashmap_iter_next(&dict->map, iter))
     {
         iterElement = HashableReceiveSettings_hashmap_iter_get_data(iter);
-        if (dict->loadedFromFile == IUS_TRUE)
+        if (dict->deepDelete == IUS_TRUE)
             iusReceiveSettingsDelete(iterElement->receiveSettings);
         free(iterElement);
     }
@@ -128,8 +126,7 @@ int iusReceiveSettingsDictGetSize
     iursd_t dict
 )
 {
-    if (dict == NULL)
-        return -1;
+    IUS_ERR_CHECK_NULL_N_RETURN(dict, -1);
     return (int) hashmap_size(&dict->map);
 }
 
@@ -139,11 +136,15 @@ iurs_t iusReceiveSettingsDictGet
     char * key
 )
 {
-    if (dict == NULL || key == NULL) return IURS_INVALID;
+    IUS_ERR_CHECK_NULL_N_RETURN(dict, IURS_INVALID);
+    IUS_ERR_CHECK_NULL_N_RETURN(key, IURS_INVALID);
     HashableReceiveSettings * search;
     search = HashableReceiveSettings_hashmap_get(&dict->map, key);
-    if( search == NULL )
+    if (search == NULL)
+    {
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_INVALID_KEY, "for key '%s'", key);
         return IURS_INVALID;
+    }
     return search->receiveSettings;
 }
 
@@ -154,15 +155,16 @@ int iusReceiveSettingsDictSet
     iurs_t member
 )
 {
-    if (dict == NULL || key == NULL) return IUS_ERR_VALUE;
+    IUS_ERR_CHECK_NULL_N_RETURN(dict, IUS_ERR_VALUE);
+    IUS_ERR_CHECK_NULL_N_RETURN(key, IUS_ERR_VALUE);
     HashableReceiveSettings *newMember = calloc(1, sizeof(HashableReceiveSettings));
     newMember->receiveSettings = member;
     strcpy(newMember->key,key);
     if (HashableReceiveSettings_hashmap_put(&dict->map, newMember->key, newMember) != newMember)
     {
-      printf("discarding blob with duplicate key: %s\n", newMember->key);
-      free(newMember);
-      return IUS_ERR_VALUE;
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_DUPLICATE_KEY, "discarding blob with duplicate key: %s", key);
+        free(newMember);
+        return IUS_ERR_VALUE;
     }
     return IUS_E_OK;
 }
@@ -179,12 +181,9 @@ int iusReceiveSettingsDictSave
     struct hashmap_iter *iter;
 	hid_t group_id;
 
-    if(dict == NULL)
-        return IUS_ERR_VALUE;
-    if(handle == H5I_INVALID_HID)
-        return IUS_ERR_VALUE;
-
-	status = H5Gget_objinfo(handle, IUS_INPUTFILE_PATH_RECEIVESETTINGSDICT, 0, NULL);
+    IUS_ERR_CHECK_NULL_N_RETURN(dict, IUS_ERR_VALUE);
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUS_ERR_VALUE);
+    status = H5Gget_objinfo(handle, IUS_INPUTFILE_PATH_RECEIVESETTINGSDICT, 0, NULL);
 	if (status != 0) // the group does not exist yet
 	{
 		group_id = H5Gcreate(handle, IUS_INPUTFILE_PATH_RECEIVESETTINGSDICT, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
@@ -193,9 +192,14 @@ int iusReceiveSettingsDictSave
 	{
 		group_id = H5Gopen(handle, IUS_INPUTFILE_PATH_RECEIVESETTINGSDICT, H5P_DEFAULT);
 	}
+
 	if (group_id == H5I_INVALID_HID)
-		return IUS_ERR_VALUE;
-	status = 0;
+    {
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "Error getting handle for path: %s", IUS_INPUTFILE_PATH_TRANSMITAPODIZATIONDICT);
+        return IUS_ERR_VALUE;
+    }
+
+    status = 0;
     HashableReceiveSettings *receiveSettingsDictItem;
 
     // iterate over source list elements and save'em
@@ -204,6 +208,11 @@ int iusReceiveSettingsDictSave
 		receiveSettingsDictItem = HashableReceiveSettings_hashmap_iter_get_data(iter);
 		hid_t subgroup_id = H5Gcreate(group_id, receiveSettingsDictItem->key, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
         status = iusReceiveSettingsSave(receiveSettingsDictItem->receiveSettings, subgroup_id);
+        if (subgroup_id <= 0)
+        {
+            H5Gclose(group_id);
+            return IUS_ERR_VALUE;
+        }
 		status |= H5Gclose(subgroup_id);
     }
 
@@ -221,9 +230,13 @@ iursd_t iusReceiveSettingsDictLoad
     int status = 0;
     char member_name[IUS_MAX_HDF5_PATH];
 
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IURSD_INVALID);
     hid_t grpid = H5Gopen(handle, IUS_INPUTFILE_PATH_RECEIVESETTINGSDICT, H5P_DEFAULT);
-    if (handle == H5I_INVALID_HID)
-        return NULL;
+    if (grpid == H5I_INVALID_HID)
+    {
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "Error getting handle for path: %s", IUS_INPUTFILE_PATH_RECEIVESETTINGSDICT);
+        return IURSD_INVALID;
+    }
 
     hsize_t nobj;
     status = H5Gget_num_objs(grpid, &nobj);
@@ -242,8 +255,8 @@ iursd_t iusReceiveSettingsDictLoad
     
 	if (status != IUS_E_OK)
     {
-        return NULL;
+        return IURSD_INVALID;
     }
-    dict->loadedFromFile = IUS_TRUE;
+    dict->deepDelete = IUS_TRUE;
     return dict;
 }

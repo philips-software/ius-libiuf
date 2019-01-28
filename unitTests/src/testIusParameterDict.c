@@ -9,16 +9,31 @@
 #include <iusParameterDictPrivate.h>
 #include <testDataGenerators.h>
 
+
+static char *pErrorFilename = "IusParameterDict.errlog";
+static FILE *fpErrorLogging = NULL;
+
 TEST_GROUP(IusParameterDict);
 
 TEST_SETUP(IusParameterDict)
 {
+    iusErrorLogClear();
+    iusErrorLog(IUS_TRUE);
+    iusErrorAutoReport(IUS_TRUE);
+    fpErrorLogging = fopen(pErrorFilename, "w+");
+    iusErrorSetStream(fpErrorLogging);
 }
 
 TEST_TEAR_DOWN(IusParameterDict)
 {
+    iusErrorLogClear();
+    iusErrorLog(IUS_FALSE);
+    if (fpErrorLogging != NULL)
+        fclose(fpErrorLogging);
+    fpErrorLogging=stderr;
+    iusErrorSetStream(fpErrorLogging);
+    remove(pErrorFilename);
 }
-
 
 TEST(IusParameterDict, testIusParameterDictCreate)
 {
@@ -40,12 +55,19 @@ TEST(IusParameterDict, testIusParameterDictSetGet)
     TEST_ASSERT_EQUAL_STRING(value, iusParameterDictGet(dict, key));
 
     // invalid args
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, iusParameterDictSet(NULL, key, value));
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, iusParameterDictSet(dict, NULL, value));
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, iusParameterDictSet(dict, key, NULL));
 
+    TEST_ASSERT_EQUAL(NULL, iusParameterDictGet(NULL, key));
     TEST_ASSERT_EQUAL(NULL, iusParameterDictGet(dict, NULL));
     TEST_ASSERT_EQUAL(NULL, iusParameterDictGet(dict, "unknownKey"));
+
+    TEST_ASSERT_EQUAL(6,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
     iusParameterDictDelete(dict);
 }
 
