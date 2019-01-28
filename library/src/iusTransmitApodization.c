@@ -114,6 +114,8 @@ int iusTransmitApodizationSetApodization
 	float *apodization
 )
 {
+    int idx;
+    int status=0;
 	IUS_ERR_CHECK_NULL_N_RETURN(transmitApodization, IUS_ERR_VALUE);
     if (apodization == NULL)
     {
@@ -127,8 +129,12 @@ int iusTransmitApodizationSetApodization
         return IUS_ERR_VALUE;
     }
 
-	memcpy(transmitApodization->apodization, apodization, transmitApodization->numElements * sizeof(int));
-	return (transmitApodization->apodization == NULL);
+    for (idx = 0; idx < transmitApodization->numElements; idx++)
+    {
+        status |= iusTransmitApodizationSetElement(transmitApodization,idx,apodization[idx]);
+    }
+
+	return status;
 }
 
 int iusTransmitApodizationSave
