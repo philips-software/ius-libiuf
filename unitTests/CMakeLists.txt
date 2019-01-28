@@ -35,6 +35,7 @@ add_executable(unitTests
 		src/testIusIqFile.c
         src/testIusIqPattern.c
         src/testIusIqPatternList.c
+        src/testIusIqPatternListDict.c
         src/testIusHistoryNode.c
         src/testIusHistoryNodeList.c
         src/testIusNonParametricPulse.c

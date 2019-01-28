@@ -200,7 +200,7 @@ int iusPatternListDictSave
 
     if (group_id == H5I_INVALID_HID)
     {
-        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "Error getting handle for path: %s", IUS_INPUTFILE_PATH_TRANSMITAPODIZATIONDICT);
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "Error getting handle for path: %s", IUS_INPUTFILE_PATH_PATTERNLISTDICT);
         return IUS_ERR_VALUE;
     }
 
@@ -241,7 +241,7 @@ iupald_t iusPatternListDictLoad
 	hid_t grpid = H5Gopen(handle, IUS_INPUTFILE_PATH_PATTERNLISTDICT, H5P_DEFAULT);
     if (grpid == H5I_INVALID_HID)
     {
-        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "Error getting handle for path: %s", IUS_INPUTFILE_PATH_RECEIVECHANNELMAPDICT);
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "Error getting handle for path: %s", IUS_INPUTFILE_PATH_PATTERNLISTDICT);
         return IUPALD_INVALID;
     }
 
