@@ -192,6 +192,7 @@ int iusReceiveSettingsDictSave
 	{
 		group_id = H5Gopen(handle, IUS_INPUTFILE_PATH_RECEIVESETTINGSDICT, H5P_DEFAULT);
 	}
+
 	if (group_id == H5I_INVALID_HID)
     {
         IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "Error getting handle for path: %s", IUS_INPUTFILE_PATH_TRANSMITAPODIZATIONDICT);

@@ -9,14 +9,30 @@
 #include <iusDemodulationDictPrivate.h>
 #include <testDataGenerators.h>
 
+
+static char *pErrorFilename = "IusDemodulationDict.errlog";
+static FILE *fpErrorLogging = NULL;
+
 TEST_GROUP(IusDemodulationDict);
 
 TEST_SETUP(IusDemodulationDict)
 {
+    iusErrorLogClear();
+    iusErrorLog(IUS_TRUE);
+    iusErrorAutoReport(IUS_TRUE);
+    fpErrorLogging = fopen(pErrorFilename, "w+");
+    iusErrorSetStream(fpErrorLogging);
 }
 
 TEST_TEAR_DOWN(IusDemodulationDict)
 {
+    iusErrorLogClear();
+    iusErrorLog(IUS_FALSE);
+    if (fpErrorLogging != NULL)
+        fclose(fpErrorLogging);
+    fpErrorLogging=stderr;
+    iusErrorSetStream(fpErrorLogging);
+    remove(pErrorFilename);
 }
 
 
@@ -53,10 +69,19 @@ TEST(IusDemodulationDict, testIusSetGetDict)
 	TEST_ASSERT_EQUAL(IUS_TRUE, iusDemodulationCompare(obj, retrievedObj));
 
 	// Invalid params
-	TEST_ASSERT_EQUAL(IURS_INVALID, iusDemodulationDictGet(dict, NULL));
-	TEST_ASSERT_EQUAL(IURS_INVALID, iusDemodulationDictGet(NULL, pObjLabel));
-	TEST_ASSERT_EQUAL(IURS_INVALID, iusDemodulationDictGet(dict, "unknownLabel"));
-	iusDemodulationDelete(obj);
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+    TEST_ASSERT_EQUAL(IUTA_INVALID, iusDemodulationDictGet(dict,NULL));
+    TEST_ASSERT_EQUAL(IUTA_INVALID, iusDemodulationDictGet(NULL,pObjLabel));
+    TEST_ASSERT_EQUAL(IUTA_INVALID, iusDemodulationDictGet(dict,"unknownLabel"));
+
+    TEST_ASSERT_EQUAL(IUS_ERR_VALUE, iusDemodulationDictSet(dict, pObjLabel, obj));
+    TEST_ASSERT_EQUAL(IUS_ERR_VALUE, iusDemodulationDictSet(NULL, pObjLabel, obj));
+    TEST_ASSERT_EQUAL(IUS_ERR_VALUE, iusDemodulationDictSet(dict, pObjLabel, NULL));
+
+    TEST_ASSERT_EQUAL(6,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
+    iusDemodulationDelete(obj);
 	iusDemodulationDictDelete(dict);
 }
 
