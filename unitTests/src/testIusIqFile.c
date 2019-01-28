@@ -13,24 +13,30 @@
 static const char *pFilename = "IusIqFile.hdf5";
 static const char *pNotherFilename = "AnotherIusIqFile.hdf5";
 
+static char *pErrorFilename = "IusIqFile.errlog";
+static FILE *fpErrorLogging = NULL;
+
 TEST_GROUP(IusIqFile);
 
 TEST_SETUP(IusIqFile)
 {
+    iusErrorLogClear();
+    iusErrorLog(IUS_TRUE);
+    iusErrorAutoReport(IUS_TRUE);
+    fpErrorLogging = fopen(pErrorFilename, "w+");
+    iusErrorSetStream(fpErrorLogging);
 }
 
 TEST_TEAR_DOWN(IusIqFile)
 {
-    if( fileExists(pFilename) == IUS_TRUE )
-    {
-		remove(pFilename);
-    }
-    if( fileExists(pNotherFilename) == IUS_TRUE )
-    {
-		remove(pNotherFilename);
-    }
+    iusErrorLogClear();
+    iusErrorLog(IUS_FALSE);
+    if (fpErrorLogging != NULL)
+        fclose(fpErrorLogging);
+    fpErrorLogging=stderr;
+    iusErrorSetStream(fpErrorLogging);
+    remove(pErrorFilename);
 }
-
 
 TEST(IusIqFile, testIusIqFileCreate)
 {
@@ -39,6 +45,9 @@ TEST(IusIqFile, testIusIqFileCreate)
 
     iuif_t ifh = iusIqFileCreate(pFilename);
     TEST_ASSERT(ifh != IUIF_INVALID);
+
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
 
     // Create file that is already open should result in error
     iuif_t ifh2 = iusIqFileCreate(pFilename);
@@ -57,6 +66,9 @@ TEST(IusIqFile, testIusIqFileCreate)
     TEST_ASSERT(ifh == IUIF_INVALID);
     ifh = iusIqFileCreate(pSpecialCharsFilename);
     TEST_ASSERT(ifh == IUIF_INVALID);
+
+    TEST_ASSERT_EQUAL(3,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
 }
 
 TEST(IusIqFile, testIusIqFileDelete)

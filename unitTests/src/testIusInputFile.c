@@ -61,14 +61,15 @@ TEST(IusInputFile, testIusInputFileCreate)
     iusInputFileDelete(ifh);
     TEST_ASSERT(status != IUS_E_OK);
 
-    TEST_ASSERT_EQUAL(2,iusErrorGetCount());
-    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
-
     // Invalid argument should result in error.
     ifh = iusInputFileCreate(pEmptyFilename);
     TEST_ASSERT(ifh == IUIF_INVALID);
     ifh = iusInputFileCreate(pSpecialCharsFilename);
     TEST_ASSERT(ifh == IUIF_INVALID);
+
+    TEST_ASSERT_EQUAL(4,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
+
 }
 
 TEST(IusInputFile, testIusInputFileDelete)
@@ -83,8 +84,14 @@ TEST(IusInputFile, testIusInputFileDelete)
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
     // invalid params
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
     status = iusInputFileDelete(NULL);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
+
+    TEST_ASSERT_EQUAL(1, iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
 }
 
 
@@ -237,6 +244,9 @@ TEST(IusInputFile, iusInputFileSetGetTransmitApodizationDict)
 	TEST_ASSERT_EQUAL(IUS_TRUE, equal);
 
     // invalid param
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
     status = iusInputFileSetTransmitApodizationDict(obj, NULL);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
 
@@ -245,6 +255,9 @@ TEST(IusInputFile, iusInputFileSetGetTransmitApodizationDict)
 
     gotMeATransmitApodizationDict = iusInputFileGetTransmitApodizationDict(NULL);
     TEST_ASSERT_EQUAL(IUTAD_INVALID, gotMeATransmitApodizationDict);
+
+    TEST_ASSERT_EQUAL(3, iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
 
 	status = iusInputFileClose(obj);
 	TEST_ASSERT(status == IUS_E_OK);
@@ -270,6 +283,9 @@ TEST(IusInputFile, iusInputFileSetGetReceiveSettingsDict)
     TEST_ASSERT_EQUAL(IUS_TRUE, equal);
 
     // invalid param
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
     status = iusInputFileSetReceiveSettingsDict(obj, NULL);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
 
@@ -278,6 +294,10 @@ TEST(IusInputFile, iusInputFileSetGetReceiveSettingsDict)
 
     gotMeATransmitReceiveSettingsDict = iusInputFileGetReceiveSettingsDict(NULL);
     TEST_ASSERT_EQUAL(IURSD_INVALID, gotMeATransmitReceiveSettingsDict);
+
+    TEST_ASSERT_EQUAL(3, iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
+
 
     status = iusInputFileClose(obj);
     TEST_ASSERT(status == IUS_E_OK);
@@ -303,6 +323,9 @@ TEST(IusInputFile, iusInputFileSetGetAcquisition)
     TEST_ASSERT_EQUAL(IUS_TRUE, equal);
 
     // invalid param
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
     status = iusInputFileSetAcquisition(obj, NULL);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
 
@@ -311,6 +334,10 @@ TEST(IusInputFile, iusInputFileSetGetAcquisition)
 
     gotMeAnAcquisition = iusInputFileGetAcquisition(NULL);
     TEST_ASSERT_EQUAL(IURSD_INVALID, gotMeAnAcquisition);
+
+    TEST_ASSERT_EQUAL(3, iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
+
 
     status = iusInputFileClose(obj);
     TEST_ASSERT(status == IUS_E_OK);
@@ -336,6 +363,9 @@ TEST(IusInputFile, iusInputFileSetGetTransducer)
     TEST_ASSERT_EQUAL(IUS_TRUE, equal);
 
     // invalid param
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
     status = iusInputFileSetTransducer(obj, NULL);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
 
@@ -344,6 +374,9 @@ TEST(IusInputFile, iusInputFileSetGetTransducer)
 
     gotMeATransducer = iusInputFileGetTransducer(NULL);
     TEST_ASSERT_EQUAL(IURSD_INVALID, gotMeATransducer);
+
+    TEST_ASSERT_EQUAL(3, iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
 
     status = iusInputFileClose(obj);
     TEST_ASSERT(status == IUS_E_OK);

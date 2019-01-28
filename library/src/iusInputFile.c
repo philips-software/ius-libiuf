@@ -54,7 +54,7 @@ iuifi_t iusInputFileInstanceCreate
 )
 {
     iuifi_t instanceData = (iuifi_t) calloc(1, sizeof(IusInputFileInstance));
-    IUS_ERR_ALLOC_NULL_N_RETURN(instanceData, IusParameterDict, IUIFI_INVALID);
+    IUS_ERR_ALLOC_NULL_N_RETURN(instanceData, IusInputFileInstance, IUIFI_INVALID);
 
 	instanceData->IusVersion = iusGetVersionMajor();
 	instanceData->pFilename = "";
@@ -154,6 +154,7 @@ int iusInputFileGetNumChannels
 )
 {
     IUS_ERR_CHECK_NULL_N_RETURN(inputFile, -1);
+    IUS_ERR_CHECK_NULL_N_RETURN(label, -1);
     iurcmd_t receiveChannelMapDict = iusInputFileGetReceiveChannelMapDict(inputFile);
     if (receiveChannelMapDict == IURCMD_INVALID) return -1;
     iurcm_t receiveChannelMap = iusReceiveChannelMapDictGet(receiveChannelMapDict,label);
@@ -384,6 +385,11 @@ iuif_t iusInputFileNodeLoad
 
     iuif_t inputFile = (iuif_t) iusHistoryNodeLoad(handle);
     iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
+    if (instance == IUIFI_INVALID)
+    {
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "could not get instance data %s", pFilename);
+        return IUIF_INVALID;
+    }
     instance->pFilename = strdup(pFilename);
     return inputFile;
 }

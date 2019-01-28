@@ -54,10 +54,7 @@ iuiqfi_t iusIqFileInstanceCreate
 )
 {
     iuiqfi_t instanceData = (iuiqfi_t) calloc(1, sizeof(IusIqFileInstance));
-	if (instanceData == NULL)
-	{
-		return IUIQFI_INVALID;
-	}
+    IUS_ERR_ALLOC_NULL_N_RETURN(instanceData, IusInputFileInstance, IUIQFI_INVALID);
 
 	instanceData->IusVersion = iusGetVersionMajor();
 	instanceData->pFilename = "";
@@ -80,7 +77,7 @@ int iusIqFileInstanceDelete
     iuiqfi_t instance
 )
 {
-    if (instance == NULL) return IUS_ERR_VALUE;
+    IUS_ERR_CHECK_NULL_N_RETURN(instance, IUS_ERR_VALUE);
     iusDataStreamDictDelete(instance->dataStreamDict);
     free((void *)instance->pFilename);
     if(instance->loadedFromFile == IUS_TRUE)
@@ -105,15 +102,11 @@ int iusIqFileDelete
     iuiqf_t iqFile
 )
 {
-    int status = IUS_ERR_VALUE;
-    if(iqFile != NULL)
-    {
-        iuiqfi_t instance = iusHistoryNodeGetInstanceData(iqFile);
-        iusIqFileInstanceDelete(instance);
-        iusHistoryNodeDelete((iuhn_t)iqFile);
-        status = IUS_E_OK;
-    }
-    return status;
+    IUS_ERR_CHECK_NULL_N_RETURN(iqFile, IUS_ERR_VALUE);
+    iuiqfi_t instance = iusHistoryNodeGetInstanceData(iqFile);
+    iusIqFileInstanceDelete(instance);
+    iusHistoryNodeDelete((iuhn_t)iqFile);
+    return IUS_E_OK;
 }
 
 iuiqf_t iusIqFileCreate
@@ -121,23 +114,19 @@ iuiqf_t iusIqFileCreate
     const char *filename
 )
 {
-	if (filename == NULL)
-	{
-		fprintf(stderr, "iusIqFileAlloc: Input arguments can not be NULL \n");
-		return IUIQF_INVALID;
-	}
-
+    IUS_ERR_CHECK_NULL_N_RETURN(filename, IUIQF_INVALID);
 	iuiqfi_t instanceData = iusIqFileInstanceCreate();
-	if (instanceData == IUIQFI_INVALID)
-	{
-		fprintf(stderr, "iusIqFileCreate: calloc of instance failed\n");
-		return IUIQF_INVALID;
-	}
+    if (instanceData == IUIQFI_INVALID)
+    {
+        IUS_ERROR_PUSH(IUS_ERR_MAJ_MEMORY, IUS_ERR_MIN_ALLOC,  "calloc of iusIqFileInstanceCreate failed");
+        return IUIQF_INVALID;
+    }
 
     instanceData->pFilename = strdup(filename);
     instanceData->handle = H5Fcreate(filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
 	if (instanceData->handle == H5I_INVALID_HID)
 	{
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_ERROR, IUS_ERR_MIN_HDF5,  "unable to create file %s", filename);
         iusIqFileInstanceDelete(instanceData);
 		return IUIQF_INVALID;
 	}
@@ -152,7 +141,7 @@ int iusIqFileGetNumFrames
     iuiqf_t iqFile
 )
 {
-    if (iqFile == NULL) return -1;
+    IUS_ERR_CHECK_NULL_N_RETURN(iqFile, -1);
     iuiqfi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)iqFile);
     if (instance->frameList == IUFL_INVALID) return 0;
     return iusFrameListGetSize(instance->frameList);
@@ -164,7 +153,9 @@ int iusIqFileGetNumChannels
     char *label
 )
 {
-    if (iqFile == NULL) return -1;
+    IUS_ERR_CHECK_NULL_N_RETURN(iqFile, -1);
+    IUS_ERR_CHECK_NULL_N_RETURN(label, -1);
+
     iurcmd_t receiveChannelMapDict = iusIqFileGetReceiveChannelMapDict(iqFile);
     if (receiveChannelMapDict == IURCMD_INVALID) return -1;
     iurcm_t receiveChannelMap = iusReceiveChannelMapDictGet(receiveChannelMapDict,label);
@@ -179,7 +170,8 @@ int iusIqFileGetSamplesPerLine
     char *label
 )
 {
-    if (iqFile == NULL) return -1;
+    IUS_ERR_CHECK_NULL_N_RETURN(iqFile, -1);
+    IUS_ERR_CHECK_NULL_N_RETURN(label, -1);
     iudmd_t demodulationDict = iusIqFileGetDemodulationDict(iqFile);
     if (demodulationDict == IUDMD_INVALID) return -1;
     iudm_t demodulation = iusDemodulationDictGet(demodulationDict,label);
@@ -193,7 +185,8 @@ int iusIqFileGetNumResponses
     char *label
 )
 {
-    if (iqFile == NULL) return -1;
+    IUS_ERR_CHECK_NULL_N_RETURN(iqFile, -1);
+    IUS_ERR_CHECK_NULL_N_RETURN(label, -1);
     iuiqpald_t listDict = iusIqFileGetPatternListDict(iqFile);
     if (listDict == IUIQPALD_INVALID) return -1;
     iuiqpal_t patternList = iusIqPatternListDictGet(listDict,label);
@@ -207,7 +200,8 @@ iud_t iusIqFileFrameCreate
     char *label
 )
 {
-    if(iqFile == NULL) return IUD_INVALID;
+    IUS_ERR_CHECK_NULL_N_RETURN(iqFile, IUD_INVALID);
+    IUS_ERR_CHECK_NULL_N_RETURN(label, IUD_INVALID);
     // calculate frame size:
     // numchannels * numresponses * numsamples = [x*y*z]
     int numChannels = iusIqFileGetNumChannels(iqFile,label);
@@ -223,8 +217,8 @@ iud_t iusIqFileResponseCreate
     char *label
 )
 {
-    if(iqFile == NULL) return IUD_INVALID;
-
+    IUS_ERR_CHECK_NULL_N_RETURN(iqFile, IUD_INVALID);
+    IUS_ERR_CHECK_NULL_N_RETURN(label, IUD_INVALID);
     int numChannels = iusIqFileGetNumChannels(iqFile,label);
     int numSamples = iusIqFileGetSamplesPerLine(iqFile,label);
     int responseSize = numChannels * numSamples ;
@@ -237,8 +231,8 @@ iud_t iusIqFileChannelCreate
     char *label
 )
 {
-    if(iqFile == NULL) return IUD_INVALID;
-
+    IUS_ERR_CHECK_NULL_N_RETURN(iqFile, IUD_INVALID);
+    IUS_ERR_CHECK_NULL_N_RETURN(label, IUD_INVALID);
     int numSamples = iusIqFileGetSamplesPerLine(iqFile,label);
     return iusDataCreate(numSamples);
 }
@@ -249,75 +243,74 @@ static iuiqfi_t iqFileInstanceLoad
     iuiqfi_t instance
 )
 {
-    if (instance == NULL) return IUIQFI_INVALID;
-
+    IUS_ERR_CHECK_NULL_N_RETURN(instance, IUIQFI_INVALID);
     instance->frameList = iusFrameListLoad(instance->handle);
     if (instance->frameList == IUFL_INVALID)
     {
-        fprintf(stderr, "Warning from iusIqFileNodeLoad: could not load framelist");
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "could not load framelist from %s", instance->pFilename);
         return IUIQFI_INVALID;
     }
 
     instance->iqPatternListDict = iusIqPatternListDictLoad(instance->handle);
     if (instance->iqPatternListDict == IUIQPALD_INVALID)
     {
-        fprintf(stderr, "Warning from iusIqFileNodeLoad: could not load patternlists  %s\n", instance->pFilename );
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "could not load patternlist from %s", instance->pFilename);
         return IUIQFI_INVALID;
     }
 
     instance->pulseDict = iusPulseDictLoad(instance->handle);
     if (instance->pulseDict == IUPD_INVALID)
     {
-        fprintf( stderr, "Warning from iusIqFileNodeLoad: could not load pulses: %s\n", instance->pFilename );
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "could not load pulses from %s", instance->pFilename);
         return IUIQFI_INVALID;
     }
 
     instance->pulseSourceDict = iusSourceDictLoad(instance->handle);
     if (instance->pulseSourceDict == IUSD_INVALID)
     {
-        fprintf( stderr, "Warning from iusIqFileNodeLoad: could not load pulse sources: %s\n", instance->pFilename );
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "could not load pulse sources from %s", instance->pFilename);
         return IUIQFI_INVALID;
     }
 
     instance->receiveChannelMapDict = iusReceiveChannelMapDictLoad(instance->handle);
     if (instance->receiveChannelMapDict == IURCMD_INVALID)
     {
-        fprintf(stderr, "Warning from iusIqFileNodeLoad: could not load receiveChannelMap: %s\n", instance->pFilename);
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "could not load receiveChannelMap from %s", instance->pFilename);
         return IUIQFI_INVALID;
     }
 
     instance->transmitApodizationDict = iusTransmitApodizationDictLoad(instance->handle);
     if (instance->transmitApodizationDict == IUTAD_INVALID)
     {
-        fprintf(stderr, "Warning from iusIqFileNodeLoad: could not load transmitApodizationDict: %s\n", instance->pFilename);
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "could not load transmitApodizationDict from %s", instance->pFilename);
         return IUIQFI_INVALID;
     }
 
     instance->demodulationDict = iusDemodulationDictLoad(instance->handle);
     if (instance->demodulationDict == IUDMD_INVALID)
     {
-        fprintf(stderr, "Warning from iusIqFileNodeLoad: could not load receiveSettingsDict: %s\n", instance->pFilename);
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "could not load demodulationDict from %s", instance->pFilename);
         return IUIQFI_INVALID;
     }
 
     instance->acquisition = iusAcquisitionLoad(instance->handle);
     if (instance->acquisition == IUA_INVALID)
     {
-        fprintf(stderr, "Warning from iusIqFileNodeLoad: could not load acquisition: %s\n", instance->pFilename);
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "could not load acquisition from %s", instance->pFilename);
         return IUIQFI_INVALID;
     }
 
     instance->transducer = iusTransducerLoad(instance->handle);
     if (instance->transducer == IUT_INVALID)
     {
-        fprintf(stderr, "Warning from iusIqFileNodeLoad: could not load transducer: %s\n", instance->pFilename);
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "could not load transducer from %s", instance->pFilename);
         return IUIQFI_INVALID;
     }
 
     int status = iusHdf5ReadInt( instance->handle, IUS_IQFILE_PATH_IUSVERSION, &(instance->IusVersion));
     if( status != IUS_E_OK )
     {
-        fprintf(stderr, "Warning from iusIqFileNodeLoad: could not load IusVersion: %s\n", instance->pFilename);
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "could not load IusVersion from %s", instance->pFilename);
         return IUIQFI_INVALID;
     }
 
@@ -362,17 +355,13 @@ iuiqf_t iusIqFileNodeLoad
     const char *pFilename
 )
 {
-	if (pFilename == NULL)
-	{
-		fprintf(stderr, "iusIqFileAlloc: Input arguments can not be NULL \n");
-		return IUIF_INVALID;
-	}
+    IUS_ERR_CHECK_NULL_N_RETURN(pFilename, IUIF_INVALID);
 
     // open  Hdf5 file using default properties.
     hid_t handle = H5Fopen( pFilename, H5F_ACC_RDONLY, H5P_DEFAULT );
     if (handle <=0)
     {
-        fprintf( stderr, "iusIqFileNodeLoad: could not create file: %s\n", pFilename );
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "could not open file %s", pFilename);
         return IUIQF_INVALID;
     }
 
@@ -380,7 +369,7 @@ iuiqf_t iusIqFileNodeLoad
     iuiqfi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)iqFile);
 	if (instance == IUIQFI_INVALID)
 	{
-		fprintf(stderr, "iusHistoryNodeGetInstanceData: could not get instance data: %s\n", pFilename);
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "could not get instance data %s", pFilename);
 		return IUIQF_INVALID;
 	}
     instance->pFilename = strdup(pFilename);
@@ -394,6 +383,7 @@ int iusIqFileSaveInstance
 )
 {
     herr_t status=0;
+    IUS_ERR_CHECK_NULL_N_RETURN(instanceData, IUS_ERR_VALUE);
     status |= iusFrameListSave(instanceData->frameList, handle);
     status |= iusIqPatternListDictSave(instanceData->iqPatternListDict, handle);
     status |= iusPulseDictSave(instanceData->pulseDict, handle);
@@ -415,7 +405,7 @@ int iusIqFileNodeSave
 )
 {
     herr_t status=0;
-    if( iqFile == NULL ) return IUS_ERR_VALUE;
+    IUS_ERR_CHECK_NULL_N_RETURN(iqFile, IUS_ERR_VALUE);
 
     iuiqfi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)iqFile);
     status |= iusHistoryNodeSave(iqFile, instance->handle);
@@ -429,9 +419,7 @@ int iusIqFileClose
 )
 {
     int status=0;
-    if( iqFile == IUIQF_INVALID ) return IUS_FALSE;
-    IUS_ASSERT_MEMORY(iqFile);
-
+    IUS_ERR_CHECK_NULL_N_RETURN(iqFile, IUS_ERR_VALUE);
     iuiqfi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)iqFile);
 
     // Terminate access to the file.
@@ -503,12 +491,9 @@ iuiqpald_t iusIqFileGetPatternListDict
     iuiqf_t iqFile
 )
 {
-    if ( iqFile != NULL )
-    {
-        iuiqfi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)iqFile);
-        return instance->iqPatternListDict;
-    }
-    return NULL;
+    IUS_ERR_CHECK_NULL_N_RETURN(iqFile, IUIQPALD_INVALID);
+    iuiqfi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)iqFile);
+    return instance->iqPatternListDict;
 }
 
 
@@ -517,12 +502,9 @@ iupd_t iusIqFileGetPulseDict
     iuiqf_t iqFile
 )
 {
-    if ( iqFile != NULL )
-    {
-        iuiqfi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)iqFile);
-        return instance->pulseDict;
-    }
-    return NULL;
+    IUS_ERR_CHECK_NULL_N_RETURN(iqFile, IUPD_INVALID);
+    iuiqfi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)iqFile);
+    return instance->pulseDict;
 }
 
 iusd_t iusIqFileGetSourceDict
@@ -530,12 +512,9 @@ iusd_t iusIqFileGetSourceDict
     iuiqf_t iqFile
 )
 {
-    if (iqFile != NULL)
-    {
-        iuiqfi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)iqFile);
-        return instance->pulseSourceDict;
-    }
-    return NULL;
+    IUS_ERR_CHECK_NULL_N_RETURN(iqFile, IUSD_INVALID);
+    iuiqfi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)iqFile);
+    return instance->pulseSourceDict;
 }
 
 
@@ -544,12 +523,9 @@ iurcmd_t iusIqFileGetReceiveChannelMapDict
     iuiqf_t iqFile
 )
 {
-    if (iqFile != NULL)
-    {
-        iuiqfi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)iqFile);
-        return instance->receiveChannelMapDict;
-    }
-    return NULL;
+    IUS_ERR_CHECK_NULL_N_RETURN(iqFile, IURCMD_INVALID);
+    iuiqfi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)iqFile);
+    return instance->receiveChannelMapDict;
 }
 
 iutad_t iusIqFileGetTransmitApodizationDict
@@ -557,12 +533,9 @@ iutad_t iusIqFileGetTransmitApodizationDict
     iuiqf_t iqFile
 )
 {
-    if (iqFile != NULL)
-    {
-        iuiqfi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)iqFile);
-        return instance->transmitApodizationDict;
-    }
-    return NULL;
+    IUS_ERR_CHECK_NULL_N_RETURN(iqFile, IUTAD_INVALID);
+    iuiqfi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)iqFile);
+    return instance->transmitApodizationDict;
 }
 
 iudmd_t iusIqFileGetDemodulationDict
@@ -570,12 +543,9 @@ iudmd_t iusIqFileGetDemodulationDict
     iuiqf_t iqFile
 )
 {
-    if (iqFile != NULL)
-    {
-        iuiqfi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)iqFile);
-        return instance->demodulationDict;
-    }
-    return NULL;
+    IUS_ERR_CHECK_NULL_N_RETURN(iqFile, IUDMD_INVALID);
+    iuiqfi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)iqFile);
+    return instance->demodulationDict;
 }
 
 iua_t iusIqFileGetAcquisition
@@ -583,12 +553,9 @@ iua_t iusIqFileGetAcquisition
    iuiqf_t iqFile
 )
 {
-	if ( iqFile != NULL )
-	{
-        iuiqfi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)iqFile);
-		return instance->acquisition;
-	}
-	return NULL;
+    IUS_ERR_CHECK_NULL_N_RETURN(iqFile, IUA_INVALID);
+    iuiqfi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)iqFile);
+    return instance->acquisition;
 }
 
 iut_t iusIqFileGetTransducer
@@ -596,12 +563,9 @@ iut_t iusIqFileGetTransducer
     iuiqf_t iqFile
 )
 {
-    if ( iqFile != NULL )
-    {
-        iuiqfi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)iqFile);
-        return instance->transducer;
-    }
-    return NULL;
+    IUS_ERR_CHECK_NULL_N_RETURN(iqFile, IUT_INVALID);
+    iuiqfi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)iqFile);
+    return instance->transducer;
 }
 
 
@@ -613,15 +577,11 @@ int iusIqFileSetFrameList
     iufl_t frameList
 )
 {
-    int status = IUS_ERR_VALUE;
-
-    if (iqFile != NULL)
-    {
-        iuiqfi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)iqFile);
-        instance->frameList = frameList;
-        status = IUS_E_OK;
-    }
-    return status;
+    IUS_ERR_CHECK_NULL_N_RETURN(iqFile, IUS_ERR_VALUE);
+    IUS_ERR_CHECK_NULL_N_RETURN(frameList, IUS_ERR_VALUE);
+    iuiqfi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)iqFile);
+    instance->frameList = frameList;
+    return IUS_E_OK;
 }
 
 int iusIqFileSetPatternListDict
@@ -630,15 +590,11 @@ int iusIqFileSetPatternListDict
     iuiqpald_t iqPatternListDict
 )
 {
-    int status = IUS_ERR_VALUE;
-
-    if(iqFile != NULL)
-    {
-        iuiqfi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)iqFile);
-        instance->iqPatternListDict = iqPatternListDict;
-        status = IUS_E_OK;
-    }
-    return status;
+    IUS_ERR_CHECK_NULL_N_RETURN(iqFile, IUS_ERR_VALUE);
+    IUS_ERR_CHECK_NULL_N_RETURN(iqPatternListDict, IUS_ERR_VALUE);
+    iuiqfi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)iqFile);
+    instance->iqPatternListDict = iqPatternListDict;
+    return IUS_E_OK;
 }
 
 int iusIqFileSetPulseDict
@@ -647,15 +603,11 @@ int iusIqFileSetPulseDict
     iupd_t pulseDict
 )
 {
-    int status = IUS_ERR_VALUE;
-
-    if ( iqFile != NULL )
-    {
-        iuiqfi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)iqFile);
-        instance->pulseDict = pulseDict;
-        status = IUS_E_OK;
-    }
-    return status;
+    IUS_ERR_CHECK_NULL_N_RETURN(iqFile, IUS_ERR_VALUE);
+    IUS_ERR_CHECK_NULL_N_RETURN(pulseDict, IUS_ERR_VALUE);
+    iuiqfi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)iqFile);
+    instance->pulseDict = pulseDict;
+    return IUS_E_OK;
 }
 
 
@@ -666,15 +618,11 @@ int iusIqFileSetSourceDict
     iusd_t sourceDict
 )
 {
-    int status = IUS_ERR_VALUE;
-
-    if (iqFile != NULL)
-    {
-        iuiqfi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)iqFile);
-        instance->pulseSourceDict = sourceDict;
-        status = IUS_E_OK;
-    }
-    return status;
+    IUS_ERR_CHECK_NULL_N_RETURN(iqFile, IUS_ERR_VALUE);
+    IUS_ERR_CHECK_NULL_N_RETURN(sourceDict, IUS_ERR_VALUE);
+    iuiqfi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)iqFile);
+    instance->pulseSourceDict = sourceDict;
+    return IUS_E_OK;
 }
 
 int iusIqFileSetReceiveChannelMapDict
@@ -683,15 +631,11 @@ int iusIqFileSetReceiveChannelMapDict
 	iurcmd_t receiveChannelMapDict
 )
 {
-	int status = IUS_ERR_VALUE;
-
-	if(iqFile != NULL)
-	{
-        iuiqfi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)iqFile);
-        instance->receiveChannelMapDict = receiveChannelMapDict;
-		status = IUS_E_OK;
-	}
-	return status;
+    IUS_ERR_CHECK_NULL_N_RETURN(iqFile, IUS_ERR_VALUE);
+    IUS_ERR_CHECK_NULL_N_RETURN(receiveChannelMapDict, IUS_ERR_VALUE);
+    iuiqfi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)iqFile);
+    instance->receiveChannelMapDict = receiveChannelMapDict;
+	return IUS_E_OK;
 }
 
 int iusIqFileSetTransmitApodizationDict
@@ -700,15 +644,11 @@ int iusIqFileSetTransmitApodizationDict
 	iutad_t transmitApodizationDict
 )
 {
-	int status = IUS_ERR_VALUE;
-
-	if(iqFile != NULL && transmitApodizationDict != NULL)
-	{
-        iuiqfi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)iqFile);
-        instance->transmitApodizationDict = transmitApodizationDict;
-		status = IUS_E_OK;
-	}
-	return status;
+    IUS_ERR_CHECK_NULL_N_RETURN(iqFile, IUS_ERR_VALUE);
+    IUS_ERR_CHECK_NULL_N_RETURN(transmitApodizationDict, IUS_ERR_VALUE);
+    iuiqfi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)iqFile);
+    instance->transmitApodizationDict = transmitApodizationDict;
+	return IUS_E_OK;
 }
 
 int iusIqFileSetDemodulationDict
@@ -717,33 +657,25 @@ int iusIqFileSetDemodulationDict
     iudmd_t demodulationDict
 )
 {
-    int status = IUS_ERR_VALUE;
-
-    if(iqFile != NULL && demodulationDict != NULL)
-    {
-        iuiqfi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)iqFile);
-        instance->demodulationDict = demodulationDict;
-        status = IUS_E_OK;
-    }
-    return status;
+    IUS_ERR_CHECK_NULL_N_RETURN(iqFile, IUS_ERR_VALUE);
+    IUS_ERR_CHECK_NULL_N_RETURN(demodulationDict, IUS_ERR_VALUE);
+    iuiqfi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)iqFile);
+    instance->demodulationDict = demodulationDict;
+    return IUS_E_OK;
 }
 
 
 int iusIqFileSetAcquisition
 (
-iuiqf_t iqFile,
-iua_t acquisition
+    iuiqf_t iqFile,
+    iua_t acquisition
 )
 {
-	int status = IUS_ERR_VALUE;
-
-	if (iqFile != NULL && acquisition != NULL)
-	{
-        iuiqfi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)iqFile);
-        instance->acquisition = acquisition;
-		status = IUS_E_OK;
-	}
-	return status;
+    IUS_ERR_CHECK_NULL_N_RETURN(iqFile, IUS_ERR_VALUE);
+    IUS_ERR_CHECK_NULL_N_RETURN(acquisition, IUS_ERR_VALUE);
+    iuiqfi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)iqFile);
+    instance->acquisition = acquisition;
+	return IUS_E_OK;
 }
 
 
@@ -753,15 +685,11 @@ int iusIqFileSetTransducer
     iut_t transducer
 )
 {
-    int status = IUS_ERR_VALUE;
-
-    if (iqFile != NULL && transducer != NULL)
-    {
-        iuiqfi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)iqFile);
-        instance->transducer = transducer;
-        status = IUS_E_OK;
-    }
-    return status;
+    IUS_ERR_CHECK_NULL_N_RETURN(iqFile, IUS_ERR_VALUE);
+    IUS_ERR_CHECK_NULL_N_RETURN(transducer, IUS_ERR_VALUE);
+    iuiqfi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)iqFile);
+    instance->transducer = transducer;
+    return IUS_E_OK;
 }
 
 int iusIqFileSetFilename
@@ -770,15 +698,11 @@ int iusIqFileSetFilename
     char * fileName
 )
 {
-    int status = IUS_ERR_VALUE;
-
-    if (iqFile != NULL)
-    {
-        iuiqfi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)iqFile);
-        instance->pFilename = strdup(fileName);
-        status = IUS_E_OK;
-    }
-    return status;
+    IUS_ERR_CHECK_NULL_N_RETURN(iqFile, IUS_ERR_VALUE);
+    IUS_ERR_CHECK_NULL_N_RETURN(fileName, IUS_ERR_VALUE);
+    iuiqfi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)iqFile);
+    instance->pFilename = strdup(fileName);
+    return IUS_E_OK;
 }
 
 
@@ -810,6 +734,8 @@ hid_t iusIqFileGetWriteSpace
     hsize_t rfDataDims[4];
     hsize_t chunkDims[4];
     hid_t space, dataChunkConfig;
+    IUS_ERR_CHECK_NULL_N_RETURN(iqFile, H5I_INVALID_HID);
+    IUS_ERR_CHECK_NULL_N_RETURN(label, H5I_INVALID_HID);
 
     iuiqfi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)iqFile);
     iuds_t dataStream = iusDataStreamDictGet(instance->dataStreamDict,label);
@@ -844,6 +770,8 @@ hid_t iusIqFileGetReadSpace
     char *label
 )
 {
+    IUS_ERR_CHECK_NULL_N_RETURN(iqFile, H5I_INVALID_HID);
+    IUS_ERR_CHECK_NULL_N_RETURN(label, H5I_INVALID_HID);
     iuiqfi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)iqFile);
     iuds_t dataStream = iusDataStreamDictGet(instance->dataStreamDict,label);
     if ( dataStream == IUDS_INVALID)
@@ -870,6 +798,11 @@ int iusIqFileFrameSave
     hsize_t count[4];
     hsize_t memdim[3];
     herr_t  status;
+
+    IUS_ERR_CHECK_NULL_N_RETURN(iqFile, H5I_INVALID_HID);
+    IUS_ERR_CHECK_NULL_N_RETURN(label, H5I_INVALID_HID);
+    IUS_ERR_CHECK_NULL_N_RETURN(frame, H5I_INVALID_HID);
+    IUS_ERR_CHECK_NULL_N_RETURN(frame_offset, H5I_INVALID_HID);
 
     memdim[0] = (hsize_t) iusIqFileGetNumChannels(iqFile,label);
     memdim[1] = (hsize_t) iusIqFileGetSamplesPerLine(iqFile,label);
@@ -920,6 +853,11 @@ int iusIqFileResponseSave
     hsize_t memdim[2];
     herr_t  status;
 
+    IUS_ERR_CHECK_NULL_N_RETURN(iqFile, H5I_INVALID_HID);
+    IUS_ERR_CHECK_NULL_N_RETURN(label, H5I_INVALID_HID);
+    IUS_ERR_CHECK_NULL_N_RETURN(response, H5I_INVALID_HID);
+    IUS_ERR_CHECK_NULL_N_RETURN(response_offset, H5I_INVALID_HID);
+
     memdim[0] = (hsize_t) iusIqFileGetNumChannels(iqFile,label);
     memdim[1] = (hsize_t) iusIqFileGetSamplesPerLine(iqFile,label);
     memspace = H5Screate_simple(2, memdim, NULL);
@@ -965,6 +903,11 @@ int iusIqFileChannelSave
     hsize_t count[4];
     hsize_t memdim;
     herr_t  status;
+
+    IUS_ERR_CHECK_NULL_N_RETURN(iqFile, H5I_INVALID_HID);
+    IUS_ERR_CHECK_NULL_N_RETURN(label, H5I_INVALID_HID);
+    IUS_ERR_CHECK_NULL_N_RETURN(channel, H5I_INVALID_HID);
+    IUS_ERR_CHECK_NULL_N_RETURN(channel_offset, H5I_INVALID_HID);
 
     memdim = (hsize_t) iusIqFileGetNumChannels(iqFile,label);
     memspace = H5Screate_simple(1, &memdim, NULL);
@@ -1012,6 +955,11 @@ int iusIqFileFrameLoad
     hsize_t count[4];
     hsize_t memdim[3];
     herr_t  status;
+
+    IUS_ERR_CHECK_NULL_N_RETURN(iqFile, H5I_INVALID_HID);
+    IUS_ERR_CHECK_NULL_N_RETURN(label, H5I_INVALID_HID);
+    IUS_ERR_CHECK_NULL_N_RETURN(frame, H5I_INVALID_HID);
+    IUS_ERR_CHECK_NULL_N_RETURN(frame_offset, H5I_INVALID_HID);
 
     memdim[0] = (hsize_t) iusIqFileGetNumChannels(iqFile,label);
     memdim[1] = (hsize_t) iusIqFileGetSamplesPerLine(iqFile,label);
@@ -1062,6 +1010,11 @@ int iusIqFileResponseLoad
     hsize_t memdim[2];
     herr_t  status;
 
+    IUS_ERR_CHECK_NULL_N_RETURN(iqFile, H5I_INVALID_HID);
+    IUS_ERR_CHECK_NULL_N_RETURN(label, H5I_INVALID_HID);
+    IUS_ERR_CHECK_NULL_N_RETURN(response, H5I_INVALID_HID);
+    IUS_ERR_CHECK_NULL_N_RETURN(response_offset, H5I_INVALID_HID);
+
     memdim[0] = (hsize_t) iusIqFileGetNumChannels(iqFile,label);
     memdim[1] = (hsize_t) iusIqFileGetSamplesPerLine(iqFile,label);
     memspace = H5Screate_simple(2, memdim, NULL);
@@ -1109,6 +1062,11 @@ int iusIqFileChannelLoad
     hsize_t count[4];
     hsize_t memdim;
     herr_t  status;
+
+    IUS_ERR_CHECK_NULL_N_RETURN(iqFile, H5I_INVALID_HID);
+    IUS_ERR_CHECK_NULL_N_RETURN(label, H5I_INVALID_HID);
+    IUS_ERR_CHECK_NULL_N_RETURN(channel, H5I_INVALID_HID);
+    IUS_ERR_CHECK_NULL_N_RETURN(channel_offset, H5I_INVALID_HID);
 
     memdim = (hsize_t) iusIqFileGetNumChannels(iqFile,label);
     memspace = H5Screate_simple(1, &memdim, NULL);
