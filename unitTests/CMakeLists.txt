@@ -54,7 +54,7 @@ add_executable(unitTests
         src/testIusTransmitApodizationDict.c
         src/testIusTGC.c
         src/util.c
-        )
+        src/testIusIqPattern.c)
 
 if(MSVC)
     # disable the security warnings for sprintf() in bee2.c
