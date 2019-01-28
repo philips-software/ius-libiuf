@@ -27,20 +27,27 @@ iuiqpal_t iusIqPatternListCreate
 	iurcmd_t receiveChannelMapDict
 )
 {
+    if (numPatterns <= 0)
+    {
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE,
+                           "numPatterns argument should be > 0, but was: '%d'", numPatterns);
+        return IUIQPAL_INVALID;
+    }
+
 	iuiqpal_t list = calloc(1, sizeof(IusIqPatternList));
-	if (list != NULL)
-	{
-		list->loadedFromFile = IUS_FALSE;
-		list->receiveChannelMapDict = receiveChannelMapDict;
-		list->demodulationDict = demodulationDict;
-		list->numPatterns = numPatterns;
-		list->pPatterns = (iuiqpa_t *)calloc((size_t)numPatterns, sizeof(iuiqpa_t));
-		if (list->pPatterns == NULL)
-		{
-			free(list);
-			list = NULL;
-		}
-	}
+    IUS_ERR_ALLOC_NULL_N_RETURN(list, IusPatternList, IUIQPAL_INVALID);
+
+    list->loadedFromFile = IUS_FALSE;
+    list->receiveChannelMapDict = receiveChannelMapDict;
+    list->demodulationDict = demodulationDict;
+    list->numPatterns = numPatterns;
+    list->pPatterns = (iuiqpa_t *)calloc((size_t)numPatterns, sizeof(iuiqpa_t));
+    if (list->pPatterns == NULL)
+    {
+        IUS_ERROR_PUSH(IUS_ERR_MAJ_MEMORY, IUS_ERR_MIN_ALLOC, "calloc failed for numPatterns");
+        free(list);
+        list = IUIQPAL_INVALID;
+    }
 	return list;
 }
 
@@ -49,7 +56,7 @@ int iusIqPatternListDeepDelete
 	iuiqpal_t list
 )
 {
-	if (list == NULL) return IUS_ERR_VALUE;
+    IUS_ERR_CHECK_NULL_N_RETURN(list, IUS_ERR_VALUE);
 	list->loadedFromFile = IUS_TRUE;
 	return iusIqPatternListDelete(list);
 }
@@ -61,7 +68,7 @@ int iusIqPatternListDelete
 )
 {
 	int index;
-	if (list == NULL) return IUS_ERR_VALUE;
+    IUS_ERR_CHECK_NULL_N_RETURN(list, IUS_ERR_VALUE);
 	if (list->loadedFromFile == IUS_TRUE)
 	{
 		for (index = 0; index < list->numPatterns; index++)
@@ -101,6 +108,7 @@ int iusIqPatternListGetSize
 	iuiqpal_t list
 )
 {
+    IUS_ERR_CHECK_NULL_N_RETURN(list, IUS_ERR_VALUE);
 	return list->numPatterns;
 }
 
@@ -110,8 +118,13 @@ iuiqpa_t iusIqPatternListGet
 	int index
 )
 {
-	if (index < 0) return NULL;
-	if (list == NULL || index >= list->numPatterns) return NULL;
+    IUS_ERR_CHECK_NULL_N_RETURN(list, IUIQPA_INVALID);
+    if (index >= list->numPatterns || index < 0)
+    {
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE,
+                           "index >= 0 && index < %d (numPatterns) but was '%d'", list->numPatterns, index);
+        return IUIQPA_INVALID;
+    }
 	return list->pPatterns[index];
 }
 
@@ -121,8 +134,6 @@ IUS_BOOL iusIqPatternListValidateDimensions
 	iuiqpa_t member
 )
 {
-	IUS_UNUSED(list);
-	IUS_UNUSED(member);
 	// getSamplesPerLine of first item
 	if (list == NULL) return IUS_FALSE;
 	char *dmLabel1stItem = (char *)iusIqPatternGetDemodulationLabel(list->pPatterns[0]);
@@ -132,8 +143,13 @@ IUS_BOOL iusIqPatternListValidateDimensions
 	char *dmLabelNewItem = (char *)iusIqPatternGetDemodulationLabel(member);
 	iudm_t demodulationNewItem = iusDemodulationDictGet(list->demodulationDict, dmLabelNewItem);
 	int numSamplesPerLineNewItem = iusDemodulationGetNumSamplesPerLine(demodulationNewItem);
-	if (numSamplesPerLine1stItem != numSamplesPerLineNewItem)
-		return IUS_FALSE;
+    if (numSamplesPerLine1stItem != numSamplesPerLineNewItem)
+    {
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE,
+                           "Invalid dimensions for member NumSamplesPerLine (%d) != %d",
+                           numSamplesPerLineNewItem, numSamplesPerLine1stItem );
+        return IUS_FALSE;
+    }
 
 
 	char *rcmLabel1stItem = (char *)iusIqPatternGetChannelMapLabel(list->pPatterns[0]);
@@ -143,8 +159,13 @@ IUS_BOOL iusIqPatternListValidateDimensions
 	char *rcmLabelNewItem = (char *)iusIqPatternGetChannelMapLabel(member);
 	iurcm_t channelMapNewItem = iusReceiveChannelMapDictGet(list->receiveChannelMapDict, rcmLabelNewItem);
 	int numChannelsNewItem = iusReceiveChannelMapGetNumChannels(channelMapNewItem);
-	if (numChannels1stItem != numChannelsNewItem)
-		return IUS_FALSE;
+    if (numChannels1stItem != numChannelsNewItem)
+    {
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE,
+                           "Invalid dimensions for member NumChannels (%d) != %d",
+                           numChannelsNewItem, numChannels1stItem );
+        return IUS_FALSE;
+    }
 
 	return IUS_TRUE;
 }
@@ -156,8 +177,14 @@ int iusIqPatternListSet
 	int index
 )
 {
-	if (index < 0) return IUS_ERR_VALUE;
-	if (list == NULL || index >= list->numPatterns) return IUS_ERR_VALUE;
+    IUS_ERR_CHECK_NULL_N_RETURN(list, IUS_ERR_VALUE);
+    if (index >= list->numPatterns || index < 0)
+    {
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE,
+                           "index >= 0 && index < %d (numPatterns) but was '%d'", list->numPatterns, index);
+        return IUS_ERR_VALUE;
+    }
+
 	if (index > 0)
 	{
 		IUS_BOOL validDimensions = iusIqPatternListValidateDimensions(list, member);
@@ -179,7 +206,9 @@ iuiqpal_t iusIqPatternListLoad
 	char path[IUS_MAX_HDF5_PATH];
 	int numPatterns, i;
 
-	int status = iusHdf5ReadInt(handle, IUS_IQFILE_PATH_PATTERNLIST_SIZE, &(numPatterns));
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUIQPAL_INVALID);
+
+    int status = iusHdf5ReadInt(handle, IUS_IQFILE_PATH_PATTERNLIST_SIZE, &(numPatterns));
 	if (status != 0) return IUIQPAL_INVALID;
 
 	iuiqpal_t patternList = iusIqPatternListCreate(numPatterns, NULL, NULL);
@@ -208,7 +237,10 @@ IUS_BOOL iusIqPatternListFull
 {
 	IUS_BOOL isFull = IUS_TRUE;
 	int i;
-	for (i = 0; i < list->numPatterns; i++)
+
+    IUS_ERR_CHECK_NULL_N_RETURN(list, IUS_FALSE);
+
+    for (i = 0; i < list->numPatterns; i++)
 	{
 		if (list->pPatterns[i] == IUIQPA_INVALID)
 		{
@@ -228,17 +260,24 @@ int iusIqPatternListSave
 	int status = 0;
 	int i, size;
 	char path[IUS_MAX_HDF5_PATH];
+    IUS_ERR_CHECK_NULL_N_RETURN(list, IUS_ERR_VALUE);
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUS_ERR_VALUE);
 
-	if (list == NULL)
-		return IUS_ERR_VALUE;
-	if (handle == H5I_INVALID_HID)
-		return IUS_ERR_VALUE;
 	if (iusIqPatternListFull(list) == IUS_FALSE)
-		return IUS_ERR_VALUE;
+    {
+        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE, "argument list (pattern list) was not full");
+        return IUS_ERR_VALUE;
+    }
 
 	iuiqpa_t pattern;
 	size = iusIqPatternListGetSize(list);
 	status |= iusHdf5WriteInt(handle, IUS_INPUTFILE_PATH_PATTERNLIST_SIZE, &(size), 1);
+    if (status != 0)
+    {
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "write failed for %s",
+                           IUS_INPUTFILE_PATH_PATTERNLIST_SIZE);
+        return IUS_ERR_VALUE;
+    }
 
 	// iterate over source list elements and save'em
 	for (i = 0; i < size; i++)

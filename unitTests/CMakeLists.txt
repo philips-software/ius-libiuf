@@ -33,6 +33,8 @@ add_executable(unitTests
         src/testIusFrameList.c
         src/testIusInputFile.c
 		src/testIusIqFile.c
+        src/testIusIqPattern.c
+        src/testIusIqPatternList.c
         src/testIusHistoryNode.c
         src/testIusHistoryNodeList.c
         src/testIusNonParametricPulse.c
@@ -54,7 +56,7 @@ add_executable(unitTests
         src/testIusTransmitApodizationDict.c
         src/testIusTGC.c
         src/util.c
-        src/testIusIqPattern.c)
+        )
 
 if(MSVC)
     # disable the security warnings for sprintf() in bee2.c

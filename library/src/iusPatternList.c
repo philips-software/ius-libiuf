@@ -108,6 +108,7 @@ int iusPatternListGetSize
 	iupal_t list
 )
 {
+    IUS_ERR_CHECK_NULL_N_RETURN(list, IUS_ERR_VALUE);
     return list->numPatterns;
 }
 
