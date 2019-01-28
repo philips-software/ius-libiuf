@@ -98,9 +98,9 @@ int iusTransmitApodizationSetElement
         return IUS_ERR_VALUE;
     }
 
-	if (attenuation < 0.0f || attenuation > 1.0f)
+	if (attenuation < -1.0f || attenuation > 1.0f)
     {
-        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE, "attentuation >= 0.0 && attentuation <= 1.0 but was '%.1f'", attenuation);
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE, "attentuation >= -1.0 && attentuation <= 1.0 but was '%.1f'", attenuation);
         return IUS_ERR_VALUE;
     }
 
