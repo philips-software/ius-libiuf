@@ -20,14 +20,16 @@ iuff_t iusFirFilterCreate
 )
 {
 	IusFirFilter *firFilter;
-
-	if (kernelSize < 0) return IUFIRFILTER_INVALID;
-
+    IUS_ERR_EVAL_N_RETURN(kernelSize <0, IUFIRFILTER_INVALID);
 	firFilter = (IusFirFilter *)calloc(1, sizeof(IusFirFilter));
-	if (firFilter == NULL) return NULL;
+    IUS_ERR_ALLOC_NULL_N_RETURN(firFilter, IusFirFilter, IUFIRFILTER_INVALID);
 
 	firFilter->pCoefficients = (float *)calloc(kernelSize, sizeof(float));
-	if (firFilter->pCoefficients == NULL) return IUFIRFILTER_INVALID;
+	if (firFilter->pCoefficients == NULL)
+    {
+        IUS_ERROR_PUSH(IUS_ERR_MAJ_MEMORY, IUS_ERR_MIN_ALLOC, "calloc failed for pCoefficients member");
+        return IUFIRFILTER_INVALID;
+    }
 
 	firFilter->kernelSize = kernelSize;
 	return firFilter;
@@ -35,17 +37,13 @@ iuff_t iusFirFilterCreate
 
 int iusFirFilterDelete
 (
-	iuff_t iusFirFilter
+	iuff_t filter
 )
 {
-	int status = IUS_ERR_VALUE;
-	if (iusFirFilter != NULL)
-	{
-		free(iusFirFilter->pCoefficients);
-		free(iusFirFilter);
-		status = IUS_E_OK;
-	}
-	return status;
+    IUS_ERR_CHECK_NULL_N_RETURN(filter, IUS_ERR_VALUE);
+    free(filter->pCoefficients);
+    free(filter);
+	return IUS_E_OK;
 }
 
 
@@ -70,59 +68,65 @@ int iusFirFilterCompare
 // Getters
 int iusFirFilterGetKernelSize
 (
-	iuff_t iusFirFilter
+	iuff_t filter
 )
 {
-	if (iusFirFilter == NULL)
-		return -1;
-	return iusFirFilter->kernelSize;
+    IUS_ERR_CHECK_NULL_N_RETURN(filter, -1);
+	return filter->kernelSize;
 }
 
 
 float iusFirFilterGetCoefficient
 (
-	iuff_t iusFirFilter,
+	iuff_t filter,
 	int index
 )
 {
-	if (iusFirFilter == NULL) return NAN;
-	if (index < 0 || index >= iusFirFilter->kernelSize)
-		return NAN;
-	return iusFirFilter->pCoefficients[index];
+    IUS_ERR_CHECK_NULL_N_RETURN(filter, NAN);
+    if (index >= filter->kernelSize || index < 0)
+    {
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE,
+                           "index >= 0 && index < %d (kernelSize) but was '%d'", filter->kernelSize, index);
+        return NAN;
+    }
+
+	return filter->pCoefficients[index];
 }
 
 // Setters
 int iusFirFilterSetCoefficient
 (
-	iuff_t iusFirFilter,
+	iuff_t filter,
 	int index,
 	float coefficient
 )
 {
-	if (iusFirFilter == NULL) return IUS_ERR_VALUE;
-	if (index < 0 || index >= iusFirFilter->kernelSize)
-		return IUS_ERR_VALUE;
-	iusFirFilter->pCoefficients[index] = coefficient;
+    IUS_ERR_CHECK_NULL_N_RETURN(filter, IUS_ERR_VALUE);
+    if (index >= filter->kernelSize || index < 0)
+    {
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE,
+                           "index >= 0 && index < %d (kernelSize) but was '%d'", filter->kernelSize, index);
+        return IUS_ERR_VALUE;
+    }
+	filter->pCoefficients[index] = coefficient;
 	return IUS_E_OK;
 }
 
 int iusFirFilterSave
 (
-	iuff_t iusFirFilter,
+	iuff_t filter,
 	hid_t handle
 )
 {
 	int status = 0;
-	if (iusFirFilter == NULL)
-		return IUS_ERR_VALUE;
-	if (handle == H5I_INVALID_HID)
-		return IUS_ERR_VALUE;
+    IUS_ERR_CHECK_NULL_N_RETURN(filter, IUS_ERR_VALUE);
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUS_ERR_VALUE);
 
-	status |= iusHdf5WriteInt(handle, IUS_PATH_FIRFILTER_KERNELSIZE, &(iusFirFilter->kernelSize), 1);
+	status |= iusHdf5WriteInt(handle, IUS_PATH_FIRFILTER_KERNELSIZE, &(filter->kernelSize), 1);
 
 	hsize_t dims[1] = { 1 };
-	dims[0] = iusFirFilter->kernelSize;
-	status |= H5LTmake_dataset_float(handle, IUS_PATH_FIRFILTER_COEFFICIENTS, 1, dims, iusFirFilter->pCoefficients);
+	dims[0] = filter->kernelSize;
+	status |= H5LTmake_dataset_float(handle, IUS_PATH_FIRFILTER_COEFFICIENTS, 1, dims, filter->pCoefficients);
 	
 	return status;
 }
@@ -136,8 +140,7 @@ iuff_t iusFirFilterLoad
 	int  kernelSize;
 	iuff_t firFilter;
 
-	if (handle == H5I_INVALID_HID)
-		return IUFIRFILTER_INVALID;
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUFIRFILTER_INVALID);
 
 	status |= iusHdf5ReadInt(handle, IUS_PATH_FIRFILTER_KERNELSIZE, &(kernelSize));
 	if (status < 0)

@@ -26,7 +26,7 @@ static void RunAllTests(void)
     RUN_TEST_GROUP(IusDemodulationDict);
 //    RUN_TEST_GROUP(IusErrorHandling);
     RUN_TEST_GROUP(IusFile);
-//	RUN_TEST_GROUP(IusFirFilter);
+	RUN_TEST_GROUP(IusFirFilter);
     RUN_TEST_GROUP(IusFrame);
     RUN_TEST_GROUP(IusFrameList);
     RUN_TEST_GROUP(IusInputFile);
