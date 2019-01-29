@@ -25,6 +25,7 @@ struct IusPulseDict
 {
     struct hashmap map;
     IUS_BOOL deepDelete;
+    char **keys;
 } ;
 
 /* Declare type-specific blob_hashmap_* functions with this handy macro */
@@ -39,7 +40,17 @@ iupd_t iusPulseDictCreate
     IUS_ERR_ALLOC_NULL_N_RETURN(dict, IusPulseDict, IUPD_INVALID);
     hashmap_init(&dict->map, hashmap_hash_string, hashmap_compare_string, 0);
     dict->deepDelete = IUS_FALSE;
+    dict->keys = NULL;
     return dict;
+}
+
+static void iusPulseDictDeleteKeys
+(
+    iupd_t dict
+)
+{
+    if (dict->keys != NULL)
+    free(dict->keys);
 }
 
 int iusPulseDictDeepDelete
@@ -70,6 +81,7 @@ int iusPulseDictDelete
         free(iterElement);
     }
     hashmap_destroy(&dict->map);
+    iusPulseDictDeleteKeys(dict);
     free(dict);
     return IUS_E_OK;
 }
@@ -125,12 +137,12 @@ int iusPulseDictCompare
 }
 
 
-int iusPulseDictGetSize
+size_t iusPulseDictGetSize
 (
     iupd_t dict
 )
 {
-    IUS_ERR_CHECK_NULL_N_RETURN(dict, -1);
+    IUS_ERR_CHECK_NULL_N_RETURN(dict, (size_t) -1);
     return (int) hashmap_size(&dict->map);
 }
 
@@ -152,6 +164,40 @@ iup_t iusPulseDictGet
     return search->pulse;
 }
 
+char **iusPulseDictGetKeys
+(
+    iupd_t dict
+)
+{
+    IUS_ERR_CHECK_NULL_N_RETURN(dict, NULL);
+    return dict->keys;
+}
+
+static int iusPulseDictUpdateKeys
+(
+    iupd_t  dict
+)
+{
+    iusPulseDictDeleteKeys(dict);
+    // allocate memory for the keys
+    int keyIndex;
+    size_t size = iusPulseDictGetSize(dict);
+    dict->keys = calloc(size+1, sizeof(char*));
+    IUS_ERR_ALLOC_NULL_N_RETURN(dict, char *, IUS_ERR_VALUE);
+
+    struct hashmap_iter *iter;
+    HashablePulse *iterElement;
+    IUS_ERR_CHECK_NULL_N_RETURN(dict, IUS_ERR_VALUE);
+    /* Free all allocated resources associated with map and reset its state */
+    for (iter = hashmap_iter(&dict->map), keyIndex=0; iter; iter = hashmap_iter_next(&dict->map, iter), keyIndex++)
+    {
+        iterElement = HashablePulse_hashmap_iter_get_data(iter);
+        dict->keys[keyIndex] = iterElement->key;
+    }
+    dict->keys[keyIndex] = NULL;
+    return IUS_E_OK;
+}
+
 int iusPulseDictSet
 (
     iupd_t dict,
@@ -171,7 +217,7 @@ int iusPulseDictSet
         free(newMember);
         return IUS_ERR_VALUE;
     }
-    return IUS_E_OK;
+    return iusPulseDictUpdateKeys(dict);
 }
 
 

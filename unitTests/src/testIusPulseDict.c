@@ -6,6 +6,7 @@
 #include <unity_fixture.h>
 
 #include <ius.h>
+#include <util.h>
 #include <iusPulseDictPrivate.h>
 
 static char *pErrorFilename = "IusPulseDict.errlog";
@@ -74,6 +75,54 @@ TEST(IusPulseDict, testIusPulseDictSetGet)
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, iusPulseDictSet(dict, pObjLabel, NULL));
 
     TEST_ASSERT_EQUAL(6,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
+
+    iusParametricPulseDelete(obj);
+    iusPulseDictDelete(dict);
+}
+
+
+TEST(IusPulseDict, testIusPulseDictGetKeys)
+{
+    float   pulseFrequency=8000000.0f;   /**< frequency that the pulse represents in Hz */
+    float   pulseAmplitude=800.0f;       /**< (max) amplitude of the pulse in Volts */
+    int     numPulses=10;               /**< number of cycles that the pulse represents */
+    int     status;
+    char *labels[] = { "one" , "two" , "three", "four" , "five"};
+
+    iupd_t dict = iusPulseDictCreate();
+    TEST_ASSERT(dict != IUPD_INVALID);
+
+    // Create
+    iupp_t obj = iusParametricPulseCreate(pulseFrequency, pulseAmplitude, numPulses);
+
+
+    int i;
+    int keySize = sizeof(labels)/sizeof(labels[0]);
+    for (i=0; i<keySize; i++)
+    {
+        status = iusPulseDictSet(dict, labels[i], (iup_t) obj);
+        TEST_ASSERT(status == IUS_E_OK);
+    }
+
+    size_t dictSize = iusPulseDictGetSize(dict);
+    TEST_ASSERT_EQUAL(5, dictSize);
+    char **keys = iusPulseDictGetKeys(dict);
+
+    // Validate keys
+    for (i=0; i<keySize; i++)
+    {
+        TEST_ASSERT_EQUAL(IUS_TRUE, aInB(keys[i], labels));
+    }
+
+    // Invalid params
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
+    keys = iusPulseDictGetKeys(NULL);
+    TEST_ASSERT_EQUAL(NULL,keys);
+
+    TEST_ASSERT_EQUAL(1,iusErrorGetCount());
     TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
 
     iusParametricPulseDelete(obj);
@@ -191,5 +240,6 @@ TEST_GROUP_RUNNER(IusPulseDict)
     RUN_TEST_CASE(IusPulseDict, testIusPulseDictCreate);
     RUN_TEST_CASE(IusPulseDict, testIusPulseDictCompare);
     RUN_TEST_CASE(IusPulseDict, testIusPulseDictSetGet);
+    RUN_TEST_CASE(IusPulseDict, testIusPulseDictGetKeys)
     RUN_TEST_CASE(IusPulseDict, testIusSerialization);
 }
