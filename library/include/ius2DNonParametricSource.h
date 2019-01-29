@@ -35,7 +35,7 @@ iu2dnps_t ius2DNonParametricSourceCreate
  */
 int ius2DNonParametricSourceDelete
 (
-    iu2dnps_t ius2DNonParametricSource      ///< The source that is deleted
+    iu2dnps_t source      ///< The source that is deleted
 );
 
 /** \brief Compares two 2D non-parametric sources.
@@ -52,16 +52,25 @@ int ius2DNonParametricSourceCompare
  */
 iu2dp_t ius2DNonParametricSourceGetPosition
 (
-    iu2dnps_t ius2DNonParametricSource,     ///< 2D non-parametric source with positions
+    iu2dnps_t source,     ///< 2D non-parametric source with positions
     int index							    ///< the index of the position list 
 );
 
-/** \brief sets the 2D position \p pos on the \p index -th location for the 2D non-parametric source \p ius2DNonParametricSource. 
+/** \brief  Gets he number of points the source has.
+ * \return  The number of points the source has.
+ */
+int ius2DNonParametricSourceGetNumLocations
+(
+    iu2dnps_t source     ///< 2D non-parametric source with positions
+);
+
+
+/** \brief sets the 2D position \p pos on the \p index -th location for the 2D non-parametric source \p ius2DNonParametricSource.
  * \return Returns #IUS_E_OK on success or #IUS_ERR_VALUE in case of an error.
  */
 int ius2DNonParametricSourceSetPosition
 (
-    iu2dnps_t ius2DNonParametricSource,		///< the 2D non-parametric source
+    iu2dnps_t source,		///< the 2D non-parametric source
     iu2dp_t  pos,                           ///< the 2D position to be set 
     int index                               ///< the index of the position
 );

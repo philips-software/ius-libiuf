@@ -22,10 +22,9 @@ iunpp_t iusNonParametricPulseCreate
 {
     IusNonParametricPulse *pulse;
 
-    if( numPulseValues < 0 ) return NULL;
-
+    IUS_ERR_EVAL_N_RETURN(numPulseValues < 0, IUNPP_INVALID);
     pulse = (IusNonParametricPulse *) calloc (1,sizeof(IusNonParametricPulse));
-    if(pulse == NULL) return NULL;
+    IUS_ERR_ALLOC_NULL_N_RETURN(pulse, IusNonParametricPulse, IUNPP_INVALID);
 
     pulse->pRawPulseAmplitudes = (float *)calloc(numPulseValues, sizeof(float));
     pulse->pRawPulseTimes = (float *)calloc(numPulseValues, sizeof(float));
@@ -42,9 +41,8 @@ int iusNonParametricPulseDelete
     iunpp_t pulse
 )
 {
-    if( pulse == NULL ) return IUS_ERR_VALUE;
-    if(iusPulseGetType( (iup_t)pulse ) != IUS_NON_PARAMETRIC_PULSETYPE ) return IUS_ERR_VALUE;
-
+    IUS_ERR_CHECK_NULL_N_RETURN(pulse, IUS_ERR_VALUE);
+    IUS_ERR_EVAL_N_RETURN(iusPulseGetType( (iup_t)pulse ) != IUS_NON_PARAMETRIC_PULSETYPE, IUS_ERR_VALUE);
     free(pulse->pRawPulseTimes);
     free(pulse->pRawPulseAmplitudes);
     free(pulse);
@@ -77,9 +75,9 @@ int iusNonParametricPulseGetNumValues
     iunpp_t pulse
 )
 {
-    if(pulse == NULL || iusPulseGetType( (iup_t)pulse ) != IUS_NON_PARAMETRIC_PULSETYPE)
-        return -1;
-    return ((IusNonParametricPulse *)pulse)->numPulseValues;
+    IUS_ERR_CHECK_NULL_N_RETURN(pulse, -1);
+    IUS_ERR_EVAL_N_RETURN(iusPulseGetType( (iup_t)pulse ) != IUS_NON_PARAMETRIC_PULSETYPE, -1);
+    return pulse->numPulseValues;
 }
 
 float iusNonParametricPulseGetValueAmplitude
@@ -88,8 +86,8 @@ float iusNonParametricPulseGetValueAmplitude
     int index
 )
 {
-    if(pulse == NULL || iusPulseGetType( (iup_t)pulse ) != IUS_NON_PARAMETRIC_PULSETYPE)
-        return IUS_ERR_VALUE;
+    IUS_ERR_CHECK_NULL_N_RETURN(pulse, IUS_ERR_VALUE);
+    IUS_ERR_EVAL_N_RETURN(iusPulseGetType( (iup_t)pulse ) != IUS_NON_PARAMETRIC_PULSETYPE, IUS_ERR_VALUE);
     return pulse->pRawPulseAmplitudes[index];
 }
 
@@ -100,8 +98,8 @@ float iusNonParametricPulseGetValueTime
     int index
 )
 {
-    if(pulse == NULL || iusPulseGetType( (iup_t)pulse ) != IUS_NON_PARAMETRIC_PULSETYPE)
-        return IUS_ERR_VALUE;
+    IUS_ERR_CHECK_NULL_N_RETURN(pulse, IUS_ERR_VALUE);
+    IUS_ERR_EVAL_N_RETURN(iusPulseGetType( (iup_t)pulse ) != IUS_NON_PARAMETRIC_PULSETYPE, IUS_ERR_VALUE);
     return pulse->pRawPulseTimes[index];
 }
 
@@ -114,12 +112,10 @@ int iusNonParametricPulseSetValue
     float pulseAmplitude
 )
 {
-    if(pulse == NULL || iusPulseGetType( (iup_t)pulse ) != IUS_NON_PARAMETRIC_PULSETYPE)
-        return IUS_ERR_VALUE;
-    if(pulseTime < 0.0f)
-        return IUS_ERR_VALUE;
-    if( index < 0 || index >= pulse->numPulseValues )
-        return IUS_ERR_VALUE;
+    IUS_ERR_CHECK_NULL_N_RETURN(pulse, IUS_ERR_VALUE);
+    IUS_ERR_EVAL_N_RETURN(iusPulseGetType( (iup_t)pulse ) != IUS_NON_PARAMETRIC_PULSETYPE, IUS_ERR_VALUE);
+    IUS_ERR_EVAL_N_RETURN(pulseTime < 0.0f, IUS_ERR_VALUE);
+    IUS_ERR_EVAL_N_RETURN(index < 0 || index >= pulse->numPulseValues, IUS_ERR_VALUE);
     pulse->pRawPulseTimes[index] = pulseTime;
     pulse->pRawPulseAmplitudes[index] = pulseAmplitude;
     return IUS_E_OK;
@@ -133,12 +129,9 @@ int iusNonParametricPulseSave
 {
     int status=0;
 
-	if(pulse == NULL || iusPulseGetType( (iup_t)pulse ) != IUS_NON_PARAMETRIC_PULSETYPE)
-        return IUS_ERR_VALUE;
-    if(handle == H5I_INVALID_HID)
-		return IUS_ERR_VALUE;
-
-
+    IUS_ERR_CHECK_NULL_N_RETURN(pulse, IUS_ERR_VALUE);
+    IUS_ERR_EVAL_N_RETURN(iusPulseGetType( (iup_t)pulse ) != IUS_NON_PARAMETRIC_PULSETYPE, IUS_ERR_VALUE);
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUS_ERR_VALUE);
     status = iusBasePulseSave((iup_t)pulse, handle);
     status |= iusHdf5WriteInt(handle, IUS_INPUTFILE_PATH_PULSE_NUMPULSEVALUES, &(pulse->numPulseValues), 1);
 
@@ -159,19 +152,17 @@ iunpp_t iusNonParametricPulseLoad
 
     iunpp_t  pulse;
 
-    if (handle == H5I_INVALID_HID)
-        return NULL;
-
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUNPP_INVALID);
     status |= iusHdf5ReadInt(handle, IUS_INPUTFILE_PATH_PULSE_NUMPULSEVALUES, &(numPulseValues));
     if( status < 0 )
-        return NULL;
+        return IUNPP_INVALID;
 
     pulse = iusNonParametricPulseCreate(numPulseValues);
     status |= H5LTread_dataset_float(handle, IUS_INPUTFILE_PATH_PULSE_RAWPULSEAMPLITUDES, pulse->pRawPulseAmplitudes );
     status |= H5LTread_dataset_float(handle, IUS_INPUTFILE_PATH_PULSE_RAWPULSETIMES, pulse->pRawPulseTimes );
 
 	if( status < 0 )
-      return NULL;
+      return IUNPP_INVALID;
     return pulse;
 }
 

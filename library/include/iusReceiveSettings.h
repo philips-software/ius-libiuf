@@ -27,7 +27,7 @@ iurs_t iusReceiveSettingsCreate
  */
 int iusReceiveSettingsDelete
 (
-    iurs_t iusReceiveSettings     ///< The receive settings of interest.
+    iurs_t receiveSettings     ///< The receive settings of interest.
 );
 
 /** \brief Compare two receive settings with each other, including their TGC function.
@@ -44,7 +44,7 @@ int iusReceiveSettingsCompare
  */
 float iusReceiveSettingsGetSampleFrequency
 (
-    iurs_t iusReceiveSettings     ///< the receive settings of interest 
+    iurs_t receiveSettings     ///< the receive settings of interest
 );
 
 /** \brief Returns the number of samples per line
@@ -52,7 +52,7 @@ float iusReceiveSettingsGetSampleFrequency
  */
 int iusReceiveSettingsGetNumSamplesPerLine
 (
-    iurs_t iusReceiveSettings     ///< the receive settings of interest
+    iurs_t receiveSettings     ///< the receive settings of interest
 );
 
 /** \brief Gets the number of \p [time,gain] paira that the TGC has
@@ -60,7 +60,7 @@ int iusReceiveSettingsGetNumSamplesPerLine
  */
 int iusReceiveSettingsGetNumTGCentries
 (
-    iurs_t iusReceiveSettings     ///< the receive settings of interest
+    iurs_t receiveSettings     ///< the receive settings of interest
 );
 
 /** \brief Gets the TGC object of the receive settings
@@ -68,7 +68,7 @@ int iusReceiveSettingsGetNumTGCentries
  */
 iutgc_t iusReceiveSettingsGetTGC
 (
-    iurs_t iusReceiveSettings  ///< the receive settings of interest
+    iurs_t receiveSettings  ///< the receive settings of interest
 );
 
 

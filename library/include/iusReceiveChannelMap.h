@@ -31,7 +31,7 @@ iurcm_t  iusReceiveChannelMapCreate
  */ 
 int iusReceiveChannelMapDelete
 (
-	iurcm_t receiveChannelMap ///< the map of interest
+	iurcm_t channelMap ///< the map of interest
 );
 
 /** \brief Compare two #IusReceiveChannelMap object with each other.
@@ -48,7 +48,7 @@ IUS_BOOL  iusReceiveChannelMapCompare
  */
 int iusReceiveChannelMapGetNumChannels
 (
-    iurcm_t receiveChannelMap ///< The #IusReceiveChannelMap of interest
+    iurcm_t channelMap ///< The #IusReceiveChannelMap of interest
 );
 
 /** \brief Get the index value (the transducer element number) at channelMap \p mapIdx.
@@ -56,8 +56,8 @@ int iusReceiveChannelMapGetNumChannels
  */
 int iusReceiveChannelMapGetChannel
 (
-	iurcm_t receiveChannelMap, ///< The #IusReceiveChannelMap of interest
-	int mapIdx                 ///< The channel number of the map.
+	iurcm_t channelMap, ///< The #IusReceiveChannelMap of interest
+	int index                 ///< The channel number of the map.
 );
 
 /** \brief Same as iusReceiveChannelMapGetNumChannels
@@ -65,7 +65,7 @@ int iusReceiveChannelMapGetChannel
  */
 int iusReceiveChannelMapGetNumDelays
 (
-	iurcm_t receiveChannelMap ///< the #IusReceiveChannelMap of interest
+	iurcm_t channelMap ///< the #IusReceiveChannelMap of interest
 );
 
 /** \brief Gets the (digitization) delay of each channel.
@@ -73,7 +73,7 @@ int iusReceiveChannelMapGetNumDelays
  */
 float iusReceiveChannelMapGetStartDelay
 (
-	iurcm_t receiveChannelMap, ///< the #IusReceiveChannelMap of interest
+	iurcm_t channelMap, ///< the #IusReceiveChannelMap of interest
     int index                  ///< the channel index
 );
 
@@ -82,8 +82,8 @@ float iusReceiveChannelMapGetStartDelay
  */
 int iusReceiveChannelMapSetChannel
 (
-	iurcm_t receiveChannelMap,  ///< the #IusReceiveChannelMap of interest
-	int mapIdx,                 ///< the channel index
+	iurcm_t channelMap,  ///< the #IusReceiveChannelMap of interest
+	int index,                 ///< the channel index
 	int transducerIdx           ///< the transducer index
 );
 
@@ -92,7 +92,7 @@ int iusReceiveChannelMapSetChannel
  */
 int iusReceiveChannelMapSetMap
 (
-	iurcm_t receiveChannelMap,  ///< the #IusReceiveChannelMap of interest
+	iurcm_t channelMap,  ///< the #IusReceiveChannelMap of interest
 	int *map                    ///< the array of transducer indices.
 );
 
@@ -101,7 +101,7 @@ int iusReceiveChannelMapSetMap
  */
 int iusReceiveChannelMapSetStartDelay
 (
-	iurcm_t receiveChannelMap, ///< the #IusReceiveChannelMap of interest
+	iurcm_t ch, ///< the #IusReceiveChannelMap of interest
     int index,                 ///< the channel index
     float delay                ///< the channel delay in seconds
 );

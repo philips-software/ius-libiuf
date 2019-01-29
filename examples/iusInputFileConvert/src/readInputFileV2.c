@@ -33,7 +33,7 @@ static iu2dp_t iusHdf5Read2DPos(hid_t elementsHandle, int index)
 	int ndims = H5Sget_simple_extent_dims(space, dims, NULL);
 	if (ndims != 1)
 	{
-		fprintf(stderr, "iusHdf5Read2DPos: Only 1D array of transducer elements expected.\n");
+        IUS_ERROR_PUSH(IUS_ERR_MAJ_ERROR, IUS_ERR_MIN_ARG_VALUE, "iusHdf5Read2DPos: Only 1D array of transducer elements expected.");
 		return IU2DP_INVALID;
 	}
 	hid_t position_tid = H5Tcreate(H5T_COMPOUND, sizeof(TripleFloat));
@@ -44,8 +44,8 @@ static iu2dp_t iusHdf5Read2DPos(hid_t elementsHandle, int index)
 	status = H5Dread(positionsHandle, position_tid, H5S_ALL, H5S_ALL, H5P_DEFAULT, posData); //We are reading the whole thing just to return 1 item...
 	if (status != IUS_E_OK)
 	{
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "Reading data: H5Dread returned %d.", status);
 		free(posData);
-		fprintf(stderr, "Error reading data: H5Dread returned %d.\n", status);
 		return IU2DP_INVALID;
 	}
 	iu2dp_t pos = ius2DPositionCreate(posData[index].x, posData[index].z);
@@ -69,7 +69,7 @@ static iu2ds_t iusHdf5Read2DSize(hid_t elementsHandle, int index)
 	int ndims = H5Sget_simple_extent_dims(space, dims, NULL);
 	if (ndims != 1)
 	{
-		fprintf(stderr, "iusHdf5Read2DSize: Only 1D array of transducer elements expected \n");
+        IUS_ERROR_PUSH(IUS_ERR_MAJ_ERROR, IUS_ERR_MIN_ARG_VALUE, "Only 1D array of transducer elements expected");
 		return IU2DS_INVALID;
 	}
 	hid_t size_tid = H5Tcreate(H5T_COMPOUND, sizeof(TripleFloat));
@@ -80,8 +80,8 @@ static iu2ds_t iusHdf5Read2DSize(hid_t elementsHandle, int index)
 	status = H5Dread(sizesHandle, size_tid, H5S_ALL, H5S_ALL, H5P_DEFAULT, sizeData); //We are reading the whole thing just to return 1 item...
 	if (status != IUS_E_OK)
 	{
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "Reading data: H5Dread returned %d.", status);
 		free(sizeData);
-		fprintf(stderr, "Error reading data: H5Dread returned: %d\n", status);
 		return IU2DS_INVALID;
 	}
 	iu2ds_t size = ius2DSizeCreate(sizeData[index].x, sizeData[index].z);
@@ -105,7 +105,7 @@ static int iusHdf5Read2DAngle(hid_t elementsHandle, int index, float *theta)
 	int ndims = H5Sget_simple_extent_dims(space, dims, NULL);
 	if (ndims != 1)
 	{
-		printf("iusHdf5Read2DSize: Only 1D array of transducer elements expected \n");
+        IUS_ERROR_PUSH(IUS_ERR_MAJ_ERROR, IUS_ERR_MIN_ARG_VALUE, "Only 1D array of transducer elements expected");
 		return IUS_ERR_VALUE;
 	}
 
@@ -116,8 +116,8 @@ static int iusHdf5Read2DAngle(hid_t elementsHandle, int index, float *theta)
 	status = H5Dread(anglesHandle, angle_tid, H5S_ALL, H5S_ALL, H5P_DEFAULT, angleData); //We are reading the whole thing just to return 1 item...
 	if (status != IUS_E_OK)
 	{
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "Reading data: H5Dread returned %d.", status);
 		free(angleData);
-		printf("Error reading data: H5Dread returned: %d\n", status);
 		return status;
 	}
 	*theta = angleData[index].theta;

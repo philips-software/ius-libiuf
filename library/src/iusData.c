@@ -19,26 +19,29 @@ iud_t iusDataCreate
     int size
 )
 {
-    if( size < 0 ) return IUD_INVALID;
+    IUS_ERR_EVAL_N_RETURN(size <= 0, IUD_INVALID);
     iud_t created = calloc(1,sizeof(IusData));
+    IUS_ERR_ALLOC_NULL_N_RETURN(created, IusData, IUD_INVALID);
     created->size = size;
     created->pData = calloc((size_t)size,sizeof(float));
+    if( created->pData == NULL )
+    {
+        IUS_ERROR_PUSH(IUS_ERR_MAJ_MEMORY, IUS_ERR_MIN_ALLOC, "calloc failed for pData member");
+        free(created);
+        created = IUD_INVALID;
+    }
     return created;
 }
 
 int iusDataDelete
 (
-    iud_t iusData
+    iud_t data
 )
 {
-    int status = IUS_ERR_VALUE;
-    if(iusData != NULL)
-    {
-        free(iusData->pData);
-        free(iusData);
-        status = IUS_E_OK;
-    }
-    return status;
+    IUS_ERR_CHECK_NULL_N_RETURN(data, IUS_ERR_VALUE);
+    free(data->pData);
+    free(data);
+    return IUS_E_OK;
 }
 
 
@@ -59,18 +62,18 @@ int iusDataCompare
 // Getters
 int iusDataGetSize
 (
-    iud_t iusData
+    iud_t data
 )
 {
-    if( iusData == NULL ) return -1;
-    return iusData->size;
+    IUS_ERR_CHECK_NULL_N_RETURN(data, -1);
+    return data->size;
 }
 
 float *iusDataGetPointer
 (
-    iud_t iusData
+    iud_t data
 )
 {
-    if( iusData == NULL ) return NULL;
-    return iusData->pData;
+    IUS_ERR_CHECK_NULL_N_RETURN(data, NULL);
+    return data->pData;
 }

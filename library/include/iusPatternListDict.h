@@ -49,7 +49,7 @@ int iusPatternListDictCompare
 /** \brief Get the number of #IusPatternList objects in the dictionary.
  * \return Returns the number of #IusPatternList objects or -1 in case of an invalid dictionary.
  */
-int iusPatternListDictGetSize
+size_t iusPatternListDictGetSize
 (
 	iupald_t dict ///< The dictionary of interest
 );
@@ -61,6 +61,14 @@ iupal_t iusPatternListDictGet
 (
 	iupald_t dict, ///< The dictionary of interest
 	char * key     ///< The label of the #IusPatternList
+);
+
+/** \brief Get the #IusPatternList object with label \p key from the dictionary.
+ * \return Returns #IusPatternList \p key or #IUPALD_INVALID if it is not found.
+ */
+char **iusPatternListDictGetKeys
+(
+    iupald_t dict   ///< The dictionary of interest
 );
 
 /** \brief Add the #IusPatternList object with label \p key to the dictionary.

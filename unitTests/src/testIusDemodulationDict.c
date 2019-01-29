@@ -6,17 +6,34 @@
 #include <unity_fixture.h>
 
 #include <ius.h>
+#include <util.h>
 #include <iusDemodulationDictPrivate.h>
 #include <testDataGenerators.h>
+
+
+static char *pErrorFilename = "IusDemodulationDict.errlog";
+static FILE *fpErrorLogging = NULL;
 
 TEST_GROUP(IusDemodulationDict);
 
 TEST_SETUP(IusDemodulationDict)
 {
+    iusErrorLogClear();
+    iusErrorLog(IUS_TRUE);
+    iusErrorAutoReport(IUS_TRUE);
+    fpErrorLogging = fopen(pErrorFilename, "w+");
+    iusErrorSetStream(fpErrorLogging);
 }
 
 TEST_TEAR_DOWN(IusDemodulationDict)
 {
+    iusErrorLogClear();
+    iusErrorLog(IUS_FALSE);
+    if (fpErrorLogging != NULL)
+        fclose(fpErrorLogging);
+    fpErrorLogging=stderr;
+    iusErrorSetStream(fpErrorLogging);
+    remove(pErrorFilename);
 }
 
 
@@ -56,11 +73,69 @@ TEST(IusDemodulationDict, testIusSetGetDict)
 	TEST_ASSERT_EQUAL(IUS_TRUE, iusDemodulationCompare(obj, retrievedObj));
 
 	// Invalid params
-	TEST_ASSERT_EQUAL(IURS_INVALID, iusDemodulationDictGet(dict, NULL));
-	TEST_ASSERT_EQUAL(IURS_INVALID, iusDemodulationDictGet(NULL, pObjLabel));
-	TEST_ASSERT_EQUAL(IURS_INVALID, iusDemodulationDictGet(dict, "unknownLabel"));
-	iusDemodulationDelete(obj);
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+    TEST_ASSERT_EQUAL(IUTA_INVALID, iusDemodulationDictGet(dict,NULL));
+    TEST_ASSERT_EQUAL(IUTA_INVALID, iusDemodulationDictGet(NULL,pObjLabel));
+    TEST_ASSERT_EQUAL(IUTA_INVALID, iusDemodulationDictGet(dict,"unknownLabel"));
+
+    TEST_ASSERT_EQUAL(IUS_ERR_VALUE, iusDemodulationDictSet(dict, pObjLabel, obj));
+    TEST_ASSERT_EQUAL(IUS_ERR_VALUE, iusDemodulationDictSet(NULL, pObjLabel, obj));
+    TEST_ASSERT_EQUAL(IUS_ERR_VALUE, iusDemodulationDictSet(dict, pObjLabel, NULL));
+
+    TEST_ASSERT_EQUAL(6,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
+    iusDemodulationDelete(obj);
 	iusDemodulationDictDelete(dict);
+}
+
+TEST(IusDemodulationDict, testIusDictGetKeys)
+{
+    char *labels[] = { "one" , "two" , "three", "four" , "five"};
+    float sampleFrequency = 4000;
+    int numSamplesPerLine = 10;
+    int numTGCentries = 1;
+    IusDemodulationMethod method = IUS_DEMODULATION_FOURX;
+    int kernelSize = 5;
+    int status;
+
+
+    iudm_t obj = iusDemodulationCreate(method, sampleFrequency, numSamplesPerLine, numTGCentries, kernelSize);
+
+
+    // Create
+    iudmd_t  dict = iusDemodulationDictCreate();
+
+    // Fill
+    int i;
+    int keySize = sizeof(labels)/sizeof(labels[0]);
+    for (i=0; i<keySize; i++)
+    {
+        status = iusDemodulationDictSet(dict, labels[i], obj);
+        TEST_ASSERT(status == IUS_E_OK);
+    }
+
+    size_t dictSize = iusDemodulationDictGetSize(dict);
+    TEST_ASSERT_EQUAL(5, dictSize);
+    char **keys = iusDemodulationDictGetKeys(dict);
+
+    // Validate keys
+    for (i=0; i<keySize; i++)
+    {
+        TEST_ASSERT_EQUAL(IUS_TRUE, aInB(keys[i], labels));
+    }
+
+    // Invalid params
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
+    keys = iusDemodulationDictGetKeys(NULL);
+    TEST_ASSERT_EQUAL(NULL,keys);
+
+    TEST_ASSERT_EQUAL(1,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
+    iusDemodulationDelete(obj);
+    iusDemodulationDictDelete(dict);
 }
 
 TEST(IusDemodulationDict, testIusCompareDict)
@@ -154,6 +229,7 @@ TEST_GROUP_RUNNER(IusDemodulationDict)
 {
 	RUN_TEST_CASE(IusDemodulationDict, testIusCreateDict);
 	RUN_TEST_CASE(IusDemodulationDict, testIusSetGetDict);
+    RUN_TEST_CASE(IusDemodulationDict, testIusDictGetKeys)
 	RUN_TEST_CASE(IusDemodulationDict, testIusCompareDict);
 	RUN_TEST_CASE(IusDemodulationDict, testIusSerialization);
 }

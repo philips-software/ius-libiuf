@@ -48,6 +48,16 @@ float iusTransmitApodizationGetElement
 	iuta_t transmitApodization, ///< The IusTransmitApodization of interest
 	int idx                     ///< the index in the transmit apodization function. Should be smaller than \p numElements
 );
+
+/** \brief Get the number of ekements that the transducer has.
+ * \return Returns the number of ekements that the transducer has.
+ */
+int iusTransmitApodizationGetNumElements
+(
+        iuta_t transmitApodization ///< The IusTransmitApodization of interest
+);
+
+
 /** \brief Set the value of a single elements of the transmit apodization function at index \p idx.
  *   
  *   The attenuation value is checked that it is within the allowed range [0.0,1.0] and the index \p idx is checked 

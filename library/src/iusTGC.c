@@ -22,15 +22,23 @@ iutgc_t iusTGCCreate
 )
 {
     IusTGC *tgc;
-
-    if( numTGCValues < 0 ) return NULL;
+    if( numTGCValues < 0 )
+    {
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE,
+        "argument numTGCValues should be >= 0, but was '%d'", numTGCValues);
+        return IUTGC_INVALID;
+    }
 
     tgc = (IusTGC *) calloc (1,sizeof(IusTGC));
-    if(tgc == NULL) return NULL;
+    IUS_ERR_ALLOC_NULL_N_RETURN(tgc, IusReceiveSettingsDict, IUTGC_INVALID);
 
     tgc->pTimes = (float *)calloc(numTGCValues, sizeof(float));
     tgc->pGains = (float *)calloc(numTGCValues, sizeof(float));
-    if(tgc->pTimes == NULL || tgc->pGains == NULL ) return NULL;
+    if(tgc->pTimes == NULL || tgc->pGains == NULL )
+    {
+        IUS_ERROR_PUSH(IUS_ERR_MAJ_MEMORY, IUS_ERR_MIN_ALLOC, "calloc failed for IusTGC members pTimes/pGains");
+        return IUTGC_INVALID;
+    }
 
     tgc->numTGCValues = numTGCValues;
     return tgc;
@@ -38,18 +46,14 @@ iutgc_t iusTGCCreate
 
 int iusTGCDelete
 (
-    iutgc_t iusTGC
+    iutgc_t tgc
 )
 {
-    int status = IUS_ERR_VALUE;
-    if(iusTGC != NULL)
-    {
-        free(iusTGC->pGains);
-        free(iusTGC->pTimes);
-        free(iusTGC);
-        status = IUS_E_OK;
-    }
-    return status;
+    IUS_ERR_CHECK_NULL_N_RETURN(tgc, IUS_ERR_VALUE);
+    free(tgc->pGains);
+    free(tgc->pTimes);
+    free(tgc);
+    return IUS_E_OK;
 }
 
 
@@ -75,75 +79,89 @@ int iusTGCCompare
 // Getters
 int iusTGCGetNumValues
 (
-    iutgc_t iusTGC
+    iutgc_t tgc
 )
 {
-    if ( iusTGC == NULL )
-        return -1;
-    return iusTGC->numTGCValues;
+    IUS_ERR_CHECK_NULL_N_RETURN(tgc, -1);
+    return tgc->numTGCValues;
 }
 
 
 float iusTGCGetTime
 (
-    iutgc_t iusTGC,
+    iutgc_t tgc,
     int index
 )
 {
-    if( iusTGC == NULL ) return NAN;
-    if( index < 0 || index >= iusTGC->numTGCValues )
+    IUS_ERR_CHECK_NULL_N_RETURN(tgc, NAN);
+    if( index < 0 || index >= tgc->numTGCValues )
+    {
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE,
+        "index >= 0 && index < %d but was '%d'", tgc->numTGCValues, index);
         return NAN;
-    return iusTGC->pTimes[index];
+    }
+    return tgc->pTimes[index];
 }
 
 float iusTGCGetGain
 (
-    iutgc_t iusTGC,
+    iutgc_t tgc,
     int index
 )
 {
-    if( iusTGC == NULL ) return NAN;
-    if( index < 0 || index >= iusTGC->numTGCValues )
+    IUS_ERR_CHECK_NULL_N_RETURN(tgc, NAN);
+    if( index < 0 || index >= tgc->numTGCValues )
+    {
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE,
+                           "index >= 0 && index < %d but was '%d'", tgc->numTGCValues, index);
         return NAN;
-    return iusTGC->pGains[index];
+    }
+
+    return tgc->pGains[index];
 }
 
 // Setters
 int iusTGCSet
 (
-    iutgc_t iusTGC,
+    iutgc_t tgc,
     int index,
     float time,
     float gain
 )
 {
-    if( iusTGC == NULL ) return IUS_ERR_VALUE;
-    if( index < 0 || index >= iusTGC->numTGCValues )
+    IUS_ERR_CHECK_NULL_N_RETURN(tgc, IUS_ERR_VALUE);
+    if( index < 0 || index >= tgc->numTGCValues )
+    {
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE,
+                           "index >= 0 && index < %d but was '%d'", tgc->numTGCValues, index);
         return IUS_ERR_VALUE;
-    iusTGC->pTimes[index] = time;
-    iusTGC->pGains[index] = gain;
+    }
+
+    tgc->pTimes[index] = time;
+    tgc->pGains[index] = gain;
     return IUS_E_OK;
 }
 
 int iusTGCSave
 (
-    iutgc_t iusTGC,
+    iutgc_t tgc,
     hid_t handle
 )
 {
-    int status=0;
-    if( iusTGC == NULL )
-        return IUS_ERR_VALUE;
-    if(handle == H5I_INVALID_HID)
-        return IUS_ERR_VALUE;
-
-    status |= iusHdf5WriteInt(handle, IUS_INPUTFILE_PATH_RECEIVESETTINGS_TGC_NUMTGCVALUES, &(iusTGC->numTGCValues), 1);
+    int status=IUS_E_OK;
+    IUS_ERR_CHECK_NULL_N_RETURN(tgc, IUS_ERR_VALUE);
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUS_ERR_VALUE);
+    status |= iusHdf5WriteInt(handle, IUS_INPUTFILE_PATH_RECEIVESETTINGS_TGC_NUMTGCVALUES, &(tgc->numTGCValues), 1);
 
     hsize_t dims[1] = { 1 };
-    dims[0] = iusTGC->numTGCValues;
-    status |= H5LTmake_dataset_float(handle, IUS_INPUTFILE_PATH_RECEIVESETTINGS_TGC_GAINS, 1, dims, iusTGC->pGains );
-    status |= H5LTmake_dataset_float(handle, IUS_INPUTFILE_PATH_RECEIVESETTINGS_TGC_TIMES, 1, dims, iusTGC->pTimes );
+    dims[0] = tgc->numTGCValues;
+    status |= H5LTmake_dataset_float(handle, IUS_INPUTFILE_PATH_RECEIVESETTINGS_TGC_GAINS, 1, dims, tgc->pGains );
+    status |= H5LTmake_dataset_float(handle, IUS_INPUTFILE_PATH_RECEIVESETTINGS_TGC_TIMES, 1, dims, tgc->pTimes );
 
+    if (status != IUS_E_OK)
+    {
+        IUS_ERROR_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "during write of tgc gains, times or count");
+    }
 	return status;
 }
 
@@ -152,22 +170,27 @@ iutgc_t iusTGCLoad
     hid_t handle
 )
 {
-    int status = 0;
+    int status = IUS_E_OK;
     int  numTGCValues;
     iutgc_t  tgc;
 
-    if(handle == H5I_INVALID_HID)
-        return NULL;
-
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUTGC_INVALID);
     status |= iusHdf5ReadInt(handle, IUS_INPUTFILE_PATH_RECEIVESETTINGS_TGC_NUMTGCVALUES, &(numTGCValues));
-    if( status < 0 )
-        return NULL;
+    if (status != IUS_E_OK)
+    {
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "during read of %s",
+        IUS_INPUTFILE_PATH_RECEIVESETTINGS_TGC_NUMTGCVALUES);
+        return IUTGC_INVALID;
+    }
 
     tgc = iusTGCCreate(numTGCValues);
     status |= H5LTread_dataset_float( handle, IUS_INPUTFILE_PATH_RECEIVESETTINGS_TGC_TIMES, tgc->pTimes );
     status |= H5LTread_dataset_float( handle, IUS_INPUTFILE_PATH_RECEIVESETTINGS_TGC_GAINS, tgc->pGains );
-    if( status < 0 )
-        return NULL;
+    if (status != IUS_E_OK)
+    {
+        IUS_ERROR_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "during read of tgc gains, times or count");
+        return IUTGC_INVALID;
+    }
     return tgc;
 }
 

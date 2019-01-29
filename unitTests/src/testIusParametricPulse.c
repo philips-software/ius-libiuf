@@ -9,16 +9,30 @@
 #include <iusPulsePrivate.h>
 #include <iusParametricPulsePrivate.h>
 
+static char *pErrorFilename = "IusParametricPulse.errlog";
+static FILE *fpErrorLogging = NULL;
+
 TEST_GROUP(IusParametricPulse);
 
 TEST_SETUP(IusParametricPulse)
 {
+    iusErrorLogClear();
+    iusErrorLog(IUS_TRUE);
+    iusErrorAutoReport(IUS_TRUE);
+    fpErrorLogging = fopen(pErrorFilename, "w+");
+    iusErrorSetStream(fpErrorLogging);
 }
 
 TEST_TEAR_DOWN(IusParametricPulse)
 {
+    iusErrorLogClear();
+    iusErrorLog(IUS_FALSE);
+    if (fpErrorLogging != NULL)
+        fclose(fpErrorLogging);
+    fpErrorLogging=stderr;
+    iusErrorSetStream(fpErrorLogging);
+    remove(pErrorFilename);
 }
-
 
 
 TEST(IusParametricPulse, testIusCreatePulse)
@@ -36,6 +50,9 @@ TEST(IusParametricPulse, testIusCreatePulse)
 
 
     // Invalid operation on nonparametric dta type
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
     TEST_ASSERT_EQUAL(NULL,
                       iusParametricPulseCreate(pulseFrequency,
                                                pulseAmplitude,
@@ -44,6 +61,8 @@ TEST(IusParametricPulse, testIusCreatePulse)
                       iusParametricPulseCreate(-1.0f,
                                                pulseAmplitude,
                                                numPulses));
+    TEST_ASSERT_EQUAL(2,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
 
     status = iusParametricPulseDelete(parametricPulse);
     TEST_ASSERT(status == IUS_E_OK);
@@ -69,12 +88,16 @@ TEST(IusParametricPulse, testIusDeletePulse)
     nonParametricPulse = iusNonParametricPulseCreate(numPulseValues);
 
     // Invalid operation on nonparametric dta type
-    status = iusNonParametricPulseDelete((iunpp_t) parametricPulse);
-    TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
     status = iusParametricPulseDelete((iupp_t) nonParametricPulse);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
     status = iusParametricPulseDelete(NULL);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
+
+    TEST_ASSERT_EQUAL(2,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
 
     status = iusNonParametricPulseDelete(nonParametricPulse);
     TEST_ASSERT(status == IUS_E_OK);
@@ -144,14 +167,24 @@ TEST(IusParametricPulse, testIusSetGetPulse)
     TEST_ASSERT_EQUAL_FLOAT( iusParametricPulseGetNumPulses(parametricPulse),numPulses);
 
     // Invalid operation on nonparametric dta type
-    nonParametricPulse = iusNonParametricPulseCreate(numPulseValues);
-    TEST_ASSERT_EQUAL_FLOAT(iusParametricPulseGetFrequency( (iupp_t) nonParametricPulse), NAN);
-    TEST_ASSERT_EQUAL_FLOAT(iusParametricPulseGetPulseAmplitude( (iupp_t) nonParametricPulse), NAN);
-    TEST_ASSERT_EQUAL(IUS_ERR_VALUE, iusParametricPulseGetNumPulses((iupp_t) nonParametricPulse));
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
 
-    TEST_ASSERT_EQUAL_FLOAT(iusParametricPulseGetFrequency( (iupp_t) NULL), NAN);
-    TEST_ASSERT_EQUAL_FLOAT(iusParametricPulseGetPulseAmplitude( (iupp_t) NULL), NAN);
-    TEST_ASSERT_EQUAL(IUS_ERR_VALUE, iusParametricPulseGetNumPulses((iupp_t) NULL));
+    nonParametricPulse = iusNonParametricPulseCreate(numPulseValues);
+    float freq = iusParametricPulseGetFrequency( (iupp_t) nonParametricPulse);
+    TEST_ASSERT_EQUAL_FLOAT(freq, NAN);
+    float amp = iusParametricPulseGetPulseAmplitude( (iupp_t) nonParametricPulse);
+    TEST_ASSERT_EQUAL_FLOAT(amp, NAN);
+    int num = iusParametricPulseGetNumPulses((iupp_t) nonParametricPulse);
+    TEST_ASSERT_EQUAL(-1, num);
+    freq = iusParametricPulseGetFrequency( (iupp_t) NULL);
+    TEST_ASSERT_EQUAL_FLOAT(freq, NAN);
+    amp = iusParametricPulseGetPulseAmplitude( (iupp_t) NULL);
+    TEST_ASSERT_EQUAL_FLOAT(amp, NAN);
+    TEST_ASSERT_EQUAL(-1, iusParametricPulseGetNumPulses((iupp_t) NULL));
+
+    TEST_ASSERT_EQUAL(6,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
 
     status = iusNonParametricPulseDelete(nonParametricPulse);
     TEST_ASSERT(status == IUS_E_OK);

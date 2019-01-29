@@ -49,7 +49,7 @@ int iusPulseDictCompare
 /** \brief Get the number of #IusPulse objects in the dictionary.
  * \return Returns the number of #IusPulse objects or -1 in case of an error.
  */
-int iusPulseDictGetSize
+size_t iusPulseDictGetSize
 (
     iupd_t dict  ///< The pulse dictionary of interest
 );
@@ -61,6 +61,14 @@ iup_t iusPulseDictGet
 (
     iupd_t list,
     char * key
+);
+
+/** \brief Get the keys currently available in the dict
+ *  \return array (with size #iusTransmitApodizationDictGetSize) of keys.
+ */
+ char **iusPulseDictGetKeys
+(
+    iupd_t dict   ///< The pulse dictionary of interest
 );
 
 /** \brief Add the #IusPulse to the dictionary with label \p key.

@@ -6,19 +6,35 @@
 #include <unity_fixture.h>
 
 #include <ius.h>
+#include <util.h>
 #include <iusParameterDictPrivate.h>
 #include <testDataGenerators.h>
+
+
+static char *pErrorFilename = "IusParameterDict.errlog";
+static FILE *fpErrorLogging = NULL;
 
 TEST_GROUP(IusParameterDict);
 
 TEST_SETUP(IusParameterDict)
 {
+    iusErrorLogClear();
+    iusErrorLog(IUS_TRUE);
+    iusErrorAutoReport(IUS_TRUE);
+    fpErrorLogging = fopen(pErrorFilename, "w+");
+    iusErrorSetStream(fpErrorLogging);
 }
 
 TEST_TEAR_DOWN(IusParameterDict)
 {
+    iusErrorLogClear();
+    iusErrorLog(IUS_FALSE);
+    if (fpErrorLogging != NULL)
+        fclose(fpErrorLogging);
+    fpErrorLogging=stderr;
+    iusErrorSetStream(fpErrorLogging);
+    remove(pErrorFilename);
 }
-
 
 TEST(IusParameterDict, testIusParameterDictCreate)
 {
@@ -33,6 +49,46 @@ TEST(IusParameterDict, testIusParameterDictCreate)
 
 TEST(IusParameterDict, testIusParameterDictSetGet)
 {
+    char *labels[] = { "one" , "two" , "three", "four" , "five"};
+    char *value = "testValue";
+
+    // Create
+    iupad_t dict = iusParameterDictCreate();
+
+    // Fill
+    int i, status;
+    int keySize = sizeof(labels)/sizeof(labels[0]);
+    for (i=0; i<keySize; i++)
+    {
+        status = iusParameterDictSet(dict, labels[i], value);
+        TEST_ASSERT(status == IUS_E_OK);
+    }
+
+    size_t dictSize = iusParameterDictGetSize(dict);
+    TEST_ASSERT_EQUAL(5, dictSize);
+    char **keys = iusParameterDictGetKeys(dict);
+
+    // Validate keys
+    for (i=0; i<keySize; i++)
+    {
+        TEST_ASSERT_EQUAL(IUS_TRUE, aInB(keys[i], labels));
+    }
+
+    // invalid args
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
+    keys = iusParameterDictGetKeys(NULL);
+    TEST_ASSERT_EQUAL(NULL,keys);
+
+    TEST_ASSERT_EQUAL(1,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
+    iusParameterDictDelete(dict);
+}
+
+
+TEST(IusParameterDict, testIusParameterDictGetKeys)
+{
     char *key = "testKey";
     char *value = "testValue";
     iupad_t dict = iusParameterDictCreate();
@@ -40,14 +96,22 @@ TEST(IusParameterDict, testIusParameterDictSetGet)
     TEST_ASSERT_EQUAL_STRING(value, iusParameterDictGet(dict, key));
 
     // invalid args
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, iusParameterDictSet(NULL, key, value));
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, iusParameterDictSet(dict, NULL, value));
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, iusParameterDictSet(dict, key, NULL));
 
+    TEST_ASSERT_EQUAL(NULL, iusParameterDictGet(NULL, key));
     TEST_ASSERT_EQUAL(NULL, iusParameterDictGet(dict, NULL));
     TEST_ASSERT_EQUAL(NULL, iusParameterDictGet(dict, "unknownKey"));
+
+    TEST_ASSERT_EQUAL(6,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
     iusParameterDictDelete(dict);
 }
+
 
 TEST(IusParameterDict, testIusParameterDictCompare)
 {
@@ -179,6 +243,7 @@ TEST_GROUP_RUNNER(IusParameterDict)
     RUN_TEST_CASE(IusParameterDict, testIusParameterDictCreate);
     RUN_TEST_CASE(IusParameterDict, testIusParameterDictCompare);
     RUN_TEST_CASE(IusParameterDict, testIusParameterDictSetGet);
+    RUN_TEST_CASE(IusParameterDict, testIusParameterDictGetKeys)
     RUN_TEST_CASE(IusParameterDict, testIusSerialization);
     RUN_TEST_CASE(IusParameterDict, testIusSerializationErrorFlow);
 }

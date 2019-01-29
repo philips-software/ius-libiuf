@@ -25,7 +25,8 @@ herr_t iusHdf5ReadFloat
     status = H5LTread_dataset_float( handle, pVariableString, pValue );
     if ( status < 0 )
     {
-        fprintf( stderr, "H5LTread_dataset_float %s failed\n", pVariableString );
+
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "H5LTread_dataset_float %s failed", pVariableString );
         return status;
     }
     if ( verbose )
@@ -53,7 +54,7 @@ herr_t iusHdf5ReadShort
     status = H5LTread_dataset_short( handle, pVariableString, pValue );
     if ( status < 0 )
     {
-        fprintf( stderr, "H5LTread_dataset_short %s failed\n", pVariableString );
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "H5LTread_dataset_short %s failed", pVariableString );
         return status;
     }
     if ( verbose )
@@ -81,7 +82,7 @@ herr_t iusHdf5ReadInt
     status = H5LTread_dataset_int( handle, pVariableString, pValue );
     if ( status < 0 )
     {
-        fprintf( stderr, "H5LTread_dataset_int %s failed\n", pVariableString );
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "H5LTread_dataset_int %s failed", pVariableString );
         return status;
     }
     if ( verbose )
@@ -109,8 +110,7 @@ herr_t iusHdf5ReadLong
     status = H5LTread_dataset_long(handle, pVariableString, pValue);
     if ( status < 0 )
     {
-        fprintf( stderr, "iusInputFileOpen: H5LTread_dataset_int %s failed\n",
-                 pVariableString );
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "H5LTread_dataset_long %s failed", pVariableString );
         return status;
     }
     if ( verbose )
@@ -138,8 +138,7 @@ herr_t iusHdf5ReadString
     status = H5LTread_dataset_string( handle, pVariableString, ppReturnString );
     if ( status < 0 )
     {
-        fprintf( stderr,"iusInputFileOpen: H5LTread_dataset_string %s failed\n",
-                 pVariableString );
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "H5LTread_dataset_string %s failed", pVariableString );
         return status;
     }
     if ( verbose )
@@ -188,7 +187,7 @@ int *        pDim2
     }
     else
     {
-        fprintf( stderr, "Error: Grid type %s, is not supported\n", pGridName );
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_ERROR, IUS_ERR_MIN_ARG_VALUE, "Grid type %s, is not supported", pGridName );
     }
 
     return status;
@@ -218,8 +217,7 @@ herr_t iusHdf5ReadGrid
                                       &dims[2] );
         if ( status < 0 )
         {
-            fprintf( stderr,
-                     "Error reading dataset: H5Dread returned: %d\n", status );
+            IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "Reading (iusHdf5ReadGridSize): H5Dread returned: %d", status );
             return status;
         }
 
@@ -235,14 +233,13 @@ herr_t iusHdf5ReadGrid
         //         pGrid.pointsZ );
         if ( status < 0 )
         {
-            fprintf( stderr,
-                     "Error reading dataset: H5Dread returned: %d\n", status );
+            IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "Reading (H5LTread_dataset_float): H5Dread returned: %d", status );
             return status;
         }
     }
     else
     {
-        fprintf(stderr, "Error: Grid type %s, is not supported\n", pGridName);
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_ERROR, IUS_ERR_MIN_ARG_VALUE, "Grid type %s, is not supported", pGridName );
         return status;
     }
 
@@ -273,7 +270,7 @@ herr_t iusHdf5WriteFloat
 
     if (returnValue !=0 )
     {
-        fprintf(stderr, "Error: iusHdf5WriteFloat error: %d\n", returnValue);
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "H5LTmake_dataset_float returned: %d\n", returnValue);
     }
     return returnValue;
 }
@@ -301,7 +298,7 @@ herr_t iusHdf5WriteInt
     H5LTmake_dataset_int( handle, pVariableString, 1, dims, pValues );
     if ( returnValue != 0 )
     {
-        fprintf( stderr, "Error: iusHdf5WriteInt error: %d\n", returnValue );
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "H5LTmake_dataset_int returned: %d\n", returnValue);
     }
     return returnValue;
 }
@@ -329,7 +326,7 @@ herr_t iusHdf5WriteLong
     H5LTmake_dataset_long( handle, pVariableString, 1, dims, pValues );
     if ( returnValue != 0 )
     {
-        fprintf(stderr, "Error: iusHdf5WriteLong error: %d\n", returnValue );
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "H5LTmake_dataset_long returned: %d\n", returnValue);
     }
     return returnValue;
 }
@@ -351,7 +348,7 @@ const char * pString
     returnValue = H5LTmake_dataset_string( handle, pVariableString, pString );
     if ( returnValue != 0 )
     {
-        fprintf( stderr, "Error: iusHdf5WriteLong error: %d\n", returnValue );
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "H5LTmake_dataset_string returned: %d\n", returnValue);
     }
     return returnValue;
 }
@@ -401,9 +398,8 @@ herr_t iusHdf5WriteGrid
     }
     else
     {
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_ERROR, IUS_ERR_MIN_ARG_VALUE, "Grid name unknown (%s)\n", pGridName );
         returnValue = -1;
-        fprintf( stderr, "Error: iusHdf5WriteGrid, Grid name unknown (%s)\n",
-                 pGridName );
     }
 
     if ( verbose )
@@ -413,15 +409,10 @@ herr_t iusHdf5WriteGrid
 
     if ( returnValue != 0 )
     {
-        fprintf( stderr, "Error: iusHdf5WriteGrid error: %d\n", returnValue );
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "One of the H5LTmake_dataset_int's returned: %d\n", returnValue);
     }
 
     return returnValue;
 }
 
 
-herr_t iusHdf5DisableMessages()
-{
-    // Turn off error handling permanently
-    return H5Eset_auto (H5E_DEFAULT, NULL, NULL);
-}

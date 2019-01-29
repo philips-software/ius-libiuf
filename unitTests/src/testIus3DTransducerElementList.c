@@ -9,14 +9,29 @@
 #include <ius.h>
 #include <ius3DTransducerElementListPrivate.h>
 
+static char *pErrorFilename = "Ius3DTransducerElementList.errlog";
+static FILE *fpErrorLogging = NULL;
+
 TEST_GROUP(Ius3DTransducerElementList);
 
 TEST_SETUP(Ius3DTransducerElementList)
 {
+    iusErrorLogClear();
+    iusErrorLog(IUS_TRUE);
+    iusErrorAutoReport(IUS_TRUE);
+    fpErrorLogging = fopen(pErrorFilename, "w+");
+    iusErrorSetStream(fpErrorLogging);
 }
 
 TEST_TEAR_DOWN(Ius3DTransducerElementList)
 {
+    iusErrorLogClear();
+    iusErrorLog(IUS_FALSE);
+    if (fpErrorLogging != NULL)
+        fclose(fpErrorLogging);
+    fpErrorLogging=stderr;
+    iusErrorSetStream(fpErrorLogging);
+    remove(pErrorFilename);
 }
 
 TEST(Ius3DTransducerElementList, testIus3DTransducerElementListCreate)
@@ -28,8 +43,16 @@ TEST(Ius3DTransducerElementList, testIus3DTransducerElementListCreate)
     TEST_ASSERT_EQUAL(num3DTransducerElements, ius3DTransducerElementListGetSize(_3dTransducerElementList));
     ius3DTransducerElementListDelete(_3dTransducerElementList);
 
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
     _3dTransducerElementList = ius3DTransducerElementListCreate(-1);
     TEST_ASSERT_EQUAL(IU3DTEL_INVALID, _3dTransducerElementList);
+    _3dTransducerElementList = ius3DTransducerElementListCreate(0);
+    TEST_ASSERT_EQUAL(IU3DTEL_INVALID, _3dTransducerElementList);
+
+    TEST_ASSERT_EQUAL(2,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
 }
 
 
@@ -41,8 +64,15 @@ TEST(Ius3DTransducerElementList, testIus3DTransducerElementListDelete)
     TEST_ASSERT_NOT_EQUAL(IU3DTEL_INVALID, _3dTransducerElementList);
     int status = ius3DTransducerElementListDelete(_3dTransducerElementList);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
+
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0, iusErrorGetCount());
+
     status = ius3DTransducerElementListDelete(NULL);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE,status);
+
+    TEST_ASSERT_EQUAL(1, iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
 
 }
 
@@ -108,10 +138,15 @@ TEST(Ius3DTransducerElementList, testIus3DTransducerElementListSetGet)
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
     // invalid params
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0, iusErrorGetCount());
+
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, ius3DTransducerElementListSet(NULL,element,0));
-    TEST_ASSERT_EQUAL(IUS_ERR_VALUE, ius3DTransducerElementListSet(_3dTransducerElementList,NULL,0));
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, ius3DTransducerElementListSet(_3dTransducerElementList,element,-1));
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, ius3DTransducerElementListSet(_3dTransducerElementList,element,num3DTransducerElements));
+
+    TEST_ASSERT_EQUAL(3, iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
 
     ius3DTransducerElementListDelete(_3dTransducerElementList);
     ius3DTransducerElementDelete(element);

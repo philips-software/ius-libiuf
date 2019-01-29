@@ -61,7 +61,7 @@ int main
     int version = iusGetVersionMajor();
     int numFrames = 10;
     char *ultrasoundMode = "bmode";
-    iusDiagDisable();
+    iusErrorLog(IUS_TRUE);
 
     if (argc != 2)
     {
@@ -72,7 +72,7 @@ int main
     iuif_t ifh = iusInputFileCreate(argv[1]);
     if (ifh == IUIF_INVALID)
     {
-        fprintf(stderr, "ERROR: Unable to create file %s", argv[1]);
+        IUS_ERROR_FMT_PRINT(IUS_ERR_MAJ_GENERAL, IUS_ERR_MIN_ARG_VALUE, "Unable to create file %s", argv[1]);
         return -1;
     }
 
@@ -80,13 +80,15 @@ int main
     status |= iusInputFileNodeSave(ifh);
     if( status != 0 )
     {
-        fprintf(stderr, "ERROR: configuring node for file  %s", argv[1]);
+        IUS_ERROR_FMT_PRINT(IUS_ERR_MAJ_GENERAL, IUS_ERR_MIN_ARG_VALUE, "Configuring node for file  %s", argv[1]);
+        return -1;
     }
 
     status = saveFrames(ifh,ultrasoundMode,numFrames);
     if( status != 0 )
     {
-        fprintf(stderr, "ERROR: saving frames for file  %s", argv[1]);
+        IUS_ERROR_FMT_PRINT(IUS_ERR_MAJ_GENERAL, IUS_ERR_MIN_ARG_VALUE, "Saving frames for file  %s", argv[1]);
+        return -1;
     }
 
     // Create Meta data in Node

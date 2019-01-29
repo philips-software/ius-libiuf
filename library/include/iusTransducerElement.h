@@ -17,7 +17,7 @@ iute_t iusTransducerElementCreate
 
 int iusTransducerElementDelete
 (
-    iute_t iusTransducerElement
+    iute_t transducerElement
 );
 
 // operations

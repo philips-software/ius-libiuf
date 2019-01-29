@@ -38,7 +38,7 @@ struct IusInputFileInstance
     hid_t               handle;           /**< HDF5 file handle     */
     const char          *pFilename;       /**< the filename         */
     iudsd_t             dataStreamDict;   /**< Contains dataset administration */
-    IUS_BOOL            loadedFromFile;
+    IUS_BOOL            deepDelete;
 }  ;
 
 
@@ -54,10 +54,7 @@ iuifi_t iusInputFileInstanceCreate
 )
 {
     iuifi_t instanceData = (iuifi_t) calloc(1, sizeof(IusInputFileInstance));
-	if (instanceData == NULL)
-	{
-		return IUIFI_INVALID;
-	}
+    IUS_ERR_ALLOC_NULL_N_RETURN(instanceData, IusInputFileInstance, IUIFI_INVALID);
 
 	instanceData->IusVersion = iusGetVersionMajor();
 	instanceData->pFilename = "";
@@ -71,7 +68,7 @@ iuifi_t iusInputFileInstanceCreate
     instanceData->transducer = IUT_INVALID;
 	instanceData->acquisition = IUA_INVALID;
 	instanceData->dataStreamDict = iusDataStreamDictCreate();
-	instanceData->loadedFromFile = IUS_FALSE;
+	instanceData->deepDelete = IUS_FALSE;
     return instanceData;
 }
 
@@ -80,10 +77,10 @@ int iusInputFileInstanceDelete
     iuifi_t instance
 )
 {
-    if (instance == NULL) return IUS_ERR_VALUE;
+    IUS_ERR_CHECK_NULL_N_RETURN(instance, IUS_ERR_VALUE);
     iusDataStreamDictDelete(instance->dataStreamDict);
     free((void *)instance->pFilename);
-    if(instance->loadedFromFile == IUS_TRUE)
+    if(instance->deepDelete == IUS_TRUE)
     {
         iusFrameListDelete(instance->frameList);
         iusAcquisitionDelete(instance->acquisition);
@@ -105,15 +102,11 @@ int iusInputFileDelete
     iuif_t inputFile
 )
 {
-    int status = IUS_ERR_VALUE;
-    if(inputFile != NULL)
-    {
-        iuifi_t instance = iusHistoryNodeGetInstanceData(inputFile);
-        iusInputFileInstanceDelete(instance);
-        iusHistoryNodeDelete((iuhn_t)inputFile);
-        status = IUS_E_OK;
-    }
-    return status;
+    IUS_ERR_CHECK_NULL_N_RETURN(inputFile, IUS_ERR_VALUE);
+    iuifi_t instance = iusHistoryNodeGetInstanceData(inputFile);
+    iusInputFileInstanceDelete(instance);
+    iusHistoryNodeDelete((iuhn_t)inputFile);
+    return IUS_E_OK;
 }
 
 iuif_t iusInputFileCreate
@@ -121,16 +114,11 @@ iuif_t iusInputFileCreate
     const char *filename
 )
 {
-	if (filename == NULL)
-	{
-		fprintf(stderr, "iusInputFileAlloc: Input arguments can not be NULL \n");
-		return IUIF_INVALID;
-	}
-
+    IUS_ERR_CHECK_NULL_N_RETURN(filename, IUIF_INVALID);
 	iuifi_t instanceData = iusInputFileInstanceCreate();
 	if (instanceData == IUIFI_INVALID)
 	{
-		fprintf(stderr, "iusInputFileCreate: calloc of instance failed\n");
+        IUS_ERROR_PUSH(IUS_ERR_MAJ_MEMORY, IUS_ERR_MIN_ALLOC,  "calloc of IusInputFileInstance failed");
 		return IUIF_INVALID;
 	}
 
@@ -138,6 +126,7 @@ iuif_t iusInputFileCreate
     instanceData->handle = H5Fcreate(filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
 	if (instanceData->handle == H5I_INVALID_HID)
 	{
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_ERROR, IUS_ERR_MIN_HDF5,  "unable to create file %s", filename);
         iusInputFileInstanceDelete(instanceData);
 		return IUIF_INVALID;
 	}
@@ -152,7 +141,7 @@ int iusInputFileGetNumFrames
     iuif_t inputFile
 )
 {
-    if (inputFile == NULL) return -1;
+    IUS_ERR_CHECK_NULL_N_RETURN(inputFile, -1);
     iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
     if (instance->frameList == IUFL_INVALID) return 0;
     return iusFrameListGetSize(instance->frameList);
@@ -164,7 +153,8 @@ int iusInputFileGetNumChannels
     char *label
 )
 {
-    if (inputFile == NULL) return -1;
+    IUS_ERR_CHECK_NULL_N_RETURN(inputFile, -1);
+    IUS_ERR_CHECK_NULL_N_RETURN(label, -1);
     iurcmd_t receiveChannelMapDict = iusInputFileGetReceiveChannelMapDict(inputFile);
     if (receiveChannelMapDict == IURCMD_INVALID) return -1;
     iurcm_t receiveChannelMap = iusReceiveChannelMapDictGet(receiveChannelMapDict,label);
@@ -179,11 +169,21 @@ int iusInputFileGetSamplesPerLine
     char *label
 )
 {
-    if (inputFile == NULL) return -1;
+    IUS_ERR_CHECK_NULL_N_RETURN(inputFile, -1);
+    IUS_ERR_CHECK_NULL_N_RETURN(label, -1);
+
     iursd_t receiveSettingsDict = iusInputFileGetReceiveSettingsDict(inputFile);
-    if (receiveSettingsDict == IURSD_INVALID) return -1;
+    if (receiveSettingsDict == IURSD_INVALID)
+    {
+        IUS_ERROR_PUSH(IUS_ERR_MAJ_ERROR, IUS_ERR_MIN_ARG_VALUE,  "unable to iusInputFileGetReceiveSettingsDict");
+        return -1;
+    }
     iurs_t receiveSettings = iusReceiveSettingsDictGet(receiveSettingsDict,label);
-    if (receiveSettings == IURS_INVALID) return -1;
+    if (receiveSettings == IURS_INVALID)
+    {
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_ERROR, IUS_ERR_MIN_ARG_VALUE,  "unable to get receiveSettings for label %s", label);
+        return -1;
+    }
     return iusReceiveSettingsGetNumSamplesPerLine(receiveSettings);
 }
 
@@ -193,11 +193,22 @@ int iusInputFileGetNumResponses
     char *label
 )
 {
-    if (inputFile == NULL) return -1;
+    IUS_ERR_CHECK_NULL_N_RETURN(inputFile, -1);
+    IUS_ERR_CHECK_NULL_N_RETURN(label, -1);
+
     iupald_t listDict = iusInputFileGetPatternListDict(inputFile);
-    if (listDict == IUPALD_INVALID) return -1;
+    if (listDict == IUPALD_INVALID)
+    {
+        IUS_ERROR_PUSH(IUS_ERR_MAJ_ERROR, IUS_ERR_MIN_ARG_VALUE,  "unable to iusInputFileGetPatternListDict");
+        return -1;
+    }
     iupal_t patternList = iusPatternListDictGet(listDict,label);
-    if (patternList == IUPAL_INVALID) return -1;
+    if (patternList == IUPAL_INVALID)
+    {
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_ERROR, IUS_ERR_MIN_ARG_VALUE,  "unable to get patternLlist for label %s", label);
+        return -1;
+    }
+
     return iusPatternListGetSize(patternList);
 }
 
@@ -207,7 +218,8 @@ iud_t iusInputFileFrameCreate
     char *label
 )
 {
-    if(inputFile == NULL) return IUD_INVALID;
+    IUS_ERR_CHECK_NULL_N_RETURN(inputFile, IUD_INVALID);
+    IUS_ERR_CHECK_NULL_N_RETURN(label, IUD_INVALID);
     // calculate frame size:
     // numchannels * numresponses * numsamples = [x*y*z]
     int numChannels = iusInputFileGetNumChannels(inputFile,label);
@@ -223,8 +235,8 @@ iud_t iusInputFileResponseCreate
     char *label
 )
 {
-    if(inputFile == NULL) return IUD_INVALID;
-
+    IUS_ERR_CHECK_NULL_N_RETURN(inputFile, IUD_INVALID);
+    IUS_ERR_CHECK_NULL_N_RETURN(label, IUD_INVALID);
     int numChannels = iusInputFileGetNumChannels(inputFile,label);
     int numSamples = iusInputFileGetSamplesPerLine(inputFile,label);
     int responseSize = numChannels * numSamples ;
@@ -237,8 +249,8 @@ iud_t iusInputFileChannelCreate
     char *label
 )
 {
-    if(inputFile == NULL) return IUD_INVALID;
-
+    IUS_ERR_CHECK_NULL_N_RETURN(inputFile, IUD_INVALID);
+    IUS_ERR_CHECK_NULL_N_RETURN(label, IUD_INVALID);
     int numSamples = iusInputFileGetSamplesPerLine(inputFile,label);
     return iusDataCreate(numSamples);
 }
@@ -249,79 +261,78 @@ static iuifi_t inputFileInstanceLoad
     iuifi_t instance
 )
 {
-    if (instance == NULL) return IUIFI_INVALID;
-
+    IUS_ERR_CHECK_NULL_N_RETURN(instance, IUIFI_INVALID);
     instance->frameList = iusFrameListLoad(instance->handle);
     if (instance->frameList == IUFL_INVALID)
     {
-        fprintf(stderr, "Warning from iusInputFileNodeLoad: could not load framelist");
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "could not load framelist from %s", instance->pFilename);
         return IUIFI_INVALID;
     }
 
     instance->patternListDict = iusPatternListDictLoad(instance->handle);
     if (instance->patternListDict == IUPALD_INVALID)
     {
-        fprintf(stderr, "Warning from iusInputFileNodeLoad: could not load patternlists  %s\n", instance->pFilename );
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "could not load patternlist from %s", instance->pFilename);
         return IUIFI_INVALID;
     }
 
     instance->pulseDict = iusPulseDictLoad(instance->handle);
     if (instance->pulseDict == IUPD_INVALID)
     {
-        fprintf( stderr, "Warning from iusInputFileNodeLoad: could not load pulses: %s\n", instance->pFilename );
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "could not load pulses from %s", instance->pFilename);
         return IUIFI_INVALID;
     }
 
     instance->pulseSourceDict = iusSourceDictLoad(instance->handle);
     if (instance->pulseSourceDict == IUSD_INVALID)
     {
-        fprintf( stderr, "Warning from iusInputFileNodeLoad: could not load pulse sources: %s\n", instance->pFilename );
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "could not load pulse sources from %s", instance->pFilename);
         return IUIFI_INVALID;
     }
 
     instance->receiveChannelMapDict = iusReceiveChannelMapDictLoad(instance->handle);
     if (instance->receiveChannelMapDict == IURCMD_INVALID)
     {
-        fprintf(stderr, "Warning from iusInputFileNodeLoad: could not load receiveChannelMap: %s\n", instance->pFilename);
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "could not load receiveChannelMap from %s", instance->pFilename);
         return IUIFI_INVALID;
     }
 
     instance->transmitApodizationDict = iusTransmitApodizationDictLoad(instance->handle);
     if (instance->transmitApodizationDict == IUTAD_INVALID)
     {
-        fprintf(stderr, "Warning from iusInputFileNodeLoad: could not load transmitApodizationDict: %s\n", instance->pFilename);
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "could not load transmitApodizationDict from %s", instance->pFilename);
         return IUIFI_INVALID;
     }
 
     instance->receiveSettingsDict = iusReceiveSettingsDictLoad(instance->handle);
     if (instance->receiveSettingsDict == IURSD_INVALID)
     {
-        fprintf(stderr, "Warning from iusInputFileNodeLoad: could not load receiveSettingsDict: %s\n", instance->pFilename);
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "could not load receiveSettingsDict from %s", instance->pFilename);
         return IUIFI_INVALID;
     }
 
     instance->acquisition = iusAcquisitionLoad(instance->handle);
     if (instance->acquisition == IUA_INVALID)
     {
-        fprintf(stderr, "Warning from iusInputFileNodeLoad: could not load acquisition: %s\n", instance->pFilename);
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "could not load acquisition from %s", instance->pFilename);
         return IUIFI_INVALID;
     }
 
     instance->transducer = iusTransducerLoad(instance->handle);
     if (instance->transducer == IUT_INVALID)
     {
-        fprintf(stderr, "Warning from iusInputFileNodeLoad: could not load transducer: %s\n", instance->pFilename);
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "could not load transducer from %s", instance->pFilename);
         return IUIFI_INVALID;
     }
 
     int status = iusHdf5ReadInt( instance->handle, IUS_INPUTFILE_PATH_IUSVERSION, &(instance->IusVersion));
     if( status != IUS_E_OK )
     {
-        fprintf(stderr, "Warning from iusInputFileNodeLoad: could not load IusVersion: %s\n", instance->pFilename);
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "could not load IusVersion from %s", instance->pFilename);
         return IUIFI_INVALID;
     }
 
-    instance->loadedFromFile = IUS_TRUE;
+    instance->deepDelete = IUS_TRUE;
     return instance;
 }
 
@@ -339,7 +350,7 @@ void *iusInputFileInstanceLoad
         iusInputFileInstanceDelete(instance);
         instance = new_instance;
     }
-    instance->loadedFromFile = IUS_TRUE;
+    instance->deepDelete = IUS_TRUE;
     return (void *)instance;
 }
 
@@ -362,22 +373,23 @@ iuif_t iusInputFileNodeLoad
     const char *pFilename
 )
 {
-	if (pFilename == NULL)
-	{
-		fprintf(stderr, "iusInputFileAlloc: Input arguments can not be NULL \n");
-		return IUIF_INVALID;
-	}
+    IUS_ERR_CHECK_NULL_N_RETURN(pFilename, IUIF_INVALID);
 
     // open  Hdf5 file using default properties.
     hid_t handle = H5Fopen( pFilename, H5F_ACC_RDONLY, H5P_DEFAULT );
-    if (handle <=0)
+    if (handle<=0)
     {
-        fprintf( stderr, "iusInputFileNodeLoad: could not create file: %s\n", pFilename );
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "could not open file %s", pFilename);
         return IUIF_INVALID;
     }
 
     iuif_t inputFile = (iuif_t) iusHistoryNodeLoad(handle);
     iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
+    if (instance == IUIFI_INVALID)
+    {
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "could not get instance data %s", pFilename);
+        return IUIF_INVALID;
+    }
     instance->pFilename = strdup(pFilename);
     return inputFile;
 }
@@ -388,6 +400,7 @@ int iusInputFileSaveInstance
     iuifi_t instanceData
 )
 {
+    IUS_ERR_CHECK_NULL_N_RETURN(instanceData, IUS_ERR_VALUE);
     herr_t status=0;
     status |= iusFrameListSave(instanceData->frameList, handle);
     status |= iusPatternListDictSave(instanceData->patternListDict, handle);
@@ -410,8 +423,7 @@ int iusInputFileNodeSave
 )
 {
     herr_t status=0;
-    if( inputFile == NULL ) return IUS_ERR_VALUE;
-
+    IUS_ERR_CHECK_NULL_N_RETURN(inputFile, IUS_ERR_VALUE);
     iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
     status |= iusHistoryNodeSave(inputFile, instance->handle);
 	return status;
@@ -423,17 +435,13 @@ int iusInputFileClose
     iuif_t inputFile
 )
 {
-    int status=0;
-    if( inputFile == IUIF_INVALID ) return IUS_FALSE;
-    IUS_ASSERT_MEMORY(inputFile);
-
+    IUS_ERR_CHECK_NULL_N_RETURN(inputFile, IUS_ERR_VALUE);
     iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
+    IUS_ERR_EVAL_N_RETURN(instance->handle  == H5I_INVALID_HID, IUS_ERR_VALUE);
 
     // Terminate access to the file.
-    if( instance->handle != H5I_INVALID_HID )
-    {
-        status |= H5Fclose(instance->handle);
-    }
+    int status = H5Fclose(instance->handle);
+    instance->handle = H5I_INVALID_HID;
     return status;
 }
 
@@ -485,12 +493,9 @@ iufl_t iusInputFileGetFrameList
     iuif_t inputFile
 )
 {
-    if ( inputFile != NULL )
-    {
-        iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
-        return instance->frameList;
-    }
-    return IUFL_INVALID;
+    IUS_ERR_CHECK_NULL_N_RETURN(inputFile, IUFL_INVALID);
+    iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
+    return instance->frameList;
 }
 
 iupald_t iusInputFileGetPatternListDict
@@ -498,12 +503,9 @@ iupald_t iusInputFileGetPatternListDict
     iuif_t inputFile
 )
 {
-    if ( inputFile != NULL )
-    {
-        iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
-        return instance->patternListDict;
-    }
-    return NULL;
+    IUS_ERR_CHECK_NULL_N_RETURN(inputFile, IUPALD_INVALID);
+    iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
+    return instance->patternListDict;
 }
 
 
@@ -512,12 +514,9 @@ iupd_t iusInputFileGetPulseDict
     iuif_t inputFile
 )
 {
-    if ( inputFile != NULL )
-    {
-        iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
-        return instance->pulseDict;
-    }
-    return NULL;
+    IUS_ERR_CHECK_NULL_N_RETURN(inputFile, IUPD_INVALID);
+    iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
+    return instance->pulseDict;
 }
 
 iusd_t iusInputFileGetSourceDict
@@ -525,12 +524,9 @@ iusd_t iusInputFileGetSourceDict
     iuif_t inputFile
 )
 {
-    if (inputFile != NULL)
-    {
-        iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
-        return instance->pulseSourceDict;
-    }
-    return NULL;
+    IUS_ERR_CHECK_NULL_N_RETURN(inputFile, IUSD_INVALID);
+    iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
+    return instance->pulseSourceDict;
 }
 
 
@@ -539,12 +535,9 @@ iurcmd_t iusInputFileGetReceiveChannelMapDict
     iuif_t inputFile
 )
 {
-    if (inputFile != NULL)
-    {
-        iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
-        return instance->receiveChannelMapDict;
-    }
-    return NULL;
+    IUS_ERR_CHECK_NULL_N_RETURN(inputFile, IURCMD_INVALID);
+    iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
+    return instance->receiveChannelMapDict;
 }
 
 iutad_t iusInputFileGetTransmitApodizationDict
@@ -552,12 +545,9 @@ iutad_t iusInputFileGetTransmitApodizationDict
     iuif_t inputFile
 )
 {
-    if (inputFile != NULL)
-    {
-        iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
-        return instance->transmitApodizationDict;
-    }
-    return NULL;
+    IUS_ERR_CHECK_NULL_N_RETURN(inputFile, IUTAD_INVALID);
+    iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
+    return instance->transmitApodizationDict;
 }
 
 iursd_t iusInputFileGetReceiveSettingsDict
@@ -565,12 +555,9 @@ iursd_t iusInputFileGetReceiveSettingsDict
     iuif_t inputFile
 )
 {
-    if (inputFile != NULL)
-    {
-        iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
-        return instance->receiveSettingsDict;
-    }
-    return NULL;
+    IUS_ERR_CHECK_NULL_N_RETURN(inputFile, IURSD_INVALID);
+    iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
+    return instance->receiveSettingsDict;
 }
 
 iua_t iusInputFileGetAcquisition
@@ -578,12 +565,9 @@ iua_t iusInputFileGetAcquisition
    iuif_t inputFile
 )
 {
-	if ( inputFile != NULL )
-	{
-        iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
-		return instance->acquisition;
-	}
-	return NULL;
+    IUS_ERR_CHECK_NULL_N_RETURN(inputFile, IUA_INVALID);
+    iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
+    return instance->acquisition;
 }
 
 iut_t iusInputFileGetTransducer
@@ -591,12 +575,9 @@ iut_t iusInputFileGetTransducer
     iuif_t inputFile
 )
 {
-    if ( inputFile != NULL )
-    {
-        iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
-        return instance->transducer;
-    }
-    return NULL;
+    IUS_ERR_CHECK_NULL_N_RETURN(inputFile, IUT_INVALID);
+    iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
+    return instance->transducer;
 }
 
 
@@ -608,15 +589,11 @@ int iusInputFileSetFrameList
     iufl_t frameList
 )
 {
-    int status = IUS_ERR_VALUE;
-
-    if (inputFile != NULL)
-    {
-        iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
-        instance->frameList = frameList;
-        status = IUS_E_OK;
-    }
-    return status;
+    IUS_ERR_CHECK_NULL_N_RETURN(inputFile, IUS_ERR_VALUE);
+    IUS_ERR_CHECK_NULL_N_RETURN(frameList, IUS_ERR_VALUE);
+    iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
+    instance->frameList = frameList;
+    return IUS_E_OK;
 }
 
 int iusInputFileSetPatternListDict
@@ -625,15 +602,11 @@ int iusInputFileSetPatternListDict
     iupald_t patternListDict
 )
 {
-    int status = IUS_ERR_VALUE;
-
-    if(inputFile != NULL)
-    {
-        iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
-        instance->patternListDict = patternListDict;
-        status = IUS_E_OK;
-    }
-    return status;
+    IUS_ERR_CHECK_NULL_N_RETURN(inputFile, IUS_ERR_VALUE);
+    IUS_ERR_CHECK_NULL_N_RETURN(patternListDict, IUS_ERR_VALUE);
+    iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
+    instance->patternListDict = patternListDict;
+    return IUS_E_OK;
 }
 
 int iusInputFileSetPulseDict
@@ -642,15 +615,11 @@ int iusInputFileSetPulseDict
     iupd_t pulseDict
 )
 {
-    int status = IUS_ERR_VALUE;
-
-    if ( inputFile != NULL )
-    {
-        iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
-        instance->pulseDict = pulseDict;
-        status = IUS_E_OK;
-    }
-    return status;
+    IUS_ERR_CHECK_NULL_N_RETURN(inputFile, IUS_ERR_VALUE);
+    IUS_ERR_CHECK_NULL_N_RETURN(pulseDict, IUS_ERR_VALUE);
+    iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
+    instance->pulseDict = pulseDict;
+    return IUS_E_OK;
 }
 
 
@@ -661,15 +630,11 @@ int iusInputFileSetSourceDict
     iusd_t sourceDict
 )
 {
-    int status = IUS_ERR_VALUE;
-
-    if (inputFile != NULL)
-    {
-        iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
-        instance->pulseSourceDict = sourceDict;
-        status = IUS_E_OK;
-    }
-    return status;
+    IUS_ERR_CHECK_NULL_N_RETURN(inputFile, IUS_ERR_VALUE);
+    IUS_ERR_CHECK_NULL_N_RETURN(sourceDict, IUS_ERR_VALUE);
+    iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
+    instance->pulseSourceDict = sourceDict;
+    return IUS_E_OK;
 }
 
 int iusInputFileSetReceiveChannelMapDict
@@ -678,15 +643,11 @@ int iusInputFileSetReceiveChannelMapDict
 	iurcmd_t receiveChannelMapDict
 )
 {
-	int status = IUS_ERR_VALUE;
-
-	if(inputFile != NULL)
-	{
-        iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
-        instance->receiveChannelMapDict = receiveChannelMapDict;
-		status = IUS_E_OK;
-	}
-	return status;
+    IUS_ERR_CHECK_NULL_N_RETURN(inputFile, IUS_ERR_VALUE);
+    IUS_ERR_CHECK_NULL_N_RETURN(receiveChannelMapDict, IUS_ERR_VALUE);
+    iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
+    instance->receiveChannelMapDict = receiveChannelMapDict;
+    return IUS_E_OK;
 }
 
 int iusInputFileSetTransmitApodizationDict
@@ -695,15 +656,11 @@ int iusInputFileSetTransmitApodizationDict
 	iutad_t transmitApodizationDict
 )
 {
-	int status = IUS_ERR_VALUE;
-
-	if(inputFile != NULL && transmitApodizationDict != NULL)
-	{
-        iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
-        instance->transmitApodizationDict = transmitApodizationDict;
-		status = IUS_E_OK;
-	}
-	return status;
+    IUS_ERR_CHECK_NULL_N_RETURN(inputFile, IUS_ERR_VALUE);
+    IUS_ERR_CHECK_NULL_N_RETURN(transmitApodizationDict, IUS_ERR_VALUE);
+    iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
+    instance->transmitApodizationDict = transmitApodizationDict;
+    return IUS_E_OK;
 }
 
 int iusInputFileSetReceiveSettingsDict
@@ -712,33 +669,25 @@ int iusInputFileSetReceiveSettingsDict
     iursd_t receiveSettingsDict
 )
 {
-    int status = IUS_ERR_VALUE;
-
-    if(inputFile != NULL && receiveSettingsDict != NULL)
-    {
-        iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
-        instance->receiveSettingsDict = receiveSettingsDict;
-        status = IUS_E_OK;
-    }
-    return status;
+    IUS_ERR_CHECK_NULL_N_RETURN(inputFile, IUS_ERR_VALUE);
+    IUS_ERR_CHECK_NULL_N_RETURN(receiveSettingsDict, IUS_ERR_VALUE);
+    iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
+    instance->receiveSettingsDict = receiveSettingsDict;
+    return IUS_E_OK;
 }
 
 
 int iusInputFileSetAcquisition
 (
-iuif_t inputFile,
-iua_t acquisition
+    iuif_t inputFile,
+    iua_t acquisition
 )
 {
-	int status = IUS_ERR_VALUE;
-
-	if (inputFile != NULL && acquisition != NULL)
-	{
-        iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
-        instance->acquisition = acquisition;
-		status = IUS_E_OK;
-	}
-	return status;
+    IUS_ERR_CHECK_NULL_N_RETURN(inputFile, IUS_ERR_VALUE);
+    IUS_ERR_CHECK_NULL_N_RETURN(acquisition, IUS_ERR_VALUE);
+    iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
+    instance->acquisition = acquisition;
+    return IUS_E_OK;
 }
 
 
@@ -748,15 +697,11 @@ int iusInputFileSetTransducer
     iut_t transducer
 )
 {
-    int status = IUS_ERR_VALUE;
-
-    if (inputFile != NULL && transducer != NULL)
-    {
-        iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
-        instance->transducer = transducer;
-        status = IUS_E_OK;
-    }
-    return status;
+    IUS_ERR_CHECK_NULL_N_RETURN(inputFile, IUS_ERR_VALUE);
+    IUS_ERR_CHECK_NULL_N_RETURN(transducer, IUS_ERR_VALUE);
+    iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
+    instance->transducer = transducer;
+    return IUS_E_OK;
 }
 
 int iusInputFileSetFilename
@@ -765,15 +710,11 @@ int iusInputFileSetFilename
     char * fileName
 )
 {
-    int status = IUS_ERR_VALUE;
-
-    if (inputFile != NULL)
-    {
-        iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
-        instance->pFilename = strdup(fileName);
-        status = IUS_E_OK;
-    }
-    return status;
+    IUS_ERR_CHECK_NULL_N_RETURN(inputFile, IUS_ERR_VALUE);
+    IUS_ERR_CHECK_NULL_N_RETURN(fileName, IUS_ERR_VALUE);
+    iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
+    instance->pFilename = strdup(fileName);
+    return IUS_E_OK;
 }
 
 
@@ -805,6 +746,9 @@ hid_t iusInputFileGetWriteSpace
     hsize_t rfDataDims[4];
     hsize_t chunkDims[4];
     hid_t space, dataChunkConfig;
+
+    IUS_ERR_CHECK_NULL_N_RETURN(inputFile, H5I_INVALID_HID);
+    IUS_ERR_CHECK_NULL_N_RETURN(label, H5I_INVALID_HID);
 
     iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
     iuds_t dataStream = iusDataStreamDictGet(instance->dataStreamDict,label);
@@ -839,6 +783,8 @@ hid_t iusInputFileGetReadSpace
     char *label
 )
 {
+    IUS_ERR_CHECK_NULL_N_RETURN(inputFile, H5I_INVALID_HID);
+    IUS_ERR_CHECK_NULL_N_RETURN(label, H5I_INVALID_HID);
     iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
     iuds_t dataStream = iusDataStreamDictGet(instance->dataStreamDict,label);
     if ( dataStream == IUDS_INVALID)
@@ -865,6 +811,11 @@ int iusInputFileFrameSave
     hsize_t count[4];
     hsize_t memdim[3];
     herr_t  status;
+
+    IUS_ERR_CHECK_NULL_N_RETURN(inputFile, H5I_INVALID_HID);
+    IUS_ERR_CHECK_NULL_N_RETURN(label, H5I_INVALID_HID);
+    IUS_ERR_CHECK_NULL_N_RETURN(frame, H5I_INVALID_HID);
+    IUS_ERR_CHECK_NULL_N_RETURN(frame_offset, H5I_INVALID_HID);
 
     memdim[0] = (hsize_t) iusInputFileGetNumChannels(inputFile,label);
     memdim[1] = (hsize_t) iusInputFileGetSamplesPerLine(inputFile,label);
@@ -915,6 +866,11 @@ int iusInputFileResponseSave
     hsize_t memdim[2];
     herr_t  status;
 
+    IUS_ERR_CHECK_NULL_N_RETURN(inputFile, H5I_INVALID_HID);
+    IUS_ERR_CHECK_NULL_N_RETURN(label, H5I_INVALID_HID);
+    IUS_ERR_CHECK_NULL_N_RETURN(response, H5I_INVALID_HID);
+    IUS_ERR_CHECK_NULL_N_RETURN(response_offset, H5I_INVALID_HID);
+
     memdim[0] = (hsize_t) iusInputFileGetNumChannels(inputFile,label);
     memdim[1] = (hsize_t) iusInputFileGetSamplesPerLine(inputFile,label);
     memspace = H5Screate_simple(2, memdim, NULL);
@@ -960,6 +916,11 @@ int iusInputFileChannelSave
     hsize_t count[4];
     hsize_t memdim;
     herr_t  status;
+
+    IUS_ERR_CHECK_NULL_N_RETURN(inputFile, H5I_INVALID_HID);
+    IUS_ERR_CHECK_NULL_N_RETURN(label, H5I_INVALID_HID);
+    IUS_ERR_CHECK_NULL_N_RETURN(channel, H5I_INVALID_HID);
+    IUS_ERR_CHECK_NULL_N_RETURN(channel_offset, H5I_INVALID_HID);
 
     memdim = (hsize_t) iusInputFileGetNumChannels(inputFile,label);
     memspace = H5Screate_simple(1, &memdim, NULL);
@@ -1007,6 +968,11 @@ int iusInputFileFrameLoad
     hsize_t count[4];
     hsize_t memdim[3];
     herr_t  status;
+
+    IUS_ERR_CHECK_NULL_N_RETURN(inputFile, H5I_INVALID_HID);
+    IUS_ERR_CHECK_NULL_N_RETURN(label, H5I_INVALID_HID);
+    IUS_ERR_CHECK_NULL_N_RETURN(frame, H5I_INVALID_HID);
+    IUS_ERR_CHECK_NULL_N_RETURN(frame_offset, H5I_INVALID_HID);
 
     memdim[0] = (hsize_t) iusInputFileGetNumChannels(inputFile,label);
     memdim[1] = (hsize_t) iusInputFileGetSamplesPerLine(inputFile,label);
@@ -1057,6 +1023,11 @@ int iusInputFileResponseLoad
     hsize_t memdim[2];
     herr_t  status;
 
+    IUS_ERR_CHECK_NULL_N_RETURN(inputFile, H5I_INVALID_HID);
+    IUS_ERR_CHECK_NULL_N_RETURN(label, H5I_INVALID_HID);
+    IUS_ERR_CHECK_NULL_N_RETURN(response, H5I_INVALID_HID);
+    IUS_ERR_CHECK_NULL_N_RETURN(response_offset, H5I_INVALID_HID);
+
     memdim[0] = (hsize_t) iusInputFileGetNumChannels(inputFile,label);
     memdim[1] = (hsize_t) iusInputFileGetSamplesPerLine(inputFile,label);
     memspace = H5Screate_simple(2, memdim, NULL);
@@ -1104,6 +1075,11 @@ int iusInputFileChannelLoad
     hsize_t count[4];
     hsize_t memdim;
     herr_t  status;
+
+    IUS_ERR_CHECK_NULL_N_RETURN(inputFile, H5I_INVALID_HID);
+    IUS_ERR_CHECK_NULL_N_RETURN(label, H5I_INVALID_HID);
+    IUS_ERR_CHECK_NULL_N_RETURN(channel, H5I_INVALID_HID);
+    IUS_ERR_CHECK_NULL_N_RETURN(channel_offset, H5I_INVALID_HID);
 
     memdim = (hsize_t) iusInputFileGetNumChannels(inputFile,label);
     memspace = H5Screate_simple(1, &memdim, NULL);

@@ -21,17 +21,21 @@ add_executable(unitTests
         src/testIus3DTransducer.c
         src/testIus3DTransducerElement.c
         src/testIus3DTransducerElementList.c
+        src/testIusAcquisition.c
         src/testIusDataStream.c
         src/testIusDataStreamDict.c
 		src/testIusDemodulation.c
         src/testIusDemodulationDict.c
-        src/testIusAcquisition.c
+        src/testIusErrorHandling.c
         src/testIusFile.c
         src/testIusFilter.c
         src/testIusFrame.c
         src/testIusFrameList.c
         src/testIusInputFile.c
 		src/testIusIqFile.c
+        src/testIusIqPattern.c
+        src/testIusIqPatternList.c
+        src/testIusIqPatternListDict.c
         src/testIusHistoryNode.c
         src/testIusHistoryNodeList.c
         src/testIusNonParametricPulse.c

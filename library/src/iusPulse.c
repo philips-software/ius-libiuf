@@ -17,13 +17,23 @@ iup_t  iusPulseCreate
     IusPulseType type
 )
 {
-    iup_t transmitPulse = IUP_INVALID;
+    iup_t transmitPulse;
 
     if( type != IUS_PARAMETRIC_PULSETYPE &&
         type != IUS_NON_PARAMETRIC_PULSETYPE )
-        return transmitPulse;
+    {
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE, "unsupported pulse type: '%d'", type);
+        return IUP_INVALID;
+
+    }
 
     transmitPulse = calloc(1, sizeof(struct IusPulse));
+    if(transmitPulse == NULL)
+    {
+        IUS_ERROR_PUSH(IUS_ERR_MAJ_MEMORY, IUS_ERR_MIN_ALLOC, "calloc failed for IusPulse");
+        return IUP_INVALID;
+    }
+
     transmitPulse->type = type;
     return transmitPulse;
 }
@@ -33,7 +43,7 @@ int iusPulseDelete
     iup_t pulse
 )
 {
-    if( pulse == NULL ) return IUS_ERR_VALUE;
+    IUS_ERR_CHECK_NULL_N_RETURN(pulse, IUS_ERR_VALUE);
     if( pulse->type == IUS_NON_PARAMETRIC_PULSETYPE )
         return iusNonParametricPulseDelete((iunpp_t) pulse);
     if( pulse->type == IUS_PARAMETRIC_PULSETYPE )
@@ -70,6 +80,7 @@ IUS_BOOL iusPulseCompare
         return iusNonParametricPulseCompare((iunpp_t) reference, (iunpp_t)actual);
     if( reference->type == IUS_PARAMETRIC_PULSETYPE )
         return iusParametricPulseCompare((iupp_t) reference, (iupp_t)actual);
+    IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE, "unsupported pulse type: '%d'", reference->type);
     return IUS_FALSE;
 }
 
@@ -79,7 +90,7 @@ IusPulseType iusPulseGetType
     iup_t pulse
 )
 {
-    if( pulse == NULL ) return  IUS_INVALID_PULSETYPE;
+    IUS_ERR_CHECK_NULL_N_RETURN(pulse, IUS_INVALID_PULSETYPE);
     return pulse->type;
 }
 
@@ -139,8 +150,18 @@ int iusBasePulseSave
 )
 {
     int status=IUS_E_OK;
+    if( pulse == NULL )
+    {
+        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "pulse argument is NULL");
+        return IUS_INVALID_PULSETYPE;
+    }
 
-	status |= iusWritePulseType(handle, IUS_INPUTFILE_PATH_PULSE_PULSETYPE, pulse->type);
+    status |= iusWritePulseType(handle, IUS_INPUTFILE_PATH_PULSE_PULSETYPE, pulse->type);
+    if (status != IUS_E_OK)
+    {
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "during save of %s",
+                           IUS_INPUTFILE_PATH_PULSE_PULSETYPE);
+    }
     return status;
 }
 
@@ -151,15 +172,17 @@ int iusPulseSave
     hid_t handle
 )
 {
-    int status=IUS_ERR_VALUE;
+    IUS_ERR_CHECK_NULL_N_RETURN(pulse, IUS_ERR_VALUE);
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUS_ERR_VALUE);
 
     if( pulse->type == IUS_PARAMETRIC_PULSETYPE )
-        status = iusParametricPulseSave((iupp_t)pulse, handle);
+        return iusParametricPulseSave((iupp_t)pulse, handle);
 
     if( pulse->type == IUS_NON_PARAMETRIC_PULSETYPE )
-        status = iusNonParametricPulseSave((iunpp_t)pulse, handle);
+        return iusNonParametricPulseSave((iunpp_t)pulse, handle);
 
-    return status;
+    IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE, "unsupported pulse type: '%d'", pulse->type);
+    return IUS_ERR_VALUE;
 }
 
 iup_t iusBasePulseLoad
@@ -169,11 +192,13 @@ iup_t iusBasePulseLoad
 {
 	int status = IUS_E_OK;
 	IusPulseType type;
-
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUP_INVALID);
 	status |= iusReadPulseType(handle, IUS_INPUTFILE_PATH_PULSE_PULSETYPE, &(type));
-	if (status < 0)
-		return NULL;
-
+    if (status != IUS_E_OK)
+    {
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "during load of %s",
+                           IUS_INPUTFILE_PATH_PULSE_PULSETYPE);
+    }
 	return iusPulseCreate(type);
 }
 
@@ -184,13 +209,20 @@ iup_t iusPulseLoad
 {
     int status = IUS_E_OK;
     IusPulseType type;
+
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUP_INVALID);
     status |= iusReadPulseType(handle, IUS_INPUTFILE_PATH_PULSE_PULSETYPE, &(type));
-    if (status < 0)
+    if (status != IUS_E_OK)
+    {
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "during load of %s",
+                           IUS_INPUTFILE_PATH_PULSE_PULSETYPE);
         return IUP_INVALID;
+    }
 
     if( type == IUS_PARAMETRIC_PULSETYPE )
         return (iup_t) iusParametricPulseLoad(handle);
     if( type == IUS_NON_PARAMETRIC_PULSETYPE )
         return (iup_t) iusNonParametricPulseLoad(handle);
+    IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE, "unsupported pulse type: '%d'", type);
 	return IUP_INVALID;
 }

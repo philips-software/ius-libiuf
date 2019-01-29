@@ -15,7 +15,7 @@ typedef IusFrame *iufr_t;
 */
 iufr_t iusFrameCreate
 (
-    char *patternListLabel,      ///< The patternList label this frame refers to, e.g. "bmode"
+    char *label,      ///< The patternList label this frame refers to, e.g. "bmode"
     int dataIndex,               ///< The offset in the data (frame number?)
     float time                   ///< The timestamp in seconds since the start of the acquisition
 );

@@ -11,7 +11,7 @@
 
 int iusFirFilterSave
 (
-	iuff_t iusFirFilter,
+	iuff_t filter,
 	hid_t handle
 );
 

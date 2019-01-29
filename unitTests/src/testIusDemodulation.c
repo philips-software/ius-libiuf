@@ -8,14 +8,30 @@
 #include <ius.h>
 #include <iusDemodulationPrivate.h>
 
+
+static char *pErrorFilename = "IusDemodulation.errlog";
+static FILE *fpErrorLogging = NULL;
+
 TEST_GROUP(IusDemodulation);
 
 TEST_SETUP(IusDemodulation)
 {
+    iusErrorLogClear();
+    iusErrorLog(IUS_TRUE);
+    iusErrorAutoReport(IUS_TRUE);
+    fpErrorLogging = fopen(pErrorFilename, "w+");
+    iusErrorSetStream(fpErrorLogging);
 }
 
 TEST_TEAR_DOWN(IusDemodulation)
 {
+    iusErrorLogClear();
+    iusErrorLog(IUS_FALSE);
+    if (fpErrorLogging != NULL)
+        fclose(fpErrorLogging);
+    fpErrorLogging=stderr;
+    iusErrorSetStream(fpErrorLogging);
+    remove(pErrorFilename);
 }
 
 
@@ -35,14 +51,21 @@ TEST(IusDemodulation, testIusDemodulationCreate)
 	iusDemodulationDelete(notherObj);
 
 	// invalid params
-	obj = iusDemodulationCreate(method, (float)-1.0, numSamplesPerLine, numTGCentries, kernelSize);
-	TEST_ASSERT(obj == IUDM_INVALID);
-	obj = iusDemodulationCreate(method, sampleFrequency, -1, numTGCentries, kernelSize);
-	TEST_ASSERT(obj == IUDM_INVALID);
-	obj = iusDemodulationCreate(method, sampleFrequency, numSamplesPerLine, -1, kernelSize);
-	TEST_ASSERT(obj == IUDM_INVALID);
-	obj = iusDemodulationCreate(method, sampleFrequency, numSamplesPerLine, numTGCentries, -1);
-	TEST_ASSERT(obj == IUDM_INVALID);
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
+    obj = iusDemodulationCreate(method, (float)-1.0, numSamplesPerLine, numTGCentries, kernelSize);
+    TEST_ASSERT(obj == IUDM_INVALID);
+    obj = iusDemodulationCreate(method, sampleFrequency, -1, numTGCentries, kernelSize);
+    TEST_ASSERT(obj == IUDM_INVALID);
+    obj = iusDemodulationCreate(method, sampleFrequency, numSamplesPerLine, -1, kernelSize);
+    TEST_ASSERT(obj == IUDM_INVALID);
+    obj = iusDemodulationCreate(method, sampleFrequency, numSamplesPerLine, numTGCentries, -1);
+    TEST_ASSERT(obj == IUDM_INVALID);
+
+    TEST_ASSERT_EQUAL(4,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
+
 }
 
 TEST(IusDemodulation, testIusDemodulationDelete)
@@ -59,8 +82,15 @@ TEST(IusDemodulation, testIusDemodulationDelete)
 	TEST_ASSERT_EQUAL(IUS_E_OK, status);
 
 	// invalid params
-	status = iusDemodulationDelete(NULL);
-	TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
+
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
+    status = iusDemodulationDelete(NULL);
+    TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
+
+    TEST_ASSERT_EQUAL(1,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
 }
 
 

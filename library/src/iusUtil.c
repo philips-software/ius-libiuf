@@ -8,11 +8,6 @@
 #include <iusHDF5.h>
 #include <iusUtil.h>
 
-int iusDiagDisable()
-{
-    return iusHdf5DisableMessages();
-}
-
 char* iusGetVersionMajor(void) {
     return IUS_VERSION_MAJOR;
 }

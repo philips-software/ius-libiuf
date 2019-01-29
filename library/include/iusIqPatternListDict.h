@@ -49,7 +49,7 @@ int iusIqPatternListDictCompare
 /** \brief Get the number of #IusPatternList objects in the dictionary.
  * \return Returns the number of #IusPatternList objects or -1 in case of an invalid dictionary.
  */
-int iusIqPatternListDictGetSize
+size_t iusIqPatternListDictGetSize
 (
 	iuiqpald_t dict ///< The dictionary of interest
 );
@@ -62,6 +62,15 @@ iuiqpal_t iusIqPatternListDictGet
 	iuiqpald_t dict, ///< The dictionary of interest
 	char * key       ///< The label of the #IusIqPatternList
 );
+
+/** \brief Get the #IusPatternList object with label \p key from the dictionary.
+ * \return Returns #IusPatternList \p key or #IUPALD_INVALID if it is not found.
+ */
+char **iusIqPatternListDictGetKeys
+(
+    iuiqpald_t dict   ///< The dictionary of interest
+);
+
 
 /** \brief Add the #IusIqPatternList object with label \p key to the dictionary.
  * \return Returns #IUS_E_OK when successful  or #IUS_ERR_VALUE in case of an error.

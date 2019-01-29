@@ -1,3 +1,4 @@
+
 //
 // Created by nlv09165 on 31/08/2018.
 //
@@ -16,22 +17,23 @@ struct IusFile
 // ADT
 int iusFileDelete
 (
-    iuf_t file
+    iuf_t iusFile
 )
 {
-    int status = IUS_ERR_VALUE;
-    if(file != NULL)
+    if (iusFile == NULL)
     {
-        if( strcmp( iusHistoryNodeGetType(file->history), IUS_INPUT_TYPE ) == 0 )
-        {
-            iuifi_t instance = iusHistoryNodeGetInstanceData(file->history);
-            iusInputFileInstanceDelete(instance);
-        }
-        iusHistoryNodeDelete(file->history);
-        free(file);
-        status = IUS_E_OK;
+        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_FILENAME, "iusFile argument is NULL");
+        return IUS_ERR_VALUE;
     }
-    return status;
+
+    if( strcmp( iusHistoryNodeGetType(iusFile->history), IUS_INPUT_TYPE ) == 0 )
+    {
+        iuifi_t instance = iusHistoryNodeGetInstanceData(iusFile->history);
+        iusInputFileInstanceDelete(instance);
+    }
+    iusHistoryNodeDelete(iusFile->history);
+    free(iusFile);
+    return IUS_E_OK;
 }
 
 
@@ -54,16 +56,14 @@ iuf_t iusFileLoad
 {
     if (pFilename == NULL)
     {
-        fprintf(stderr, "iusFileLoad: Input arguments can not be NULL \n");
+        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_FILENAME, "pFilename argument is NULL");
         return IUFI_INVALID;
     }
 
     iuf_t file = calloc(1,sizeof(IusFile));
-
-    // check calloc
     if (file == IUFI_INVALID)
     {
-        fprintf(stderr, "iusFileLoad: calloc of instance failed\n");
+        IUS_ERROR_PUSH(IUS_ERR_MAJ_MEMORY, IUS_ERR_MIN_ALLOC, "unable to allocate IusFile ADT");
         return IUFI_INVALID;
     }
 
@@ -71,7 +71,8 @@ iuf_t iusFileLoad
     file->handle = H5Fopen( pFilename, H5F_ACC_RDONLY, H5P_DEFAULT );
     if (file->handle <=0)
     {
-        fprintf( stderr, "iusFileLoad: could not open file: %s\n", pFilename );
+        free(file);
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_FILENAME, "unable to open file '%s'", pFilename );
         return IUFI_INVALID;
     }
 
@@ -88,32 +89,47 @@ iuf_t iusFileLoad
 // Getters
 iuhn_t iusFileGetHistoryTree
 (
-    iuf_t file
+    iuf_t iusFile
 )
 {
-    if (file == NULL) return IUHN_INVALID;
-    return file->history;
+    if (iusFile == NULL)
+    {
+        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "iusFile");
+        return IUHN_INVALID;
+    }
+    return iusFile->history;
 }
 
 const char *iusFileGetType
 (
-    iuf_t file
+    iuf_t iusFile
 )
 {
-    if (file == NULL) return NULL;
-    return iusHistoryNodeGetType(file->history);
+    if (iusFile == NULL)
+    {
+        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "iusFile");
+    }
+    return iusHistoryNodeGetType(iusFile->history);
 }
 
 // Setters
 int iusFileSetHistoryTree
 (
-    iuf_t file,
+    iuf_t iusFile,
     iuhn_t history
 )
 {
-    if (file == NULL) return IUS_ERR_VALUE;
-    if (history == NULL) return IUS_ERR_VALUE;
-    file->history = history;
+    if (iusFile == NULL)
+    {
+        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "iusFile");
+        return IUS_ERR_VALUE;
+    }
+    if (history == NULL)
+    {
+        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "history");
+        return IUS_ERR_VALUE;
+    }
+
+    iusFile->history = history;
     return IUS_E_OK;
 }
-

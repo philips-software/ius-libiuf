@@ -23,7 +23,7 @@ iud_t iusDataCreate
  */
 int iusDataDelete
 (
-    iud_t iusData
+    iud_t data
 );
 
 
@@ -36,12 +36,12 @@ int iusDataCompare
 
 int iusDataGetSize
 (
-    iud_t iusData
+    iud_t data
 );
 
 float *iusDataGetPointer
 (
-    iud_t iusData
+    iud_t data
 );
 
 #endif //IUSLIBRARY_IUSDATA_H

@@ -6,16 +6,32 @@
 #include <unity_fixture.h>
 
 #include <ius.h>
+#include <util.h>
 #include <iusPatternListDictPrivate.h>
+
+static char *pErrorFilename = "IusPatternListDict.errlog";
+static FILE *fpErrorLogging = NULL;
 
 TEST_GROUP(IusPatternListDict);
 
 TEST_SETUP(IusPatternListDict)
 {
+	iusErrorLogClear();
+	iusErrorLog(IUS_TRUE);
+	iusErrorAutoReport(IUS_TRUE);
+	fpErrorLogging = fopen(pErrorFilename, "w+");
+	iusErrorSetStream(fpErrorLogging);
 }
 
 TEST_TEAR_DOWN(IusPatternListDict)
 {
+	iusErrorLogClear();
+	iusErrorLog(IUS_FALSE);
+	if (fpErrorLogging != NULL)
+		fclose(fpErrorLogging);
+	fpErrorLogging=stderr;
+	iusErrorSetStream(fpErrorLogging);
+	remove(pErrorFilename);
 }
 
 
@@ -58,14 +74,84 @@ TEST(IusPatternListDict, testIusPatternListDictSetGet)
     TEST_ASSERT_EQUAL(IUS_TRUE, iusPatternListCompare(obj,retrievedObj));
 
     // invalid params
-    TEST_ASSERT_EQUAL(IUPAL_INVALID, iusPatternListDictGet(NULL, labelDual));
-    TEST_ASSERT_EQUAL(IUPAL_INVALID, iusPatternListDictGet(dict, NULL));
-    TEST_ASSERT_EQUAL(IUPAL_INVALID, iusPatternListDictGet(dict, "unknownLabe"));
+    iusErrorLogClear();
+	long filePos = ftell(fpErrorLogging);
+	TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+	TEST_ASSERT_EQUAL(IUTA_INVALID, iusPatternListDictGet(dict,NULL));
+	TEST_ASSERT_EQUAL(IUTA_INVALID, iusPatternListDictGet(NULL,labelDual));
+	TEST_ASSERT_EQUAL(IUTA_INVALID, iusPatternListDictGet(dict,"unknownLabel"));
+
+	TEST_ASSERT_EQUAL(IUS_ERR_VALUE, iusPatternListDictSet(dict, NULL, obj));
+	TEST_ASSERT_EQUAL(IUS_ERR_VALUE, iusPatternListDictSet(NULL, labelDual, obj));
+	TEST_ASSERT_EQUAL(IUS_ERR_VALUE, iusPatternListDictSet(dict, labelDual, NULL));
+
+	TEST_ASSERT_EQUAL(6,iusErrorGetCount());
+	TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
 
     iusPatternDelete(pattern1);
     iusPatternDelete(pattern2);
     iusPatternListDelete(obj);
 	iusPatternListDictDelete(dict);
+}
+
+
+TEST(IusPatternListDict, testIusPatternListDictGetKeys)
+{
+    int status;
+    char *labels[] = { "one" , "two" , "three", "four" , "five"};
+    iupa_t pattern1 = iusPatternCreate(0.01f, "pulseLabel test 1",
+                                       "sourceLabel test 1",
+                                       "channelMapLabel test 1",
+                                       "apodizationLabel test 1",
+                                       "receiveSetingsLabel test 1");
+    iupa_t pattern2 = iusPatternCreate(0.02f, "pulseLabel test 2",
+                                       "sourceLabel test 2",
+                                       "channelMapLabel test 2",
+                                       "apodizationLabel test 2",
+                                       "receiveSetingsLabel test 2");
+    // CreatNFill PatternList
+    iupal_t obj = iusPatternListCreate(2,NULL,NULL);
+    iusPatternListSet(obj, pattern1, 0);
+    iusPatternListSet(obj, pattern2, 1);
+
+    // Create
+    iupald_t dict = iusPatternListDictCreate();
+    TEST_ASSERT_NOT_EQUAL(IUPALD_INVALID, dict);
+
+    // Fill
+    int i;
+    int keySize = sizeof(labels)/sizeof(labels[0]);
+    for (i=0; i<keySize; i++)
+    {
+        status = iusPatternListDictSet(dict, labels[i], obj);
+        TEST_ASSERT(status == IUS_E_OK);
+    }
+
+    size_t dictSize = iusPatternListDictGetSize(dict);
+    TEST_ASSERT_EQUAL(5, dictSize);
+    char **keys = iusPatternListDictGetKeys(dict);
+
+    // Validate keys
+    for (i=0; i<keySize; i++)
+    {
+        TEST_ASSERT_EQUAL(IUS_TRUE, aInB(keys[i], labels));
+    }
+
+    // invalid params
+    iusErrorLogClear();
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
+    keys = iusPatternListDictGetKeys(NULL);
+    TEST_ASSERT_EQUAL(NULL,keys);
+
+    TEST_ASSERT_EQUAL(1,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
+
+    iusPatternDelete(pattern1);
+    iusPatternDelete(pattern2);
+    iusPatternListDelete(obj);
+    iusPatternListDictDelete(dict);
 }
 
 
@@ -199,5 +285,6 @@ TEST_GROUP_RUNNER(IusPatternListDict)
 	RUN_TEST_CASE(IusPatternListDict, testIusCreatePatternListDict);
 	RUN_TEST_CASE(IusPatternListDict, testIusComparePatternListDict);
     RUN_TEST_CASE(IusPatternListDict, testIusPatternListDictSetGet);
+    RUN_TEST_CASE(IusPatternListDict, testIusPatternListDictGetKeys)
 	RUN_TEST_CASE(IusPatternListDict, testIusSerialization);
 }

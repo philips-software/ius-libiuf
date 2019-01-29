@@ -31,7 +31,7 @@ iuo_t iusOffsetCreate
  */
 int iusOffsetDelete
 (
-    iuo_t iusOffset  ///< the offset that is to be deleted.
+    iuo_t offset  ///< the offset that is to be deleted.
 );
 
 /** \brief Compare two offsets with each other 

@@ -9,14 +9,29 @@
 #include <ius.h>
 #include <ius3DTransducerPrivate.h>
 
+static char *pErrorFilename = "Ius3DTransducer.errlog";
+static FILE *fpErrorLogging = NULL;
+
 TEST_GROUP(Ius3DTransducer);
 
 TEST_SETUP(Ius3DTransducer)
 {
+    iusErrorLogClear();
+    iusErrorLog(IUS_TRUE);
+    iusErrorAutoReport(IUS_TRUE);
+    fpErrorLogging = fopen(pErrorFilename, "w+");
+    iusErrorSetStream(fpErrorLogging);
 }
 
 TEST_TEAR_DOWN(Ius3DTransducer)
 {
+    iusErrorLogClear();
+    iusErrorLog(IUS_FALSE);
+    if (fpErrorLogging != NULL)
+        fclose(fpErrorLogging);
+    fpErrorLogging=stderr;
+    iusErrorSetStream(fpErrorLogging);
+    remove(pErrorFilename);
 }
 
 
@@ -34,6 +49,9 @@ TEST(Ius3DTransducer, testIus3DTransducerCreate)
 
 
     //invalid params
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
     transducer = ius3DTransducerCreate(NULL, shape, centerFrequency, numTransducerElements);
     TEST_ASSERT_EQUAL(IU3DT_INVALID,transducer);
     transducer = ius3DTransducerCreate(transducerName, IUS_INVALID_TRANSDUCER_SHAPE, centerFrequency, numTransducerElements);
@@ -46,6 +64,10 @@ TEST(Ius3DTransducer, testIus3DTransducerCreate)
     TEST_ASSERT_EQUAL(IU3DT_INVALID,transducer);
     transducer = ius3DTransducerCreate(transducerName, shape, centerFrequency, -1);
     TEST_ASSERT_EQUAL(IU3DT_INVALID,transducer);
+
+    TEST_ASSERT_EQUAL(6,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
+
 
 }
 
@@ -62,8 +84,14 @@ TEST(Ius3DTransducer, testIus3DTransducerDelete)
     TEST_ASSERT_EQUAL(IUS_E_OK, status);
 
     // invalid params
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
     status = ius3DTransducerDelete(NULL);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
+
+    TEST_ASSERT_EQUAL(1,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
 }
 
 
@@ -163,6 +191,9 @@ TEST(Ius3DTransducer, testIus3DTransducerSetGet)
 
 
     // invalid params
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
     status = ius3DTransducerSetElement(transducer,numTransducerElements,element);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE,status);
     status = ius3DTransducerSetElement(transducer,-1,element);
@@ -171,6 +202,10 @@ TEST(Ius3DTransducer, testIus3DTransducerSetGet)
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE,status);
     status = ius3DTransducerSetElement(transducer,0,NULL);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE,status);
+
+    TEST_ASSERT_EQUAL(4,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
+
 
     ius3DTransducerDelete(transducer);
     ius3DTransducerElementDelete(element);

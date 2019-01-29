@@ -9,7 +9,7 @@
 
 int iusDemodulationSave
 (
-	iudm_t receiveSettings,
+	iudm_t demodulation,
 	hid_t handle
 );
 
