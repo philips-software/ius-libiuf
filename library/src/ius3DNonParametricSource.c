@@ -86,6 +86,15 @@ iu3dp_t ius3DNonParametricSourceGetPosition
     return &source->pLocations[index];
 }
 
+int ius3DNonParametricSourceGetNumLocations
+(
+    iu3dnps_t source
+)
+{
+    IUS_ERR_CHECK_NULL_N_RETURN(source, -1);
+    return source->numLocations;
+}
+
 // Setters
 int ius3DNonParametricSourceSetPosition
 (

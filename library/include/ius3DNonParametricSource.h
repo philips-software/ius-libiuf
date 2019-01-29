@@ -45,6 +45,14 @@ iu3dp_t ius3DNonParametricSourceGetPosition
     int index								///< the index of the position list 
 );
 
+/** \brief  Gets he number of points the source has.
+ * \return  The number of points the source has.
+ */
+int ius3DNonParametricSourceGetNumLocations
+(
+    iu3dnps_t source     ///< 2D non-parametric source with positions
+);
+
 /** \brief Sets the 3D position \p pos on the \p index -th location for the 3D non-parametric source \p ius3DNonParametricSource.
  * \return Returns #IUS_E_OK on success or #IUS_ERR_VALUE in case of an error.
  */

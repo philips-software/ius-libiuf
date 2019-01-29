@@ -127,6 +127,7 @@ TEST(Ius3DNonParametricSource, testIus3DNonParametricSourceSetGet)
     int p,numLocations = 5;
 
     iu3dnps_t obj = ius3DNonParametricSourceCreate(numLocations);
+    TEST_ASSERT_EQUAL(numLocations, ius3DNonParametricSourceGetNumLocations(obj));
 
     // Set/Get location test
     for(p=0; p<numLocations; p++)
@@ -144,8 +145,9 @@ TEST(Ius3DNonParametricSource, testIus3DNonParametricSourceSetGet)
 
     TEST_ASSERT_EQUAL(IU3DP_INVALID, ius3DNonParametricSourceGetPosition(NULL,0));
     TEST_ASSERT_EQUAL(IU3DP_INVALID, ius3DNonParametricSourceGetPosition(obj,-1));
+    TEST_ASSERT_EQUAL(-1, ius3DNonParametricSourceGetNumLocations(NULL));
 
-    TEST_ASSERT_EQUAL(2,iusErrorGetCount());
+    TEST_ASSERT_EQUAL(3,iusErrorGetCount());
     TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
 
 
