@@ -6,6 +6,7 @@
 #include <unity_fixture.h>
 
 #include <ius.h>
+#include <util.h>
 #include <iusDemodulationDictPrivate.h>
 #include <testDataGenerators.h>
 
@@ -86,6 +87,55 @@ TEST(IusDemodulationDict, testIusSetGetDict)
     TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
     iusDemodulationDelete(obj);
 	iusDemodulationDictDelete(dict);
+}
+
+TEST(IusDemodulationDict, testIusDictGetKeys)
+{
+    char *labels[] = { "one" , "two" , "three", "four" , "five"};
+    float sampleFrequency = 4000;
+    int numSamplesPerLine = 10;
+    int numTGCentries = 1;
+    IusDemodulationMethod method = IUS_DEMODULATION_FOURX;
+    int kernelSize = 5;
+    int status;
+
+
+    iudm_t obj = iusDemodulationCreate(method, sampleFrequency, numSamplesPerLine, numTGCentries, kernelSize);
+
+
+    // Create
+    iudmd_t  dict = iusDemodulationDictCreate();
+
+    // Fill
+    int i;
+    int keySize = sizeof(labels)/sizeof(labels[0]);
+    for (i=0; i<keySize; i++)
+    {
+        status = iusDemodulationDictSet(dict, labels[i], obj);
+        TEST_ASSERT(status == IUS_E_OK);
+    }
+
+    size_t dictSize = iusDemodulationDictGetSize(dict);
+    TEST_ASSERT_EQUAL(5, dictSize);
+    char **keys = iusDemodulationDictGetKeys(dict);
+
+    // Validate keys
+    for (i=0; i<keySize; i++)
+    {
+        TEST_ASSERT_EQUAL(IUS_TRUE, aInB(keys[i], labels));
+    }
+
+    // Invalid params
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
+    keys = iusDemodulationDictGetKeys(NULL);
+    TEST_ASSERT_EQUAL(NULL,keys);
+
+    TEST_ASSERT_EQUAL(1,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
+    iusDemodulationDelete(obj);
+    iusDemodulationDictDelete(dict);
 }
 
 TEST(IusDemodulationDict, testIusCompareDict)
@@ -179,6 +229,7 @@ TEST_GROUP_RUNNER(IusDemodulationDict)
 {
 	RUN_TEST_CASE(IusDemodulationDict, testIusCreateDict);
 	RUN_TEST_CASE(IusDemodulationDict, testIusSetGetDict);
+    RUN_TEST_CASE(IusDemodulationDict, testIusDictGetKeys)
 	RUN_TEST_CASE(IusDemodulationDict, testIusCompareDict);
 	RUN_TEST_CASE(IusDemodulationDict, testIusSerialization);
 }
