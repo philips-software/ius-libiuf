@@ -6,6 +6,7 @@
 #include <unity_fixture.h>
 
 #include <ius.h>
+#include <util.h>
 #include <iusTransmitApodizationDictPrivate.h>
 #include <string.h>
 
@@ -80,25 +81,6 @@ TEST(IusTransmitApodizationDict, testIusTransmitApodizationDictSetGet)
 	iusTransmitApodizationDictDelete(dict);
 }
 
-
-IUS_BOOL  aInB
-(
-    char *a,
-    char **b
-)
-{
-    int i=0;
-    char *current = b[i];
-    while (current != NULL)
-    {
-        if (strcmp(a,b[i])==0)
-        {
-            return IUS_TRUE;
-        }
-        i++;
-    }
-    return IUS_FALSE;
-}
 
 TEST(IusTransmitApodizationDict, testIusTransmitApodizationDictKeys)
 {

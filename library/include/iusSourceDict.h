@@ -64,6 +64,14 @@ ius_t iusSourceDictGet
     char * key         ///< The label of the source
 );
 
+/** \brief Get the keys currently available in the dict
+ *  \return array (with size #iusTransmitApodizationDictGetSize) of keys.
+ */
+char **iusSourceDictGetKeys
+(
+    iusd_t dict       ///< The dictionary of interest
+);
+
 /** \brief Add a sources to the dictionary
  *  \return Returns #IUS_E_OK in case of success and #IUS_ERR_VALUE in case of invalid arguments
  */ 
