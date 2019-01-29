@@ -22,7 +22,7 @@ struct IusCompoundFileInstance
 	hid_t               handle;           /**< HDF5 file handle     */
 	const char          *pFilename;       /**< the filename         */
 	iuds_t             dataStream;        /**< Contains dataset administration */
-	IUS_BOOL           loadedFromFile;
+	IUS_BOOL           deepDelete;
 };
 
 struct IusCompoundFile
@@ -127,7 +127,7 @@ void *iusCompoundFileInstanceLoad
 		iusCompoundFileInstanceDelete(instance);
 		instance = new_instance;
 	}
-	instance->loadedFromFile = IUS_TRUE;
+	instance->deepDelete = IUS_TRUE;
 	return (void *)instance;
 }
 

@@ -12,7 +12,7 @@
 struct IusFrameList
 {
     int numFrames;
-    iufr_t *   pFrames ;
+    iufr_t *  pFrames ;
     IUS_BOOL deepDelete;
 } ;
 

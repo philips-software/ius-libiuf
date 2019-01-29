@@ -13,7 +13,7 @@ struct IusIqPatternList
 {
 	int numPatterns;
 	iuiqpa_t *pPatterns;
-	IUS_BOOL loadedFromFile;
+	IUS_BOOL deepDelete;
 	iudmd_t demodulationDict;
 	iurcmd_t receiveChannelMapDict;
 
@@ -37,7 +37,7 @@ iuiqpal_t iusIqPatternListCreate
 	iuiqpal_t list = calloc(1, sizeof(IusIqPatternList));
     IUS_ERR_ALLOC_NULL_N_RETURN(list, IusPatternList, IUIQPAL_INVALID);
 
-    list->loadedFromFile = IUS_FALSE;
+    list->deepDelete = IUS_FALSE;
     list->receiveChannelMapDict = receiveChannelMapDict;
     list->demodulationDict = demodulationDict;
     list->numPatterns = numPatterns;
@@ -57,7 +57,7 @@ int iusIqPatternListDeepDelete
 )
 {
     IUS_ERR_CHECK_NULL_N_RETURN(list, IUS_ERR_VALUE);
-	list->loadedFromFile = IUS_TRUE;
+	list->deepDelete = IUS_TRUE;
 	return iusIqPatternListDelete(list);
 }
 
@@ -69,7 +69,7 @@ int iusIqPatternListDelete
 {
 	int index;
     IUS_ERR_CHECK_NULL_N_RETURN(list, IUS_ERR_VALUE);
-	if (list->loadedFromFile == IUS_TRUE)
+	if (list->deepDelete == IUS_TRUE)
 	{
 		for (index = 0; index < list->numPatterns; index++)
 		{
@@ -226,7 +226,7 @@ iuiqpal_t iusIqPatternListLoad
 		}
 		iusIqPatternListSet(patternList, pattern, i);
 	}
-	patternList->loadedFromFile = IUS_TRUE;
+	patternList->deepDelete = IUS_TRUE;
 	return patternList;
 }
 

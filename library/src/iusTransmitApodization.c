@@ -83,6 +83,15 @@ float iusTransmitApodizationGetElement
 	return transmitApodization->apodization[idx];
 }
 
+int iusTransmitApodizationGetNumElements
+(
+    iuta_t transmitApodization
+)
+{
+    IUS_ERR_CHECK_NULL_N_RETURN(transmitApodization, -1);
+    return transmitApodization->numElements;
+}
+
 int iusTransmitApodizationSetElement
 (
 	iuta_t transmitApodization,
