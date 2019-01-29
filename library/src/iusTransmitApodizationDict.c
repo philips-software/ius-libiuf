@@ -22,6 +22,7 @@ struct IusTransmitApodizationDict
 {
 	struct hashmap map;
     IUS_BOOL deepDelete;
+    char **keys;
 };
 
 /* Declare type-specific blob_hashmap_* functions with this handy macro */
@@ -36,6 +37,7 @@ iutad_t iusTransmitApodizationDictCreate
 	IUS_ERR_ALLOC_NULL_N_RETURN(dict, IusTransmitApodizationDict, IUTAD_INVALID);
 	hashmap_init(&dict->map, hashmap_hash_string, hashmap_compare_string, 0);
 	dict->deepDelete = IUS_FALSE;
+	dict->keys = NULL;
 	return dict;
 }
 
@@ -52,6 +54,15 @@ int iusTransmitApodizationDictDeepDelete
     }
 	dict->deepDelete = IUS_TRUE;
 	return iusTransmitApodizationDictDelete(dict);
+}
+
+static void iusTransmitApodizationDictDeleteKeys
+(
+    iutad_t dict
+)
+{
+    if (dict->keys != NULL)
+        free(dict->keys);
 }
 
 int iusTransmitApodizationDictDelete
@@ -71,6 +82,7 @@ int iusTransmitApodizationDictDelete
 		free(iterElement);
 	}
 	hashmap_destroy(&dict->map);
+    iusTransmitApodizationDictDeleteKeys(dict);
 	free(dict);
 	return IUS_E_OK;
 }
@@ -149,6 +161,40 @@ iuta_t iusTransmitApodizationDictGet
 	return search->transmitApodization;
 }
 
+char **iusTransmitApodizationDictGetKeys
+(
+    iutad_t dict
+)
+{
+    IUS_ERR_CHECK_NULL_N_RETURN(dict, NULL);
+    return dict->keys;
+}
+
+static int iusTransmitApodizationDictUpdateKeys
+(
+    iutad_t dict
+)
+{
+    iusTransmitApodizationDictDeleteKeys(dict);
+    // allocate memory for the keys
+    int keyIndex;
+    int size = iusTransmitApodizationDictGetSize(dict);
+    dict->keys = calloc(size+1, sizeof(char*));
+    IUS_ERR_ALLOC_NULL_N_RETURN(dict, char *, IUS_ERR_VALUE);
+
+    struct hashmap_iter *iter;
+    HashableTransmitApodization *iterElement;
+    IUS_ERR_CHECK_NULL_N_RETURN(dict, IUS_ERR_VALUE);
+    /* Free all allocated resources associated with map and reset its state */
+    for (iter = hashmap_iter(&dict->map), keyIndex=0; iter; iter = hashmap_iter_next(&dict->map, iter), keyIndex++)
+    {
+        iterElement = HashableTransmitApodization_hashmap_iter_get_data(iter);
+        dict->keys[keyIndex] = iterElement->key;
+    }
+    dict->keys[keyIndex] = NULL;
+    return IUS_E_OK;
+}
+
 int iusTransmitApodizationDictSet
 (
 	iutad_t dict,
@@ -167,7 +213,7 @@ int iusTransmitApodizationDictSet
 		free(newMember);
 		return IUS_ERR_VALUE;
 	}
-	return IUS_E_OK;
+	return iusTransmitApodizationDictUpdateKeys(dict);
 }
 
 herr_t iusTransmitApodizationDictSave
