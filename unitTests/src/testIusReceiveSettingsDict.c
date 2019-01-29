@@ -6,6 +6,7 @@
 #include <unity_fixture.h>
 
 #include <ius.h>
+#include <util.h>
 #include <iusReceiveSettingsDictPrivate.h>
 #include <testDataGenerators.h>
 
@@ -80,6 +81,54 @@ TEST(IusReceiveSettingsDict, testIusSetGetDict)
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, iusReceiveSettingsDictSet(dict, pObjLabel, NULL));
 
     TEST_ASSERT_EQUAL(6,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
+
+    iusReceiveSettingsDelete(obj);
+    iusReceiveSettingsDictDelete(dict);
+}
+
+
+TEST(IusReceiveSettingsDict, testIusDictKeys)
+{
+    float sampleFrequency=4000;
+    int numSamplesPerLine=10;
+    int numTGCentries = 1;
+    int status;
+    char *labels[] = { "one" , "two" , "three", "four" , "five"};
+
+    iurs_t obj = iusReceiveSettingsCreate(sampleFrequency, numSamplesPerLine, numTGCentries);
+
+
+    // Create
+    iursd_t  dict = iusReceiveSettingsDictCreate();
+
+    // Fill
+    int i;
+    int keySize = sizeof(labels)/sizeof(labels[0]);
+    for (i=0; i<keySize; i++)
+    {
+        status = iusReceiveSettingsDictSet(dict, labels[i], obj);
+        TEST_ASSERT(status == IUS_E_OK);
+    }
+
+    size_t dictSize = iusReceiveSettingsDictGetSize(dict);
+    TEST_ASSERT_EQUAL(5, dictSize);
+    char **keys = iusReceiveSettingsDictGetKeys(dict);
+
+    // Validate keys
+    for (i=0; i<keySize; i++)
+    {
+        TEST_ASSERT_EQUAL(IUS_TRUE, aInB(keys[i], labels));
+    }
+
+    // Invalid params
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
+    keys = iusReceiveSettingsDictGetKeys(NULL);
+    TEST_ASSERT_EQUAL(NULL,keys);
+
+    TEST_ASSERT_EQUAL(1,iusErrorGetCount());
     TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
 
     iusReceiveSettingsDelete(obj);
@@ -175,6 +224,7 @@ TEST_GROUP_RUNNER(IusReceiveSettingsDict)
 {
     RUN_TEST_CASE(IusReceiveSettingsDict, testIusCreateDict);
     RUN_TEST_CASE(IusReceiveSettingsDict, testIusSetGetDict);
+    RUN_TEST_CASE(IusReceiveSettingsDict, testIusDictKeys)
     RUN_TEST_CASE(IusReceiveSettingsDict, testIusCompareDict);
     RUN_TEST_CASE(IusReceiveSettingsDict, testIusSerialization);
 }

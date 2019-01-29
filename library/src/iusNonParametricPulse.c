@@ -77,7 +77,7 @@ int iusNonParametricPulseGetNumValues
 {
     IUS_ERR_CHECK_NULL_N_RETURN(pulse, -1);
     IUS_ERR_EVAL_N_RETURN(iusPulseGetType( (iup_t)pulse ) != IUS_NON_PARAMETRIC_PULSETYPE, -1);
-    return ((IusNonParametricPulse *)pulse)->numPulseValues;
+    return pulse->numPulseValues;
 }
 
 float iusNonParametricPulseGetValueAmplitude

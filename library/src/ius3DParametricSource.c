@@ -149,6 +149,24 @@ float ius3DParametricSourceGetStartPhi
     return source->startPhi;
 }
 
+int ius3DParametricSourceGetNumThetaLocations
+(
+    iu3dps_t source
+)
+{
+    IUS_ERR_CHECK_NULL_N_RETURN(source, -1);
+    return source->numThetaLocations;
+}
+
+int ius3DParametricSourceGetNumPhiLocations
+(
+    iu3dps_t source
+)
+{
+    IUS_ERR_CHECK_NULL_N_RETURN(source, -1);
+    return source->numPhiLocations;
+}
+
 int ius3DParametricSourceSetFNumber
 (
     iu3dps_t source,

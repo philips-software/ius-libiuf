@@ -134,6 +134,7 @@ TEST(Ius2DParametricSource, testIus2DParametricSourceSetGet)
     TEST_ASSERT_EQUAL_FLOAT(FNumber,ius2DParametricSourceGetFNumber(obj));
     TEST_ASSERT_EQUAL_FLOAT(deltaTheta,ius2DParametricSourceGetDeltaTheta(obj));
     TEST_ASSERT_EQUAL_FLOAT(startTheta,ius2DParametricSourceGetStartTheta(obj));
+    TEST_ASSERT_EQUAL(numLocations, ius2DParametricSourceGetNumLocations(obj));
 
 
     // invalid param
@@ -143,8 +144,9 @@ TEST(Ius2DParametricSource, testIus2DParametricSourceSetGet)
     TEST_ASSERT_EQUAL_FLOAT(NAN,ius2DParametricSourceGetFNumber(NULL));
     TEST_ASSERT_EQUAL_FLOAT(NAN,ius2DParametricSourceGetDeltaTheta(NULL));
     TEST_ASSERT_EQUAL_FLOAT(NAN,ius2DParametricSourceGetStartTheta(NULL));
+    TEST_ASSERT_EQUAL(-1, ius2DParametricSourceGetNumLocations(NULL));
 
-    TEST_ASSERT_EQUAL(3,iusErrorGetCount());
+    TEST_ASSERT_EQUAL(4,iusErrorGetCount());
     TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
 
 

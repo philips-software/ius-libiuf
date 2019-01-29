@@ -22,6 +22,7 @@ struct IusParameterDict
 {
     struct hashmap map;
     IUS_BOOL deepDelete;
+    char **keys;
 } ;
 
 /* Declare type-specific blob_hashmap_* functions with this handy macro */
@@ -36,7 +37,17 @@ iupad_t iusParameterDictCreate
     IUS_ERR_ALLOC_NULL_N_RETURN(dict, IusParameterDict, IUPAD_INVALID);
     hashmap_init(&dict->map, hashmap_hash_string, hashmap_compare_string, 0);
     dict->deepDelete = IUS_FALSE;
+    dict->keys = NULL;
     return dict;
+}
+
+static void iusParameterDictDeleteKeys
+(
+    iupad_t dict
+)
+{
+    if (dict->keys != NULL)
+        free(dict->keys);
 }
 
 int iusParameterDictDelete
@@ -58,6 +69,7 @@ int iusParameterDictDelete
         free(iterElement);
     }
     hashmap_destroy(&dict->map);
+    iusParameterDictDeleteKeys(dict);
     free(dict);
     return IUS_E_OK;
 }
@@ -113,12 +125,12 @@ int iusParameterDictCompare
 }
 
 
-int iusParameterDictGetSize
+size_t iusParameterDictGetSize
 (
     iupad_t dict
 )
 {
-    IUS_ERR_CHECK_NULL_N_RETURN(dict, -1);
+    IUS_ERR_CHECK_NULL_N_RETURN(dict, (size_t) -1);
     return (int) hashmap_size(&dict->map);
 }
 
@@ -139,6 +151,40 @@ char * iusParameterDictGet
         return NULL;
     }
     return search->value;
+}
+
+char **iusParameterDictGetKeys
+(
+    iupad_t dict
+)
+{
+    IUS_ERR_CHECK_NULL_N_RETURN(dict, NULL);
+    return dict->keys;
+}
+
+static int iusParameterDictUpdateKeys
+(
+    iupad_t  dict
+)
+{
+    iusParameterDictDeleteKeys(dict);
+    // allocate memory for the keys
+    int keyIndex;
+    size_t size = iusParameterDictGetSize(dict);
+    dict->keys = calloc(size+1, sizeof(char*));
+    IUS_ERR_ALLOC_NULL_N_RETURN(dict, char *, IUS_ERR_VALUE);
+
+    struct hashmap_iter *iter;
+    HashableParameter *iterElement;
+    IUS_ERR_CHECK_NULL_N_RETURN(dict, IUS_ERR_VALUE);
+    /* Free all allocated resources associated with map and reset its state */
+    for (iter = hashmap_iter(&dict->map), keyIndex=0; iter; iter = hashmap_iter_next(&dict->map, iter), keyIndex++)
+    {
+        iterElement = HashableParameter_hashmap_iter_get_data(iter);
+        dict->keys[keyIndex] = iterElement->key;
+    }
+    dict->keys[keyIndex] = NULL;
+    return IUS_E_OK;
 }
 
 int iusParameterDictSet
@@ -163,7 +209,7 @@ int iusParameterDictSet
         free(newMember);
         return IUS_ERR_VALUE;
     }
-    return IUS_E_OK;
+    return iusParameterDictUpdateKeys(dict);
 }
 
 

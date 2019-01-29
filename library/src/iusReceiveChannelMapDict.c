@@ -22,6 +22,7 @@ struct IusReceiveChannelMapDict
 {
 	struct hashmap map;
 	IUS_BOOL deepDelete;
+    char **keys;
 };
 
 /* Declare type-specific blob_hashmap_* functions with this handy macro */
@@ -36,7 +37,17 @@ iurcmd_t iusReceiveChannelMapDictCreate
 	IUS_ERR_ALLOC_NULL_N_RETURN(dict, IusReceiveChannelMapDict, IURCMD_INVALID);
 	hashmap_init(&dict->map, hashmap_hash_string, hashmap_compare_string, 0);
 	dict->deepDelete = IUS_FALSE;
+    dict->keys = NULL;
 	return dict;
+}
+
+static void iusReceiveChannelMapDictDeleteKeys
+        (
+                iurcmd_t dict
+        )
+{
+    if (dict->keys != NULL)
+        free(dict->keys);
 }
 
 int iusReceiveChannelMapDictDelete
@@ -55,6 +66,7 @@ int iusReceiveChannelMapDictDelete
 		free(iterElement);
 	}
 	hashmap_destroy(&dict->map);
+    iusReceiveChannelMapDictDeleteKeys(dict);
 	free(dict);
 	return IUS_E_OK;
 }
@@ -143,6 +155,40 @@ iurcm_t iusReceiveChannelMapDictGet
 	return search->receiveChannelMap;
 }
 
+char **iusReceiveChannelMapDictGetKeys
+(
+    iurcmd_t dict
+)
+{
+    IUS_ERR_CHECK_NULL_N_RETURN(dict, NULL);
+    return dict->keys;
+}
+
+static int iusReceiveSettingsUpdateKeys
+(
+    iurcmd_t dict
+)
+{
+    iusReceiveChannelMapDictDeleteKeys(dict);
+    // allocate memory for the keys
+    int keyIndex;
+    size_t size = iusReceiveChannelMapDictGetSize(dict);
+    dict->keys = calloc(size+1, sizeof(char*));
+    IUS_ERR_ALLOC_NULL_N_RETURN(dict, char *, IUS_ERR_VALUE);
+
+    struct hashmap_iter *iter;
+    HashableReceiveChannelMap *iterElement;
+    IUS_ERR_CHECK_NULL_N_RETURN(dict, IUS_ERR_VALUE);
+    /* Free all allocated resources associated with map and reset its state */
+    for (iter = hashmap_iter(&dict->map), keyIndex=0; iter; iter = hashmap_iter_next(&dict->map, iter), keyIndex++)
+    {
+        iterElement = HashableReceiveChannelMap_hashmap_iter_get_data(iter);
+        dict->keys[keyIndex] = iterElement->key;
+    }
+    dict->keys[keyIndex] = NULL;
+    return IUS_E_OK;
+}
+
 int iusReceiveChannelMapDictSet
 (
 	iurcmd_t dict,
@@ -161,7 +207,7 @@ int iusReceiveChannelMapDictSet
 		free(newMember);
 		return IUS_ERR_VALUE;
 	}
-	return IUS_E_OK;
+	return iusReceiveSettingsUpdateKeys(dict);
 }
 
 herr_t iusReceiveChannelMapDictSave

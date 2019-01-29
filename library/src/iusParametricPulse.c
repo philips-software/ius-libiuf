@@ -95,7 +95,7 @@ int iusParametricPulseGetNumPulses
 {
     IUS_ERR_CHECK_NULL_N_RETURN(pulse, -1);
     IUS_ERR_EVAL_N_RETURN(iusPulseGetType( (iup_t) pulse ) != IUS_PARAMETRIC_PULSETYPE, -1);
-    return ((IusParametricPulse *)pulse)->numPulses;
+    return pulse->numPulses;
 }
 
 int iusParametricPulseSave

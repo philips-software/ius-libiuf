@@ -63,6 +63,15 @@ iurcm_t iusReceiveChannelMapDictGet
 	char * key      ///< The label of the #IusReceiveChannelMap
 );
 
+/** \brief Get the keys currently available in the dict
+ *  \return array (with size #iusTransmitApodizationDictGetSize) of keys.
+ */
+char **iusReceiveChannelMapDictGetKeys
+(
+    iurcmd_t dict   ///< The dictionary of interest
+);
+
+
 /** \brief Add a #IusReceiveChannelMap with label \p key to the dictionary. 
  * \return Returns #IUS_E_OK in case of success or #IUS_ERR_VALUE in case of an invalid argument.
  */

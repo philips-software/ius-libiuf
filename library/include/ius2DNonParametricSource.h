@@ -56,7 +56,16 @@ iu2dp_t ius2DNonParametricSourceGetPosition
     int index							    ///< the index of the position list 
 );
 
-/** \brief sets the 2D position \p pos on the \p index -th location for the 2D non-parametric source \p ius2DNonParametricSource. 
+/** \brief  Gets he number of points the source has.
+ * \return  The number of points the source has.
+ */
+int ius2DNonParametricSourceGetNumLocations
+(
+    iu2dnps_t source     ///< 2D non-parametric source with positions
+);
+
+
+/** \brief sets the 2D position \p pos on the \p index -th location for the 2D non-parametric source \p ius2DNonParametricSource.
  * \return Returns #IUS_E_OK on success or #IUS_ERR_VALUE in case of an error.
  */
 int ius2DNonParametricSourceSetPosition

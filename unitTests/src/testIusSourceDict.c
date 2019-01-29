@@ -6,7 +6,9 @@
 #include <unity_fixture.h>
 
 #include <ius.h>
+#include <util.h>
 #include <iusSourceDictPrivate.h>
+#include <string.h>
 
 static char *pErrorFilename = "IusSourceDict.errlog";
 static FILE *fpErrorLogging = NULL;
@@ -88,6 +90,60 @@ TEST(IusSourceDict, testIusSourceDictSetGet)
     ius3DParametricSourceDelete(obj);
     iusSourceDictDelete(dict);
 
+}
+
+
+TEST(IusSourceDict, testIusSourceDictKeys)
+{
+    int numLocationsPhi = 5; /**< number of locations */
+    int numLocationsTheta = 3; /**< number of locations */
+    // Happy flow
+    float angularDelta = 0.13f;
+    float FNumber = -0.955f;
+    float startAngle = 3.14f;
+    float startPhi = startAngle;
+    float deltaPhi = angularDelta;
+    float startTheta = startAngle;
+    float deltaTheta = angularDelta;
+    char *labels[] = { "one" , "two" , "three", "four" , "five"};
+    iu3dps_t obj = ius3DParametricSourceCreate(numLocationsTheta, numLocationsPhi, FNumber,
+                                               deltaTheta, startTheta, deltaPhi, startPhi);
+
+    TEST_ASSERT(obj != IU3DPS_INVALID);
+
+    iusd_t dict = iusSourceDictCreate();
+
+    // Fill dict
+    int i, status;
+    int keySize = sizeof(labels)/sizeof(labels[0]);
+    for (i=0; i<keySize; i++)
+    {
+        status = iusSourceDictSet(dict, labels[i], (ius_t) obj);
+        TEST_ASSERT(status == IUS_E_OK);
+    }
+
+    // Get keys
+    size_t dictSize = iusSourceDictGetSize(dict);
+    TEST_ASSERT_EQUAL(5, dictSize);
+    char **keys = iusSourceDictGetKeys(dict);
+
+    // Validate keys
+    for (i=0; i<keySize; i++)
+    {
+        TEST_ASSERT_EQUAL(IUS_TRUE, aInB(keys[i], labels));
+    }
+
+    // Invalid params
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
+    keys = iusSourceDictGetKeys(NULL);
+    TEST_ASSERT_EQUAL(NULL,keys);
+
+    TEST_ASSERT_EQUAL(1,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
+    ius3DParametricSourceDelete(obj);
+    iusSourceDictDelete(dict);
 }
 
 TEST(IusSourceDict, testIusCompareSourceDict)
@@ -216,6 +272,7 @@ TEST(IusSourceDict, testIusSerialization)
 TEST_GROUP_RUNNER(IusSourceDict)
 {
     RUN_TEST_CASE(IusSourceDict, testIusCreateSourceDict);
+    RUN_TEST_CASE(IusSourceDict, testIusSourceDictKeys);
     RUN_TEST_CASE(IusSourceDict, testIusSourceDictSetGet);
     RUN_TEST_CASE(IusSourceDict, testIusCompareSourceDict);
     RUN_TEST_CASE(IusSourceDict, testIusSerialization);

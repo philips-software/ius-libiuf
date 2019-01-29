@@ -22,6 +22,7 @@ struct IusReceiveSettingsDict
 {
     struct hashmap map;
     IUS_BOOL deepDelete;
+    char **keys;
 } ;
 
 /* Declare type-specific blob_hashmap_* functions with this handy macro */
@@ -36,6 +37,7 @@ iursd_t iusReceiveSettingsDictCreate
     IUS_ERR_ALLOC_NULL_N_RETURN(dict, IusReceiveSettingsDict, IURSD_INVALID);
     hashmap_init(&dict->map, hashmap_hash_string, hashmap_compare_string, 0);
     dict->deepDelete = IUS_FALSE;
+    dict->keys = NULL;
     return dict;
 }
 
@@ -47,6 +49,15 @@ int iusReceiveSettingsDictDeepDelete
     IUS_ERR_CHECK_NULL_N_RETURN(dict, IUS_ERR_VALUE);
     dict->deepDelete = IUS_TRUE;
     return iusReceiveSettingsDictDelete(dict);
+}
+
+static void iusReceiveSettingsDictDeleteKeys
+(
+        iursd_t dict
+)
+{
+    if (dict->keys != NULL)
+        free(dict->keys);
 }
 
 int iusReceiveSettingsDictDelete
@@ -66,6 +77,7 @@ int iusReceiveSettingsDictDelete
         free(iterElement);
     }
     hashmap_destroy(&dict->map);
+    iusReceiveSettingsDictDeleteKeys(dict);
     free(dict);
     return IUS_E_OK;
 }
@@ -121,12 +133,12 @@ int iusReceiveSettingsDictCompare
 }
 
 
-int iusReceiveSettingsDictGetSize
+size_t iusReceiveSettingsDictGetSize
 (
     iursd_t dict
 )
 {
-    IUS_ERR_CHECK_NULL_N_RETURN(dict, -1);
+    IUS_ERR_CHECK_NULL_N_RETURN(dict, (size_t) -1);
     return (int) hashmap_size(&dict->map);
 }
 
@@ -148,6 +160,40 @@ iurs_t iusReceiveSettingsDictGet
     return search->receiveSettings;
 }
 
+char **iusReceiveSettingsDictGetKeys
+(
+    iursd_t dict
+)
+{
+    IUS_ERR_CHECK_NULL_N_RETURN(dict, NULL);
+    return dict->keys;
+}
+
+static int iusReceiveSettingsUpdateKeys
+(
+        iursd_t dict
+)
+{
+    iusReceiveSettingsDictDeleteKeys(dict);
+    // allocate memory for the keys
+    int keyIndex;
+    size_t size = iusReceiveSettingsDictGetSize(dict);
+    dict->keys = calloc(size+1, sizeof(char*));
+    IUS_ERR_ALLOC_NULL_N_RETURN(dict, char *, IUS_ERR_VALUE);
+
+    struct hashmap_iter *iter;
+    HashableReceiveSettings *iterElement;
+    IUS_ERR_CHECK_NULL_N_RETURN(dict, IUS_ERR_VALUE);
+    /* Free all allocated resources associated with map and reset its state */
+    for (iter = hashmap_iter(&dict->map), keyIndex=0; iter; iter = hashmap_iter_next(&dict->map, iter), keyIndex++)
+    {
+        iterElement = HashableReceiveSettings_hashmap_iter_get_data(iter);
+        dict->keys[keyIndex] = iterElement->key;
+    }
+    dict->keys[keyIndex] = NULL;
+    return IUS_E_OK;
+}
+
 int iusReceiveSettingsDictSet
 (
     iursd_t dict,
@@ -166,7 +212,7 @@ int iusReceiveSettingsDictSet
         free(newMember);
         return IUS_ERR_VALUE;
     }
-    return IUS_E_OK;
+    return iusReceiveSettingsUpdateKeys(dict);
 }
 
 

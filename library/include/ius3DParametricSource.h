@@ -88,6 +88,24 @@ float ius3DParametricSourceGetDeltaPhi
     iu3dps_t source ///< The 3D parametric source that holds the dleta phi
 );
 
+/** \brief Return the number of sources in theta dimension
+*
+* \return The number of sources in theta dimension
+*/
+int ius3DParametricSourceGetNumThetaLocations
+(
+    iu3dps_t source  ///< The source of interest
+);
+
+/** \brief Return the number of sources in phi dimension
+*
+* \return The number of sources in phi dimension
+*/
+int ius3DParametricSourceGetNumPhiLocations
+(
+    iu3dps_t source  ///< The source of interest
+);
+
 /** \brief Return the starting angle phi
 *
 * \return the offset angle in radians along the phi axis

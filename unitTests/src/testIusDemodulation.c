@@ -51,14 +51,16 @@ TEST(IusDemodulation, testIusDemodulationCreate)
     long filePos = ftell(fpErrorLogging);
     TEST_ASSERT_EQUAL(0,iusErrorGetCount());
 
-    obj = iusDemodulationCreate((float)-1.0, numSamplesPerLine, numTGCentries);
+    obj = iusDemodulationCreate(method, (float)-1.0, numSamplesPerLine, numTGCentries, kernelSize);
     TEST_ASSERT(obj == IUDM_INVALID);
-    obj = iusDemodulationCreate(sampleFrequency, -1, numTGCentries);
+    obj = iusDemodulationCreate(method, sampleFrequency, -1, numTGCentries, kernelSize);
     TEST_ASSERT(obj == IUDM_INVALID);
-    obj = iusDemodulationCreate(sampleFrequency, numSamplesPerLine, -1);
+    obj = iusDemodulationCreate(method, sampleFrequency, numSamplesPerLine, -1, kernelSize);
+    TEST_ASSERT(obj == IUDM_INVALID);
+    obj = iusDemodulationCreate(method, sampleFrequency, numSamplesPerLine, numTGCentries, -1);
     TEST_ASSERT(obj == IUDM_INVALID);
 
-    TEST_ASSERT_EQUAL(3,iusErrorGetCount());
+    TEST_ASSERT_EQUAL(4,iusErrorGetCount());
     TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
 
 }

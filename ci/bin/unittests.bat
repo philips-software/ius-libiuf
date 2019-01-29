@@ -8,7 +8,7 @@ echo === Building ius in %BuildFolder%
 mkdir %BuildFolder% & pushd %BuildFolder%
 cmake ..\..
 cmake --build . --config Debug
-if errorlevel 1 exit 1
+if errorlevel 1 exit /B 1
 ctest --verbose
-if errorlevel 1 exit 1
+if errorlevel 1 exit /B 1
 popd

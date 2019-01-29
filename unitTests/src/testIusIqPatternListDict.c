@@ -6,6 +6,7 @@
 #include <unity_fixture.h>
 
 #include <ius.h>
+#include <util.h>
 #include <iusIqPatternListDictPrivate.h>
 
 static char *pErrorFilename = "IusIqPatternListDict.errlog";
@@ -91,6 +92,66 @@ TEST(IusIqPatternListDict, testIusPatternListDictSetGet)
     iusIqPatternDelete(pattern2);
     iusIqPatternListDelete(obj);
 	iusIqPatternListDictDelete(dict);
+}
+
+
+TEST(IusIqPatternListDict, testIusPatternListDictGetKeys)
+{
+    int status;
+    char *labels[] = { "one" , "two" , "three", "four" , "five"};
+    iuiqpa_t pattern1 = iusIqPatternCreate(0.01f, "pulseLabel test 1",
+                                       "sourceLabel test 1",
+                                       "channelMapLabel test 1",
+                                       "apodizationLabel test 1",
+                                       "receiveSetingsLabel test 1");
+    iuiqpa_t pattern2 = iusIqPatternCreate(0.02f, "pulseLabel test 2",
+                                       "sourceLabel test 2",
+                                       "channelMapLabel test 2",
+                                       "apodizationLabel test 2",
+                                       "receiveSetingsLabel test 2");
+    // CreatNFill PatternList
+    iuiqpal_t obj = iusIqPatternListCreate(2,NULL,NULL);
+    iusIqPatternListSet(obj, pattern1, 0);
+    iusIqPatternListSet(obj, pattern2, 1);
+
+    // Create
+    iuiqpald_t dict = iusIqPatternListDictCreate();
+    TEST_ASSERT_NOT_EQUAL(IUIQPALD_INVALID, dict);
+
+    // Fill
+    int i;
+    int keySize = sizeof(labels)/sizeof(labels[0]);
+    for (i=0; i<keySize; i++)
+    {
+        status = iusIqPatternListDictSet(dict, labels[i], obj);
+        TEST_ASSERT(status == IUS_E_OK);
+    }
+
+    size_t dictSize = iusIqPatternListDictGetSize(dict);
+    TEST_ASSERT_EQUAL(5, dictSize);
+    char **keys = iusIqPatternListDictGetKeys(dict);
+
+    // Validate keys
+    for (i=0; i<keySize; i++)
+    {
+        TEST_ASSERT_EQUAL(IUS_TRUE, aInB(keys[i], labels));
+    }
+
+    // invalid params
+    iusErrorLogClear();
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
+    keys = iusIqPatternListDictGetKeys(NULL);
+    TEST_ASSERT_EQUAL(NULL,keys);
+
+    TEST_ASSERT_EQUAL(1,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
+
+    iusIqPatternDelete(pattern1);
+    iusIqPatternDelete(pattern2);
+    iusIqPatternListDelete(obj);
+    iusIqPatternListDictDelete(dict);
 }
 
 
@@ -224,5 +285,6 @@ TEST_GROUP_RUNNER(IusIqPatternListDict)
 	RUN_TEST_CASE(IusIqPatternListDict, testIusCreatePatternListDict);
 	RUN_TEST_CASE(IusIqPatternListDict, testIusComparePatternListDict);
     RUN_TEST_CASE(IusIqPatternListDict, testIusPatternListDictSetGet);
+    RUN_TEST_CASE(IusIqPatternListDict, testIusPatternListDictGetKeys)
 	RUN_TEST_CASE(IusIqPatternListDict, testIusSerialization);
 }

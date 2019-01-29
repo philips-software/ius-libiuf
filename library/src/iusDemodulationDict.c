@@ -22,6 +22,7 @@ struct IusDemodulationDict
 {
 	struct hashmap map;
 	IUS_BOOL deepDelete;
+    char **keys;
 };
 
 /* Declare type-specific blob_hashmap_* functions with this handy macro */
@@ -36,6 +37,7 @@ iudmd_t iusDemodulationDictCreate
     IUS_ERR_ALLOC_NULL_N_RETURN(dict, IusDemodulationDict, IUDMD_INVALID);
     hashmap_init(&dict->map, hashmap_hash_string, hashmap_compare_string, 0);
     dict->deepDelete = IUS_FALSE;
+    dict->keys = NULL;
 	return dict;
 }
 
@@ -47,6 +49,15 @@ int iusDemodulationDictDeepDelete
     IUS_ERR_CHECK_NULL_N_RETURN(dict, IUS_ERR_VALUE);
 	dict->deepDelete = IUS_TRUE;
 	return iusDemodulationDictDelete(dict);
+}
+
+static void iusDemodulationDictDeleteKeys
+(
+    iudmd_t dict
+)
+{
+    if (dict->keys != NULL)
+        free(dict->keys);
 }
 
 int iusDemodulationDictDelete
@@ -66,6 +77,7 @@ int iusDemodulationDictDelete
 		free(iterElement);
 	}
 	hashmap_destroy(&dict->map);
+    iusDemodulationDictDeleteKeys(dict);
 	free(dict);
 	return IUS_E_OK;
 }
@@ -121,12 +133,12 @@ int iusDemodulationDictCompare
 }
 
 
-int iusDemodulationDictGetSize
+size_t iusDemodulationDictGetSize
 (
 	iudmd_t dict
 )
 {
-    IUS_ERR_CHECK_NULL_N_RETURN(dict, -1);
+    IUS_ERR_CHECK_NULL_N_RETURN(dict, (size_t) -1);
 	return (int)hashmap_size(&dict->map);
 }
 
@@ -148,6 +160,40 @@ iudm_t iusDemodulationDictGet
 	return search->demodulation;
 }
 
+char **iusDemodulationDictGetKeys
+(
+    iudmd_t dict
+)
+{
+    IUS_ERR_CHECK_NULL_N_RETURN(dict, NULL);
+    return dict->keys;
+}
+
+static int iusDemodulationDictUpdateKeys
+(
+    iudmd_t dict
+)
+{
+    iusDemodulationDictDeleteKeys(dict);
+    // allocate memory for the keys
+    int keyIndex;
+    size_t size = iusDemodulationDictGetSize(dict);
+    dict->keys = calloc(size+1, sizeof(char*));
+    IUS_ERR_ALLOC_NULL_N_RETURN(dict, char *, IUS_ERR_VALUE);
+
+    struct hashmap_iter *iter;
+    HashableDemodulation *iterElement;
+    IUS_ERR_CHECK_NULL_N_RETURN(dict, IUS_ERR_VALUE);
+    /* Free all allocated resources associated with map and reset its state */
+    for (iter = hashmap_iter(&dict->map), keyIndex=0; iter; iter = hashmap_iter_next(&dict->map, iter), keyIndex++)
+    {
+        iterElement = HashableDemodulation_hashmap_iter_get_data(iter);
+        dict->keys[keyIndex] = iterElement->key;
+    }
+    dict->keys[keyIndex] = NULL;
+    return IUS_E_OK;
+}
+
 int iusDemodulationDictSet
 (
 	iudmd_t dict,
@@ -166,7 +212,7 @@ int iusDemodulationDictSet
 		free(newMember);
 		return IUS_ERR_VALUE;
 	}
-	return IUS_E_OK;
+	return iusDemodulationDictUpdateKeys(dict);
 }
 
 

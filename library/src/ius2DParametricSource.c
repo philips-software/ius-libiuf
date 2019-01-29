@@ -113,6 +113,15 @@ float ius2DParametricSourceGetStartTheta
     return source->startTheta;
 }
 
+int ius2DParametricSourceGetNumLocations
+(
+        iu2dps_t source
+)
+{
+    IUS_ERR_CHECK_NULL_N_RETURN(source, -1);
+    return source->numLocations;
+}
+
 int ius2DParametricSourceSetFNumber
 (
     iu2dps_t source,

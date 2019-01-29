@@ -202,7 +202,7 @@ int iusHistoryNodeSetParameters
     IUS_ERR_CHECK_NULL_N_RETURN(historyNode, IUS_ERR_VALUE);
     IUS_ERR_CHECK_NULL_N_RETURN(parameterDict, IUS_ERR_VALUE);
     historyNode->parameters = parameterDict;
-    historyNode->numberOfParameters = iusParameterDictGetSize(historyNode->parameters);
+    historyNode->numberOfParameters = (int) iusParameterDictGetSize(historyNode->parameters);
     return IUS_E_OK;
 }
 

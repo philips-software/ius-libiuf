@@ -125,6 +125,7 @@ TEST(Ius2DNonParametricSource, testIus2DNonParametricSourceSetGet)
     int p,numLocations = 5;
 
     iu2dnps_t obj = ius2DNonParametricSourceCreate(numLocations);
+    TEST_ASSERT_EQUAL(numLocations, ius2DNonParametricSourceGetNumLocations(obj));
 
     // Set/Get location test
     for(p=0; p<numLocations; p++)
@@ -142,10 +143,10 @@ TEST(Ius2DNonParametricSource, testIus2DNonParametricSourceSetGet)
 
     TEST_ASSERT_EQUAL(IU2DP_INVALID, ius2DNonParametricSourceGetPosition(NULL,0));
     TEST_ASSERT_EQUAL(IU2DP_INVALID, ius2DNonParametricSourceGetPosition(obj,-1));
+    TEST_ASSERT_EQUAL(-1, ius2DNonParametricSourceGetNumLocations(NULL));
 
-    TEST_ASSERT_EQUAL(2,iusErrorGetCount());
+    TEST_ASSERT_EQUAL(3,iusErrorGetCount());
     TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
-
 
     ius2DNonParametricSourceDelete(obj);
 }

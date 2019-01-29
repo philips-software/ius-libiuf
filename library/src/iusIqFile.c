@@ -38,7 +38,7 @@ struct IusIqFileInstance
     hid_t               handle;           /**< HDF5 file handle     */
     const char          *pFilename;       /**< the filename         */
     iudsd_t             dataStreamDict;   /**< Contains dataset administration */
-    IUS_BOOL            loadedFromFile;
+    IUS_BOOL            deepDelete;
 }  ;
 
 
@@ -68,7 +68,7 @@ iuiqfi_t iusIqFileInstanceCreate
     instanceData->transducer = IUT_INVALID;
 	instanceData->acquisition = IUA_INVALID;
 	instanceData->dataStreamDict = iusDataStreamDictCreate();
-	instanceData->loadedFromFile = IUS_FALSE;
+	instanceData->deepDelete = IUS_FALSE;
     return instanceData;
 }
 
@@ -80,7 +80,7 @@ int iusIqFileInstanceDelete
     IUS_ERR_CHECK_NULL_N_RETURN(instance, IUS_ERR_VALUE);
     iusDataStreamDictDelete(instance->dataStreamDict);
     free((void *)instance->pFilename);
-    if(instance->loadedFromFile == IUS_TRUE)
+    if(instance->deepDelete == IUS_TRUE)
     {
         iusFrameListDelete(instance->frameList);
         iusAcquisitionDelete(instance->acquisition);
@@ -314,7 +314,7 @@ static iuiqfi_t iqFileInstanceLoad
         return IUIQFI_INVALID;
     }
 
-    instance->loadedFromFile = IUS_TRUE;
+    instance->deepDelete = IUS_TRUE;
     return instance;
 }
 
@@ -332,7 +332,7 @@ void *iusIqFileInstanceLoad
         iusIqFileInstanceDelete(instance);
         instance = new_instance;
     }
-    instance->loadedFromFile = IUS_TRUE;
+    instance->deepDelete = IUS_TRUE;
     return (void *)instance;
 }
 

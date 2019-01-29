@@ -6,7 +6,9 @@
 #include <unity_fixture.h>
 
 #include <ius.h>
+#include <util.h>
 #include <iusTransmitApodizationDictPrivate.h>
+#include <string.h>
 
 static char *pErrorFilename = "IusTransmitApodizationDict.errlog";
 static FILE *fpErrorLogging = NULL;
@@ -77,6 +79,51 @@ TEST(IusTransmitApodizationDict, testIusTransmitApodizationDictSetGet)
     TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
 	iusTransmitApodizationDelete(obj);
 	iusTransmitApodizationDictDelete(dict);
+}
+
+
+TEST(IusTransmitApodizationDict, testIusTransmitApodizationDictKeys)
+{
+    const int numElements = 8;
+    float ones[8] = {1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f};
+    int status;
+    char *labels[] = { "one" , "two" , "three", "four" , "five"};
+    iuta_t obj = iusTransmitApodizationCreate(numElements);
+
+    iutad_t dict = iusTransmitApodizationDictCreate();
+    status = iusTransmitApodizationSetApodization(obj, ones);
+
+    // Fill dict
+    int i;
+    int keySize = sizeof(labels)/sizeof(labels[0]);
+    for (i=0; i<keySize; i++)
+    {
+        status = iusTransmitApodizationDictSet(dict, labels[i], obj);
+        TEST_ASSERT(status == IUS_E_OK);
+    }
+
+    // Get keys
+    size_t dictSize = iusTransmitApodizationDictGetSize(dict);
+    TEST_ASSERT_EQUAL(5, dictSize);
+    char **keys = iusTransmitApodizationDictGetKeys(dict);
+
+    // Validate keys
+    for (i=0; i<keySize; i++)
+    {
+        TEST_ASSERT_EQUAL(IUS_TRUE, aInB(keys[i], labels));
+    }
+
+    // Invalid params
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
+    keys = iusTransmitApodizationDictGetKeys(NULL);
+    TEST_ASSERT_EQUAL(NULL,keys);
+
+    TEST_ASSERT_EQUAL(1,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
+    iusTransmitApodizationDelete(obj);
+    iusTransmitApodizationDictDelete(dict);
 }
 
 TEST(IusTransmitApodizationDict, testIusTransmitApodizationDictCompare)
@@ -175,6 +222,7 @@ TEST(IusTransmitApodizationDict, testIusTransmitApodizationDictSerialization)
 TEST_GROUP_RUNNER(IusTransmitApodizationDict)
 {
 	RUN_TEST_CASE(IusTransmitApodizationDict, testIusTransmitApodizationDictCreate);
+    RUN_TEST_CASE(IusTransmitApodizationDict, testIusTransmitApodizationDictKeys);
 	RUN_TEST_CASE(IusTransmitApodizationDict, testIusTransmitApodizationDictSetGet);
 	RUN_TEST_CASE(IusTransmitApodizationDict, testIusTransmitApodizationDictCompare);
 	RUN_TEST_CASE(IusTransmitApodizationDict, testIusTransmitApodizationDictSerialization);

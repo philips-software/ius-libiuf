@@ -2,6 +2,27 @@
 // Created by Ruijzendaal on 20/03/2018.
 //
 #include <ius.h>
+#include <string.h>
+
+
+IUS_BOOL  aInB
+(
+    char *a,
+    char **b
+)
+{
+    int i=0;
+    char *current = b[i];
+    while (current != NULL)
+    {
+        if (strcmp(a,b[i])==0)
+        {
+            return IUS_TRUE;
+        }
+        i++;
+    }
+    return IUS_FALSE;
+}
 
 iu3dte_t iusUtilCreate3DElement
     (
@@ -51,4 +72,5 @@ iu2dte_t iusUtilCreate2DElement
     iu2dte_t ele = ius2DTransducerElementCreate(pos, phi, siz);
     return ele;
 }
+
 

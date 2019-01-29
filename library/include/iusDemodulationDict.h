@@ -49,7 +49,7 @@ int iusDemodulationDictCompare
 /** \brief Get the number of entries in the dictionary
 * \return Returns the number of #IusDemodulation of the dictionary, or -1 in case of an error.
 */
-int iusDemodulationDictGetSize
+size_t iusDemodulationDictGetSize
 (
 	iudmd_t dict       ///< The dictionary of interest
 );
@@ -61,6 +61,14 @@ iudm_t iusDemodulationDictGet
 (
 	iudmd_t dict,      ///< The dictionary of interest
 	char * key         ///< The label of the demodulation to return
+);
+
+/** \brief Get the #IusPatternList object with label \p key from the dictionary.
+ * \return Returns #IusPatternList \p key or #IUPALD_INVALID if it is not found.
+ */
+char **iusDemodulationDictGetKeys
+(
+    iudmd_t dict       ///< The dictionary of interest
 );
 
 /** \brief Get the #IusDemodulation from the dictionary that has the label \p key

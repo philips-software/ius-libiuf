@@ -22,6 +22,7 @@ struct IusSourceDict
 {
     struct hashmap map;
     IUS_BOOL deepDelete;
+    char **keys;
 } ;
 
 /* Declare type-specific blob_hashmap_* functions with this handy macro */
@@ -36,6 +37,7 @@ iusd_t iusSourceDictCreate
     IUS_ERR_ALLOC_NULL_N_RETURN(dict, IusSourceDict, IUSD_INVALID);
     hashmap_init(&dict->map, hashmap_hash_string, hashmap_compare_string, 0);
     dict->deepDelete = IUS_FALSE;
+    dict->keys = NULL;
     return dict;
 }
 
@@ -48,6 +50,15 @@ int iusSourceDictDeepDelete
     IUS_ERR_CHECK_NULL_N_RETURN(dict, IUS_ERR_VALUE);
     dict->deepDelete = IUS_TRUE;
     return iusSourceDictDelete(dict);
+}
+
+static void iusSourceDictDeleteKeys
+(
+    iusd_t dict
+)
+{
+    if (dict->keys != NULL)
+        free(dict->keys);
 }
 
 int iusSourceDictDelete
@@ -66,6 +77,7 @@ int iusSourceDictDelete
         free(iterElement);
     }
     hashmap_destroy(&dict->map);
+    iusSourceDictDeleteKeys(dict);
     free(dict);
     return IUS_E_OK;
 }
@@ -148,6 +160,40 @@ ius_t iusSourceDictGet
     return search->source;
 }
 
+char **iusSourceDictGetKeys
+(
+    iusd_t dict
+)
+{
+    IUS_ERR_CHECK_NULL_N_RETURN(dict, NULL);
+    return dict->keys;
+}
+
+static int iusSourceDictUpdateKeys
+(
+    iusd_t dict
+)
+{
+    iusSourceDictDeleteKeys(dict);
+    // allocate memory for the keys
+    int keyIndex;
+    size_t size = iusSourceDictGetSize(dict);
+    dict->keys = calloc(size+1, sizeof(char*));
+    IUS_ERR_ALLOC_NULL_N_RETURN(dict, char *, IUS_ERR_VALUE);
+
+    struct hashmap_iter *iter;
+    HashableSource *iterElement;
+    IUS_ERR_CHECK_NULL_N_RETURN(dict, IUS_ERR_VALUE);
+    /* Free all allocated resources associated with map and reset its state */
+    for (iter = hashmap_iter(&dict->map), keyIndex=0; iter; iter = hashmap_iter_next(&dict->map, iter), keyIndex++)
+    {
+        iterElement = HashableSource_hashmap_iter_get_data(iter);
+        dict->keys[keyIndex] = iterElement->key;
+    }
+    dict->keys[keyIndex] = NULL;
+    return IUS_E_OK;
+}
+
 int iusSourceDictSet
 (
     iusd_t dict,
@@ -166,7 +212,7 @@ int iusSourceDictSet
         free(newMember);
         return IUS_ERR_VALUE;
     }
-    return IUS_E_OK;
+    return iusSourceDictUpdateKeys(dict);
 }
 
 
