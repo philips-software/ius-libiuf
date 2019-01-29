@@ -54,9 +54,12 @@ TEST(IusDemodulationDict, testIusSetGetDict)
 	float sampleFrequency = 4000;
 	int numSamplesPerLine = 10;
 	int numTGCentries = 1;
+	IusDemodulationMethod method = IUS_DEMODULATION_FOURX;
+	int kernelSize = 5;
 	int status;
 
-	iudm_t obj = iusDemodulationCreate(sampleFrequency, numSamplesPerLine, numTGCentries);
+
+	iudm_t obj = iusDemodulationCreate(method, sampleFrequency, numSamplesPerLine, numTGCentries, kernelSize);
 
 
 	// Create
@@ -94,11 +97,13 @@ TEST(IusDemodulationDict, testIusCompareDict)
 	float sampleFrequency = 4000;
 	int numSamplesPerLine = 10;
 	int numTGCentries = 1;
+	IusDemodulationMethod method = IUS_DEMODULATION_FOURX;
+	int kernelSize = 5;
 	int status;
 
-	iudm_t obj = iusDemodulationCreate(sampleFrequency, numSamplesPerLine, numTGCentries);
-	iudm_t notherObj = iusDemodulationCreate(sampleFrequency, numSamplesPerLine, numTGCentries);
-	iudm_t differentObj = iusDemodulationCreate(sampleFrequency, numSamplesPerLine, numTGCentries + 1);
+	iudm_t obj = iusDemodulationCreate(method, sampleFrequency, numSamplesPerLine, numTGCentries, kernelSize);
+	iudm_t notherObj = iusDemodulationCreate(method, sampleFrequency, numSamplesPerLine, numTGCentries, kernelSize);
+	iudm_t differentObj = iusDemodulationCreate(method, sampleFrequency, numSamplesPerLine, numTGCentries + 1, kernelSize);
 
 	// Create
 	iudmd_t  dict = iusDemodulationDictCreate();

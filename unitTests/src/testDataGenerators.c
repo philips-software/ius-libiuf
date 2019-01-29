@@ -50,8 +50,11 @@ iudm_t dgGenerateDemodulation
 {
 	float sampleFrequency = 4000;
 	int numTGCentries = 1;
-	iudm_t obj = iusDemodulationCreate(sampleFrequency, numSamplesPerLine, numTGCentries);
+	IusDemodulationMethod method = IUS_DEMODULATION_FOURX;
+	int kernelSize = 7;
 
+	iudm_t obj = iusDemodulationCreate(method, sampleFrequency, numSamplesPerLine, numTGCentries, kernelSize);
+	// Note: more realistically call iusDemodulationCreateWithoutTGCAndFilter() and add a TGC and a PreFilter separately.
 	return obj;
 }
 

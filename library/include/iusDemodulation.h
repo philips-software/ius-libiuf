@@ -3,17 +3,27 @@
 #define IUSLIBRARY_IUSHLDEMODULATION_H
 
 #include <iusTGC.h>
+#include <iusFilter.h>
 
 // ADT
 typedef struct IusDemodulation IusDemodulation;
 typedef IusDemodulation *iudm_t;
 #define  IUDM_INVALID (iudm_t) NULL
 
+iudm_t iusDemodulationCreateWithoutTGCandFilter
+(
+	IusDemodulationMethod method,		///< The downsampling method
+	float sampleFrequency,				///< The sampling frequency in Hz
+	int numSamplesPerLine				///< The number of samples per acquired line
+);
+
 iudm_t iusDemodulationCreate
 (
-	float sampleFrequency,        ///< The sampling frequency in Hz
-	int numSamplesPerLine,        ///< The number of samples per acquired line 
-	int numTGCentries             ///< The size of the TGC function
+	IusDemodulationMethod method,       ///< The downsampling method
+	float sampleFrequency,				///< The sampling frequency in Hz
+	int numSamplesPerLine,				///< The number of samples per acquired line 
+	int numTGCentries,					///< The size of the TGC function
+	int filterKernelSize				///< The size of the preFilter
 );
 
 /** \brief Deletes the #IusDemodulation and also the TGC function that it might contain.
@@ -57,7 +67,15 @@ int iusDemodulationGetNumTGCentries
 	iudm_t demodulation     ///< the receive settings of interest
 );
 
-/** \brief Gets the TGC object of the receive settings
+/** \brief Gets the number of filter coefficients of the preFilter
+*  \return the number of filter coefficients or -1 in case of an error.
+*/
+int iusDemodulationGetPreFilterKernelSize
+(
+	iudm_t iusDemodulation     ///< the receive settings of interest
+);
+
+/** \brief Gets the TGC object of the demodulation
 *  \return the IusTGC object
 */
 iutgc_t iusDemodulationGetTGC
@@ -65,5 +83,12 @@ iutgc_t iusDemodulationGetTGC
 	iudm_t demodulation  ///< the receive settings of interest
 );
 
+/** \brief Gets the fir filter object of the demodulation
+*  \return the #IusFirFilter object
+*/
+iuff_t iusDemodulationGetPreFilter
+(
+	iudm_t iusDemodulation  ///< the receive settings of interest
+);
 
 #endif //IUSLIBRARY_IUSHLRECEIVESETTINGS_H
