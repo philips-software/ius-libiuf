@@ -103,7 +103,7 @@ TEST(IusTransmitApodizationDict, testIusTransmitApodizationDictKeys)
     }
 
     // Get keys
-    int dictSize = iusTransmitApodizationDictGetSize(dict);
+    size_t dictSize = iusTransmitApodizationDictGetSize(dict);
     TEST_ASSERT_EQUAL(5, dictSize);
     char **keys = iusTransmitApodizationDictGetKeys(dict);
 

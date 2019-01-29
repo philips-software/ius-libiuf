@@ -123,7 +123,7 @@ TEST(IusSourceDict, testIusSourceDictKeys)
     }
 
     // Get keys
-    int dictSize = iusSourceDictGetSize(dict);
+    size_t dictSize = iusSourceDictGetSize(dict);
     TEST_ASSERT_EQUAL(5, dictSize);
     char **keys = iusSourceDictGetKeys(dict);
 
@@ -140,7 +140,7 @@ TEST(IusSourceDict, testIusSourceDictKeys)
     keys = iusSourceDictGetKeys(NULL);
     TEST_ASSERT_EQUAL(NULL,keys);
 
-    TEST_ASSERT_EQUAL(1,iusErrorGetCount());
+    TEST_ASSERT_EQUAL(2,iusErrorGetCount());
     TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
     ius3DParametricSourceDelete(obj);
     iusSourceDictDelete(dict);
