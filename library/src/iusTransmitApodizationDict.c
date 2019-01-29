@@ -178,7 +178,7 @@ static int iusTransmitApodizationDictUpdateKeys
     iusTransmitApodizationDictDeleteKeys(dict);
     // allocate memory for the keys
     int keyIndex;
-    int size = iusTransmitApodizationDictGetSize(dict);
+    size_t size = iusTransmitApodizationDictGetSize(dict);
     dict->keys = calloc(size+1, sizeof(char*));
     IUS_ERR_ALLOC_NULL_N_RETURN(dict, char *, IUS_ERR_VALUE);
 
