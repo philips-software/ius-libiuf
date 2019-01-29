@@ -87,7 +87,7 @@ iu2dp_t ius2DNonParametricSourceGetPosition
 
 int ius2DNonParametricSourceGetNumLocations
 (
-    iu2dnps_t source     ///< 2D non-parametric source with positions
+    iu2dnps_t source
 )
 {
     IUS_ERR_CHECK_NULL_N_RETURN(source, -1);

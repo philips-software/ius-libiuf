@@ -67,6 +67,15 @@ float ius2DParametricSourceGetStartTheta
     iu2dps_t source ///< The source of interest
 );
 
+/** \brief  Gets the number of source locations that are triggered simulatenously.
+ * \return  The number of source locations that are triggered simulatenously.
+ */
+int ius2DParametricSourceGetNumLocations
+(
+    iu2dps_t source     ///< The source of interest
+);
+
+
 /** \brief Sets the fNumber of the parametric sources, return #IUS_E_OK when successful or #IUS_ERR_VALUE in case
 * the source is incorrect
 */

@@ -148,7 +148,6 @@ TEST(Ius2DNonParametricSource, testIus2DNonParametricSourceSetGet)
     TEST_ASSERT_EQUAL(3,iusErrorGetCount());
     TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
 
-
     ius2DNonParametricSourceDelete(obj);
 }
 
