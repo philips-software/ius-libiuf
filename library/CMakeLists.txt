@@ -125,10 +125,16 @@ add_library(ius STATIC
 		include/iusPulseDict.h
 		include/iusPulseDictPrivate.h
 		include/iusPulsePrivate.h
+	    include/iusReceiveApodization.h
+		include/iusReceiveApodizationDict.h
+		include/iusReceiveApodizationDictPrivate.h
+		include/iusReceiveApodizationPrivate.h
 		include/iusReceiveChannelMap.h
 		include/iusReceiveChannelMapDict.h
+		include/iusReceiveChannelMapDictPrivate.h
 		include/iusReceiveChannelMapPrivate.h
 		include/iusReceiveSettings.h
+		include/iusReceiveSettingsPrivate.h
 		include/iusReceiveSettingsDict.h
 		include/iusReceiveSettingsDictPrivate.h
 		include/iusSource.h
@@ -189,6 +195,8 @@ add_library(ius STATIC
 		src/iusPosition.c
 		src/iusPulse.c
 		src/iusPulseDict.c
+		src/iusReceiveApodization.c
+		src/iusReceiveApodizationDict.c
 		src/iusReceiveChannelMap.c
 		src/iusReceiveChannelMapDict.c
 		src/iusReceiveSettings.c

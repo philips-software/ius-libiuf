@@ -130,6 +130,11 @@
 #include <iusBasicFunctions.h>
 #include <iusCompoundFile.h>
 #include <iusCompoundFileStructure.h>
+#include <iusCompoundFrame.h>
+#include <iusCompoundFrameList.h>
+#include <iusCompoundWave.h>
+#include <iusCompoundWaveList.h>
+#include <iusCompoundWaveListDict.h>
 #include <iusData.h>
 #include <iusDataStream.h>
 #include <iusDemodulation.h>

@@ -107,7 +107,7 @@ TEST(IusIqFile, iusIqFileSetGetFrameList)
     IUS_BOOL equal;
     int status;
     iufl_t frameList = dgGenerateFrameList(10);
-    iuif_t obj = iusIqFileCreate(pFilename);
+    iuiqf_t obj = iusIqFileCreate(pFilename);
 
     status = iusIqFileSetFrameList(obj,frameList);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
