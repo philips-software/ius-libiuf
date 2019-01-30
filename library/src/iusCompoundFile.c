@@ -6,8 +6,9 @@
 #include <string.h>
 
 #include <ius.h>
-#include "iusCompoundFilePrivate.h"
-#include "iusCompoundFrameListPrivate.h"
+#include <iusCompoundFile.h>
+#include <iusCompoundFileStructure.h>
+#include <iusCompoundFileInstance.h>
 #include <iusDataStreamDictPrivate.h>
 #include <iusHistoryNodePrivate.h>
 #include <assert.h>
@@ -21,7 +22,7 @@ struct IusCompoundFileInstance
 	iurad_t  receiveApodizationDict;     /**< The dictionary of receiveApodizations */
 	iucwld_t compoundWaveListDict;       /**< The dictionary of compoud wave lists */
     iudsd_t  dataStreamDict;             /**< The datastreams in the file */
-	// iucs_t   compoundSettings;           
+	// iucs_t   compoundSettings;
     // iuap_t   algorithm Parameters;
 
 	int IusVersion;                      /**< The version of input file format */
@@ -30,7 +31,7 @@ struct IusCompoundFileInstance
 	hid_t               handle;           /**< HDF5 file handle     */
 	const char          *pFilename;       /**< the filename         */
 	iuds_t              dataStream;       /**< Contains dataset administration */
-	IUS_BOOL            loadedFromFile;
+	IUS_BOOL            deepDelete;
 };
 
 struct IusCompoundFile
@@ -67,7 +68,7 @@ int iusCompoundFileInstanceDelete
     if (instance == NULL) return IUS_ERR_VALUE;
     iusDataStreamDictDelete(instance->dataStreamDict);
     free((void *)instance->pFilename);
-    if(instance->loadedFromFile == IUS_TRUE)
+    if(instance->deepDelete == IUS_TRUE)
     {
         iusCompoundFrameListDelete(instance->compoundFrameList);
         iusReceiveApodizationDictDelete(instance->receiveApodizationDict);
@@ -186,7 +187,7 @@ static iucfi_t compoundFileInstanceLoad
         return IUCFI_INVALID;
     }
 
-    instance->loadedFromFile = IUS_TRUE;
+    instance->deepDelete = IUS_TRUE;
     return instance;
 }
 
@@ -204,7 +205,7 @@ void *iusCompoundFileInstanceLoad
         iusCompoundFileInstanceDelete(instance);
         instance = new_instance;
     }
-    instance->loadedFromFile = IUS_TRUE;
+    instance->deepDelete = IUS_TRUE;
     return (void *)instance;
 }
 
@@ -259,9 +260,10 @@ int iusCompoundFileSaveInstance
 )
 {
   herr_t status=0;
-  status |= iusCompoundFrameListSave(instanceData->compoundFrameList, handle);
     // Todo: Fix
+    IUS_UNUSED(handle);
     assert(IUS_FALSE);
+//    status |= iusCompoundFrameListSave(instanceData->compoundFrameList, handle);
 //  status |= iusCompoundWaveListDictSave(instanceData->compoundWaveListDict, handle);
 //  status |= iusPulseDictSave(instanceData->pulseDict, handle);
 //  status |= iusSourceDictSave(instanceData->sourceDict, handle);

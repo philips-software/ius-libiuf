@@ -21,7 +21,8 @@ typedef struct HashableSource HashableSource;
 struct IusSourceDict
 {
     struct hashmap map;
-    IUS_BOOL loadedFromFile;
+    IUS_BOOL deepDelete;
+    char **keys;
 } ;
 
 /* Declare type-specific blob_hashmap_* functions with this handy macro */
@@ -33,23 +34,31 @@ iusd_t iusSourceDictCreate
 )
 {
     iusd_t dict = calloc(1, sizeof(IusSourceDict));
-    if(dict!=NULL)
-    {
-      hashmap_init(&dict->map, hashmap_hash_string, hashmap_compare_string, 0);
-      dict->loadedFromFile = IUS_FALSE;
-    }
+    IUS_ERR_ALLOC_NULL_N_RETURN(dict, IusSourceDict, IUSD_INVALID);
+    hashmap_init(&dict->map, hashmap_hash_string, hashmap_compare_string, 0);
+    dict->deepDelete = IUS_FALSE;
+    dict->keys = NULL;
     return dict;
 }
 
 
 int iusSourceDictDeepDelete
 (
-iusd_t dict
+    iusd_t dict
 )
 {
-    if(dict == NULL) return IUS_ERR_VALUE;
-    dict->loadedFromFile = IUS_TRUE;
+    IUS_ERR_CHECK_NULL_N_RETURN(dict, IUS_ERR_VALUE);
+    dict->deepDelete = IUS_TRUE;
     return iusSourceDictDelete(dict);
+}
+
+static void iusSourceDictDeleteKeys
+(
+    iusd_t dict
+)
+{
+    if (dict->keys != NULL)
+        free(dict->keys);
 }
 
 int iusSourceDictDelete
@@ -59,15 +68,16 @@ int iusSourceDictDelete
 {
     HashableSource *iterElement;
     struct hashmap_iter *iter;
-    if(dict == NULL) return IUS_ERR_VALUE;
+    IUS_ERR_CHECK_NULL_N_RETURN(dict, IUS_ERR_VALUE);
     /* Free all allocated resources associated with map and reset its state */
     for (iter = hashmap_iter(&dict->map); iter; iter = hashmap_iter_next(&dict->map, iter)) {
         iterElement = HashableSource_hashmap_iter_get_data(iter);
-        if (dict->loadedFromFile==IUS_TRUE)
+        if (dict->deepDelete==IUS_TRUE)
             iusSourceDelete(iterElement->source);
         free(iterElement);
     }
     hashmap_destroy(&dict->map);
+    iusSourceDictDeleteKeys(dict);
     free(dict);
     return IUS_E_OK;
 }
@@ -128,8 +138,7 @@ int iusSourceDictGetSize
     iusd_t dict
 )
 {
-    if( dict == NULL )
-        return -1;
+    IUS_ERR_CHECK_NULL_N_RETURN(dict, -1);
     return (int) hashmap_size(&dict->map);
 }
 
@@ -139,12 +148,50 @@ ius_t iusSourceDictGet
     char * key
 )
 {
-    if (dict == NULL || key == NULL) return IUS_INVALID;
+    IUS_ERR_CHECK_NULL_N_RETURN(dict, IUS_INVALID);
+    IUS_ERR_CHECK_NULL_N_RETURN(key, IUS_INVALID);
     HashableSource * search;
     search = HashableSource_hashmap_get(&dict->map, key);
-    if( search == NULL )
+    if (search == NULL)
+    {
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_INVALID_KEY, "for key '%s'", key);
         return IUS_INVALID;
+    }
     return search->source;
+}
+
+char **iusSourceDictGetKeys
+(
+    iusd_t dict
+)
+{
+    IUS_ERR_CHECK_NULL_N_RETURN(dict, NULL);
+    return dict->keys;
+}
+
+static int iusSourceDictUpdateKeys
+(
+    iusd_t dict
+)
+{
+    iusSourceDictDeleteKeys(dict);
+    // allocate memory for the keys
+    int keyIndex;
+    size_t size = iusSourceDictGetSize(dict);
+    dict->keys = calloc(size+1, sizeof(char*));
+    IUS_ERR_ALLOC_NULL_N_RETURN(dict, char *, IUS_ERR_VALUE);
+
+    struct hashmap_iter *iter;
+    HashableSource *iterElement;
+    IUS_ERR_CHECK_NULL_N_RETURN(dict, IUS_ERR_VALUE);
+    /* Free all allocated resources associated with map and reset its state */
+    for (iter = hashmap_iter(&dict->map), keyIndex=0; iter; iter = hashmap_iter_next(&dict->map, iter), keyIndex++)
+    {
+        iterElement = HashableSource_hashmap_iter_get_data(iter);
+        dict->keys[keyIndex] = iterElement->key;
+    }
+    dict->keys[keyIndex] = NULL;
+    return IUS_E_OK;
 }
 
 int iusSourceDictSet
@@ -154,19 +201,18 @@ int iusSourceDictSet
     ius_t member
 )
 {
-    if( dict == NULL ) return IUS_ERR_VALUE;
-    if( key == NULL ) return IUS_ERR_VALUE;
-
+    IUS_ERR_CHECK_NULL_N_RETURN(dict, IUS_ERR_VALUE);
+    IUS_ERR_CHECK_NULL_N_RETURN(key, IUS_ERR_VALUE);
     HashableSource *newMember = calloc(1, sizeof(HashableSource));
     newMember->source = member;
     strcpy(newMember->key,key);
     if (HashableSource_hashmap_put(&dict->map, newMember->key, newMember) != newMember)
     {
-      printf("discarding blob with duplicate key: %s\n", newMember->key);
-      free(newMember);
-      return IUS_ERR_VALUE;
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_DUPLICATE_KEY, "discarding blob with duplicate key: %s", key);
+        free(newMember);
+        return IUS_ERR_VALUE;
     }
-    return IUS_E_OK;
+    return iusSourceDictUpdateKeys(dict);
 }
 
 
@@ -182,11 +228,9 @@ int iusSourceDictSave
     struct hashmap_iter *iter;
 	hid_t sources_id;
 
-    if(dict == NULL)
-        return IUS_ERR_VALUE;
-    if(handle == H5I_INVALID_HID)
-        return IUS_ERR_VALUE;
-	status = H5Gget_objinfo(handle, IUS_INPUTFILE_PATH_SOURCEDICT, 0, NULL);
+    IUS_ERR_CHECK_NULL_N_RETURN(dict, IUS_ERR_VALUE);
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUS_ERR_VALUE);
+    status = H5Gget_objinfo(handle, IUS_INPUTFILE_PATH_SOURCEDICT, 0, NULL);
 	if (status != 0) // the group does not exist yet
 	{
 		sources_id = H5Gcreate(handle, IUS_INPUTFILE_PATH_SOURCEDICT, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
@@ -195,9 +239,12 @@ int iusSourceDictSave
 	{
 		sources_id = H5Gopen(handle, IUS_INPUTFILE_PATH_SOURCEDICT, H5P_DEFAULT);
 	}
-	if (sources_id == H5I_INVALID_HID)
-		return IUS_ERR_VALUE;
-	status = 0;
+    if (sources_id == H5I_INVALID_HID)
+    {
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "Error getting handle for path: %s", IUS_INPUTFILE_PATH_SOURCEDICT);
+        return IUS_ERR_VALUE;
+    }
+
     HashableSource *sourceElement;
 
     // iterate over source list elements and save'em
@@ -206,11 +253,10 @@ int iusSourceDictSave
         sourceElement = HashableSource_hashmap_iter_get_data(iter);
 		const char *sourceLabel = HashableSource_hashmap_iter_get_key(iter);
 		hid_t src_id = H5Gcreate(sources_id, sourceLabel, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-        iusSourceSave(sourceElement->source, src_id);
-		H5Gclose(src_id);
+        status = iusSourceSave(sourceElement->source, src_id);
+		status |= H5Gclose(src_id);
     }
-	H5Gclose(sources_id);
-
+    status |= H5Gclose(sources_id);
     return status;
 }
 
@@ -225,10 +271,13 @@ iusd_t iusSourceDictLoad
     int i;
     int status;
     char memb_name[MAX_NAME];
-
-	hid_t grpid = H5Gopen(handle, IUS_INPUTFILE_PATH_SOURCEDICT, H5P_DEFAULT);
-    if(handle == H5I_INVALID_HID)
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUSD_INVALID);
+    hid_t grpid = H5Gopen(handle, IUS_INPUTFILE_PATH_SOURCEDICT, H5P_DEFAULT);
+    if (grpid == H5I_INVALID_HID)
+    {
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "Error getting handle for path: %s", IUS_INPUTFILE_PATH_SOURCEDICT);
         return NULL;
+    }
 
     hsize_t nobj;
     status = H5Gget_num_objs(grpid, &nobj);
@@ -247,6 +296,6 @@ iusd_t iusSourceDictLoad
     {
         return NULL;
     }
-    dict->loadedFromFile = IUS_TRUE;
+    dict->deepDelete = IUS_TRUE;
     return dict;
 }

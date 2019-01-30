@@ -39,7 +39,7 @@ int iusParameterDictCompare
 /** \brief Gets the number of parameter entries in the dictionary
  * \return Returns the number of parameters or -1 in case of an error.
 */
-int iusParameterDictGetSize
+size_t iusParameterDictGetSize
 (
     iupad_t dict ///< The #IusParameterDict of interest
 );
@@ -51,6 +51,14 @@ char * iusParameterDictGet
 (
     iupad_t dict,  ///< The #IusParameterDict of interest
     char * key     ///< The parameter to search for
+);
+
+/** \brief Get the keys currently available in the dict
+ *  \return array (with size #iusTransmitApodizationDictGetSize) of keys.
+ */
+char **iusParameterDictGetKeys
+(
+    iupad_t dict   ///< The #IusParameterDict of interest
 );
 
 /** \brief Add a {key,value} pair to the dictionary.

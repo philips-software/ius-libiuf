@@ -138,13 +138,13 @@ int dgDeleteIqFile
 )
 {
 	int status = iusFrameListDeepDelete(iusIqFileGetFrameList(iusIqFile));
-	status |= iusReceiveChannelMapDictDeepDelete(iusInputFileGetReceiveChannelMapDict(iusIqFile));
-	status |= iusTransducerDeepDelete(iusInputFileGetTransducer(iusIqFile));
-	status |= iusTransmitApodizationDictDeepDelete(iusInputFileGetTransmitApodizationDict(iusIqFile));
-	status |= iusPatternListDictDeepDelete(iusInputFileGetPatternListDict(iusIqFile));
-	status |= iusPulseDictDeepDelete(iusInputFileGetPulseDict(iusIqFile));
-	status |= iusSourceDictDeepDelete(iusInputFileGetSourceDict(iusIqFile));
-	status |= iusAcquisitionDelete(iusInputFileGetAcquisition(iusIqFile));
+	status |= iusReceiveChannelMapDictDeepDelete(iusIqFileGetReceiveChannelMapDict(iusIqFile));
+	status |= iusTransducerDeepDelete(iusIqFileGetTransducer(iusIqFile));
+	status |= iusTransmitApodizationDictDeepDelete(iusIqFileGetTransmitApodizationDict(iusIqFile));
+	status |= iusIqPatternListDictDeepDelete(iusIqFileGetPatternListDict(iusIqFile));
+	status |= iusPulseDictDeepDelete(iusIqFileGetPulseDict(iusIqFile));
+	status |= iusSourceDictDeepDelete(iusIqFileGetSourceDict(iusIqFile));
+	status |= iusAcquisitionDelete(iusIqFileGetAcquisition(iusIqFile));
 	status |= iusIqFileDelete(iusIqFile);
 	return status;
 }

@@ -23,7 +23,7 @@ iutgc_t iusTGCCreate
  */
 int iusTGCDelete
 (
-    iutgc_t iusTGC ///< The object to delete
+    iutgc_t tgc ///< The object to delete
 );
 
 /** \brief Checks if two TGCs are equal
@@ -40,7 +40,7 @@ int iusTGCCompare
  */
 int iusTGCGetNumValues
 (
-    iutgc_t iusTGC ///< The TGC object of interest   
+    iutgc_t tgc ///< The TGC object of interest
 );
 
 /** \brief Get the \p time value of a point in the TGC function at \p index
@@ -48,7 +48,7 @@ int iusTGCGetNumValues
  */
 float iusTGCGetTime
 (
-    iutgc_t iusTGC, ///< THe TGC object of interest
+    iutgc_t tgc, ///< THe TGC object of interest
     int index       ///< The index of the TGC function
 );
 
@@ -57,7 +57,7 @@ float iusTGCGetTime
  */
 float iusTGCGetGain
 (
-    iutgc_t iusTGC, ///< The TGC object of interest
+    iutgc_t tgc, ///< The TGC object of interest
     int index       ///< The index of the TGC function
 );
 
@@ -66,7 +66,7 @@ float iusTGCGetGain
  */
 int iusTGCSet
 (
-    iutgc_t iusTGC, ///< The TGC function of interest
+    iutgc_t tgc, ///< The TGC function of interest
     int index,      ///< The index of the TGC function to replace the time, gain pair 
     float time,     ///< The time value to set
     float gain      ///< The gain value to set

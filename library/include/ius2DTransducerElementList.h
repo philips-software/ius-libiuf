@@ -17,7 +17,7 @@ typedef Ius2DTransducerElementList *iu2dtel_t;
 */
 iu2dtel_t ius2DTransducerElementListCreate
 (
-    int num2DTransducerElements ///< the number of elements that will go in the element list
+    int numElements ///< the number of elements that will go in the element list
 );
 
 int ius2DTransducerElementListDeepDelete

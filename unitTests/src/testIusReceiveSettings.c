@@ -10,14 +10,29 @@
 #include <ius.h>
 #include <iusReceiveSettingsPrivate.h>
 
+static char *pErrorFilename = "IusReceiveSettings.errlog";
+static FILE *fpErrorLogging = NULL;
+
 TEST_GROUP(IusReceiveSettings);
 
 TEST_SETUP(IusReceiveSettings)
 {
+    iusErrorLogClear();
+    iusErrorLog(IUS_TRUE);
+    iusErrorAutoReport(IUS_TRUE);
+    fpErrorLogging = fopen(pErrorFilename, "w+");
+    iusErrorSetStream(fpErrorLogging);
 }
 
 TEST_TEAR_DOWN(IusReceiveSettings)
 {
+    iusErrorLogClear();
+    iusErrorLog(IUS_FALSE);
+    if (fpErrorLogging != NULL)
+        fclose(fpErrorLogging);
+    fpErrorLogging=stderr;
+    iusErrorSetStream(fpErrorLogging);
+    remove(pErrorFilename);
 }
 
 
@@ -34,12 +49,18 @@ TEST(IusReceiveSettings, testIusReceiveSettingsCreate)
     iusReceiveSettingsDelete(notherObj);
 
     // invalid params
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
     obj = iusReceiveSettingsCreate((float) -1.0, numSamplesPerLine, numTGCentries);
     TEST_ASSERT(obj == IURS_INVALID);
     obj = iusReceiveSettingsCreate(sampleFrequency, -1, numTGCentries);
     TEST_ASSERT(obj == IURS_INVALID);
     obj = iusReceiveSettingsCreate(sampleFrequency, numSamplesPerLine, -1);
     TEST_ASSERT(obj == IURS_INVALID);
+
+    TEST_ASSERT_EQUAL(3,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
 }
 
 TEST(IusReceiveSettings, testIusReceiveSettingsDelete)
@@ -53,8 +74,14 @@ TEST(IusReceiveSettings, testIusReceiveSettingsDelete)
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
     // invalid params
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
     status = iusReceiveSettingsDelete(NULL);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
+
+    TEST_ASSERT_EQUAL(1,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
 }
 
 

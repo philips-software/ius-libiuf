@@ -30,7 +30,7 @@ iu3dte_t ius3DTransducerElementCreate
 */
 int ius3DTransducerElementDeepDelete
 (
-	iu3dte_t ius3DTransducerElement ///< the 3D transducer object to be deleted
+	iu3dte_t element ///< the 3D transducer object to be deleted
 );
 
 /** \brief Removes the 3D element object without deleting its sub-objects (position, angle and size)
@@ -38,7 +38,7 @@ int ius3DTransducerElementDeepDelete
 */
 int ius3DTransducerElementDelete
 (
-    iu3dte_t ius3DTransducerElement ///< the 3D transducer object to be deleted
+    iu3dte_t element ///< the 3D transducer object to be deleted
 );
 
 /** \brief Compares the values of 2 transducer elements. the order of the arguments don't matter.
@@ -55,7 +55,7 @@ int ius3DTransducerElementCompare
 */
 iu3dp_t ius3DTransducerElementGetPosition
 (
-	iu3dte_t ius3DTransducerElement ///< The transducer element that has the requested position.
+	iu3dte_t elemen ///< The transducer element that has the requested position.
 );
 
 /** \brief returns the angles (theta,phi) of the \p ius2DTransducerElement.
@@ -63,7 +63,7 @@ iu3dp_t ius3DTransducerElementGetPosition
 */
 iu3da_t ius3DTransducerElementGetAngle
 (
-	iu3dte_t ius3DTransducerElement ///< The transducer element that has the requested angles.
+	iu3dte_t element ///< The transducer element that has the requested angles.
 );
 
 /** \brief returns the 3D size of the \p ius2DTransducerElement.
@@ -71,6 +71,6 @@ iu3da_t ius3DTransducerElementGetAngle
 */
 iu3ds_t ius3DTransducerElementGetSize
 (
-	iu3dte_t ius3DTransducerElement  ///< The transducer element that has the requested size.
+	iu3dte_t element  ///< The transducer element that has the requested size.
 );
 #endif //IUSLIBRARY_IUSHL3DTRANSDUCERELEMENT_H

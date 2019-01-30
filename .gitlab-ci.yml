@@ -4,12 +4,13 @@ stages:
   - distribution
   - sdk
   - sdk_test
+  - pages
 
 building:linux:
   stage: build
   image: gitlab.ta.philips.com:5432/forest/docker/centos-ci:0.2.0
   script:
-    - ./bin/build.sh
+    - ./ci/bin/build.sh
   tags:
     - docker
   artifacts:
@@ -20,9 +21,9 @@ building:linux:
 #  stage: qa
 #  image: gitlab.ta.philips.com:5432/forest/docker/centos-ci:latest
 #  script:
-#    - ./bin/code_coverage.sh
-#    - ./bin/static_code_analysis.sh
-#    - ./bin/memory_leak_detection.sh xml
+#    - ./ci/bin/code_coverage.sh
+#    - ./ci/bin/static_code_analysis.sh
+#    - ./ci/bin/memory_leak_detection.sh xml
 #    - sonar-scanner -Dsonar.login=${SONAR_LOGIN}  -Dsonar.host.url=https://sonar.ta.philips.com/
 #  tags:
 #    - docker
@@ -33,7 +34,7 @@ testing_lib:linux:
   stage: qa
   image: gitlab.ta.philips.com:5432/forest/docker/centos-ci:0.2.0
   script:
-    - ./bin/unittests.sh
+    - ./ci/bin/unittests.sh
   tags:
     - docker
   dependencies:
@@ -43,7 +44,7 @@ distribution:linux:
   stage: distribution
   image: gitlab.ta.philips.com:5432/forest/docker/centos-ci:0.2.0
   script:
-    - ./bin/mk_os_distribution.sh
+    - ./ci/bin/mk_os_distribution.sh
   tags:
     - docker
   artifacts:
@@ -55,7 +56,7 @@ distribution:linux:
 building:windows:
   stage: build
   script:
-    - .\bin\build.bat
+    - .\ci\bin\build.bat
   tags:
     - windows
   artifacts:
@@ -65,7 +66,7 @@ building:windows:
 testing_lib:windwows:
   stage: qa
   script:
-    - .\bin\unittests.bat
+    - .\ci\bin\unittests.bat
   tags:
     - windows
   dependencies:
@@ -74,7 +75,7 @@ testing_lib:windwows:
 distribution:windows:
   stage: distribution
   script:
-    - .\bin\mk_os_distribution.bat
+    - .\ci\bin\mk_os_distribution.bat
   tags:
     - windows
   artifacts:
@@ -87,7 +88,7 @@ sdk:
   stage: sdk
   image: gitlab.ta.philips.com:5432/forest/docker/centos-ci:0.2.0
   script:
-    - ./bin/mksdk.sh
+    - ./ci/bin/mksdk.sh
   tags:
     - docker
   dependencies:
@@ -101,7 +102,7 @@ sdk_test:windows:
   stage: sdk_test
   script: |
     cd dist\IUS-SDK*
-    bin\unittests.bat
+    ci\bin\unittests.bat
 
   tags:
     - windows
@@ -113,9 +114,20 @@ sdk_test:linux:
   image: gitlab.ta.philips.com:5432/forest/docker/centos-ci:0.2.0
   script: |
     cd dist/IUS-SDK*
-    bin/unittests.sh
-    
+    ci/bin/unittests.sh
+
   tags:
     - docker
   dependencies:
     - sdk
+
+pages:
+  stage: pages
+  image: gitlab.ta.philips.com:5432/forest/docker/centos-ci:0.2.0
+  script:
+  - ./ci/bin/make_pages.sh
+  artifacts:
+    paths:
+    - public
+  tags:
+    - docker

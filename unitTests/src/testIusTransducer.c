@@ -11,14 +11,31 @@
 #include <ius2DTransducerPrivate.h>
 #include <ius3DTransducerPrivate.h>
 
+
+
+static char *pErrorFilename = "IusTransducer.errlog";
+static FILE *fpErrorLogging = NULL;
+
 TEST_GROUP(IusTransducer);
 
 TEST_SETUP(IusTransducer)
 {
+    iusErrorLogClear();
+    iusErrorLog(IUS_TRUE);
+    iusErrorAutoReport(IUS_TRUE);
+    fpErrorLogging = fopen(pErrorFilename, "w+");
+    iusErrorSetStream(fpErrorLogging);
 }
 
 TEST_TEAR_DOWN(IusTransducer)
 {
+    iusErrorLogClear();
+    iusErrorLog(IUS_FALSE);
+    if (fpErrorLogging != NULL)
+        fclose(fpErrorLogging);
+    fpErrorLogging=stderr;
+    iusErrorSetStream(fpErrorLogging);
+    remove(pErrorFilename);
 }
 
 
@@ -39,8 +56,14 @@ TEST(IusTransducer, testIusTransducerDelete)
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
     // invalid params
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
     status = iusTransducerDelete(NULL);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
+
+    TEST_ASSERT_EQUAL(1,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
 }
 
 TEST(IusTransducer, testIusTransducerCompare)
@@ -69,10 +92,6 @@ TEST(IusTransducer, testIusTransducerCompare)
 
     isEqual = iusTransducerCompare(_3dTransducer, _2dTransducer);
     TEST_ASSERT(isEqual == IUS_FALSE);
-
-    // invalid params
-    int status = iusTransducerDelete(NULL);
-    TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
 
     ius2DTransducerDelete((iu2dt_t)_2dTransducer);
     ius3DTransducerDelete((iu3dt_t)_3dTransducer);

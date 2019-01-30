@@ -19,7 +19,12 @@ int iusSourceDelete
     ius_t source
 )
 {
-    if( source == IUS_INVALID) return IUS_ERR_VALUE;
+    if (source == IUS_INVALID)
+    {
+        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "source argument is NULL");
+        return IUS_ERR_VALUE;
+    }
+
     switch (source->type)
     {
         case IUS_2D_NON_PARAMETRIC_SOURCE:
@@ -41,6 +46,7 @@ int iusSourceDelete
         case IUS_INVALID_SOURCE_TYPE:
             break;
     }
+    IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE, "unsupported source type: '%d'", source->type);
     return IUS_ERR_VALUE;
 }
 
@@ -96,14 +102,11 @@ IUS_BOOL iusSourceCompare
 // Getters
 IusSourceType iusSourceGetType
 (
-    ius_t iusSource
+    ius_t source
 )
 {
-    if( iusSource == IUS_INVALID )
-    {
-        return IUS_INVALID_SOURCE_TYPE;
-    }
-    return iusSource->type;
+    IUS_ERR_CHECK_NULL_N_RETURN(source, IUS_INVALID_SOURCE_TYPE);
+    return source->type;
 }
 
 // Serialization
@@ -170,14 +173,9 @@ int iusBaseSourceSave
     hid_t handle
 )
 {
-    int status=IUS_E_OK;
-
-    if( source == IUS_INVALID )
-    {
-        return IUS_ERR_VALUE;
-    }
-    status |= iusWriteSourceType(handle, IUS_INPUTFILE_PATH_SOURCE_SOURCETYPE, source->type);
-    return status;
+    IUS_ERR_CHECK_NULL_N_RETURN(source, IUS_ERR_VALUE);
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUS_ERR_VALUE);
+    return iusWriteSourceType(handle, IUS_INPUTFILE_PATH_SOURCE_SOURCETYPE, source->type);
 }
 
 static ius_t iusSourceCreate
@@ -186,7 +184,7 @@ static ius_t iusSourceCreate
 )
 {
     ius_t source = (ius_t) calloc (1,sizeof(ius_t));
-    if(source == NULL) return IUS_INVALID;
+    IUS_ERR_ALLOC_NULL_N_RETURN(source, IusSource, IUS_INVALID);
     source->type = type;
     return source;
 }
@@ -197,13 +195,15 @@ ius_t iusBaseSourceLoad
     hid_t handle
 )
 {
-    int status = 0;
     IusSourceType type;
-    
-    status = iusReadSourceType( handle, IUS_INPUTFILE_PATH_SOURCE_SOURCETYPE, &(type));
-    if( status < 0 )
-        return NULL;
-
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUS_INVALID);
+    int status = iusReadSourceType(handle, IUS_INPUTFILE_PATH_SOURCE_SOURCETYPE, &(type));
+    if (status != IUS_E_OK)
+    {
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "during read of %s",
+                           IUS_INPUTFILE_PATH_RECEIVESETTINGS_TGC_NUMTGCVALUES);
+        return IUS_INVALID;
+    }
     return iusSourceCreate(type);
 }
 
@@ -213,10 +213,11 @@ ius_t iusSourceLoad
 )
 {
 	ius_t base;
-    ius_t source = IUS_INVALID;
+    ius_t source;
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUS_INVALID);
 
     base = iusBaseSourceLoad(handle);
-	if (base == NULL) return IUS_INVALID;
+	if (base == IUS_INVALID) return IUS_INVALID;
 
     switch(base->type)
     {
@@ -240,8 +241,12 @@ ius_t iusSourceLoad
             source = (ius_t) ius3DParametricSourceLoad(handle);
             break;
         }
+
         case IUS_INVALID_SOURCE_TYPE:
+        default:
         {
+            IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE, "unsupported type loaded: '%d'",
+                               base->type);
             source = IUS_INVALID;
             break;
         }
@@ -256,10 +261,12 @@ int iusSourceSave
     hid_t handle
 )
 {
-    if( source == IUS_INVALID )
+    if (source == IUS_INVALID)
     {
+        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "source argument is NULL");
         return IUS_ERR_VALUE;
     }
+
     switch (source->type)
     {
         case IUS_2D_NON_PARAMETRIC_SOURCE:
@@ -278,8 +285,13 @@ int iusSourceSave
         {
             return ius3DParametricSourceSave((iu3dps_t) source, handle);
         }
+
+        default:
         case IUS_INVALID_SOURCE_TYPE:
             break;
     }
+
+    IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE, "unsupported type: '%d'",
+                       source->type);
     return IUS_ERR_VALUE;
 }

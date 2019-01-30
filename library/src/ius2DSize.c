@@ -15,8 +15,10 @@ iu2ds_t ius2DSizeCreate
     float sz
 )
 {
-    if( sx == NAN || sz == NAN ) return IU2DS_INVALID;
+    IUS_ERR_EVAL_N_RETURN(sx == NAN, IU2DS_INVALID);
+    IUS_ERR_EVAL_N_RETURN(sz == NAN, IU2DS_INVALID);
     iu2ds_t created = calloc(1,sizeof(Ius2DSize));
+    IUS_ERR_ALLOC_NULL_N_RETURN(created, Ius2DSize, IU2DS_INVALID);
     created->sx = sx;
     created->sz = sz;
     return created;
@@ -24,16 +26,12 @@ iu2ds_t ius2DSizeCreate
 
 int ius2DSizeDelete
 (
-    iu2ds_t ius2DSize
+    iu2ds_t size
 )
 {
-    int status = IUS_ERR_VALUE;
-    if(ius2DSize != NULL)
-    {
-        free(ius2DSize);
-        status = IUS_E_OK;
-    }
-    return status;
+    IUS_ERR_CHECK_NULL_N_RETURN(size, IUS_ERR_VALUE);
+    free(size);
+    return IUS_E_OK;
 }
 
 
@@ -59,6 +57,7 @@ iu2ds_t ius2DSizeLoad
 {
     int status=0;
     float sx,sz;
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IU2DS_INVALID);
 	hid_t size_id = H5Gopen(handle, IUS_INPUTFILE_PATH_SIZE, H5P_DEFAULT);
     status |= iusHdf5ReadFloat(size_id, IUS_INPUTFILE_PATH_SIZE_X, &(sx));
     status |= iusHdf5ReadFloat(size_id, IUS_INPUTFILE_PATH_SIZE_Z, &(sz));
@@ -76,6 +75,8 @@ int ius2DSizeSave
 )
 {
     int status=0;
+    IUS_ERR_CHECK_NULL_N_RETURN(size, IUS_ERR_VALUE);
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUS_ERR_VALUE);
     hid_t group_id = H5Gcreate(handle, IUS_INPUTFILE_PATH_SIZE, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
     status |= iusHdf5WriteFloat(group_id, IUS_INPUTFILE_PATH_SIZE_X, &(size->sx), 1);
     status |= iusHdf5WriteFloat(group_id, IUS_INPUTFILE_PATH_SIZE_Z, &(size->sz), 1);

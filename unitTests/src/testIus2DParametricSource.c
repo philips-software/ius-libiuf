@@ -9,14 +9,29 @@
 #include <include/ius.h>
 #include "include/ius2DParametricSourcePrivate.h"
 
+static char *pErrorFilename = "Ius2DParametricSource.errlog";
+static FILE *fpErrorLogging = NULL;
+
 TEST_GROUP(Ius2DParametricSource);
 
 TEST_SETUP(Ius2DParametricSource)
 {
+    iusErrorLogClear();
+    iusErrorLog(IUS_TRUE);
+    iusErrorAutoReport(IUS_TRUE);
+    fpErrorLogging = fopen(pErrorFilename, "w+");
+    iusErrorSetStream(fpErrorLogging);
 }
 
 TEST_TEAR_DOWN(Ius2DParametricSource)
 {
+    iusErrorLogClear();
+    iusErrorLog(IUS_FALSE);
+    if (fpErrorLogging != NULL)
+        fclose(fpErrorLogging);
+    fpErrorLogging=stderr;
+    iusErrorSetStream(fpErrorLogging);
+    remove(pErrorFilename);
 }
 
 
@@ -35,10 +50,17 @@ TEST(Ius2DParametricSource, testIus2DParametricSourceCreate)
     ius2DParametricSourceDelete(notherObj);
 
     // invalid params
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
     obj = ius2DParametricSourceCreate(0, -1, 2.0f, 0);
     TEST_ASSERT(obj == IU2DPS_INVALID);
     obj = ius2DParametricSourceCreate(0, 1, -2.0f, 0);
     TEST_ASSERT(obj == IU2DPS_INVALID);
+
+    TEST_ASSERT_EQUAL(2,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
+
 }
 
 TEST(Ius2DParametricSource, testIus2DParametricSourceDelete)
@@ -54,8 +76,15 @@ TEST(Ius2DParametricSource, testIus2DParametricSourceDelete)
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
     // invalid params
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
     status = ius2DParametricSourceDelete(NULL);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
+
+    TEST_ASSERT_EQUAL(1,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
+
 }
 
 
@@ -105,12 +134,21 @@ TEST(Ius2DParametricSource, testIus2DParametricSourceSetGet)
     TEST_ASSERT_EQUAL_FLOAT(FNumber,ius2DParametricSourceGetFNumber(obj));
     TEST_ASSERT_EQUAL_FLOAT(deltaTheta,ius2DParametricSourceGetDeltaTheta(obj));
     TEST_ASSERT_EQUAL_FLOAT(startTheta,ius2DParametricSourceGetStartTheta(obj));
+    TEST_ASSERT_EQUAL(numLocations, ius2DParametricSourceGetNumLocations(obj));
 
 
     // invalid param
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
     TEST_ASSERT_EQUAL_FLOAT(NAN,ius2DParametricSourceGetFNumber(NULL));
     TEST_ASSERT_EQUAL_FLOAT(NAN,ius2DParametricSourceGetDeltaTheta(NULL));
     TEST_ASSERT_EQUAL_FLOAT(NAN,ius2DParametricSourceGetStartTheta(NULL));
+    TEST_ASSERT_EQUAL(-1, ius2DParametricSourceGetNumLocations(NULL));
+
+    TEST_ASSERT_EQUAL(4,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
+
 
     ius2DParametricSourceDelete(obj);
 }

@@ -49,7 +49,7 @@ int iusReceiveSettingsDictCompare
 /** \brief Get the number of entries in the dictionary
  * \return Returns the number of #IusReceiveSettings of the dictionary, or -1 in case of an error.
 */
-int iusReceiveSettingsDictGetSize
+size_t iusReceiveSettingsDictGetSize
 (
     iursd_t dict       ///< The dictionary of interest
 );
@@ -61,6 +61,14 @@ iurs_t iusReceiveSettingsDictGet
 (
     iursd_t dict,      ///< The dictionary of interest
     char * key         ///< The label of the receiveSettings to return
+);
+
+/** \brief Get the keys currently available in the dict
+ *  \return array (with size #iusTransmitApodizationDictGetSize) of keys.
+ */
+char **iusReceiveSettingsDictGetKeys
+(
+    iursd_t dict       ///< The dictionary of interest
 );
 
 /** \brief Get the #IusReceiveSettings from the dictionary that has the label \p key

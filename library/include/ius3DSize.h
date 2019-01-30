@@ -31,7 +31,7 @@ iu3ds_t ius3DSizeCreate
  */
 int ius3DSizeDelete
 (
-    iu3ds_t ius3DSize ///< the size object to be deleted
+    iu3ds_t size ///< the size object to be deleted
 );
 
 /** \brief Compare two 3D sizes, argument order doesn't matter.

@@ -64,6 +64,14 @@ iuta_t iusTransmitApodizationDictGet
 	char * key    ///< the label of the \p IusTransmitApodization  
 );
 
+/** \brief Get the keys currently available in the dict
+ *  \return array (with size #iusTransmitApodizationDictGetSize) of keys.
+ */
+char **iusTransmitApodizationDictGetKeys
+(
+        iutad_t dict ///< the \p IusTransmitApodizationDict of interest
+);
+
 /** \brief Add a #IusTransmitApodization with the label \p key to the \p dict
  * 
  *  \return #IUS_E_OK if the IusTransmitApodization could be added or #IUS_ERR_VALUE in case of an error.

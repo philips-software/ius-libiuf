@@ -24,7 +24,7 @@ iuff_t iusFirFilterCreate
 */
 int iusFirFilterDelete
 (
-	iuff_t iusFirFilter ///< The object to delete
+	iuff_t filter ///< The object to delete
 );
 
 /** \brief Checks if two FirFilters are equal
@@ -41,7 +41,7 @@ int iusFirFilterCompare
 */
 int iusFirFilterGetKernelSize
 (
-	iuff_t iusFirFilter ///< The FirFilter object of interest   
+	iuff_t filter ///< The FirFilter object of interest
 );
 
 /** \brief Get the \p gain value of a point in the TGC function at \p index
@@ -49,7 +49,7 @@ int iusFirFilterGetKernelSize
 */
 float iusFirFilterGetCoefficient
 (
-	iuff_t iusFirFilter, ///< The FirFilter object of interest
+	iuff_t filter, ///< The FirFilter object of interest
 	int index            ///< The index of the kernel
 );
 
@@ -58,7 +58,7 @@ float iusFirFilterGetCoefficient
 */
 int iusFirFilterSetCoefficient
 (
-	iuff_t iusFirFilter,   ///< The FirFilter of interest
+	iuff_t filter,   ///< The FirFilter of interest
 	int index,             ///< The index of the kernel
 	float coefficient     ///< The filter coefficient value
 );

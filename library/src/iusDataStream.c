@@ -13,6 +13,7 @@ iuds_t iusDataStreamCreate
 )
 {
     iuds_t created = calloc(1,sizeof(IusDataStream));
+    IUS_ERR_ALLOC_NULL_N_RETURN(created, IusDataStream, IUDS_INVALID);
     created->rfDataset = H5I_INVALID_HID;
     created->fileChunkConfig = H5I_INVALID_HID;
     return created;
@@ -20,20 +21,20 @@ iuds_t iusDataStreamCreate
 
 int iusDataStreamDelete
 (
-    iuds_t iusDataStream
+    iuds_t dataStream
 )
 {
     int status=0;
-    if (iusDataStream == NULL) return IUS_ERR_VALUE;
-    if (iusDataStream->fileChunkConfig != H5I_INVALID_HID)
+    IUS_ERR_CHECK_NULL_N_RETURN(dataStream, IUS_ERR_VALUE);
+    if (dataStream->fileChunkConfig != H5I_INVALID_HID)
     {
-        status |= H5Pclose(iusDataStream->fileChunkConfig);
+        status |= H5Pclose(dataStream->fileChunkConfig);
     }
 
-    if (iusDataStream->rfDataset != H5I_INVALID_HID)
+    if (dataStream->rfDataset != H5I_INVALID_HID)
     {
-        status |= H5Dclose(iusDataStream->rfDataset);
+        status |= H5Dclose(dataStream->rfDataset);
     }
-    free(iusDataStream);
+    free(dataStream);
     return status;
 }

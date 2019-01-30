@@ -6,16 +6,33 @@
 #include <unity_fixture.h>
 
 #include <ius.h>
+#include <util.h>
 #include <iusTransmitApodizationDictPrivate.h>
+#include <string.h>
+
+static char *pErrorFilename = "IusTransmitApodizationDict.errlog";
+static FILE *fpErrorLogging = NULL;
 
 TEST_GROUP(IusTransmitApodizationDict);
 
 TEST_SETUP(IusTransmitApodizationDict)
 {
+	iusErrorLogClear();
+    iusErrorLog(IUS_TRUE);
+    iusErrorAutoReport(IUS_TRUE);
+	fpErrorLogging = fopen(pErrorFilename, "w+");
+	iusErrorSetStream(fpErrorLogging);
 }
 
 TEST_TEAR_DOWN(IusTransmitApodizationDict)
 {
+    iusErrorLogClear();
+    iusErrorLog(IUS_FALSE);
+    if (fpErrorLogging != NULL)
+    	fclose(fpErrorLogging);
+	fpErrorLogging=stderr;
+	iusErrorSetStream(fpErrorLogging);
+	remove(pErrorFilename);
 }
 
 
@@ -48,11 +65,65 @@ TEST(IusTransmitApodizationDict, testIusTransmitApodizationDictSetGet)
 	TEST_ASSERT_EQUAL(IUS_TRUE, iusTransmitApodizationCompare(obj, retrievedObj));
 
 	// Invalid params
+	long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
 	TEST_ASSERT_EQUAL(IUTA_INVALID, iusTransmitApodizationDictGet(dict,NULL));
 	TEST_ASSERT_EQUAL(IUTA_INVALID, iusTransmitApodizationDictGet(NULL,pObjLabel));
 	TEST_ASSERT_EQUAL(IUTA_INVALID, iusTransmitApodizationDictGet(dict,"unknownLabel"));
+
+	TEST_ASSERT_EQUAL(IUS_ERR_VALUE, iusTransmitApodizationDictSet(dict, pObjLabel, obj));
+	TEST_ASSERT_EQUAL(IUS_ERR_VALUE, iusTransmitApodizationDictSet(NULL, pObjLabel, obj));
+	TEST_ASSERT_EQUAL(IUS_ERR_VALUE, iusTransmitApodizationDictSet(dict, pObjLabel, NULL));
+
+	TEST_ASSERT_EQUAL(6,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
 	iusTransmitApodizationDelete(obj);
 	iusTransmitApodizationDictDelete(dict);
+}
+
+
+TEST(IusTransmitApodizationDict, testIusTransmitApodizationDictKeys)
+{
+    const int numElements = 8;
+    float ones[8] = {1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f};
+    int status;
+    char *labels[] = { "one" , "two" , "three", "four" , "five"};
+    iuta_t obj = iusTransmitApodizationCreate(numElements);
+
+    iutad_t dict = iusTransmitApodizationDictCreate();
+    status = iusTransmitApodizationSetApodization(obj, ones);
+
+    // Fill dict
+    int i;
+    int keySize = sizeof(labels)/sizeof(labels[0]);
+    for (i=0; i<keySize; i++)
+    {
+        status = iusTransmitApodizationDictSet(dict, labels[i], obj);
+        TEST_ASSERT(status == IUS_E_OK);
+    }
+
+    // Get keys
+    size_t dictSize = iusTransmitApodizationDictGetSize(dict);
+    TEST_ASSERT_EQUAL(5, dictSize);
+    char **keys = iusTransmitApodizationDictGetKeys(dict);
+
+    // Validate keys
+    for (i=0; i<keySize; i++)
+    {
+        TEST_ASSERT_EQUAL(IUS_TRUE, aInB(keys[i], labels));
+    }
+
+    // Invalid params
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
+    keys = iusTransmitApodizationDictGetKeys(NULL);
+    TEST_ASSERT_EQUAL(NULL,keys);
+
+    TEST_ASSERT_EQUAL(1,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
+    iusTransmitApodizationDelete(obj);
+    iusTransmitApodizationDictDelete(dict);
 }
 
 TEST(IusTransmitApodizationDict, testIusTransmitApodizationDictCompare)
@@ -115,7 +186,6 @@ TEST(IusTransmitApodizationDict, testIusTransmitApodizationDictSerialization)
 	hid_t handle = H5Fcreate(filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
 	TEST_ASSERT(handle > 0);
 
-
 	status = iusTransmitApodizationDictSave(transmitApodizationDict, handle);
 	TEST_ASSERT_EQUAL(IUS_E_OK, status);
 	H5Fclose(handle);
@@ -129,16 +199,30 @@ TEST(IusTransmitApodizationDict, testIusTransmitApodizationDictSerialization)
 	H5Fclose(handle);
 
 	TEST_ASSERT_EQUAL(IUS_TRUE, iusTransmitApodizationDictCompare(transmitApodizationDict, savedDict));
+
+    // invalid params
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
+    status = iusTransmitApodizationDictSave(transmitApodizationDict, -1);
+    TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
+    status = iusTransmitApodizationDictSave(NULL, handle);
+    TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
+    savedDict = iusTransmitApodizationDictLoad(-1);
+    TEST_ASSERT_EQUAL(NULL, savedDict);
+
+    TEST_ASSERT_EQUAL(3,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
+
 	iusTransmitApodizationDelete(obj);
 	iusTransmitApodizationDictDelete(transmitApodizationDict);
 	iusTransmitApodizationDictDelete(savedDict);
 }
 
-
-
 TEST_GROUP_RUNNER(IusTransmitApodizationDict)
 {
 	RUN_TEST_CASE(IusTransmitApodizationDict, testIusTransmitApodizationDictCreate);
+    RUN_TEST_CASE(IusTransmitApodizationDict, testIusTransmitApodizationDictKeys);
 	RUN_TEST_CASE(IusTransmitApodizationDict, testIusTransmitApodizationDictSetGet);
 	RUN_TEST_CASE(IusTransmitApodizationDict, testIusTransmitApodizationDictCompare);
 	RUN_TEST_CASE(IusTransmitApodizationDict, testIusTransmitApodizationDictSerialization);

@@ -25,56 +25,56 @@ iu3dt_t ius3DTransducerCreate
   int numElements
 )
 {
-    if ( name == NULL ) return IU3DT_INVALID;
-    if ( shape == IUS_INVALID_TRANSDUCER_SHAPE ) return IU3DT_INVALID;
-    if ( shape == IUS_LINE || shape == IUS_CIRCLE) return IU3DT_INVALID;
+    IUS_ERR_CHECK_NULL_N_RETURN(name, IU3DT_INVALID);
+    IUS_ERR_EVAL_N_RETURN(shape == IUS_INVALID_TRANSDUCER_SHAPE, IU3DT_INVALID);
+    IUS_ERR_EVAL_N_RETURN(shape == IUS_LINE || shape == IUS_CIRCLE, IU3DT_INVALID);
 
     // NAN check
-    if ( centerFrequency != centerFrequency ) return IU3DT_INVALID;
-    if ( numElements < 0 ) return IU3DT_INVALID;
-
+    IUS_ERR_EVAL_N_RETURN(centerFrequency != centerFrequency, IU3DT_INVALID);
+    IUS_ERR_EVAL_N_RETURN(numElements < 0, IU3DT_INVALID);
     iu3dt_t created = calloc(1,sizeof(Ius3DTransducer));
+    IUS_ERR_ALLOC_NULL_N_RETURN(created, Ius3DTransducer, IU3DT_INVALID);
     created->elements = ius3DTransducerElementListCreate(numElements);
     created->baseTransducer.pTransducerName = strdup(name);
     created->baseTransducer.shape = shape;
     created->baseTransducer.centerFrequency = centerFrequency;
     created->baseTransducer.type = IUS_3D_SHAPE;
-    created->baseTransducer.loadedFromFile = IUS_FALSE;
+    created->baseTransducer.deepDelete = IUS_FALSE;
 
     return created;
 }
 
 int ius3DTransducerDeepDelete
 (
-    iu3dt_t ius3DTransducer
+    iu3dt_t transducer
 )
 {
-    if (ius3DTransducer == NULL) return IUS_ERR_VALUE;
-    ius3DTransducer->baseTransducer.loadedFromFile = IUS_TRUE;
-    return ius3DTransducerDelete(ius3DTransducer);
+    IUS_ERR_CHECK_NULL_N_RETURN(transducer, IUS_ERR_VALUE);
+    transducer->baseTransducer.deepDelete = IUS_TRUE;
+    return ius3DTransducerDelete(transducer);
 }
 
 int ius3DTransducerDelete
 (
-    iu3dt_t ius3DTransducer
+    iu3dt_t transducer
 )
 {
-    if (ius3DTransducer == NULL) return IUS_ERR_VALUE;
-    int numElements =  ius3DTransducerElementListGetSize(ius3DTransducer->elements);
+    IUS_ERR_CHECK_NULL_N_RETURN(transducer, IUS_ERR_VALUE);
+    int numElements =  ius3DTransducerElementListGetSize(transducer->elements);
     if (numElements > 0)
     {
-        if (ius3DTransducer->baseTransducer.loadedFromFile == IUS_TRUE)
+        if (transducer->baseTransducer.deepDelete == IUS_TRUE)
         {
-            ius3DTransducerElementListDeepDelete(ius3DTransducer->elements);
+            ius3DTransducerElementListDeepDelete(transducer->elements);
 
         }
         else
         {
-            ius3DTransducerElementListDelete(ius3DTransducer->elements);
+            ius3DTransducerElementListDelete(transducer->elements);
         }
     }
-    free(ius3DTransducer->baseTransducer.pTransducerName);
-    free(ius3DTransducer);
+    free(transducer->baseTransducer.pTransducerName);
+    free(transducer);
     return IUS_E_OK;
 }
 
@@ -99,11 +99,11 @@ int ius3DTransducerCompare
 iu3dte_t ius3DTransducerGetElement
 (
   iu3dt_t transducer,
-  int elementIndex
+  int index
 )
 {
-  if( transducer == NULL ) return IU3DTE_INVALID;
-  return ius3DTransducerElementListGet(transducer->elements,elementIndex);
+  IUS_ERR_CHECK_NULL_N_RETURN(transducer, IU3DTE_INVALID);
+  return ius3DTransducerElementListGet(transducer->elements,index);
 }
 
 int ius3DTransducerGetNumElements
@@ -111,8 +111,8 @@ int ius3DTransducerGetNumElements
   iu3dt_t transducer
 )
 {
-  if( transducer == NULL ) return -1;
-  return ius3DTransducerElementListGetSize(transducer->elements);
+    IUS_ERR_CHECK_NULL_N_RETURN(transducer, -1);
+    return ius3DTransducerElementListGetSize(transducer->elements);
 }
 
 // setters
@@ -123,12 +123,11 @@ int ius3DTransducerSetElement
   iu3dte_t element
 )
 {
-  if( transducer == NULL ) return IUS_ERR_VALUE;
-  if( elementIndex >= ius3DTransducerElementListGetSize(transducer->elements) ) return IUS_ERR_VALUE;
-  if( elementIndex < 0 ) return IUS_ERR_VALUE;
-  if( element == NULL ) return IUS_ERR_VALUE;
-
-  return ius3DTransducerElementListSet(transducer->elements,element,elementIndex);
+    IUS_ERR_CHECK_NULL_N_RETURN(transducer, IUS_ERR_VALUE);
+    IUS_ERR_CHECK_NULL_N_RETURN(element, IUS_ERR_VALUE);
+    IUS_ERR_EVAL_N_RETURN(elementIndex >= ius3DTransducerElementListGetSize(transducer->elements), IUS_ERR_VALUE);
+    IUS_ERR_EVAL_N_RETURN(elementIndex < 0, IUS_ERR_VALUE);
+    return ius3DTransducerElementListSet(transducer->elements,element,elementIndex);
 }
 
 int ius3DTransducerSetElementList
@@ -137,8 +136,8 @@ int ius3DTransducerSetElementList
     iu3dtel_t elementList
 )
 {
-    if (transducer == NULL) return IUS_ERR_VALUE;
-    if (elementList == NULL) return IUS_ERR_VALUE;
+    IUS_ERR_CHECK_NULL_N_RETURN(transducer, IUS_ERR_VALUE);
+    IUS_ERR_CHECK_NULL_N_RETURN(elementList, IUS_ERR_VALUE);
     if (transducer->elements != NULL) ius3DTransducerElementListDelete(transducer->elements);
     transducer->elements = elementList;
     return IUS_E_OK;
@@ -151,7 +150,8 @@ herr_t ius3DTransducerSave
 )
 {
 	herr_t status=0;
-
+    IUS_ERR_CHECK_NULL_N_RETURN(transducer, IUS_ERR_VALUE);
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUS_ERR_VALUE);
     status = iusBaseTransducerSave((iut_t)transducer, handle);
     if (status != 0)
         return status;
@@ -166,6 +166,7 @@ iu3dt_t ius3DTransducerLoad
 	hid_t handle
 )
 {
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IU3DT_INVALID);
 	iut_t baseTransducer = iusBaseTransducerLoad(handle);
 	if (baseTransducer == IUT_INVALID) return IU3DT_INVALID;
 
@@ -179,7 +180,7 @@ iu3dt_t ius3DTransducerLoad
 	                                              numElements);
     ius3DTransducerSetElementList(transducer,elements);
     iusBaseTransducerDelete(baseTransducer);
-    transducer->baseTransducer.loadedFromFile = IUS_TRUE;
+    transducer->baseTransducer.deepDelete = IUS_TRUE;
     return transducer;
 }
 

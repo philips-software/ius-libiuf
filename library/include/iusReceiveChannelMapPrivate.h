@@ -16,7 +16,7 @@ struct IusReceiveChannelMap
 
 int iusReceiveChannelMapSave
 (
-	iurcm_t receiveChannelMap,
+	iurcm_t channelMap,
 	hid_t   handle
 );
 

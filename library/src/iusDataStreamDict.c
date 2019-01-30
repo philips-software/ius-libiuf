@@ -32,10 +32,8 @@ iudsd_t iusDataStreamDictCreate
 )
 {
 	iudsd_t dict = calloc(1, sizeof(IusDataStreamDict));
-	if (dict != NULL)
-	{
-		hashmap_init(&dict->map, hashmap_hash_string, hashmap_compare_string, 0);
-	}
+	IUS_ERR_ALLOC_NULL_N_RETURN(dict, IusDataStreamDict, IUDSD_INVALID);
+	hashmap_init(&dict->map, hashmap_hash_string, hashmap_compare_string, 0);
 	return dict;
 }
 
@@ -46,7 +44,7 @@ int iusDataStreamDictDelete
 {
     HashableDataStream *iterElement;
     struct hashmap_iter *iter;
-	if (dict == NULL) return IUS_ERR_VALUE;
+	IUS_ERR_CHECK_NULL_N_RETURN(dict, IUS_ERR_VALUE);
 	/* Free all allocated resources associated with map and reset its state */
     for (iter = hashmap_iter(&dict->map); iter; iter = hashmap_iter_next(&dict->map, iter))
     {
@@ -116,8 +114,7 @@ int iusDataStreamDictGetSize
 	iudsd_t dict
 )
 {
-	if (dict == NULL)
-		return -1;
+	IUS_ERR_CHECK_NULL_N_RETURN(dict, -1);
 	return (int)hashmap_size(&dict->map);
 }
 
@@ -127,11 +124,15 @@ iuds_t iusDataStreamDictGet
 	char * key
 )
 {
-	if (dict == NULL || key == NULL) return IUDS_INVALID;
+	IUS_ERR_CHECK_NULL_N_RETURN(dict, IUDS_INVALID);
+	IUS_ERR_CHECK_NULL_N_RETURN(key, IUDS_INVALID);
 	HashableDataStream * search;
 	search = HashableDataStream_hashmap_get(&dict->map, key);
 	if (search == NULL)
+	{
+		IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_INVALID_KEY, "for key '%s'", key);
 		return IUDS_INVALID;
+	}
 	return search->dataStream;
 }
 
@@ -142,16 +143,15 @@ int iusDataStreamDictSet
 	iuds_t member
 )
 {
-	if (dict == NULL) return IUS_ERR_VALUE;
-	if (key == NULL) return IUS_ERR_VALUE;
-    if (member == IUDS_INVALID) return IUS_ERR_VALUE;
-
+	IUS_ERR_CHECK_NULL_N_RETURN(dict, IUS_ERR_VALUE);
+	IUS_ERR_CHECK_NULL_N_RETURN(key, IUS_ERR_VALUE);
+	IUS_ERR_CHECK_NULL_N_RETURN(member, IUS_ERR_VALUE);
 	HashableDataStream *newMember = calloc(1, sizeof(HashableDataStream));
 	newMember->dataStream = member;
 	strcpy(newMember->key, key);
 	if (HashableDataStream_hashmap_put(&dict->map, newMember->key, newMember) != newMember)
 	{
-		printf("discarding blob with duplicate key: %s\n", newMember->key);
+		IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_DUPLICATE_KEY, "discarding blob with duplicate key: %s", newMember->key);
 		free(newMember);
 		return IUS_ERR_VALUE;
 	}

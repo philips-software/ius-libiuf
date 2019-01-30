@@ -11,33 +11,33 @@ struct Ius3DTransducerElementList
 {
     int numElements;
     iu3dte_t *   p3DTransducerElements ;
-    IUS_BOOL loadedFromFile;
+    IUS_BOOL deepDelete;
 } ;
 
 // ADT
 iu3dtel_t ius3DTransducerElementListCreate
 (
-    int num3DTransducerElements
+    int numElements
 )
 {
     int i;
+    IUS_ERR_EVAL_N_RETURN(numElements<=0, IU3DTEL_INVALID);
     iu3dtel_t list = calloc(1, sizeof(Ius3DTransducerElementList));
-    if(list!=NULL)
+    IUS_ERR_ALLOC_NULL_N_RETURN(list, Ius3DTransducerElementList, IU3DTEL_INVALID);
+    list->deepDelete = IUS_FALSE;
+    list->numElements = numElements;
+    list->p3DTransducerElements = (iu3dte_t *) calloc((size_t)numElements, sizeof(iu3dte_t));
+    if( list->p3DTransducerElements == NULL )
     {
-        list->loadedFromFile = IUS_FALSE;
-        list->numElements = num3DTransducerElements;
-        list->p3DTransducerElements = (iu3dte_t *) calloc((size_t)num3DTransducerElements, sizeof(iu3dte_t));
-        if( list->p3DTransducerElements == NULL )
+        IUS_ERROR_PUSH(IUS_ERR_MAJ_MEMORY, IUS_ERR_MIN_ALLOC, "calloc failed for p3DTransducerElements member");
+        free(list);
+        list = IU3DTEL_INVALID;
+    }
+    else
+    {
+        for (i=0;i < list->numElements ;i++)
         {
-            free(list);
-            list = NULL;
-        }
-        else
-        {
-            for (i=0;i < list->numElements ;i++)
-            {
-                ius3DTransducerElementListSet(list,IU3DTE_INVALID,i);
-            }
+            ius3DTransducerElementListSet(list,IU3DTE_INVALID,i);
         }
     }
     return list;
@@ -50,8 +50,8 @@ int ius3DTransducerElementListDeepDelete
     iu3dtel_t list
 )
 {
-    if(list == NULL) return IUS_ERR_VALUE;
-    list->loadedFromFile = IUS_TRUE;
+    IUS_ERR_CHECK_NULL_N_RETURN(list, IUS_ERR_VALUE);
+    list->deepDelete = IUS_TRUE;
     return ius3DTransducerElementListDelete(list);
 }
 
@@ -60,8 +60,8 @@ int ius3DTransducerElementListDelete
     iu3dtel_t list
 )
 {
-    if(list == NULL) return IUS_ERR_VALUE;
-    if(list->loadedFromFile == IUS_TRUE)
+    IUS_ERR_CHECK_NULL_N_RETURN(list, IUS_ERR_VALUE);
+    if(list->deepDelete == IUS_TRUE)
     {
         for (int i = 0 ; i < list->numElements ; i++ )
         {
@@ -100,7 +100,7 @@ int ius3DTransducerElementListGetSize
     iu3dtel_t list
 )
 {
-    if( list == NULL ) return -1;
+    IUS_ERR_CHECK_NULL_N_RETURN(list, -1);
     return list->numElements;
 }
 
@@ -110,8 +110,8 @@ iu3dte_t ius3DTransducerElementListGet
     int index
 )
 {
-    if( index < 0 ) return NULL;
-    if( list == NULL || index >= list->numElements ) return NULL;
+    IUS_ERR_CHECK_NULL_N_RETURN(list, IU3DTE_INVALID);
+    IUS_ERR_EVAL_N_RETURN(index < 0  || index >= list->numElements, IU3DTE_INVALID);
     return list->p3DTransducerElements[index];
 }
 
@@ -122,9 +122,9 @@ int ius3DTransducerElementListSet
     int index
 )
 {
-    if( list == NULL || member == NULL ) return IUS_ERR_VALUE;
-    if( index < 0 ) return IUS_ERR_VALUE;
-    if( index >= list->numElements ) return IUS_ERR_VALUE;
+//    IUS_ERR_CHECK_NULL_N_RETURN(member, IUS_ERR_VALUE);
+    IUS_ERR_CHECK_NULL_N_RETURN(list, IUS_ERR_VALUE);
+    IUS_ERR_EVAL_N_RETURN(index < 0  || index >= list->numElements, IUS_ERR_VALUE);
     list->p3DTransducerElements[index] = member;
     return IUS_E_OK;
 }
@@ -155,10 +155,9 @@ iu3dtel_t ius3DTransducerElementListLoad
     char path[IUS_MAX_HDF5_PATH];
     int i,size;
 
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IU3DTEL_INVALID);
 	hid_t elements_id = H5Gopen(handle, IUS_INPUTFILE_PATH_TRANSDUCER_ELEMENTLIST, H5P_DEFAULT);
-    
-	if(handle == H5I_INVALID_HID || elements_id == H5I_INVALID_HID)
-        return IU3DTEL_INVALID;
+    IUS_ERR_EVAL_N_RETURN(elements_id == H5I_INVALID_HID, IU3DTEL_INVALID);
 
     int status = iusHdf5ReadInt(elements_id, IUS_INPUTFILE_PATH_TRANSDUCER_ELEMENTLIST_SIZE, &(size));
     if(status <0)
@@ -181,7 +180,7 @@ iu3dtel_t ius3DTransducerElementListLoad
             break;
     }
 
-    elementList->loadedFromFile = IUS_TRUE;
+    elementList->deepDelete = IUS_TRUE;
     if( status == IUS_ERR_VALUE )
     {
         ius3DTransducerElementListDelete(elementList);
@@ -201,12 +200,13 @@ int ius3DTransducerElementListSave
     int i;
     char path[IUS_MAX_HDF5_PATH];
 
-    if(list == NULL)
-        return IUS_ERR_VALUE;
-    if(handle == H5I_INVALID_HID)
-        return IUS_ERR_VALUE;
+    IUS_ERR_CHECK_NULL_N_RETURN(list, IUS_ERR_VALUE);
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUS_ERR_VALUE);
     if(ius3DTransducerElementListFull(list) == IUS_FALSE)
+    {
+        IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE, "argument list (3DTransducerElement list) was not full");
         return IUS_ERR_VALUE;
+    }
 
     hid_t group_id = H5Gcreate(handle, IUS_INPUTFILE_PATH_TRANSDUCER_ELEMENTLIST, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
     iu3dte_t sourceElement;

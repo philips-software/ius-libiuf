@@ -21,7 +21,8 @@ typedef struct HashableDemodulation HashableDemodulation;
 struct IusDemodulationDict
 {
 	struct hashmap map;
-	IUS_BOOL loadedFromFile;
+	IUS_BOOL deepDelete;
+    char **keys;
 };
 
 /* Declare type-specific blob_hashmap_* functions with this handy macro */
@@ -33,11 +34,10 @@ iudmd_t iusDemodulationDictCreate
 )
 {
 	iudmd_t dict = calloc(1, sizeof(IusDemodulationDict));
-	if (dict != NULL)
-	{
-		hashmap_init(&dict->map, hashmap_hash_string, hashmap_compare_string, 0);
-		dict->loadedFromFile = IUS_FALSE;
-	}
+    IUS_ERR_ALLOC_NULL_N_RETURN(dict, IusDemodulationDict, IUDMD_INVALID);
+    hashmap_init(&dict->map, hashmap_hash_string, hashmap_compare_string, 0);
+    dict->deepDelete = IUS_FALSE;
+    dict->keys = NULL;
 	return dict;
 }
 
@@ -46,9 +46,18 @@ int iusDemodulationDictDeepDelete
 	iudmd_t dict
 )
 {
-	if (dict == NULL) return IUS_ERR_VALUE;
-	dict->loadedFromFile = IUS_TRUE;
+    IUS_ERR_CHECK_NULL_N_RETURN(dict, IUS_ERR_VALUE);
+	dict->deepDelete = IUS_TRUE;
 	return iusDemodulationDictDelete(dict);
+}
+
+static void iusDemodulationDictDeleteKeys
+(
+    iudmd_t dict
+)
+{
+    if (dict->keys != NULL)
+        free(dict->keys);
 }
 
 int iusDemodulationDictDelete
@@ -59,15 +68,16 @@ int iusDemodulationDictDelete
 	HashableDemodulation *iterElement;
 	struct hashmap_iter *iter;
 
-	if (dict == NULL) return IUS_ERR_VALUE;
+    IUS_ERR_CHECK_NULL_N_RETURN(dict, IUS_ERR_VALUE);
 	for (iter = hashmap_iter(&dict->map); iter; iter = hashmap_iter_next(&dict->map, iter))
 	{
 		iterElement = HashableDemodulation_hashmap_iter_get_data(iter);
-		if (dict->loadedFromFile == IUS_TRUE)
+		if (dict->deepDelete == IUS_TRUE)
 			iusDemodulationDelete(iterElement->demodulation);
 		free(iterElement);
 	}
 	hashmap_destroy(&dict->map);
+    iusDemodulationDictDeleteKeys(dict);
 	free(dict);
 	return IUS_E_OK;
 }
@@ -123,13 +133,12 @@ int iusDemodulationDictCompare
 }
 
 
-int iusDemodulationDictGetSize
+size_t iusDemodulationDictGetSize
 (
 	iudmd_t dict
 )
 {
-	if (dict == NULL)
-		return -1;
+    IUS_ERR_CHECK_NULL_N_RETURN(dict, (size_t) -1);
 	return (int)hashmap_size(&dict->map);
 }
 
@@ -139,12 +148,50 @@ iudm_t iusDemodulationDictGet
 	char * key
 )
 {
-	if (dict == NULL || key == NULL) return IUDM_INVALID;
-	HashableDemodulation * search;
+    IUS_ERR_CHECK_NULL_N_RETURN(dict, IUDM_INVALID);
+    IUS_ERR_CHECK_NULL_N_RETURN(key, IUDM_INVALID);
+    HashableDemodulation * search;
 	search = HashableDemodulation_hashmap_get(&dict->map, key);
-	if (search == NULL)
-		return IUDM_INVALID;
+    if (search == NULL)
+    {
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_INVALID_KEY, "for key '%s'", key);
+        return IUDM_INVALID;
+    }
 	return search->demodulation;
+}
+
+char **iusDemodulationDictGetKeys
+(
+    iudmd_t dict
+)
+{
+    IUS_ERR_CHECK_NULL_N_RETURN(dict, NULL);
+    return dict->keys;
+}
+
+static int iusDemodulationDictUpdateKeys
+(
+    iudmd_t dict
+)
+{
+    iusDemodulationDictDeleteKeys(dict);
+    // allocate memory for the keys
+    int keyIndex;
+    size_t size = iusDemodulationDictGetSize(dict);
+    dict->keys = calloc(size+1, sizeof(char*));
+    IUS_ERR_ALLOC_NULL_N_RETURN(dict, char *, IUS_ERR_VALUE);
+
+    struct hashmap_iter *iter;
+    HashableDemodulation *iterElement;
+    IUS_ERR_CHECK_NULL_N_RETURN(dict, IUS_ERR_VALUE);
+    /* Free all allocated resources associated with map and reset its state */
+    for (iter = hashmap_iter(&dict->map), keyIndex=0; iter; iter = hashmap_iter_next(&dict->map, iter), keyIndex++)
+    {
+        iterElement = HashableDemodulation_hashmap_iter_get_data(iter);
+        dict->keys[keyIndex] = iterElement->key;
+    }
+    dict->keys[keyIndex] = NULL;
+    return IUS_E_OK;
 }
 
 int iusDemodulationDictSet
@@ -154,17 +201,18 @@ int iusDemodulationDictSet
 	iudm_t member
 )
 {
-	if (dict == NULL || key == NULL) return IUS_ERR_VALUE;
-	HashableDemodulation *newMember = calloc(1, sizeof(HashableDemodulation));
+    IUS_ERR_CHECK_NULL_N_RETURN(dict, IUS_ERR_VALUE);
+    IUS_ERR_CHECK_NULL_N_RETURN(key, IUS_ERR_VALUE);
+    HashableDemodulation *newMember = calloc(1, sizeof(HashableDemodulation));
 	newMember->demodulation = member;
 	strcpy(newMember->key, key);
 	if (HashableDemodulation_hashmap_put(&dict->map, newMember->key, newMember) != newMember)
 	{
-		printf("discarding blob with duplicate key: %s\n", newMember->key);
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_DUPLICATE_KEY, "discarding blob with duplicate key: %s", key);
 		free(newMember);
 		return IUS_ERR_VALUE;
 	}
-	return IUS_E_OK;
+	return iusDemodulationDictUpdateKeys(dict);
 }
 
 
@@ -179,10 +227,8 @@ int iusDemodulationDictSave
 	struct hashmap_iter *iter;
 	hid_t group_id;
 
-	if (dict == NULL)
-		return IUS_ERR_VALUE;
-	if (handle == H5I_INVALID_HID)
-		return IUS_ERR_VALUE;
+    IUS_ERR_CHECK_NULL_N_RETURN(dict, IUS_ERR_VALUE);
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUS_ERR_VALUE);
 
 	status = H5Gget_objinfo(handle, IUS_IQFILE_PATH_DEMODULATIONDICT, 0, NULL);
 	if (status != 0) // the group does not exist yet
@@ -193,9 +239,14 @@ int iusDemodulationDictSave
 	{
 		group_id = H5Gopen(handle, IUS_IQFILE_PATH_DEMODULATIONDICT, H5P_DEFAULT);
 	}
-	if (group_id == H5I_INVALID_HID)
-		return IUS_ERR_VALUE;
-	status = 0;
+
+    if (group_id == H5I_INVALID_HID)
+    {
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "Error getting handle for path: %s", IUS_IQFILE_PATH_DEMODULATIONDICT);
+        return IUS_ERR_VALUE;
+    }
+
+    status = 0;
 	HashableDemodulation *demodulationDictItem;
 
 	// iterate over source list elements and save'em
@@ -221,6 +272,7 @@ iudmd_t iusDemodulationDictLoad
 	int status = 0;
 	char member_name[IUS_MAX_HDF5_PATH];
 
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUDMD_INVALID);
 	hid_t grpid = H5Gopen(handle, IUS_IQFILE_PATH_DEMODULATIONDICT, H5P_DEFAULT);
 	if (handle == H5I_INVALID_HID)
 		return NULL;
@@ -244,6 +296,6 @@ iudmd_t iusDemodulationDictLoad
 	{
 		return NULL;
 	}
-	dict->loadedFromFile = IUS_TRUE;
+	dict->deepDelete = IUS_TRUE;
 	return dict;
 }

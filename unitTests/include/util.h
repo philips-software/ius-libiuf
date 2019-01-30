@@ -7,26 +7,32 @@
 #include <ius2DTransducerElement.h>
 #include <ius3DTransducerElement.h>
 
+IUS_BOOL  aInB
+(
+    char *a,
+    char **b
+);
+
 iu3dte_t iusUtilCreate3DElement
-    (
-        float x,
-        float y,
-        float z,
-        float sx,
-        float sy,
-        float sz,
-        float theta,
-        float phi
-    );
+(
+    float x,
+    float y,
+    float z,
+    float sx,
+    float sy,
+    float sz,
+    float theta,
+    float phi
+);
 
 
 iu2dte_t iusUtilCreate2DElement
-    (
-        float x,
-        float z,
-        float sx,
-        float sz,
-        float phi
-    );
+(
+    float x,
+    float z,
+    float sx,
+    float sz,
+    float phi
+);
 
 #endif //IUSUNITTESTS_UTIL_H

@@ -126,7 +126,7 @@ static void get_current_time(uuid_time_t *timestamp)
 
         /* if clock reading changed since last UUID generated, */
         if (time_last != time_now) {
-            /* reset numElements of uuids gen'd with this clock reading */
+            /* reset count of uuids gen'd with this clock reading */
             uuids_this_tick = 0;
             time_last = time_now;
             break;
@@ -137,7 +137,7 @@ static void get_current_time(uuid_time_t *timestamp)
         }
         /* going too fast for our clock; spin */
     }
-    /* add the numElements of uuids to low order bits of the clock reading */
+    /* add the count of uuids to low order bits of the clock reading */
     *timestamp = time_now + uuids_this_tick;
 }
 

@@ -29,13 +29,13 @@ iu2dps_t ius2DParametricSourceCreate
     float startTheta
 )
 {
-    if ( numLocations <= 0 ) return  NULL;
+    IUS_ERR_EVAL_N_RETURN(numLocations <= 0, IU2DPS_INVALID);
     iu2dps_t created = calloc(1,sizeof(Ius2DParametricSource));
-    if( created == NULL ) return NULL;
-
+    IUS_ERR_ALLOC_NULL_N_RETURN(created, Ius2DParametricSource, IU2DPS_INVALID);
     created->pLocations = (struct Ius2DPosition *) calloc((size_t)numLocations, sizeof(Ius2DPosition));
     if( created->pLocations == NULL )
     {
+        IUS_ERROR_PUSH(IUS_ERR_MAJ_MEMORY, IUS_ERR_MIN_ALLOC, "calloc failed for pLocations member");
         free(created);
         return NULL;
     }
@@ -50,17 +50,13 @@ iu2dps_t ius2DParametricSourceCreate
 
 int ius2DParametricSourceDelete
 (
-    iu2dps_t ius2DParametricSource
+    iu2dps_t source
 )
 {
-    int status = IUS_ERR_VALUE;
-    if(ius2DParametricSource != NULL)
-    {
-        free(ius2DParametricSource->pLocations);
-        free(ius2DParametricSource);
-        status = IUS_E_OK;
-    }
-    return status;
+    IUS_ERR_CHECK_NULL_N_RETURN(source, IUS_ERR_VALUE);
+    free(source->pLocations);
+    free(source);
+    return IUS_E_OK;
 }
 
 
@@ -92,61 +88,70 @@ int ius2DParametricSourceCompare
 // Getters
 float ius2DParametricSourceGetFNumber
 (
-    iu2dps_t ius2DParametricSource
+    iu2dps_t source
 )
 {
-    if( ius2DParametricSource == NULL  ) return NAN;
-    return ius2DParametricSource->fNumber;
+    IUS_ERR_CHECK_NULL_N_RETURN(source, NAN);
+    return source->fNumber;
 }
 
 float ius2DParametricSourceGetDeltaTheta
 (
-    iu2dps_t ius2DParametricSource
+    iu2dps_t source
 )
 {
-    if( ius2DParametricSource == NULL  ) return NAN;
-    return ius2DParametricSource->deltaTheta;
+    IUS_ERR_CHECK_NULL_N_RETURN(source, NAN);
+    return source->deltaTheta;
 }
 
 float ius2DParametricSourceGetStartTheta
 (
-    iu2dps_t ius2DParametricSource
+    iu2dps_t source
 )
 {
-    if( ius2DParametricSource == NULL  ) return NAN;
-    return ius2DParametricSource->startTheta;
+    IUS_ERR_CHECK_NULL_N_RETURN(source, NAN);
+    return source->startTheta;
+}
+
+int ius2DParametricSourceGetNumLocations
+(
+        iu2dps_t source
+)
+{
+    IUS_ERR_CHECK_NULL_N_RETURN(source, -1);
+    return source->numLocations;
 }
 
 int ius2DParametricSourceSetFNumber
 (
-    iu2dps_t ius2DParametricSource,
+    iu2dps_t source,
     float FNumber
 )
 {
-    if (ius2DParametricSource == NULL) return IUS_ERR_VALUE;
-    ius2DParametricSource->fNumber = FNumber;
+    IUS_ERR_CHECK_NULL_N_RETURN(source, IUS_ERR_VALUE);
+    source->fNumber = FNumber;
     return IUS_E_OK;
 }
 
 int ius2DParametricSourceSetDeltaTheta
 (
-    iu2dps_t ius2DParametricSource,
+    iu2dps_t source,
     float deltaTheta
 )
 {
-    if (ius2DParametricSource == NULL) return IUS_ERR_VALUE;
-    ius2DParametricSource->deltaTheta = deltaTheta;
+    IUS_ERR_CHECK_NULL_N_RETURN(source, IUS_ERR_VALUE);
+    source->deltaTheta = deltaTheta;
     return IUS_E_OK;
 }
 
 int ius2DParametricSourceSetStartTheta
 (
-    iu2dps_t ius2DParametricSource,
+    iu2dps_t source,
     float startTheta
 )
 {
-    if (ius2DParametricSource == NULL) return IUS_ERR_VALUE;
-    ius2DParametricSource->startTheta = startTheta;
+    IUS_ERR_CHECK_NULL_N_RETURN(source, IUS_ERR_VALUE);
+    source->startTheta = startTheta;
     return IUS_E_OK;
 }
 
@@ -159,6 +164,8 @@ int ius2DParametricSourceSave
 )
 {
     int status=0;
+    IUS_ERR_CHECK_NULL_N_RETURN(source, IUS_ERR_VALUE);
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUS_ERR_VALUE);
 
     // Base
     status = iusBaseSourceSave((ius_t)source, handle);
@@ -185,12 +192,14 @@ iu2dps_t ius2DParametricSourceLoad
     int numLocations;
     iu2dps_t  source;
 
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IU2DPS_INVALID);
+
     status |= iusHdf5ReadFloat(handle, IUS_INPUTFILE_PATH_SOURCE_FNUMBER, &(fNumber));
     status |= iusHdf5ReadFloat(handle, IUS_INPUTFILE_PATH_SOURCE_DELTATHETA, &(deltaTheta));
     status |= iusHdf5ReadFloat(handle, IUS_INPUTFILE_PATH_SOURCE_STARTTHETA, &(startTheta));
     status |= iusHdf5ReadInt(handle, IUS_INPUTFILE_PATH_SOURCE_NUMSOURCES, &(numLocations));
     if (status < 0)
-        return NULL;
+        return IU2DPS_INVALID;
 
     source = ius2DParametricSourceCreate(numLocations,fNumber,deltaTheta,startTheta);
     return source;

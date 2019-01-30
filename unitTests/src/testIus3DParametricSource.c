@@ -10,14 +10,29 @@
 #include <ius.h>
 #include <ius3DParametricSourcePrivate.h>
 
+static char *pErrorFilename = "Ius3DParametricSource.errlog";
+static FILE *fpErrorLogging = NULL;
+
 TEST_GROUP(Ius3DParametricSource);
 
 TEST_SETUP(Ius3DParametricSource)
 {
+    iusErrorLogClear();
+    iusErrorLog(IUS_TRUE);
+    iusErrorAutoReport(IUS_TRUE);
+    fpErrorLogging = fopen(pErrorFilename, "w+");
+    iusErrorSetStream(fpErrorLogging);
 }
 
 TEST_TEAR_DOWN(Ius3DParametricSource)
 {
+    iusErrorLogClear();
+    iusErrorLog(IUS_FALSE);
+    if (fpErrorLogging != NULL)
+        fclose(fpErrorLogging);
+    fpErrorLogging=stderr;
+    iusErrorSetStream(fpErrorLogging);
+    remove(pErrorFilename);
 }
 
 TEST(Ius3DParametricSource, testIus3DParametricSourceCreate)
@@ -39,10 +54,17 @@ TEST(Ius3DParametricSource, testIus3DParametricSourceCreate)
     ius3DParametricSourceDelete(notherObj);
 
     // invalid params
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
     obj = ius3DParametricSourceCreate(1, 0, -1, 2.0f, 0, 0, 0);
     TEST_ASSERT(obj == IU3DPS_INVALID);
     obj = ius3DParametricSourceCreate(-1, 1, 1, -2.0f, 0, 0, 0);
     TEST_ASSERT(obj == IU3DPS_INVALID);
+
+    TEST_ASSERT_EQUAL(2,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
+
 }
 
 TEST(Ius3DParametricSource, testIus3DParametricSourceDelete)
@@ -62,8 +84,14 @@ TEST(Ius3DParametricSource, testIus3DParametricSourceDelete)
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
     // invalid params
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
     status = ius3DParametricSourceDelete(NULL);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
+
+    TEST_ASSERT_EQUAL(1,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
 }
 
 
@@ -124,13 +152,25 @@ TEST(Ius3DParametricSource, testIus3DParametricSourceSetGet)
     TEST_ASSERT_EQUAL_FLOAT(startTheta,ius3DParametricSourceGetStartTheta(obj));
     TEST_ASSERT_EQUAL_FLOAT(deltaPhi,ius3DParametricSourceGetDeltaPhi(obj));
     TEST_ASSERT_EQUAL_FLOAT(startPhi,ius3DParametricSourceGetStartPhi(obj));
+    TEST_ASSERT_EQUAL(numThetaLocations, ius3DParametricSourceGetNumThetaLocations(obj));
+    TEST_ASSERT_EQUAL(numPhiLocations, ius3DParametricSourceGetNumPhiLocations(obj));
+
 
     // invalid param
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
     TEST_ASSERT_EQUAL_FLOAT(NAN,ius3DParametricSourceGetFNumber(NULL));
     TEST_ASSERT_EQUAL_FLOAT(NAN,ius3DParametricSourceGetDeltaTheta(NULL));
     TEST_ASSERT_EQUAL_FLOAT(NAN,ius3DParametricSourceGetStartTheta(NULL));
     TEST_ASSERT_EQUAL_FLOAT(NAN,ius3DParametricSourceGetDeltaPhi(NULL));
     TEST_ASSERT_EQUAL_FLOAT(NAN,ius3DParametricSourceGetStartPhi(NULL));
+    TEST_ASSERT_EQUAL(-1, ius3DParametricSourceGetNumThetaLocations(NULL));
+    TEST_ASSERT_EQUAL(-1, ius3DParametricSourceGetNumPhiLocations(NULL));
+
+    TEST_ASSERT_EQUAL(7,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
+
 
     ius3DParametricSourceDelete(obj);
 }

@@ -19,12 +19,12 @@ typedef IusTransducer *iut_t;
 
 int iusTransducerDelete
 (
-    iut_t iusTransducer
+    iut_t transducer
 );
 
 int iusTransducerDeepDelete
 (
-    iut_t iusTransducer
+    iut_t transducer
 );
 
 

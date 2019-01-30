@@ -71,12 +71,6 @@ add_library(ius STATIC
 		include/ius3DTransducerElementPrivate.h
 		include/ius3DTransducerElementList.h
         include/ius3DTransducerElementListPrivate.h
-        include/iusData.h
-		include/iusDataStream.h
-		include/iusDataStreamDictPrivate.h
-		include/iusDemodulation.h
-		include/iusDemodulationDict.h
-		include/iusDemodulationDictPrivate.h
         include/iusAcquisition.h
         include/iusAcquisitionPrivate.h
 		include/iusCompoundFile.h
@@ -89,6 +83,13 @@ add_library(ius STATIC
 		include/iusCompoundWave.h
 		include/iusCompoundWaveList.h
 		include/iusCompoundWaveListPrivate.h
+        include/iusData.h
+        include/iusDataStream.h
+        include/iusDataStreamDictPrivate.h
+        include/iusDemodulation.h
+        include/iusDemodulationDict.h
+        include/iusDemodulationDictPrivate.h
+        include/iusError.h
 		include/iusFile.h
 		include/iusFilter.h
 		include/iusFrame.h
@@ -174,6 +175,7 @@ add_library(ius STATIC
 		src/iusDemodulationDict.c
         src/iusAcquisition.c
         src/iusCompoundFile.c
+		src/iusError.c
 		src/iusFile.c
 		src/iusFilter.c
 		src/iusFrame.c

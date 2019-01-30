@@ -25,11 +25,11 @@ iupp_t iusParametricPulseCreate
 )
 {
     IusParametricPulse *pulse;
-    if( numPulses < 0 ) return NULL;
-    if( pulseFrequency < 0.0f ) return NULL;
+    IUS_ERR_EVAL_N_RETURN(numPulses < 0, IUPP_INVALID);
+    IUS_ERR_EVAL_N_RETURN(pulseFrequency < 0.0f, IUPP_INVALID);
 
     pulse = (IusParametricPulse *) calloc (1,sizeof(IusParametricPulse));
-    if(pulse == NULL) return NULL;
+    IUS_ERR_ALLOC_NULL_N_RETURN(pulse, IusParametricPulse, IUPP_INVALID);
 
     pulse->pulseFrequency = pulseFrequency;
     pulse->pulseAmplitude = pulseAmplitude;
@@ -45,8 +45,8 @@ int iusParametricPulseDelete
     iupp_t pulse
 )
 {
-    if( pulse == NULL ) return IUS_ERR_VALUE;
-    if(iusPulseGetType( (iup_t) pulse ) != IUS_PARAMETRIC_PULSETYPE ) return IUS_ERR_VALUE;
+    IUS_ERR_CHECK_NULL_N_RETURN(pulse, IUS_ERR_VALUE);
+    IUS_ERR_EVAL_N_RETURN(iusPulseGetType((iup_t)pulse ) != IUS_PARAMETRIC_PULSETYPE, IUS_ERR_VALUE);
     free(pulse);
     return IUS_E_OK;
 }
@@ -72,8 +72,8 @@ float iusParametricPulseGetFrequency
     iupp_t pulse
 )
 {
-    if(pulse == NULL || iusPulseGetType( (iup_t) pulse ) != IUS_PARAMETRIC_PULSETYPE)
-        return NAN;
+    IUS_ERR_CHECK_NULL_N_RETURN(pulse, NAN);
+    IUS_ERR_EVAL_N_RETURN(iusPulseGetType( (iup_t) pulse ) != IUS_PARAMETRIC_PULSETYPE, NAN);
     return ((IusParametricPulse *)pulse)->pulseFrequency;
 }
 
@@ -83,19 +83,19 @@ float iusParametricPulseGetPulseAmplitude
     iupp_t pulse
 )
 {
-    if(pulse == NULL || iusPulseGetType( (iup_t) pulse ) != IUS_PARAMETRIC_PULSETYPE)
-        return NAN;
+    IUS_ERR_CHECK_NULL_N_RETURN(pulse, NAN);
+    IUS_ERR_EVAL_N_RETURN(iusPulseGetType( (iup_t) pulse ) != IUS_PARAMETRIC_PULSETYPE, NAN);
     return ((IusParametricPulse *)pulse)->pulseAmplitude;
 }
 
 int iusParametricPulseGetNumPulses
 (
-iupp_t pulse
+    iupp_t pulse
 )
 {
-    if(pulse == NULL || iusPulseGetType( (iup_t) pulse ) != IUS_PARAMETRIC_PULSETYPE)
-        return IUS_ERR_VALUE;
-    return ((IusParametricPulse *)pulse)->numPulses;
+    IUS_ERR_CHECK_NULL_N_RETURN(pulse, -1);
+    IUS_ERR_EVAL_N_RETURN(iusPulseGetType( (iup_t) pulse ) != IUS_PARAMETRIC_PULSETYPE, -1);
+    return pulse->numPulses;
 }
 
 int iusParametricPulseSave
@@ -105,11 +105,9 @@ int iusParametricPulseSave
 )
 {
     int status=0;
-	if (pulse == NULL || iusPulseGetType((iup_t)pulse) != IUS_PARAMETRIC_PULSETYPE)
-		return IUS_ERR_VALUE;
-	if (handle == H5I_INVALID_HID)
-		return IUS_ERR_VALUE;
-
+    IUS_ERR_CHECK_NULL_N_RETURN(pulse, IUS_ERR_VALUE);
+    IUS_ERR_EVAL_N_RETURN(iusPulseGetType( (iup_t) pulse ) != IUS_PARAMETRIC_PULSETYPE, IUS_ERR_VALUE);
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUS_ERR_VALUE);
     status = iusBasePulseSave((iup_t)pulse, handle);
     if (status == IUS_ERR_VALUE) return status;
     status = iusHdf5WriteFloat(handle, IUS_INPUTFILE_PATH_PULSE_FREQUENCY, &(pulse->pulseFrequency), 1);
@@ -129,8 +127,7 @@ iupp_t iusParametricPulseLoad
     int     numPulses;           /**< number of cycles that the pulse represents */
     iupp_t  pulse;
 
-	if (handle == H5I_INVALID_HID)
-		return NULL;
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUPP_INVALID);
     status |= iusHdf5ReadFloat(handle, IUS_INPUTFILE_PATH_PULSE_FREQUENCY, &(pulseFrequency));
     status |= iusHdf5ReadFloat(handle, IUS_INPUTFILE_PATH_PULSE_PULSEAMPLITUDES, &(pulseAmplitude));
     status |= iusHdf5ReadInt(handle, IUS_INPUTFILE_PATH_NUMPULSES, &(numPulses));

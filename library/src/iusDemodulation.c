@@ -29,7 +29,8 @@ iudm_t iusDemodulationCreateWithoutTGCandFilter
 )
 {
 	iudm_t created = calloc(1, sizeof(IusDemodulation));
-	created->sampleFrequency = sampleFrequency;
+    IUS_ERR_ALLOC_NULL_N_RETURN(created, IusDemodulation, IUDM_INVALID);
+    created->sampleFrequency = sampleFrequency;
 	created->numSamplesPerLine = numSamplesPerLine;
 	created->method = method;
 	return created;
@@ -44,32 +45,50 @@ iudm_t iusDemodulationCreate
 	int filterKernelSize
 )
 {
-	if (sampleFrequency <= 0.0f) return IUDM_INVALID;
-	if (numSamplesPerLine < 0) return IUDM_INVALID;
-	if (numTGCentries <= 0) return IUDM_INVALID;
-	if (filterKernelSize <= 0) return IUDM_INVALID;
+    if( sampleFrequency <= 0.0f )
+    {
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE,
+                           "sampleFrequency argument should be > 0.0, but was: '%f'", sampleFrequency);
+        return IUDM_INVALID;
+    }
 
-	iudm_t created = iusDemodulationCreateWithoutTGCandFilter(method, sampleFrequency, numSamplesPerLine);
+    if( numSamplesPerLine < 0 )
+    {
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE,
+                           "numSamplesPerLine argument should be >= 0, but was: '%d'", numSamplesPerLine);
+        return IUDM_INVALID;
+    }
+
+    if( numTGCentries <= 0 )
+    {
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE,
+                           "numTGCentries argument should be > 0, but was: '%d'", numTGCentries);
+        return IUDM_INVALID;
+    }
+
+    if( filterKernelSize <= 0 )
+    {
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE,
+                           "filterKernelSize argument should be > 0, but was: '%d'", numTGCentries);
+        return IUDM_INVALID;
+    }
+    iudm_t created = iusDemodulationCreateWithoutTGCandFilter(method, sampleFrequency, numSamplesPerLine);
 	created->TGC = iusTGCCreate(numTGCentries);
 	created->preFilter = iusFirFilterCreate(filterKernelSize);
-	
+
 	return created;
 }
 
 int iusDemodulationDelete
 (
-	iudm_t iusDemodulation
+	iudm_t demodulation
 )
 {
-	int status = IUS_ERR_VALUE;
-	if (iusDemodulation != NULL)
-	{
-		iusTGCDelete(iusDemodulation->TGC);
-		iusFirFilterDelete(iusDemodulation->preFilter);
-		free(iusDemodulation);
-		status = IUS_E_OK;
-	}
-	return status;
+    IUS_ERR_CHECK_NULL_N_RETURN(demodulation, IUS_ERR_VALUE);
+    iusTGCDelete(demodulation->TGC);
+    iusFirFilterDelete(demodulation->preFilter);
+    free(demodulation);
+	return IUS_E_OK;
 }
 
 
@@ -91,79 +110,90 @@ int iusDemodulationCompare
 // Getters
 iutgc_t iusDemodulationGetTGC
 (
-	iudm_t iusDemodulation
+	iudm_t demodulation
 )
 {
-	if (iusDemodulation == NULL) return IUTGC_INVALID;
-	return iusDemodulation->TGC;
+    IUS_ERR_CHECK_NULL_N_RETURN(demodulation, IUTGC_INVALID);
+    return demodulation->TGC;
 }
 
 // Getters
 iuff_t iusDemodulationGetPreFilter
 (
-	iudm_t iusDemodulation
+	iudm_t demodulation
 )
 {
-	if (iusDemodulation == NULL) return IUFIRFILTER_INVALID;
-	return iusDemodulation->preFilter;
+    IUS_ERR_CHECK_NULL_N_RETURN(demodulation, IUFIRFILTER_INVALID);
+	return demodulation->preFilter;
 }
 
 float iusDemodulationGetSampleFrequency
 (
-	iudm_t iusDemodulation
+	iudm_t demodulation
 )
 {
-	if (iusDemodulation == NULL) return NAN;
-	return iusDemodulation->sampleFrequency;
+    IUS_ERR_CHECK_NULL_N_RETURN(demodulation, NAN);
+	return demodulation->sampleFrequency;
 }
 
 int iusDemodulationGetNumSamplesPerLine
 (
-	iudm_t iusDemodulation
+	iudm_t demodulation
 )
 {
-	if (iusDemodulation == NULL) return -1;
-	return iusDemodulation->numSamplesPerLine;
+    IUS_ERR_CHECK_NULL_N_RETURN(demodulation, -1);
+	return demodulation->numSamplesPerLine;
 }
 
 int iusDemodulationGetNumTGCentries
 (
-	iudm_t iusDemodulation
+	iudm_t demodulation
 )
 {
-	if (iusDemodulation == NULL) return -1;
-	return iusTGCGetNumValues(iusDemodulation->TGC);
+    IUS_ERR_CHECK_NULL_N_RETURN(demodulation, -1);
+	return iusTGCGetNumValues(demodulation->TGC);
 }
 
 int iusDemodulationGetPreFilterKernelSize
 (
-	iudm_t iusDemodulation
+	iudm_t demodulation
 )
 {
-	if (iusDemodulation == NULL) return -1;
-	return iusFirFilterGetKernelSize(iusDemodulation->preFilter);
+    IUS_ERR_CHECK_NULL_N_RETURN(demodulation, -1);
+	return iusFirFilterGetKernelSize(demodulation->preFilter);
 }
 
 
 int iusDemodulationSave
 (
-	iudm_t iusDemodulation,
+	iudm_t demodulation,
 	hid_t handle
 )
 {
 	int status = 0;
-	int method = (int)iusDemodulation->method;
+	int method = (int)demodulation->method;
 
-	status |= iusHdf5WriteFloat(handle, IUS_IQFILE_PATH_DEMODULATION_SAMPLEFREQUENCY, &(iusDemodulation->sampleFrequency), 1);
-	status |= iusHdf5WriteInt(handle, IUS_IQFILE_PATH_DEMODULATION_NUMSAMPLESPERLINE, &(iusDemodulation->numSamplesPerLine), 1);
+    IUS_ERR_CHECK_NULL_N_RETURN(demodulation, IUS_ERR_VALUE);
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUS_ERR_VALUE);
+
+	status |= iusHdf5WriteFloat(handle, IUS_IQFILE_PATH_DEMODULATION_SAMPLEFREQUENCY, &(demodulation->sampleFrequency), 1);
+	status |= iusHdf5WriteInt(handle, IUS_IQFILE_PATH_DEMODULATION_NUMSAMPLESPERLINE, &(demodulation->numSamplesPerLine), 1);
 	status |= iusHdf5WriteInt(handle, IUS_IQFILE_PATH_DEMODULATION_METHOD, &method, 1);
+    if (status != 0)
+    {
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "write failed for %s, %s and/or %s",
+                           IUS_INPUTFILE_PATH_RECEIVESETTINGS_SAMPLEFREQUENCY,
+                           IUS_INPUTFILE_PATH_RECEIVESETTINGS_NUMSAMPLESPERLINE,
+                           IUS_IQFILE_PATH_DEMODULATION_METHOD);
+        return IUS_ERR_VALUE;
+    }
 
 	hid_t tgc_id = H5Gcreate(handle, IUS_IQFILE_PATH_DEMODULATION_TGC, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-	status |= iusTGCSave(iusDemodulation->TGC, tgc_id);
+	status |= iusTGCSave(demodulation->TGC, tgc_id);
 	H5Gclose(tgc_id);
 
 	hid_t filter_id = H5Gcreate(handle, IUS_IQFILE_PATH_DEMODULATION_PREFILTER, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-	status |= iusFirFilterSave(iusDemodulation->preFilter, filter_id);
+	status |= iusFirFilterSave(demodulation->preFilter, filter_id);
 	H5Gclose(filter_id);
 
 	return status;
@@ -183,10 +213,18 @@ iudm_t iusDemodulationLoad
 	iuff_t filter;
 	iudm_t iusDemodulation;
 
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUDM_INVALID);
 	status |= iusHdf5ReadFloat(handle, IUS_IQFILE_PATH_DEMODULATION_SAMPLEFREQUENCY, &sampleFrequency);
 	status |= iusHdf5ReadInt(handle, IUS_IQFILE_PATH_DEMODULATION_NUMSAMPLESPERLINE, &numSamplesPerLine);
 	status |= iusHdf5ReadInt(handle, IUS_IQFILE_PATH_DEMODULATION_METHOD, &method);
-	if (status != 0) return IUDM_INVALID;
+    if (status != 0)
+    {
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "read failed for %s, %s or %s",
+                           IUS_IQFILE_PATH_DEMODULATION_SAMPLEFREQUENCY,
+                           IUS_IQFILE_PATH_DEMODULATION_NUMSAMPLESPERLINE,
+                           IUS_IQFILE_PATH_DEMODULATION_METHOD);
+        return IUDM_INVALID;
+    }
 
 	hid_t tgc_id = H5Gopen(handle, IUS_IQFILE_PATH_DEMODULATION_TGC, H5P_DEFAULT);
 	tgc = iusTGCLoad(tgc_id);

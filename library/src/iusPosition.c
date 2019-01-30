@@ -34,47 +34,51 @@ IUS_BOOL ius2DPositionCompare
         return IUS_FALSE;
 }
 
-Ius3DPosition *ius3DPositionCreate
+iu3dp_t ius3DPositionCreate
 (
     float x,
     float y,
     float z
 )
 {
-    Ius3DPosition *iusPos = calloc(1, sizeof(Ius3DPosition));
-    iusPos->x=x;
-    iusPos->y=y;
-    iusPos->z=z;
-    return iusPos;
+    iu3dp_t created = calloc(1, sizeof(Ius3DPosition));
+    IUS_ERR_ALLOC_NULL_N_RETURN(created, Ius3DPosition, IU3DP_INVALID);
+    created->x=x;
+    created->y=y;
+    created->z=z;
+    return created;
 }
 
 
-Ius2DPosition *ius2DPositionCreate
+iu2dp_t ius2DPositionCreate
 (
     float x,
     float z
 )
 {
-    Ius2DPosition *iusPos = calloc(1, sizeof(Ius2DPosition));
-    iusPos->x=x;
-    iusPos->z=z;
-    return iusPos;
+    Ius2DPosition *created = calloc(1, sizeof(Ius2DPosition));
+    IUS_ERR_ALLOC_NULL_N_RETURN(created, Ius2DPosition, IU2DP_INVALID);
+    created->x=x;
+    created->z=z;
+    return created;
 }
 
 void ius3DPositionDelete
 (
-    Ius3DPosition *iusPos
+    iu3dp_t pos
 )
 {
-    free(iusPos);
+    IUS_ERR_CHECK_NULL_N_RETURN(pos, /**/);
+    free(pos);
 }
 
 void ius2DPositionDelete
 (
-    Ius2DPosition *iusPos
+    iu2dp_t pos
 )
 {
-    free(iusPos);
+    IUS_ERR_CHECK_NULL_N_RETURN(pos, /**/);
+    free(pos);
 }
 
 iu3dp_t ius3DPositionLoad
@@ -102,6 +106,7 @@ iu2dp_t ius2DPositionLoad
 )
 {
     int status=0;
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IU2DP_INVALID);
 
     float x,z;
     hid_t position_id = H5Gopen(handle, IUS_INPUTFILE_PATH_POSITION, H5P_DEFAULT);
@@ -122,6 +127,9 @@ int ius3DPositionSave
 )
 {
     hid_t position_id;
+    IUS_ERR_CHECK_NULL_N_RETURN(position, IUS_ERR_VALUE);
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUS_ERR_VALUE);
+
     int status = H5Gget_objinfo(handle, IUS_INPUTFILE_PATH_POSITION, 0, NULL);
     if (status != 0) // the group does not exist yet
     {
@@ -146,6 +154,9 @@ int ius2DPositionSave
 )
 {
     hid_t position_id;
+    IUS_ERR_CHECK_NULL_N_RETURN(position, IUS_ERR_VALUE);
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUS_ERR_VALUE);
+
     int status = H5Gget_objinfo(handle, IUS_INPUTFILE_PATH_POSITION, 0, NULL);
     if (status != 0) // the group does not exist yet
     {

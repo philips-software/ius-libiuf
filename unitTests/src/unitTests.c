@@ -4,7 +4,7 @@
 
 #include <stdio.h>
 #include <unity_fixture.h>
-#include <iusUtil.h>
+#include <ius.h>
 
 static void RunAllTests(void)
 {
@@ -18,18 +18,22 @@ static void RunAllTests(void)
     RUN_TEST_GROUP(Ius3DTransducer);
     RUN_TEST_GROUP(Ius3DTransducerElement);
     RUN_TEST_GROUP(Ius3DTransducerElementList);
+    RUN_TEST_GROUP(IusAcquisition);
+    //RUN_TEST_GROUP(IusCompoundFile);
     RUN_TEST_GROUP(IusDataStream);
     RUN_TEST_GROUP(IusDataStreamDict);
-	RUN_TEST_GROUP(IusDemodulation);
-	RUN_TEST_GROUP(IusDemodulationDict);
-    RUN_TEST_GROUP(IusAcquisition);
+    RUN_TEST_GROUP(IusDemodulation);
+    RUN_TEST_GROUP(IusDemodulationDict);
+//    RUN_TEST_GROUP(IusErrorHandling);
+    RUN_TEST_GROUP(IusFile);
 	RUN_TEST_GROUP(IusFirFilter);
     RUN_TEST_GROUP(IusFrame);
     RUN_TEST_GROUP(IusFrameList);
     RUN_TEST_GROUP(IusInputFile);
 	RUN_TEST_GROUP(IusIqFile);
-	//RUN_TEST_GROUP(IusCompoundFile);
-    RUN_TEST_GROUP(IusFile);
+    RUN_TEST_GROUP(IusIqPattern);
+    RUN_TEST_GROUP(IusIqPatternList);
+    RUN_TEST_GROUP(IusIqPatternListDict);
     RUN_TEST_GROUP(IusHistoryNodeList);
     RUN_TEST_GROUP(IusHistoryNode);
     RUN_TEST_GROUP(IusParameterDict);
@@ -54,6 +58,7 @@ static void RunAllTests(void)
 
 int main(int argc, const char * argv[])
 {
-    iusDiagDisable();
+    iusHDF5ErrorLog(IUS_FALSE);
+    iusErrorLog(IUS_FALSE);
     return UnityMain(argc, argv, RunAllTests);
 }

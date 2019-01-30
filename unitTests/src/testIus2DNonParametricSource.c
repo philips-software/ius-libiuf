@@ -9,16 +9,30 @@
 #include <include/ius.h>
 #include "include/ius2DNonParametricSourcePrivate.h"
 
+static char *pErrorFilename = "Ius2DNonParametricSource.errlog";
+static FILE *fpErrorLogging = NULL;
+
 TEST_GROUP(Ius2DNonParametricSource);
 
 TEST_SETUP(Ius2DNonParametricSource)
 {
+    iusErrorLogClear();
+    iusErrorLog(IUS_TRUE);
+    iusErrorAutoReport(IUS_TRUE);
+    fpErrorLogging = fopen(pErrorFilename, "w+");
+    iusErrorSetStream(fpErrorLogging);
 }
 
 TEST_TEAR_DOWN(Ius2DNonParametricSource)
 {
+    iusErrorLogClear();
+    iusErrorLog(IUS_FALSE);
+    if (fpErrorLogging != NULL)
+        fclose(fpErrorLogging);
+    fpErrorLogging=stderr;
+    iusErrorSetStream(fpErrorLogging);
+    remove(pErrorFilename);
 }
-
 
 TEST(Ius2DNonParametricSource, testIus2DNonParametricSourceCreate)
 {
@@ -32,10 +46,17 @@ TEST(Ius2DNonParametricSource, testIus2DNonParametricSourceCreate)
     ius2DNonParametricSourceDelete(notherObj);
 
     // invalid params
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
     obj = ius2DNonParametricSourceCreate(0);
     TEST_ASSERT(obj == IU2DNPS_INVALID);
     obj = ius2DNonParametricSourceCreate(0);
     TEST_ASSERT(obj == IU2DNPS_INVALID);
+
+    TEST_ASSERT_EQUAL(2,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
+
 }
 
 TEST(Ius2DNonParametricSource, testIus2DNonParametricSourceDelete)
@@ -48,8 +69,14 @@ TEST(Ius2DNonParametricSource, testIus2DNonParametricSourceDelete)
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
     // invalid params
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
     status = ius2DNonParametricSourceDelete(NULL);
     TEST_ASSERT_EQUAL(IUS_ERR_VALUE, status);
+
+    TEST_ASSERT_EQUAL(1,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
 }
 
 
@@ -98,6 +125,7 @@ TEST(Ius2DNonParametricSource, testIus2DNonParametricSourceSetGet)
     int p,numLocations = 5;
 
     iu2dnps_t obj = ius2DNonParametricSourceCreate(numLocations);
+    TEST_ASSERT_EQUAL(numLocations, ius2DNonParametricSourceGetNumLocations(obj));
 
     // Set/Get location test
     for(p=0; p<numLocations; p++)
@@ -110,8 +138,15 @@ TEST(Ius2DNonParametricSource, testIus2DNonParametricSourceSetGet)
     }
 
     // invalid param
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
     TEST_ASSERT_EQUAL(IU2DP_INVALID, ius2DNonParametricSourceGetPosition(NULL,0));
     TEST_ASSERT_EQUAL(IU2DP_INVALID, ius2DNonParametricSourceGetPosition(obj,-1));
+    TEST_ASSERT_EQUAL(-1, ius2DNonParametricSourceGetNumLocations(NULL));
+
+    TEST_ASSERT_EQUAL(3,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
 
     ius2DNonParametricSourceDelete(obj);
 }

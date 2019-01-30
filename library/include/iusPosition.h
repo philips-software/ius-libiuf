@@ -40,13 +40,13 @@ iu3dp_t ius3DPositionCreate
 /** \brief Delete a 3D position */
 void ius3DPositionDelete
 (
-    iu3dp_t iusPos ///< The position of interest
+    iu3dp_t pos ///< The position of interest
 );
 
 /** \brief Delete a 3D position */
 void ius2DPositionDelete
 (
-    iu2dp_t iusPos ///< The position of interest
+    iu2dp_t pos ///< The position of interest
 );
 
 /** \brief compare two 2D positions with each other

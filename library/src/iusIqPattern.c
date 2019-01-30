@@ -30,22 +30,14 @@ iuiqpa_t iusIqPatternCreate
     const char *pDemodulationLabel
 )
 {
-    if( pPulseLabel == NULL ||
-        pSourceLabel == NULL ||
-        pChannelMapLabel == NULL ||
-        pApodizationLabel == NULL ||
-        pDemodulationLabel == NULL
-    ) return IUIQPA_INVALID;
-
-    if( strcmp(pPulseLabel,"") == 0 ||
-        strcmp(pSourceLabel,"") == 0 ||
-        strcmp(pChannelMapLabel,"") == 0 ||
-        strcmp(pApodizationLabel,"") == 0 ||
-        strcmp(pDemodulationLabel,"") == 0
-    ) return IUIQPA_INVALID;
-
-    if( timeInFrame < 0.0f ) return IUIQPA_INVALID;
+    IUS_ERR_EVAL_N_RETURN(timeInFrame < 0.0f, IUIQPA_INVALID);
+    IUS_ERR_STRP_NULL_EMPTY(pPulseLabel, IUIQPA_INVALID);
+    IUS_ERR_STRP_NULL_EMPTY(pSourceLabel, IUIQPA_INVALID);
+    IUS_ERR_STRP_NULL_EMPTY(pChannelMapLabel, IUIQPA_INVALID);
+    IUS_ERR_STRP_NULL_EMPTY(pApodizationLabel, IUIQPA_INVALID);
+    IUS_ERR_STRP_NULL_EMPTY(pDemodulationLabel, IUIQPA_INVALID);
     iuiqpa_t created = calloc(1, sizeof(IusIqPattern));
+    IUS_ERR_ALLOC_NULL_N_RETURN(created, IusIqPattern, IUIQPA_INVALID);
     created->timeInFrame = timeInFrame;
     created->pPulseLabel = strdup(pPulseLabel);
     created->pSourceLabel = strdup(pSourceLabel);
@@ -57,21 +49,17 @@ iuiqpa_t iusIqPatternCreate
 
 int iusIqPatternDelete
 (
-    iuiqpa_t iusIqPattern
+    iuiqpa_t pattern
 )
 {
-    int status = IUS_ERR_VALUE;
-    if(iusIqPattern != IUIQPA_INVALID)
-    {
-        free((void *)iusIqPattern->pApodizationLabel);
-        free((void *)iusIqPattern->pChannelMapLabel);
-        free((void *)iusIqPattern->pPulseLabel);
-        free((void *)iusIqPattern->pSourceLabel);
-        free((void *)iusIqPattern->pDemodulationLabel);
-        free(iusIqPattern);
-        status = IUS_E_OK;
-    }
-    return status;
+    IUS_ERR_CHECK_NULL_N_RETURN(pattern, IUS_ERR_VALUE);
+    free((void *)pattern->pApodizationLabel);
+    free((void *)pattern->pChannelMapLabel);
+    free((void *)pattern->pPulseLabel);
+    free((void *)pattern->pSourceLabel);
+    free((void *)pattern->pDemodulationLabel);
+    free(pattern);
+    return IUS_E_OK;
 }
 
 
@@ -103,16 +91,16 @@ int iusIqPatternSave
     hid_t handle
 )
 {
-  int status=IUS_E_OK;
-  //char path[IUS_MAX_HDF5_PATH];
-
-  status |= iusHdf5WriteString(handle, IUS_IQFILE_PATH_PATTERNLIST_PATTERN_PULSELABEL, pattern->pPulseLabel);
-  status |= iusHdf5WriteString(handle, IUS_IQFILE_PATH_PATTERNLIST_PATTERN_SOURCELABEL, pattern->pSourceLabel);
-  status |= iusHdf5WriteString(handle, IUS_IQFILE_PATH_PATTERNLIST_PATTERN_CHANNELMAPLABEL, pattern->pChannelMapLabel);
-  status |= iusHdf5WriteString(handle, IUS_IQFILE_PATH_PATTERNLIST_PATTERN_APODIZATIONLABEL, pattern->pApodizationLabel);
-  status |= iusHdf5WriteString(handle, IUS_IQFILE_PATH_PATTERNLIST_PATTERN_DEMODULATIONLABEL, pattern->pDemodulationLabel);
-  status |= iusHdf5WriteFloat(handle,  IUS_IQFILE_PATH_PATTERNLIST_PATTERN_TIMEINFRAME, &(pattern->timeInFrame), 1);
-  return status;
+    int status=IUS_E_OK;
+    IUS_ERR_CHECK_NULL_N_RETURN(pattern, IUS_ERR_VALUE);
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUS_ERR_VALUE);
+    status |= iusHdf5WriteString(handle, IUS_IQFILE_PATH_PATTERNLIST_PATTERN_PULSELABEL, pattern->pPulseLabel);
+    status |= iusHdf5WriteString(handle, IUS_IQFILE_PATH_PATTERNLIST_PATTERN_SOURCELABEL, pattern->pSourceLabel);
+    status |= iusHdf5WriteString(handle, IUS_IQFILE_PATH_PATTERNLIST_PATTERN_CHANNELMAPLABEL, pattern->pChannelMapLabel);
+    status |= iusHdf5WriteString(handle, IUS_IQFILE_PATH_PATTERNLIST_PATTERN_APODIZATIONLABEL, pattern->pApodizationLabel);
+    status |= iusHdf5WriteString(handle, IUS_IQFILE_PATH_PATTERNLIST_PATTERN_DEMODULATIONLABEL, pattern->pDemodulationLabel);
+    status |= iusHdf5WriteFloat(handle,  IUS_IQFILE_PATH_PATTERNLIST_PATTERN_TIMEINFRAME, &(pattern->timeInFrame), 1);
+    return status;
 }
 
 
@@ -121,26 +109,27 @@ iuiqpa_t iusIqPatternLoad
   hid_t handle
 )
 {
-  int status = 0;
+    int status = 0;
+    float timeInFrame;
+    char pPulseLabel[IUS_MAX_HDF5_PATH];
+    char pSourceLabel[IUS_MAX_HDF5_PATH];
+    char pChannelMapLabel[IUS_MAX_HDF5_PATH];
+    char pApodizationLabel[IUS_MAX_HDF5_PATH];
+    char pDemodulationLabel[IUS_MAX_HDF5_PATH];
 
-  float timeInFrame;
-  char pPulseLabel[IUS_MAX_HDF5_PATH];
-  char pSourceLabel[IUS_MAX_HDF5_PATH];
-  char pChannelMapLabel[IUS_MAX_HDF5_PATH];
-  char pApodizationLabel[IUS_MAX_HDF5_PATH];
-  char pDemodulationLabel[IUS_MAX_HDF5_PATH];
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUIQPA_INVALID);
 
-  status |= iusHdf5ReadString(handle, IUS_IQFILE_PATH_PATTERNLIST_PATTERN_PULSELABEL, pPulseLabel);
-  status |= iusHdf5ReadString(handle, IUS_IQFILE_PATH_PATTERNLIST_PATTERN_SOURCELABEL, pSourceLabel);
-  status |= iusHdf5ReadString(handle, IUS_IQFILE_PATH_PATTERNLIST_PATTERN_CHANNELMAPLABEL, pChannelMapLabel);
-  status |= iusHdf5ReadString(handle, IUS_IQFILE_PATH_PATTERNLIST_PATTERN_APODIZATIONLABEL, pApodizationLabel);
-  status |= iusHdf5ReadString(handle, IUS_IQFILE_PATH_PATTERNLIST_PATTERN_DEMODULATIONLABEL, pDemodulationLabel);
-  status |= iusHdf5ReadFloat( handle, IUS_IQFILE_PATH_PATTERNLIST_PATTERN_TIMEINFRAME, &(timeInFrame));
+    status |= iusHdf5ReadString(handle, IUS_IQFILE_PATH_PATTERNLIST_PATTERN_PULSELABEL, pPulseLabel);
+    status |= iusHdf5ReadString(handle, IUS_IQFILE_PATH_PATTERNLIST_PATTERN_SOURCELABEL, pSourceLabel);
+    status |= iusHdf5ReadString(handle, IUS_IQFILE_PATH_PATTERNLIST_PATTERN_CHANNELMAPLABEL, pChannelMapLabel);
+    status |= iusHdf5ReadString(handle, IUS_IQFILE_PATH_PATTERNLIST_PATTERN_APODIZATIONLABEL, pApodizationLabel);
+    status |= iusHdf5ReadString(handle, IUS_IQFILE_PATH_PATTERNLIST_PATTERN_DEMODULATIONLABEL, pDemodulationLabel);
+    status |= iusHdf5ReadFloat( handle, IUS_IQFILE_PATH_PATTERNLIST_PATTERN_TIMEINFRAME, &(timeInFrame));
 
-  if( status < 0 )
+    if( status < 0 )
     return NULL;
 
-  return iusIqPatternCreate(timeInFrame,
+    return iusIqPatternCreate(timeInFrame,
                           pPulseLabel,
                           pSourceLabel,
                           pChannelMapLabel,
@@ -150,55 +139,55 @@ iuiqpa_t iusIqPatternLoad
 
 const char * iusIqPatternGetPulseLabel
 (
-    iuiqpa_t iusIqPattern
+    iuiqpa_t pattern
 )
 {
-    if(iusIqPattern == IUIQPA_INVALID) return NULL;
-    return iusIqPattern->pPulseLabel;
+    IUS_ERR_CHECK_NULL_N_RETURN(pattern, NULL);
+    return pattern->pPulseLabel;
 }
 
 const char * iusIqPatternGetSourceLabel
 (
-    iuiqpa_t iusIqPattern
+    iuiqpa_t pattern
 )
 {
-    if(iusIqPattern == IUIQPA_INVALID) return NULL;
-    return iusIqPattern->pSourceLabel;
+    IUS_ERR_CHECK_NULL_N_RETURN(pattern, NULL);
+    return pattern->pSourceLabel;
 }
 
 const char * iusIqPatternGetChannelMapLabel
 (
-    iuiqpa_t iusIqPattern
+    iuiqpa_t pattern
 )
 {
-    if(iusIqPattern == IUIQPA_INVALID) return NULL;
-    return iusIqPattern->pChannelMapLabel;
+    IUS_ERR_CHECK_NULL_N_RETURN(pattern, NULL);
+    return pattern->pChannelMapLabel;
 }
 
 const char * iusIqPatternGetApodizationLabel
 (
-    iuiqpa_t iusIqPattern
+    iuiqpa_t pattern
 )
 {
-    if(iusIqPattern == IUIQPA_INVALID) return NULL;
-    return iusIqPattern->pApodizationLabel;
+    IUS_ERR_CHECK_NULL_N_RETURN(pattern, NULL);
+    return pattern->pApodizationLabel;
 }
 
 const char * iusIqPatternGetDemodulationLabel
 (
-    iuiqpa_t iusIqPattern
+    iuiqpa_t pattern
 )
 {
-    if(iusIqPattern == IUIQPA_INVALID) return NULL;
-    return iusIqPattern->pDemodulationLabel;
+    IUS_ERR_CHECK_NULL_N_RETURN(pattern, NULL);
+    return pattern->pDemodulationLabel;
 }
 
 float iusIqPatternGetTimeInFrame
 (
-    iuiqpa_t iusIqPattern
+    iuiqpa_t pattern
 )
 {
-    if(iusIqPattern == IUIQPA_INVALID) return NAN;
-    return iusIqPattern->timeInFrame;
+    IUS_ERR_CHECK_NULL_N_RETURN(pattern, NAN);
+    return pattern->timeInFrame;
 }
 

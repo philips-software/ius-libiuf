@@ -6,16 +6,32 @@
 #include <unity_fixture.h>
 
 #include <ius.h>
+#include <util.h>
 #include <iusReceiveChannelMapDictPrivate.h>
+
+static char *pErrorFilename = "IusReceiveChannelMapDict.errlog";
+static FILE *fpErrorLogging = NULL;
 
 TEST_GROUP(IusReceiveChannelMapDict);
 
 TEST_SETUP(IusReceiveChannelMapDict)
 {
+	iusErrorLogClear();
+	iusErrorLog(IUS_TRUE);
+	iusErrorAutoReport(IUS_TRUE);
+	fpErrorLogging = fopen(pErrorFilename, "w+");
+	iusErrorSetStream(fpErrorLogging);
 }
 
 TEST_TEAR_DOWN(IusReceiveChannelMapDict)
 {
+	iusErrorLogClear();
+	iusErrorLog(IUS_FALSE);
+	if (fpErrorLogging != NULL)
+		fclose(fpErrorLogging);
+	fpErrorLogging=stderr;
+	iusErrorSetStream(fpErrorLogging);
+	remove(pErrorFilename);
 }
 
 
@@ -47,11 +63,69 @@ TEST(IusReceiveChannelMapDict, testIusReceiveChannelMapDictSetGet)
 	TEST_ASSERT_EQUAL(IUS_TRUE, iusReceiveChannelMapCompare(obj,retrievedObj));
 
 	// Invalid params
-	TEST_ASSERT_EQUAL(IURCM_INVALID, iusReceiveChannelMapDictGet(dict,NULL));
-	TEST_ASSERT_EQUAL(IURCM_INVALID, iusReceiveChannelMapDictGet(NULL,pObjLabel));
-	TEST_ASSERT_EQUAL(IURCM_INVALID, iusReceiveChannelMapDictGet(dict,"unknownLabel"));
+	long filePos = ftell(fpErrorLogging);
+	TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+	TEST_ASSERT_EQUAL(IUTA_INVALID, iusReceiveChannelMapDictGet(dict,NULL));
+	TEST_ASSERT_EQUAL(IUTA_INVALID, iusReceiveChannelMapDictGet(NULL,pObjLabel));
+	TEST_ASSERT_EQUAL(IUTA_INVALID, iusReceiveChannelMapDictGet(dict,"unknownLabel"));
+
+	TEST_ASSERT_EQUAL(IUS_ERR_VALUE, iusReceiveChannelMapDictSet(dict, pObjLabel, obj));
+	TEST_ASSERT_EQUAL(IUS_ERR_VALUE, iusReceiveChannelMapDictSet(NULL, pObjLabel, obj));
+	TEST_ASSERT_EQUAL(IUS_ERR_VALUE, iusReceiveChannelMapDictSet(dict, pObjLabel, NULL));
+
+	TEST_ASSERT_EQUAL(6,iusErrorGetCount());
+	TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
+
 	iusReceiveChannelMapDelete(obj);
 	iusReceiveChannelMapDictDelete(dict);
+
+}
+
+
+TEST(IusReceiveChannelMapDict, testIusReceiveChannelMapDictGetKeys)
+{
+    const int numChannels = 10;
+    int oneToOneMap[10] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+    int     status;
+    char *labels[] = { "one" , "two" , "three", "four" , "five"};
+
+    // Create
+    iurcm_t obj = iusReceiveChannelMapCreate(numChannels);
+    iurcmd_t dict = iusReceiveChannelMapDictCreate();
+    status = iusReceiveChannelMapSetMap(obj, oneToOneMap);
+
+    // Fill
+    int i;
+    int keySize = sizeof(labels)/sizeof(labels[0]);
+    for (i=0; i<keySize; i++)
+    {
+        status = iusReceiveChannelMapDictSet(dict, labels[i], obj);
+        TEST_ASSERT(status == IUS_E_OK);
+    }
+
+    size_t dictSize = iusReceiveChannelMapDictGetSize(dict);
+    TEST_ASSERT_EQUAL(5, dictSize);
+    char **keys = iusReceiveChannelMapDictGetKeys(dict);
+
+    // Validate keys
+    for (i=0; i<keySize; i++)
+    {
+        TEST_ASSERT_EQUAL(IUS_TRUE, aInB(keys[i], labels));
+    }
+
+
+    // Invalid params
+    long filePos = ftell(fpErrorLogging);
+    TEST_ASSERT_EQUAL(0,iusErrorGetCount());
+
+    keys = iusReceiveChannelMapDictGetKeys(NULL);
+    TEST_ASSERT_EQUAL(NULL,keys);
+
+    TEST_ASSERT_EQUAL(1,iusErrorGetCount());
+    TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
+
+    iusReceiveChannelMapDelete(obj);
+    iusReceiveChannelMapDictDelete(dict);
 
 }
 
@@ -135,6 +209,7 @@ TEST_GROUP_RUNNER(IusReceiveChannelMapDict)
 {
 	RUN_TEST_CASE(IusReceiveChannelMapDict, testIusReceiveChannelMapDictCreate);
 	RUN_TEST_CASE(IusReceiveChannelMapDict, testIusReceiveChannelMapDictSetGet);
-	RUN_TEST_CASE(IusReceiveChannelMapDict, testIusReceiveChannelMapDictCompare);
+    RUN_TEST_CASE(IusReceiveChannelMapDict, testIusReceiveChannelMapDictGetKeys)
+    RUN_TEST_CASE(IusReceiveChannelMapDict, testIusReceiveChannelMapDictCompare);
 	RUN_TEST_CASE(IusReceiveChannelMapDict, testIusReceiveChannelMapDictSerialization);
 }
