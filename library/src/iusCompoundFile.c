@@ -10,6 +10,7 @@
 #include "iusCompoundFrameListPrivate.h"
 #include <iusDataStreamDictPrivate.h>
 #include <iusHistoryNodePrivate.h>
+#include <assert.h>
 
 struct IusCompoundFileInstance
 {
@@ -68,7 +69,7 @@ int iusCompoundFileInstanceDelete
     free((void *)instance->pFilename);
     if(instance->loadedFromFile == IUS_TRUE)
     {
-        iusFrameListDelete(instance->compoundFrameList);
+        iusCompoundFrameListDelete(instance->compoundFrameList);
         iusReceiveApodizationDictDelete(instance->receiveApodizationDict);
         iusReceiveChannelMapDictDelete(instance->receiveChannelMapDict);
         iusSourceDictDelete(instance->sourceDict);
@@ -133,48 +134,50 @@ static iucfi_t compoundFileInstanceLoad
 )
 {
     if (instance == NULL) return IUCFI_INVALID;
-
-    instance->compoundFrameList = iusFrameListLoad(instance->handle);
-    if (instance->compoundFrameList == IUCFRL_INVALID)
-    {
-        fprintf(stderr, "Warning from iusCompoundFileNodeLoad: could not load framelist");
-        return IUCFI_INVALID;
-    }
-
-    instance->compoundWaveListDict = iusCompoundWaveListDictLoad(instance->handle);
-    if (instance->compoundWaveListDict == IUCWLD_INVALID)
-    {
-        fprintf(stderr, "Warning from iusCompoundFileNodeLoad: could not load compoundWaveLists  %s\n", instance->pFilename );
-        return IUCFI_INVALID;
-    }
-
-    instance->pulseDict = iusPulseDictLoad(instance->handle);
-    if (instance->pulseDict == IUPD_INVALID)
-    {
-        fprintf( stderr, "Warning from iusCompoundFileNodeLoad: could not load pulses: %s\n", instance->pFilename );
-        return IUCFI_INVALID;
-    }
-
-    instance->sourceDict = iusSourceDictLoad(instance->handle);
-    if (instance->sourceDict == IUSD_INVALID)
-    {
-        fprintf( stderr, "Warning from iusCompoundFileNodeLoad: could not load sources: %s\n", instance->pFilename );
-        return IUCFI_INVALID;
-    }
-
-    instance->receiveChannelMapDict = iusReceiveChannelMapDictLoad(instance->handle);
-    if (instance->receiveChannelMapDict == IURCMD_INVALID)
-    {
-        fprintf(stderr, "Warning from iusCompoundFileNodeLoad: could not load receiveChannelMap: %s\n", instance->pFilename);
-        return IUCFI_INVALID;
-    }
-
-    instance->receiveApodizationDict = iusReceiveApodizationDictLoad(instance->handle);
-    if (instance->receiveApodizationDict == IURAD_INVALID)
-    {
-        fprintf(stderr, "Warning from iusCompoundFileNodeLoad: could not load transmitApodizationDict: %s\n", instance->pFilename);
-        return IUCFI_INVALID;
-    }
+    // Todo: Fix
+    assert(IUS_FALSE);
+//
+//    instance->compoundFrameList = iusFrameListLoad(instance->handle);
+//    if (instance->compoundFrameList == IUCFRL_INVALID)
+//    {
+//        fprintf(stderr, "Warning from iusCompoundFileNodeLoad: could not load framelist");
+//        return IUCFI_INVALID;
+//    }
+//
+//    instance->compoundWaveListDict = iusCompoundWaveListDictLoad(instance->handle);
+//    if (instance->compoundWaveListDict == IUCWLD_INVALID)
+//    {
+//        fprintf(stderr, "Warning from iusCompoundFileNodeLoad: could not load compoundWaveLists  %s\n", instance->pFilename );
+//        return IUCFI_INVALID;
+//    }
+//
+//    instance->pulseDict = iusPulseDictLoad(instance->handle);
+//    if (instance->pulseDict == IUPD_INVALID)
+//    {
+//        fprintf( stderr, "Warning from iusCompoundFileNodeLoad: could not load pulses: %s\n", instance->pFilename );
+//        return IUCFI_INVALID;
+//    }
+//
+//    instance->sourceDict = iusSourceDictLoad(instance->handle);
+//    if (instance->sourceDict == IUSD_INVALID)
+//    {
+//        fprintf( stderr, "Warning from iusCompoundFileNodeLoad: could not load sources: %s\n", instance->pFilename );
+//        return IUCFI_INVALID;
+//    }
+//
+//    instance->receiveChannelMapDict = iusReceiveChannelMapDictLoad(instance->handle);
+//    if (instance->receiveChannelMapDict == IURCMD_INVALID)
+//    {
+//        fprintf(stderr, "Warning from iusCompoundFileNodeLoad: could not load receiveChannelMap: %s\n", instance->pFilename);
+//        return IUCFI_INVALID;
+//    }
+//
+//    instance->receiveApodizationDict = iusReceiveApodizationDictLoad(instance->handle);
+//    if (instance->receiveApodizationDict == IURAD_INVALID)
+//    {
+//        fprintf(stderr, "Warning from iusCompoundFileNodeLoad: could not load transmitApodizationDict: %s\n", instance->pFilename);
+//        return IUCFI_INVALID;
+//    }
 
     int status = iusHdf5ReadInt( instance->handle, IUS_IQFILE_PATH_IUSVERSION, &(instance->IusVersion));
     if( status != IUS_E_OK )
@@ -257,11 +260,13 @@ int iusCompoundFileSaveInstance
 {
   herr_t status=0;
   status |= iusCompoundFrameListSave(instanceData->compoundFrameList, handle);
-  status |= iusCompoundWaveListDictSave(instanceData->compoundWaveListDict, handle);
-  status |= iusPulseDictSave(instanceData->pulseDict, handle);
-  status |= iusSourceDictSave(instanceData->sourceDict, handle);
-  status |= iusReceiveChannelMapDictSave(instanceData->receiveChannelMapDict, handle);
-  status |= iusReceiveApodizationDictSave(instanceData->receiveApodizationDict, handle);
+    // Todo: Fix
+    assert(IUS_FALSE);
+//  status |= iusCompoundWaveListDictSave(instanceData->compoundWaveListDict, handle);
+//  status |= iusPulseDictSave(instanceData->pulseDict, handle);
+//  status |= iusSourceDictSave(instanceData->sourceDict, handle);
+//  status |= iusReceiveChannelMapDictSave(instanceData->receiveChannelMapDict, handle);
+//  status |= iusReceiveApodizationDictSave(instanceData->receiveApodizationDict, handle);
   status |= iusHdf5WriteInt( instanceData->handle, IUS_IQFILE_PATH_IUSVERSION, &(instanceData->IusVersion), 1);
   return status;
 }
