@@ -6,3 +6,4 @@ public/
 *.html
 *.js
 Testing/
+dox/html/search/*
