@@ -7,3 +7,4 @@ public/
 *.js
 Testing/
 dox/html/search/*
+dox/html/*.[a-z]+
