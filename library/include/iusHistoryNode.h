@@ -25,6 +25,14 @@ iuhn_t iusHistoryNodeCreate
     char *nodeType          ///< The node type description
 );
 
+/** \brief Creates a history node of the type described by the string \p pNodeType and parent node stored in \p filename
+ * \return It returns the history node when successful or #IUHN_INVALID in case the node type was invalid */
+iuhn_t iusHistoryNodeCreateFromFile
+(
+    char *nodeType,          ///< The node type description
+    char *filename          ///< The filename with the parent node history
+);
+
 /** \brief Delete a history node  
  * \return Returns #IUS_E_OK when successful or #IUS_ERR_VALUE in case of an error */ 
 int iusHistoryNodeDelete

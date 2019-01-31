@@ -26,6 +26,8 @@ struct IusHistoryNode
 
 } ;
 
+iuhn_t iusHistoryNodeLoad(hid_t handle);
+
 static iuhn_t iusHistoryNodeCreateWithId
 (
     char *ID,
@@ -56,6 +58,37 @@ iuhn_t iusHistoryNodeCreate
     // Uuid should be generated for it.
     setIusUuidCreate( ID );
     return iusHistoryNodeCreateWithId(ID,pNodeType);
+}
+
+iuhn_t iusHistoryNodeCreateFromFile
+(
+    char *pNodeType,
+    char *filename
+)
+{
+    IUS_ERR_CHECK_EMPTYSTR_N_RETURN(pNodeType, IUHN_INVALID);
+    IUS_ERR_CHECK_EMPTYSTR_N_RETURN(filename, IUHN_INVALID);
+    hid_t handle = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT);
+    if (handle <= 0)
+    {
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "File open of %s failed", filename);
+        return IUHN_INVALID;
+    }
+
+    iuhn_t savedObj = iusHistoryNodeLoad(handle);
+    H5Fclose(handle);
+    if (savedObj == IUHN_INVALID)
+    {
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "Unable to load node structure from file %s", filename);
+        return IUHN_INVALID;
+    }
+
+    // create new node NN
+    iuhn_t node = iusHistoryNodeCreate(pNodeType);
+    iuhnl_t nodeList_nt = iusHistoryNodeListCreate(1);
+    iusHistoryNodeListSet(nodeList_nt,savedObj,0);
+    iusHistoryNodeSetParents(node, nodeList_nt);
+    return node;
 }
 
 int iusHistoryNodeDelete

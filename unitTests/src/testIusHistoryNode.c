@@ -21,12 +21,12 @@ TEST_GROUP(IusHistoryNode);
 
 TEST_SETUP(IusHistoryNode)
 {
-//    remove(hierFilename);
     iusErrorLogClear();
-    iusErrorLog(IUS_TRUE);
+    iusErrorLog(IUS_FALSE);
     iusErrorAutoReport(IUS_TRUE);
     fpErrorLogging = fopen(pErrorFilename, "w+");
     iusErrorSetStream(fpErrorLogging);
+    iusErrorSetStream(stderr);
 }
 
 TEST_TEAR_DOWN(IusHistoryNode)
@@ -39,7 +39,7 @@ TEST_TEAR_DOWN(IusHistoryNode)
     iusErrorSetStream(fpErrorLogging);
     remove(pErrorFilename);
     remove(filename);
-//    remove(hierFilename);
+    remove(hierFilename);
 }
 
 TEST(IusHistoryNode, testIusHistoryNodeCreate)
@@ -179,28 +179,116 @@ TEST(IusHistoryNode, testIusHistoryNodeSetGet)
     iusParameterDictDelete(parameterDict);
 }
 
-TEST(IusHistoryNode, testIusHistoryNodeHierarchy)
+iuhn_t dgGenerateNodeHierarchy
+(
+    char *topLevel,
+    iuhn_t node_h
+)
 {
-    iuhn_t node_a = iusHistoryNodeCreate("A");
+    iuhn_t node_a = iusHistoryNodeCreate(topLevel);
     iuhn_t node_b = iusHistoryNodeCreate("B");
     iuhn_t node_c = iusHistoryNodeCreate("C");
     iuhnl_t nodeList_b = iusHistoryNodeListCreate(1);
+    iuhnl_t nodeList_c = iusHistoryNodeListCreate(1);
+    iupad_t paramDict_a = iusParameterDictCreate();
+    iupad_t paramDict_b = iusParameterDictCreate();
+
+    iusParameterDictSet(paramDict_a,"Param for A", "Value for A");
+    iusParameterDictSet(paramDict_b,"Param for B", "Value for B");
+
     iusHistoryNodeListSet(nodeList_b, node_b, 0);
     iusHistoryNodeSetParents(node_a, nodeList_b);
-    iuhnl_t nodeList_c = iusHistoryNodeListCreate(1);
+    iusHistoryNodeSetParameters(node_a, paramDict_a);
+
     iusHistoryNodeListSet(nodeList_c, node_c, 0);
     iusHistoryNodeSetParents(node_b, nodeList_c);
+    iusHistoryNodeSetParameters(node_b, paramDict_b);
 
+    if (node_h == IUHN_INVALID)
+    {
+        return node_a;
+    }
+    iuhnl_t nodeList_h = iusHistoryNodeListCreate(1);
+    iusHistoryNodeListSet(nodeList_h, node_a, 0);
+    iusHistoryNodeSetParents(node_h, nodeList_h);
+    return node_h;
+}
 
+int dgGenerateNodeHierarchyFile
+(
+        char *filename
+)
+{
+    iuhn_t node = dgGenerateNodeHierarchy("A", IUHN_INVALID);
+    int status = 0;
     // save
-    hid_t handle = H5Fcreate( hierFilename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT );
+    hid_t handle = H5Fcreate(filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
+    if (handle > 0)
+    {
+        status = iusHistoryNodeSave(node, handle);
+        status |= H5Fclose(handle);
+    }
+    return status;
+}
+
+TEST(IusHistoryNode, testIusHistoryNodeHierarchyFromFile)
+{
+    // test scenario:
+    // generate node hierarchy file HF
+    int status = dgGenerateNodeHierarchyFile(filename);
+    TEST_ASSERT_EQUAL(0,status);
+
+    // Create new node base on node history from file.
+    iuhn_t newNode = iusHistoryNodeCreateFromFile("NewFileType", filename);
+
+    // Construct node hierarchy from file, as you would expect it from
+    // iusHistoryNodeCreateFromFile and compare the results.
+    hid_t handle = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT);
     TEST_ASSERT(handle > 0);
 
-    int status = iusHistoryNodeSave(node_a, handle);
+    iuhn_t savedObj = iusHistoryNodeLoad(handle);
+    TEST_ASSERT(savedObj != NULL);
+    H5Fclose(handle);
+
+    // create new node NN
+    iuhn_t node = iusHistoryNodeCreate("NewFileType");
+    iuhnl_t nodeList_nt = iusHistoryNodeListCreate(1);
+    status = iusHistoryNodeListSet(nodeList_nt,savedObj,0);
+    TEST_ASSERT_EQUAL(IUS_E_OK,status);
+    iusHistoryNodeSetParents(node, nodeList_nt);
+
+    TEST_ASSERT_EQUAL(IUS_TRUE, iusHistoryNodeCompare(node,newNode));
+}
+
+TEST(IusHistoryNode, testIusHistoryNodeHierarchyFromMemory)
+{
+    // test scenario:
+    //
+    // generate node hierarchy from memory
+    // save it to file
+    // load from file
+    // compare with original
+    iuhn_t node = dgGenerateNodeHierarchy("A", IUHN_INVALID);
+
+    // save
+    hid_t handle = H5Fcreate(hierFilename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
+    TEST_ASSERT(handle > 0);
+
+    int status = iusHistoryNodeSave(node, handle);
     H5Fclose(handle);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
+    // read back
+    handle = H5Fopen(hierFilename, H5F_ACC_RDONLY, H5P_DEFAULT);
+    TEST_ASSERT(handle > 0);
+
+    iuhn_t savedObj = iusHistoryNodeLoad(handle);
+    TEST_ASSERT(savedObj != NULL);
+    H5Fclose(handle);
+
+    TEST_ASSERT_EQUAL(IUS_TRUE, iusHistoryNodeCompareWithId(node,savedObj));
 }
+
 
 TEST(IusHistoryNode, testIusHistoryNodeSerialize)
 {
@@ -235,11 +323,12 @@ TEST(IusHistoryNode, testIusHistoryNodeSerialize)
 
 TEST_GROUP_RUNNER(IusHistoryNode)
 {
-    RUN_TEST_CASE(IusHistoryNode, testIusHistoryNodeCreate);
-    RUN_TEST_CASE(IusHistoryNode, testIusHistoryNodeDelete);
-    RUN_TEST_CASE(IusHistoryNode, testIusHistoryNodeCompare);
-    RUN_TEST_CASE(IusHistoryNode, testIusHistoryNodeSetGet);
-    RUN_TEST_CASE(IusHistoryNode, testIusHistoryNodeHierarchy);
-    RUN_TEST_CASE(IusHistoryNode, testIusHistoryNodeCreate);
-    RUN_TEST_CASE(IusHistoryNode, testIusHistoryNodeSerialize);
+//    RUN_TEST_CASE(IusHistoryNode, testIusHistoryNodeCreate);
+//    RUN_TEST_CASE(IusHistoryNode, testIusHistoryNodeDelete);
+//    RUN_TEST_CASE(IusHistoryNode, testIusHistoryNodeCompare);
+//    RUN_TEST_CASE(IusHistoryNode, testIusHistoryNodeSetGet);
+    RUN_TEST_CASE(IusHistoryNode, testIusHistoryNodeHierarchyFromMemory);
+    RUN_TEST_CASE(IusHistoryNode, testIusHistoryNodeHierarchyFromFile);
+//    RUN_TEST_CASE(IusHistoryNode, testIusHistoryNodeCreate);
+//    RUN_TEST_CASE(IusHistoryNode, testIusHistoryNodeSerialize);
 }
