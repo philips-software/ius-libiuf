@@ -3,3 +3,6 @@ dist/
 .idea/
 cmake-build*/
 public/
+*.html
+*.js
+Testing/
