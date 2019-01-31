@@ -190,6 +190,7 @@ int iusHistoryNodeSetParents
     IUS_ERR_CHECK_NULL_N_RETURN(historyNode, IUS_ERR_VALUE);
     IUS_ERR_CHECK_NULL_N_RETURN(parents, IUS_ERR_VALUE);
     historyNode->parents = parents;
+    historyNode->numberOfParents = iusHistoryNodeListGetSize(parents);
     return IUS_E_OK;
 }
 

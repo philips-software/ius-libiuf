@@ -14,11 +14,14 @@
 
 static char *pErrorFilename = "IusHistoryNode.errlog";
 static FILE *fpErrorLogging = NULL;
+static char *hierFilename = "testIusHistoryNodeHierarchy.hdf5";
+static char *filename = "testIusHistoryNodeSerialization.hdf5";
 
 TEST_GROUP(IusHistoryNode);
 
 TEST_SETUP(IusHistoryNode)
 {
+//    remove(hierFilename);
     iusErrorLogClear();
     iusErrorLog(IUS_TRUE);
     iusErrorAutoReport(IUS_TRUE);
@@ -35,6 +38,8 @@ TEST_TEAR_DOWN(IusHistoryNode)
     fpErrorLogging=stderr;
     iusErrorSetStream(fpErrorLogging);
     remove(pErrorFilename);
+    remove(filename);
+//    remove(hierFilename);
 }
 
 TEST(IusHistoryNode, testIusHistoryNodeCreate)
@@ -174,13 +179,34 @@ TEST(IusHistoryNode, testIusHistoryNodeSetGet)
     iusParameterDictDelete(parameterDict);
 }
 
+TEST(IusHistoryNode, testIusHistoryNodeHierarchy)
+{
+    iuhn_t node_a = iusHistoryNodeCreate("A");
+    iuhn_t node_b = iusHistoryNodeCreate("B");
+    iuhn_t node_c = iusHistoryNodeCreate("C");
+    iuhnl_t nodeList_b = iusHistoryNodeListCreate(1);
+    iusHistoryNodeListSet(nodeList_b, node_b, 0);
+    iusHistoryNodeSetParents(node_a, nodeList_b);
+    iuhnl_t nodeList_c = iusHistoryNodeListCreate(1);
+    iusHistoryNodeListSet(nodeList_c, node_c, 0);
+    iusHistoryNodeSetParents(node_b, nodeList_c);
+
+
+    // save
+    hid_t handle = H5Fcreate( hierFilename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT );
+    TEST_ASSERT(handle > 0);
+
+    int status = iusHistoryNodeSave(node_a, handle);
+    H5Fclose(handle);
+    TEST_ASSERT_EQUAL(IUS_E_OK,status);
+
+}
 
 TEST(IusHistoryNode, testIusHistoryNodeSerialize)
 {
 
     // create and fill
     iuhn_t historyNode = dgGenerateHistoryNode();
-    char *filename = "testIusHistoryNodeSerialization.hdf5";
 
     // save
     hid_t handle = H5Fcreate( filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT );
@@ -213,5 +239,7 @@ TEST_GROUP_RUNNER(IusHistoryNode)
     RUN_TEST_CASE(IusHistoryNode, testIusHistoryNodeDelete);
     RUN_TEST_CASE(IusHistoryNode, testIusHistoryNodeCompare);
     RUN_TEST_CASE(IusHistoryNode, testIusHistoryNodeSetGet);
+    RUN_TEST_CASE(IusHistoryNode, testIusHistoryNodeHierarchy);
+    RUN_TEST_CASE(IusHistoryNode, testIusHistoryNodeCreate);
     RUN_TEST_CASE(IusHistoryNode, testIusHistoryNodeSerialize);
 }
