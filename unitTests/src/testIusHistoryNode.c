@@ -216,13 +216,13 @@ iuhn_t dgGenerateNodeHierarchy
 
 int dgGenerateNodeHierarchyFile
 (
-        char *filename
+    char *nhFilename
 )
 {
     iuhn_t node = dgGenerateNodeHierarchy("A", IUHN_INVALID);
     int status = 0;
     // save
-    hid_t handle = H5Fcreate(filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
+    hid_t handle = H5Fcreate(nhFilename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
     if (handle > 0)
     {
         status = iusHistoryNodeSave(node, handle);
