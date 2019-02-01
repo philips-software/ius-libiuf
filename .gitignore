@@ -3,3 +3,8 @@ dist/
 .idea/
 cmake-build*/
 public/
+*.html
+*.js
+Testing/
+dox/html/search/*
+dox/html/*\.*
