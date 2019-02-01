@@ -8,3 +8,4 @@ public/
 Testing/
 dox/html/search/*
 dox/html/*\.*
+*__pycache__*
