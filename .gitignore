@@ -9,3 +9,5 @@ Testing/
 dox/html/search/*
 dox/html/*\.*
 *__pycache__*
+*.so
+*_wrap.*
