@@ -3,6 +3,8 @@
 %{
 #include <ius.h>
 #include "iusAcquisitionADT.h"
+#include "iusHistoryNodeADT.h"
+#include "iusPatternListADT.h"
 
 %}
 #if 0
@@ -67,6 +69,54 @@
 %include <ius.h>
 #endif
 
+%include <iusError.h>
+%include <iusPatternListADT.h>
+
+%extend IusPatternList {
+        IusPatternList() {
+            int numPatterns = 1;
+            iursd_t receiveSettingsDict = NULL;
+            iurcmd_t receiveChannelMapDict = NULL;
+            return iusPatternListCreate(numPatterns, receiveSettingsDict, receiveChannelMapDict);
+        }
+
+        ~IusPatternList() {
+            iusPatternListDelete($self);
+        }
+
+};
+
+%include <iusHistoryNodeADT.h>
+%extend IusHistoryNode {             // Attach these functions to struct Vector
+        IusHistoryNode(char *nodeType) {
+            return iusHistoryNodeCreate(nodeType);
+        }
+
+        ~IusHistoryNode() {
+            iusHistoryNodeDelete($self);
+        }
+
+        char *Type()
+        {
+            return iusHistoryNodeGetType($self);
+        }
+
+        int NumParams()
+        {
+            return iusHistoryNodeGetNumParams($self);
+        }
+
+        int NumParents()
+        {
+            return iusHistoryNodeGetNumParents($self);
+        }
+
+        char *__str__() {
+            static char temp[256];
+            sprintf(temp, "IusHistoryNode [%s]\n", $self->pType);
+            return &temp[0];
+        }
+};
 
 %include <iusAcquisitionADT.h>
 
@@ -76,11 +126,6 @@
         }
         ~IusAcquisition() {
             iusAcquisitionDelete($self);
-        }
-
-        char *description()
-        {
-            return iusAcquisitionGetDescription($self);
         }
 
         char *__str__() {

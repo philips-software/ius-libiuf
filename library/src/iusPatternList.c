@@ -7,17 +7,8 @@
 #include <include/ius.h>
 #include <iusPatternPrivate.h>
 #include <iusPatternListPrivate.h>
+#include <iusPatternListADT.h>
 
-// ADT
-struct IusPatternList
-{
-    int numPatterns;
-    iupa_t *   pPatterns ;
-    IUS_BOOL deepDelete;
-    iursd_t receiveSettingsDict;
-    iurcmd_t receiveChannelMapDict;
-
-};
 
 // ADT
 iupal_t iusPatternListCreate
