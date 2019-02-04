@@ -51,90 +51,90 @@ include_directories(${HASHMAP_INCLUDE_DIR})
 set(CMAKE_DEBUG_POSTFIX d)
 add_library(ius STATIC
 		include/ius2DNonParametricSource.h
-		include/ius2DNonParametricSourcePrivate.h
+		private/ius2DNonParametricSourcePrivate.h
 		include/ius2DParametricSource.h
 		include/ius2DSize.h
-		include/ius2DSizePrivate.h
+		private/ius2DSizePrivate.h
 		include/ius2DTransducer.h
 		include/ius2DTransducerElement.h
-		include/ius2DTransducerElementPrivate.h
+		private/ius2DTransducerElementPrivate.h
 		include/ius2DTransducerElementList.h
-		include/ius2DTransducerElementListPrivate.h
+		private/ius2DTransducerElementListPrivate.h
 		include/ius3DAngle.h
-		include/ius3DAnglePrivate.h
+		private/ius3DAnglePrivate.h
 		include/ius3DNonParametricSource.h
 		include/ius3DParametricSource.h
 		include/ius3DSize.h
-		include/ius3DSizePrivate.h
+		private/ius3DSizePrivate.h
 		include/ius3DTransducer.h
 		include/ius3DTransducerElement.h
-		include/ius3DTransducerElementPrivate.h
+		private/ius3DTransducerElementPrivate.h
 		include/ius3DTransducerElementList.h
-        include/ius3DTransducerElementListPrivate.h
+		private/ius3DTransducerElementListPrivate.h
         include/iusData.h
 		include/iusDataStream.h
-		include/iusDataStreamDictPrivate.h
+		private/iusDataStreamDictPrivate.h
 		include/iusDemodulation.h
 		include/iusDemodulationDict.h
-		include/iusDemodulationDictPrivate.h
+		private/iusDemodulationDictPrivate.h
         include/iusAcquisition.h
-        include/iusAcquisitionPrivate.h
+		private/iusAcquisitionPrivate.h
 		include/iusFile.h
 		include/iusFilter.h
 		include/iusFrame.h
 		include/iusFrameList.h
-		include/iusFrameListPrivate.h
+		private/iusFrameListPrivate.h
 		include/iusHistoryNode.h
-		include/iusHistoryNodePrivate.h
+		private/iusHistoryNodePrivate.h
 		include/iusHistoryNodeList.h
-		include/iusHistoryNodeListPrivate.h
+		private/iusHistoryNodeListPrivate.h
 		include/iusHDF5.h
 		include/iusInputFile.h
 		include/iusIqFile.h
 		include/iusIqPattern.h
-		include/iusIqPatternPrivate.h
+		private/iusIqPatternPrivate.h
 		include/iusIqPatternList.h
-		include/iusIqPatternListPrivate.h
+		private/iusIqPatternListPrivate.h
 		include/iusIqPatternListDict.h
-		include/iusIqPatternListDictPrivate.h
-		include/iusInputFilePrivate.h
+		private/iusIqPatternListDictPrivate.h
+		private/iusInputFilePrivate.h
 		include/iusNonParametricPulse.h
-		include/iusNonParametricPulsePrivate.h
+		private/iusNonParametricPulsePrivate.h
 		include/iusOffset.h
 		include/iusParameterDict.h
 		include/iusParametricPulse.h
-		include/iusParametricPulsePrivate.h
+		private/iusParametricPulsePrivate.h
 		include/iusPattern.h
-		include/iusPatternPrivate.h
+		private/iusPatternPrivate.h
 		include/iusPatternList.h
-		include/iusPatternListPrivate.h
+		private/iusPatternListPrivate.h
 		include/iusPatternListDict.h
-		include/iusPatternListDictPrivate.h
+		private/iusPatternListDictPrivate.h
 		include/iusPosition.h
 		include/iusPulse.h
 		include/iusPulseDict.h
-		include/iusPulseDictPrivate.h
-		include/iusPulsePrivate.h
+		private/iusPulseDictPrivate.h
+		private/iusPulsePrivate.h
 		include/iusReceiveChannelMap.h
 		include/iusReceiveChannelMapDict.h
-		include/iusReceiveChannelMapPrivate.h
+		private/iusReceiveChannelMapPrivate.h
 		include/iusReceiveSettings.h
 		include/iusReceiveSettingsDict.h
-		include/iusReceiveSettingsDictPrivate.h
+		private/iusReceiveSettingsDictPrivate.h
 		include/iusSource.h
 		include/iusSourceDict.h
-		include/iusSourcePrivate.h
+		private/iusSourcePrivate.h
 		include/iusTGC.h
-		include/iusTGCPrivate.h
+		private/iusTGCPrivate.h
 		include/iusTransducer.h
 		include/iusTransducerElement.h
-		include/iusTransducerElementPrivate.h
-		include/iusTransducerPrivate.h
-        include/ius2DTransducerPrivate.h
-        include/ius3DTransducerPrivate.h
+		private/iusTransducerElementPrivate.h
+		private/iusTransducerPrivate.h
+		private/ius2DTransducerPrivate.h
+		private/ius3DTransducerPrivate.h
 		include/iusTransmitApodization.h
 		include/iusTransmitApodizationDict.h
-		include/iusTransmitApodizationPrivate.h
+		private/iusTransmitApodizationPrivate.h
 		include/iusTypes.h
 		include/iusUtil.h
 		src/iusHDF5.c
@@ -196,9 +196,8 @@ add_library(ius STATIC
 		)
 
 target_include_directories(ius PUBLIC
-        ${CMAKE_CURRENT_LIST_DIR}
         ${CMAKE_CURRENT_LIST_DIR}/include
-        include
+		${CMAKE_CURRENT_LIST_DIR}/private
         )
 
 if(MSVC)

@@ -2,7 +2,7 @@
 #ifndef IUSLIBRARY_IUSHISTORYNODE_H
 #define IUSLIBRARY_IUSHISTORYNODE_H
 
-#include <include/iusParameterDict.h>
+#include <iusParameterDict.h>
 
 // ADT
 typedef struct IusHistoryNodeList IusHistoryNodeList;

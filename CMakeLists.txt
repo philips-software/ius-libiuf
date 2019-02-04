@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.00)
 project(iusLibrary C)
 
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/external/cmake_modules" ${CMAKE_MODULE_PATH})
 if(CMAKE_COMPILER_IS_GNUCC)
     include(CodeCoverage)
@@ -36,6 +37,7 @@ else()
 endif()
 
 add_subdirectory(library)
+add_subdirectory(python)
 
 # Distribution stuff
 install(DIRECTORY library/include DESTINATION ${PROJECT_BINARY_DIR}/dist

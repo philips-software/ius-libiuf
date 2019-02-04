@@ -4,7 +4,7 @@
 //
 #include <stdlib.h>
 
-#include <include/ius.h>
+#include <ius.h>
 #include <iusPatternPrivate.h>
 #include <iusPatternListPrivate.h>
 #include <iusPatternListADT.h>

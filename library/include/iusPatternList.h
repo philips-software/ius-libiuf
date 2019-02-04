@@ -4,7 +4,7 @@
 #ifndef IUSLIBRARY_IUSHLPATTERNLIST_H
 #define IUSLIBRARY_IUSHLPATTERNLIST_H
 
-#include <include/iusPattern.h>
+#include <iusPattern.h>
 #include <iusReceiveSettingsDict.h>
 #include <iusReceiveChannelMapDict.h>
 
