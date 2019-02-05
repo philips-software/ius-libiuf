@@ -1,5 +1,6 @@
 include_directories(include)
 include_directories(${HDF5_INCLUDE_DIR})
+include_directories(${CMAKE_SOURCE_DIR}/include)
 include_directories(${CMAKE_SOURCE_DIR}/library/include)
 include_directories(${CMAKE_SOURCE_DIR}/library/private)
 include_directories(${CMAKE_CURRENT_LIST_DIR})
