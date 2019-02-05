@@ -37,7 +37,10 @@ else()
 endif()
 
 add_subdirectory(library)
-add_subdirectory(python)
+
+if(CMAKE_BUILD_TYPE STREQUAL Release)
+    add_subdirectory(python)
+endif()
 
 # Distribution stuff
 install(DIRECTORY library/include DESTINATION ${PROJECT_BINARY_DIR}/dist
