@@ -8,11 +8,11 @@ echo === Building ius in %BuildFolder%
 set PlatformFolder=%BuildFolder%\Windows
 mkdir %PlatformFolder% & pushd %PlatformFolder%
 set Config=Debug
-cmake -DCMAKE_BUILD_TYPE=%Config% ..\..
+cmake -DCMAKE_CONFIG=%Config% ..\..
 cmake --build .  --target install  --config %Config%
 if errorlevel 1 exit /B 1
 set Config=Release
-cmake -DCMAKE_BUILD_TYPE=%Config% ..\..
+cmake -DCMAKE_CONFIG=%Config% ..\..
 cmake --build .  --target install  --config %Config%
 if errorlevel 1 exit /B 1
 popd
