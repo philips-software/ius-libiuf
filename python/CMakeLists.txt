@@ -43,12 +43,25 @@ SET(CMAKE_SWIG_FLAGS "")
 
 SET(UseSWIG_TARGET_NAME_PREFERENCE STANDARD)
 SWIG_ADD_LIBRARY(PythonIus LANGUAGE python SOURCES PythonIus.i)
-TARGET_LINK_LIBRARIES(PythonIus
-        ${Python2_LIBRARIES}
-        ${IUS_LIBRARIES}
-        ${HDF5_LIBRARIES}
-        ${HDF5_HL_LIBRARIES}
-        ${UUID_LIBRARIES}
-        )
+
+if(MSVC)
+    TARGET_LINK_LIBRARIES(PythonIus
+            optimized ${Python2_LIBRARIES}
+            )
+    TARGET_LINK_LIBRARIES(PythonIus
+            ${IUS_LIBRARIES}
+            ${HDF5_LIBRARIES}
+            ${HDF5_HL_LIBRARIES}
+            ${UUID_LIBRARIES}
+            )
+else(MSVC)
+    TARGET_LINK_LIBRARIES(PythonIus
+            ${Python2_LIBRARIES}
+            ${IUS_LIBRARIES}
+            ${HDF5_LIBRARIES}
+            ${HDF5_HL_LIBRARIES}
+            ${UUID_LIBRARIES}
+            )
+endif(MSVC)
 
 
