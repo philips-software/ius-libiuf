@@ -3,29 +3,34 @@ classdef iusInputFile < handle
     %   Detailed explanation goes here
     
     properties
-        fp = [];
+        PatternLists = struct();
+        Pulses = struct();
+        Sources = struct();
+        ReceiveChannels = struct();
+        TransmitApodizations = struct();
+        ReceiveSettings = struct();
     end
     
-    methods
-        function obj = iusInputFile( filename )
+    methods        
+        function obj = iusInputFile( )
             %IUSINPUTFILE Construct an instance of this class
             %   Detailed explanation goes here
-            disp('Allocating iusInputFile');
-            if nargin > 0 && ischar(filename)
-                disp('Creating new file');
-                obj.create(filename)
-            end
+            
+            % Set some initial test data
+            
+            % TransmitApodization
+            obj.TransmitApodizations.bmode = rand(15,1);
+            
+            % ReceiveChannelMap
+            ReceiveChannelMap.map = 1:15;
+            ReceiveChannelMap.startDelay = zeros(size(ReceiveChannelMap.map));            
+            obj.ReceiveChannels.bmode = ReceiveChannelMap;
+                       
+            % Pulses
+            obj.Pulses
+            
         end
-        
-        function delete(obj)
-            %DELETE Summary of this function goes here
-            %   Detailed explanation goes here
-            disp('delete called');
-            if ~isempty(obj.fp)
-                fclose(obj.fp);
-                disp('closing file handle');
-            end
-        end
+       
     end
 end
 
