@@ -51,4 +51,15 @@ TARGET_LINK_LIBRARIES(PythonIus
         ${UUID_LIBRARIES}
         )
 
+file(GLOB_RECURSE PYTHON_FILES
+        "${PROJECT_BINARY_DIR}/python/*PythonIus*")
+message("PROJECT_BINARY_DIR is ${PROJECT_BINARY_DIR}")
+set(IUS_INSTALL_PATH ${PROJECT_BINARY_DIR}/dist/python/${CMAKE_SYSTEM_NAME})
+install(DIRECTORY "${PROJECT_BINARY_DIR}/python"  DESTINATION ${IUS_INSTALL_PATH}
+        PATTERN "*/*PythonIus*"
+        PATTERN "*CMakeFiles/*" EXCLUDE
+        PATTERN "*CMakeFiles/*/*" EXCLUDE
+        PATTERN "*CMakeFiles/*/*/*" EXCLUDE
+        PATTERN "*ake*" EXCLUDE
+        )
 
