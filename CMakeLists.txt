@@ -46,7 +46,7 @@ install(DIRECTORY library/include DESTINATION ${PROJECT_BINARY_DIR}/dist
 install(DIRECTORY examples DESTINATION ${PROJECT_BINARY_DIR}/dist)
 install(DIRECTORY unitTests DESTINATION ${PROJECT_BINARY_DIR}/dist)
 file(GLOB_RECURSE PRIVATE_HEADERS
-        "${PROJECT_SOURCE_DIR}/library/include/*[pP]rivate.h"
+        "${PROJECT_SOURCE_DIR}/library/private/*[pP]rivate.h"
         )
 install(FILES ${PRIVATE_HEADERS}  DESTINATION ${PROJECT_BINARY_DIR}/dist/unitTests/include)
 install(FILES package/README.md package/CMakeLists.txt package/PreLoad.cmake  DESTINATION ${PROJECT_BINARY_DIR}/dist)
