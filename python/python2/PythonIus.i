@@ -1,4 +1,4 @@
-%module PythonIus
+%module Python2Ius
 
 %{
 #include <ius.h>
