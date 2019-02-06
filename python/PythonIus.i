@@ -70,6 +70,7 @@
 %include <iusError.h>
 %include <iusParameterDictADT.h>
 
+
 %extend IusParameterDict{
         IusParameterDict() {
             return iusParameterDictCreate();
@@ -99,6 +100,15 @@
             return iusParameterDictGet($self,item) != NULL;
         }
 
+        int __eq__(IusParameterDict *a)
+        {
+            return iusParameterDictCompare($self,a);
+        }
+
+        int __ne__(IusParameterDict *a)
+        {
+            return !iusParameterDictCompare($self,a);
+        }
 };
 
 
