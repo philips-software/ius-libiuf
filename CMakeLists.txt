@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.00)
 project(iusLibrary C)
 
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/external/cmake_modules" ${CMAKE_MODULE_PATH})
 if(CMAKE_COMPILER_IS_GNUCC)
     include(CodeCoverage)
@@ -37,6 +38,11 @@ endif()
 
 add_subdirectory(library)
 
+if(NOT CMAKE_CONFIG STREQUAL Debug)
+    add_subdirectory(python)
+#    install(DIRECTORY python DESTINATION ${PROJECT_BINARY_DIR}/dist)
+endif()
+
 # Distribution stuff
 install(DIRECTORY library/include DESTINATION ${PROJECT_BINARY_DIR}/dist
         PATTERN "library/include/*[pP]rivate*.h" EXCLUDE
@@ -44,7 +50,7 @@ install(DIRECTORY library/include DESTINATION ${PROJECT_BINARY_DIR}/dist
 install(DIRECTORY examples DESTINATION ${PROJECT_BINARY_DIR}/dist)
 install(DIRECTORY unitTests DESTINATION ${PROJECT_BINARY_DIR}/dist)
 file(GLOB_RECURSE PRIVATE_HEADERS
-        "${PROJECT_SOURCE_DIR}/library/include/*[pP]rivate.h"
+        "${PROJECT_SOURCE_DIR}/library/private/*[pP]rivate.h"
         )
 install(FILES ${PRIVATE_HEADERS}  DESTINATION ${PROJECT_BINARY_DIR}/dist/unitTests/include)
 install(FILES package/README.md package/CMakeLists.txt package/PreLoad.cmake  DESTINATION ${PROJECT_BINARY_DIR}/dist)

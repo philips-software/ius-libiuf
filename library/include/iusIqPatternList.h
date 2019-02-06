@@ -4,7 +4,7 @@
 #ifndef IUSLIBRARY_IUSHLIQPATTERNLIST_H
 #define IUSLIBRARY_IUSHLIQPATTERNLIST_H
 
-#include <include/iusIqPattern.h>
+#include <iusIqPattern.h>
 //#include <iusDemodulationDict.h>
 #include <iusReceiveChannelMapDict.h>
 

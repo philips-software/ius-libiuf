@@ -4,7 +4,7 @@
 #define IUSLIBRARY_IUSHL3DTRANSDUCERELEMENTLISTIMP_H
 
 #include <hdf5.h>
-#include <include/ius3DTransducerElementList.h>
+#include <ius3DTransducerElementList.h>
 
 
 int ius3DTransducerElementListSave

@@ -8,23 +8,10 @@
 #include <iusIqFilePrivate.h>
 #include <iusParameterDictPrivate.h>
 #include <iusHistoryNodeListPrivate.h>
+#include "iusHistoryNodeADT.h"
 
 #define MAX_ID_LENGTH   40
 
-// ADT
-struct IusHistoryNode
-{
-
-    char                *pId;
-    char                *pType;
-    int                 numberOfParents;
-    iuhnl_t             parents;
-    int                 numberOfParameters;
-    iupad_t             parameters;
-    void *              instanceData;
-    IUS_BOOL            deepDelete;
-
-} ;
 
 static iuhn_t iusHistoryNodeCreateWithId
 (

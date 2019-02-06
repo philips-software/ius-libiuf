@@ -7,7 +7,7 @@
 #include <unity_fixture.h>
 
 #include <ius.h>
-#include <include/ius2DTransducerPrivate.h>
+#include <ius2DTransducerPrivate.h>
 
 static char *pErrorFilename = "Ius2DTransducer.errlog";
 static FILE *fpErrorLogging = NULL;

@@ -3,7 +3,7 @@
 #define IUSLIBRARY_IUSHL2DTRANSDUCERELEMENTLISTIMP_H
 
 #include <hdf5.h>
-#include <include/ius2DTransducerElementList.h>
+#include <ius2DTransducerElementList.h>
 
 
 int ius2DTransducerElementListSave

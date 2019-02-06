@@ -8,45 +8,45 @@ stages:
 
 building:linux:
   stage: build
-  image: gitlab.ta.philips.com:5432/forest/docker/centos-ci:0.2.0
+  image: gitlab.ta.philips.com:5432/forest/docker/centos-ci:0.4.0
   script:
     - ./ci/bin/build.sh
   tags:
-    - docker
+    - docker-mega
   artifacts:
     paths:
       - ./build/*
 
 #sonar:
 #  stage: qa
-#  image: gitlab.ta.philips.com:5432/forest/docker/centos-ci:latest
+#  image: gitlab.ta.philips.com:5432/forest/docker/centos-ci:0.4.0
 #  script:
 #    - ./ci/bin/code_coverage.sh
 #    - ./ci/bin/static_code_analysis.sh
 #    - ./ci/bin/memory_leak_detection.sh xml
 #    - sonar-scanner -Dsonar.login=${SONAR_LOGIN}  -Dsonar.host.url=https://sonar.ta.philips.com/
 #  tags:
-#    - docker
+#    - docker-mega
 #  dependencies:
 #    - building:linux
 
 testing_lib:linux:
   stage: qa
-  image: gitlab.ta.philips.com:5432/forest/docker/centos-ci:0.2.0
+  image: gitlab.ta.philips.com:5432/forest/docker/centos-ci:0.4.0
   script:
     - ./ci/bin/unittests.sh
   tags:
-    - docker
+    - docker-mega
   dependencies:
     - building:linux
 
 distribution:linux:
   stage: distribution
-  image: gitlab.ta.philips.com:5432/forest/docker/centos-ci:0.2.0
+  image: gitlab.ta.philips.com:5432/forest/docker/centos-ci:0.4.0
   script:
     - ./ci/bin/mk_os_distribution.sh
   tags:
-    - docker
+    - docker-mega
   artifacts:
     paths:
       - ./build/Linux/dist
@@ -86,11 +86,11 @@ distribution:windows:
 
 sdk:
   stage: sdk
-  image: gitlab.ta.philips.com:5432/forest/docker/centos-ci:0.2.0
+  image: gitlab.ta.philips.com:5432/forest/docker/centos-ci:0.4.0
   script:
     - ./ci/bin/mksdk.sh
   tags:
-    - docker
+    - docker-mega
   dependencies:
     - distribution:windows
     - distribution:linux
@@ -111,23 +111,23 @@ sdk_test:windows:
 
 sdk_test:linux:
   stage: sdk_test
-  image: gitlab.ta.philips.com:5432/forest/docker/centos-ci:0.2.0
+  image: gitlab.ta.philips.com:5432/forest/docker/centos-ci:0.4.0
   script: |
     cd dist/IUS-SDK*
     ci/bin/unittests.sh
 
   tags:
-    - docker
+    - docker-mega
   dependencies:
     - sdk
 
 pages:
   stage: pages
-  image: gitlab.ta.philips.com:5432/forest/docker/centos-ci:0.2.0
+  image: gitlab.ta.philips.com:5432/forest/docker/centos-ci:0.4.0
   script:
   - ./ci/bin/make_pages.sh
   artifacts:
     paths:
     - public
   tags:
-    - docker
+    - docker-mega

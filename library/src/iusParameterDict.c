@@ -8,22 +8,7 @@
 
 #include <ius.h>
 #include <iusParameterDictPrivate.h>
-
-// ADT
-struct HashableParameter
-{
-    char *value;
-    char *key;
-} ;
-
-typedef struct HashableParameter HashableParameter;
-
-struct IusParameterDict
-{
-    struct hashmap map;
-    IUS_BOOL deepDelete;
-    char **keys;
-} ;
+#include <iusParameterDictADT.h>
 
 /* Declare type-specific blob_hashmap_* functions with this handy macro */
 HASHMAP_FUNCS_CREATE(HashableParameter, const char, struct HashableParameter)

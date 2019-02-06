@@ -4,7 +4,7 @@
 #ifndef IUSLIBRARY_IUSHL3DTRANSDUCERELEMENTLIST_H
 #define IUSLIBRARY_IUSHL3DTRANSDUCERELEMENTLIST_H
 
-#include <include/ius3DTransducerElement.h>
+#include <ius3DTransducerElement.h>
 
 // ADT
 typedef struct Ius3DTransducerElementList Ius3DTransducerElementList;

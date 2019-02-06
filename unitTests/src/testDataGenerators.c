@@ -3,7 +3,7 @@
 //
 #include <unity.h>
 
-#include <include/ius.h>
+#include <ius.h>
 #include <testDataGenerators.h>
 
 

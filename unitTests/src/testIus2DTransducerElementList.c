@@ -6,7 +6,7 @@
 #include <unity_internals.h>
 #include <unity_fixture.h>
 
-#include <include/ius.h>
+#include <ius.h>
 #include <ius2DTransducerElementListPrivate.h>
 
 static char *pErrorFilename = "Ius2DTransducerElementList.errlog";
