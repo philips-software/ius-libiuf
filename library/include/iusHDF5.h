@@ -195,8 +195,6 @@ herr_t iusHdf5WriteGrid
     IusGrid *    pGrid             ///< the grid structure that will be serialized
 );
 
-herr_t iusHdf5DisableMessages();
-
 #define IUS_MAX_HDF5_PATH	1024
 
 #ifdef __cplusplus

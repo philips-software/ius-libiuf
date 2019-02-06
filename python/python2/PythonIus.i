@@ -7,7 +7,6 @@
 #include "iusPatternListADT.h"
 
 %}
-#if 0
 %include <ius2DNonParametricSource.h>
 %include <ius2DParametricSource.h>
 %include <ius2DSize.h>
@@ -67,7 +66,6 @@
 %include <iusUtil.h>
 %include <iusUuid.h>
 %include <ius.h>
-#endif
 
 %include <iusError.h>
 %include <iusPatternListADT.h>
