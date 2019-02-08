@@ -1,4 +1,4 @@
-%function writeIusIqFile( filename, iusInput )
+function writeIusIqFile( filename, iusInput )
 % writeIusIqfile  Writes a hdf5 iusIqFile based on a MatLab iusInput struct
 
 clear all;
@@ -13,7 +13,11 @@ end
 
 % Register python library wrapper to python search path (uses distribution
 % i.s.o. local build!
-libpath = fullfile( pwd, '..', 'build', 'Windows', 'dist', 'python36', 'Windows');
+if ispc
+    libpath = fullfile( pwd, '..', 'build', 'Windows', 'dist', 'python36', 'Windows');
+else
+    libpath = fullfile( pwd, '..', 'build', 'Linux', 'dist', 'python36', 'Windows');
+end
 if count(py.sys.path, libpath) == 0
     insert(py.sys.path,int32(0),libpath);
 end

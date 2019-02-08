@@ -1,3 +1,4 @@
+%feature("autodoc", "2")
 
 %{
 #include <ius.h>
