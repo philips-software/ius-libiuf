@@ -12,11 +12,14 @@ import py.Python3Ius.*
 
 % Create the iq file
 iqHandle = iusIqFileCreate(iqFilename);
+if iqHandle == py.None
+    error('Unable to open file!');
+end
 
 convert( iqHandle, iusIqStruct, iqData, 'doppler' );
 
 % Store to disk
-iusInputFileNodeSave(iqHandle);
+iusIqFileNodeSave(iqHandle);
 % Close the file
 iusIqFileClose(iqHandle);
 % Free memory
@@ -36,13 +39,13 @@ numLocations = iusIqStruct.DrivingScheme.numTransmitSources;
 if numLocations ~= 1
     error('Single element recording expected.');
 end
-sourceDict = iusSourceDictCreate();
+%sourceDict = iusSourceDictCreate();
 % Would be nice if a double holding an integer automatically gets converted
 % to int
-source = ius2DParametricSourceCreate( int32(numLocations), 0, 0, 0);
+%%source = ius2DParametricSourceCreate( int32(numLocations), 0, 0, 0);
 %source is an Ius2DParametricSource * while ius_t is required
-iusSourceDictSet( sourceDict, SOURCE_LABEL, source);
-iusIqFileSetSourceDict( h, sourceDict );
+%%iusSourceDictSet( sourceDict, SOURCE_LABEL, source);
+%%iusIqFileSetSourceDict( h, sourceDict );
 
 % pulseDict
 
@@ -55,6 +58,12 @@ iusIqFileSetSourceDict( h, sourceDict );
 % transmitApodizationDict
 
 % acquisition
+speedOfSound = iusIqStruct.Experiment.speedOfSound;
+date = int32(iusIqStruct.Experiment.date);
+description = iusIqStruct.Experiment.description;
+
+acquisition = iusAcquisitionCreate( speedOfSound, date, description);
+iusIqFileSetAcquisition( h, acquisition );
 
 % transducer
 
@@ -67,7 +76,11 @@ function initIusLibrary()
 % Set python version
 [version, executable, isLoaded] = pyversion;
 if ~isLoaded
-    pyversion 3.6
+    if ispc
+        pyversion 3.6
+    else
+        pyversion('~/cadbin/python3')
+    end
 end
 
 % Register python library wrapper to python search path (uses distribution
@@ -75,7 +88,7 @@ end
 if ispc
     libpath = fullfile( pwd, '..', 'build', 'Windows', 'dist', 'python36', 'Windows');
 else
-    libpath = fullfile( pwd, '..', 'build', 'Linux', 'dist', 'python36', 'Windows');
+    libpath = fullfile( pwd, '..', 'build', 'Linux', 'dist', 'python36', 'Linux');
 end
 if count(py.sys.path, libpath) == 0
     insert(py.sys.path,int32(0),libpath);
