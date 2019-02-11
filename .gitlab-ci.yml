@@ -8,7 +8,7 @@ stages:
 
 building:linux:
   stage: build
-  image: gitlab.ta.philips.com:5432/forest/docker/centos-ci:0.4.0
+  image: gitlab.ta.philips.com:5432/forest/docker/centos-ci:0.5.1
   script:
     - ./ci/bin/build.sh
   tags:
@@ -17,22 +17,26 @@ building:linux:
     paths:
       - ./build/*
 
-#sonar:
-#  stage: qa
-#  image: gitlab.ta.philips.com:5432/forest/docker/centos-ci:0.4.0
-#  script:
-#    - ./ci/bin/code_coverage.sh
-#    - ./ci/bin/static_code_analysis.sh
-#    - ./ci/bin/memory_leak_detection.sh xml
-#    - sonar-scanner -Dsonar.login=${SONAR_LOGIN}  -Dsonar.host.url=https://sonar.ta.philips.com/
-#  tags:
-#    - docker-mega
-#  dependencies:
-#    - building:linux
+sonar:
+  stage: qa
+  image: gitlab.ta.philips.com:5432/forest/docker/centos-ci:0.5.1
+  script:
+    - ./ci/bin/code_coverage.sh
+    - ./ci/bin/static_code_analysis.sh
+    - ./ci/bin/memory_leak_detection.sh xml
+    - sonar-scanner -Dsonar.login=${SONAR_LOGIN}  -Dsonar.host.url=https://sonarc.ta.philips.com/
+  tags:
+    - docker-mega
+  dependencies:
+    - building:linux
+  only:
+    - develop
+    - master
+    - /^feature/IUS-160.*$/
 
 testing_lib:linux:
   stage: qa
-  image: gitlab.ta.philips.com:5432/forest/docker/centos-ci:0.4.0
+  image: gitlab.ta.philips.com:5432/forest/docker/centos-ci:0.5.1
   script:
     - ./ci/bin/unittests.sh
   tags:
@@ -42,7 +46,7 @@ testing_lib:linux:
 
 distribution:linux:
   stage: distribution
-  image: gitlab.ta.philips.com:5432/forest/docker/centos-ci:0.4.0
+  image: gitlab.ta.philips.com:5432/forest/docker/centos-ci:0.5.1
   script:
     - ./ci/bin/mk_os_distribution.sh
   tags:
@@ -86,7 +90,7 @@ distribution:windows:
 
 sdk:
   stage: sdk
-  image: gitlab.ta.philips.com:5432/forest/docker/centos-ci:0.4.0
+  image: gitlab.ta.philips.com:5432/forest/docker/centos-ci:0.5.1
   script:
     - ./ci/bin/mksdk.sh
   tags:
@@ -111,7 +115,7 @@ sdk_test:windows:
 
 sdk_test:linux:
   stage: sdk_test
-  image: gitlab.ta.philips.com:5432/forest/docker/centos-ci:0.4.0
+  image: gitlab.ta.philips.com:5432/forest/docker/centos-ci:0.5.1
   script: |
     cd dist/IUS-SDK*
     ci/bin/unittests.sh
@@ -123,7 +127,7 @@ sdk_test:linux:
 
 pages:
   stage: pages
-  image: gitlab.ta.philips.com:5432/forest/docker/centos-ci:0.4.0
+  image: gitlab.ta.philips.com:5432/forest/docker/centos-ci:0.5.1
   script:
   - ./ci/bin/make_pages.sh
   artifacts:

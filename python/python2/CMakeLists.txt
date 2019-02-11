@@ -19,7 +19,12 @@ if(Python2_FOUND)
     SET(CMAKE_SWIG_FLAGS "")
     SET(UseSWIG_TARGET_NAME_PREFERENCE STANDARD)
     SET(IUS_TARGET "Python2Ius")
-    SWIG_ADD_LIBRARY(${IUS_TARGET} LANGUAGE python SOURCES PythonIus.i)
+    set_property(SOURCE Python2Ius.i PROPERTY DEPENDS ../PythonIus.it)
+    set_property(SOURCE ../PythonIus.it PROPERTY DEPENDS ../extendDict.it)
+    set_property(SOURCE ../extendDict.it PROPERTY DEPENDS ../s0list.it)
+    SWIG_ADD_LIBRARY(${IUS_TARGET}
+            LANGUAGE python
+            SOURCES Python2Ius.i ../extendDict.it ../s0list.it ../PythonIus.it)
     TARGET_LINK_LIBRARIES(${IUS_TARGET}
             ${Python2_LIBRARIES}
             ${IUS_LIBRARIES}

@@ -1,4 +1,5 @@
 %feature("autodoc", "2")
+%include  extendDict.it
 
 %{
 #include <ius.h>
@@ -6,7 +7,23 @@
 #include "iusHistoryNodeADT.h"
 #include "iusPatternListADT.h"
 #include "iusParameterDictADT.h"
+#include "iusDemodulationDictADT.h"
 %}
+
+
+%typemap(in) int {
+        if (PyFloat_Check($input)) {
+            $1 = (int) PyFloat_AsDouble($input);
+            printf("warning, casting float to n = %d\n", $1);
+        }
+        else {
+            $1 = (int) PyInt_AsLong($input);
+        }
+}
+
+%typemap(in) ius_t {
+        $1 = (ius_t) $input;
+}
 
 %include <ius2DNonParametricSource.h>
 %include <ius2DParametricSource.h>
@@ -25,7 +42,6 @@
 %include <iusData.h>
 %include <iusDataStream.h>
 %include <iusDemodulation.h>
-%include <iusDemodulationDict.h>
 %include <iusError.h>
 %include <iusAcquisition.h>
 %include <iusFile.h>
@@ -41,7 +57,6 @@
 %include <iusIqFileStructure.h>
 %include <iusNonParametricPulse.h>
 %include <iusOffset.h>
-%include <iusParameterDict.h>
 %include <iusParametricPulse.h>
 %include <iusPattern.h>
 %include <iusPatternList.h>
@@ -69,48 +84,15 @@
 %include <ius.h>
 
 %include <iusError.h>
-%include <iusParameterDictADT.h>
 
 
-%extend IusParameterDict{
-        IusParameterDict() {
-            return iusParameterDictCreate();
-        }
-
-        ~IusParameterDict() {
-            iusParameterDictDelete($self);
-        }
-
-        int __len__()
-        {
-            return iusParameterDictGetSize($self);
-        }
-
-        void __setitem__(char *key, char *value)
-        {
-            iusParameterDictSet($self, key, value);
-        }
-
-        char *__getitem__(char *key)
-        {
-            return iusParameterDictGet($self, key);
-        }
-
-        int __contains__(char *item)
-        {
-            return iusParameterDictGet($self,item) != NULL;
-        }
-
-        int __eq__(IusParameterDict *a)
-        {
-            return iusParameterDictCompare($self,a);
-        }
-
-        int __ne__(IusParameterDict *a)
-        {
-            return !iusParameterDictCompare($self,a);
-        }
-};
+// Extend code for given Dict class and contained type
+// The EXTEND_DICT_ADT macro assumes, the ADT implemention
+// is stored in a separate file
+// i.e. iusParameterDictADT.h for ParameterDict data type.
+//
+EXTEND_DICT_ADT(ParameterDict, char)
+EXTEND_DICT_ADT(DemodulationDict, IusDemodulation)
 
 
 %include <iusPatternListADT.h>

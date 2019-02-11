@@ -14,12 +14,20 @@ if(Python3_FOUND)
     INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/library/include)
     INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/library/private)
     INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/external/hashmap/src)
+    INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/python)
     INCLUDE_DIRECTORIES(${HDF5_INCLUDE_DIR})
 
     SET(CMAKE_SWIG_FLAGS "")
     SET(UseSWIG_TARGET_NAME_PREFERENCE STANDARD)
     SET(IUS_TARGET "Python3Ius")
-    SWIG_ADD_LIBRARY(${IUS_TARGET} LANGUAGE python SOURCES PythonIus.i)
+
+    set_property(SOURCE Python3Ius.i PROPERTY DEPENDS ../PythonIus.it)
+    set_property(SOURCE ../PythonIus.it PROPERTY DEPENDS ../extendDict.it)
+    set_property(SOURCE ../extendDict.it PROPERTY DEPENDS ../s0list.it)
+    SWIG_ADD_LIBRARY(${IUS_TARGET}
+            LANGUAGE python
+            SOURCES Python3Ius.i ../extendDict.it ../s0list.it ../PythonIus.it)
+
     TARGET_LINK_LIBRARIES(${IUS_TARGET}
             ${Python3_LIBRARIES}
             ${IUS_LIBRARIES}

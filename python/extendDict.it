@@ -1,0 +1,60 @@
+%import s0list.it
+
+%define EXTEND_DICT_ADT(name, type)
+    %include <ius##name##ADT.h>
+
+    S02LIST(ius##name##GetKeys)
+
+    %define TOSTR(name) #name
+    %enddef
+
+    %extend Ius ## name {
+    S02LIST(keys)
+
+    Ius ## name() {
+        return ius ## name ## Create();
+    }
+
+    ~Ius ## name() {
+        ius ## name ## Delete($self);
+    }
+
+    int __len__()
+    {
+        return ius ## name ## GetSize($self);
+    }
+
+    void __setitem__(char *key, type *value)
+    {
+        ius ## name ## Set($self, key, value);
+    }
+
+    type *__getitem__(char *key)
+    {
+        return ius ## name ## Get($self, key);
+    }
+
+    int __contains__(char *item)
+    {
+        return ius ## name ## Get($self,item) != NULL;
+    }
+
+    int __eq__(Ius ## name *a)
+    {
+    return ius ## name ## Compare($self,a);
+    }
+
+    int __ne__(Ius ## name *a)
+    {
+    return !ius ## name ## Compare($self,a);
+    }
+
+    char **keys()
+    {
+        return ius ## name ## GetKeys($self);
+    }
+
+    };
+    %include <ius##name.h>
+%enddef
+
