@@ -20,6 +20,10 @@
         }
 }
 
+%typemap(in) ius_t {
+        $1 = (ius_t) $input;
+}
+
 %include <ius2DNonParametricSource.h>
 %include <ius2DParametricSource.h>
 %include <ius2DSize.h>
