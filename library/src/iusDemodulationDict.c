@@ -8,22 +8,9 @@
 
 #include <ius.h>
 #include <iusDemodulationPrivate.h>
+#include <iusDemodulationDictADT.h>
 
-// ADT
-struct HashableDemodulation
-{
-	iudm_t demodulation;
-	char key[256];
-};
 
-typedef struct HashableDemodulation HashableDemodulation;
-
-struct IusDemodulationDict
-{
-	struct hashmap map;
-	IUS_BOOL deepDelete;
-    char **keys;
-};
 
 /* Declare type-specific blob_hashmap_* functions with this handy macro */
 HASHMAP_FUNCS_CREATE(HashableDemodulation, const char, struct HashableDemodulation)
@@ -37,7 +24,7 @@ iudmd_t iusDemodulationDictCreate
     IUS_ERR_ALLOC_NULL_N_RETURN(dict, IusDemodulationDict, IUDMD_INVALID);
     hashmap_init(&dict->map, hashmap_hash_string, hashmap_compare_string, 0);
     dict->deepDelete = IUS_FALSE;
-    dict->keys = NULL;
+    dict->kys = NULL;
 	return dict;
 }
 
@@ -56,8 +43,8 @@ static void iusDemodulationDictDeleteKeys
     iudmd_t dict
 )
 {
-    if (dict->keys != NULL)
-        free(dict->keys);
+    if (dict->kys != NULL)
+        free(dict->kys);
 }
 
 int iusDemodulationDictDelete
@@ -166,7 +153,7 @@ char **iusDemodulationDictGetKeys
 )
 {
     IUS_ERR_CHECK_NULL_N_RETURN(dict, NULL);
-    return dict->keys;
+    return dict->kys;
 }
 
 static int iusDemodulationDictUpdateKeys
@@ -175,10 +162,10 @@ static int iusDemodulationDictUpdateKeys
 )
 {
     iusDemodulationDictDeleteKeys(dict);
-    // allocate memory for the keys
+    // allocate memory for the kys
     int keyIndex;
     size_t size = iusDemodulationDictGetSize(dict);
-    dict->keys = calloc(size+1, sizeof(char*));
+    dict->kys = calloc(size+1, sizeof(char*));
     IUS_ERR_ALLOC_NULL_N_RETURN(dict, char *, IUS_ERR_VALUE);
 
     struct hashmap_iter *iter;
@@ -188,9 +175,9 @@ static int iusDemodulationDictUpdateKeys
     for (iter = hashmap_iter(&dict->map), keyIndex=0; iter; iter = hashmap_iter_next(&dict->map, iter), keyIndex++)
     {
         iterElement = HashableDemodulation_hashmap_iter_get_data(iter);
-        dict->keys[keyIndex] = iterElement->key;
+        dict->kys[keyIndex] = iterElement->key;
     }
-    dict->keys[keyIndex] = NULL;
+    dict->kys[keyIndex] = NULL;
     return IUS_E_OK;
 }
 

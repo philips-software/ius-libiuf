@@ -17,7 +17,6 @@ building:linux:
     paths:
       - ./build/*
 
-
 sonar:
   stage: qa
   image: gitlab.ta.philips.com:5432/forest/docker/centos-ci:0.5.1

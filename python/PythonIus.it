@@ -1,3 +1,4 @@
+%include  extendDict.it
 
 %{
 #include <ius.h>
@@ -5,6 +6,7 @@
 #include "iusHistoryNodeADT.h"
 #include "iusPatternListADT.h"
 #include "iusParameterDictADT.h"
+#include "iusDemodulationDictADT.h"
 %}
 
 %include <ius2DNonParametricSource.h>
@@ -24,7 +26,6 @@
 %include <iusData.h>
 %include <iusDataStream.h>
 %include <iusDemodulation.h>
-%include <iusDemodulationDict.h>
 %include <iusError.h>
 %include <iusAcquisition.h>
 %include <iusFile.h>
@@ -40,7 +41,6 @@
 %include <iusIqFileStructure.h>
 %include <iusNonParametricPulse.h>
 %include <iusOffset.h>
-%include <iusParameterDict.h>
 %include <iusParametricPulse.h>
 %include <iusPattern.h>
 %include <iusPatternList.h>
@@ -68,49 +68,11 @@
 %include <ius.h>
 
 %include <iusError.h>
-%include <iusParameterDictADT.h>
 
 
-%extend IusParameterDict{
-        IusParameterDict() {
-            return iusParameterDictCreate();
-        }
 
-        ~IusParameterDict() {
-            iusParameterDictDelete($self);
-        }
-
-        int __len__()
-        {
-            return iusParameterDictGetSize($self);
-        }
-
-        void __setitem__(char *key, char *value)
-        {
-            iusParameterDictSet($self, key, value);
-        }
-
-        char *__getitem__(char *key)
-        {
-            return iusParameterDictGet($self, key);
-        }
-
-        int __contains__(char *item)
-        {
-            return iusParameterDictGet($self,item) != NULL;
-        }
-
-        int __eq__(IusParameterDict *a)
-        {
-            return iusParameterDictCompare($self,a);
-        }
-
-        int __ne__(IusParameterDict *a)
-        {
-            return !iusParameterDictCompare($self,a);
-        }
-};
-
+EXTEND_DICT_ADT(ParameterDict, char)
+EXTEND_DICT_ADT(DemodulationDict, IusDemodulation)
 
 %include <iusPatternListADT.h>
 
