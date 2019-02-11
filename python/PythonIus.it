@@ -9,6 +9,17 @@
 #include "iusDemodulationDictADT.h"
 %}
 
+
+%typemap(in) int {
+        if (PyFloat_Check($input)) {
+            $1 = (int) PyFloat_AsDouble($input);
+            printf("warning, casting float to n = %d\n", $1);
+        }
+        else {
+            $1 = (int) PyInt_AsLong($input);
+        }
+}
+
 %include <ius2DNonParametricSource.h>
 %include <ius2DParametricSource.h>
 %include <ius2DSize.h>
@@ -70,9 +81,14 @@
 %include <iusError.h>
 
 
-
+// Extend code for given Dict class and contained type
+// The EXTEND_DICT_ADT macro assumes, the ADT implemention
+// is stored in a separate file
+// i.e. iusParameterDictADT.h for ParameterDict data type.
+//
 EXTEND_DICT_ADT(ParameterDict, char)
 EXTEND_DICT_ADT(DemodulationDict, IusDemodulation)
+
 
 %include <iusPatternListADT.h>
 
