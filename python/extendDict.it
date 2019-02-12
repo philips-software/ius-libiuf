@@ -19,9 +19,9 @@
         ius ## name ## Delete($self);
     }
 
-    int __len__()
+    size_t __len__()
     {
-        return ius ## name ## GetSize($self);
+        return (int) ius ## name ## GetSize($self);
     }
 
     void __setitem__(char *key, type *value)
