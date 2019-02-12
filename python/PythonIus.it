@@ -24,7 +24,7 @@
         $1 = (ius_t) $input;
 }
 
-%typemap(in) float * {
+%typemap(in) float *apodization {
     int i;
     Py_ssize_t length;
     if (!PySequence_Check($input)) {
@@ -38,6 +38,7 @@
         PyObject *o = PySequence_GetItem($input,i);
         if (PyNumber_Check(o)) {
             temp[i] = (float) PyFloat_AsDouble(o);
+            printf("Element %d = %f\n",i, temp[i]);
         } else {
             PyErr_SetString(PyExc_ValueError,"Sequence elements must be numbers");
         return NULL;
