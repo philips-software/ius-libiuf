@@ -38,6 +38,7 @@ if(Python3_FOUND)
 
     if(MSVC)
         target_compile_options(${IUS_TARGET} PRIVATE /W4 /WX)
+        set_target_properties(unitTests PROPERTIES LINK_FLAGS "/ignore:4100")
     else()
         if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
             target_compile_options(${IUS_TARGET} PRIVATE -Wall -Wextra -pedantic -Werror)
