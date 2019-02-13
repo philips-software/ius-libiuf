@@ -1,4 +1,3 @@
-%feature("autodoc", "2")
 %include  extendDict.it
 
 %{
@@ -24,6 +23,11 @@
 %typemap(in) ius_t {
         $1 = (ius_t) $input;
 }
+
+%typemap(in) iup_t {
+        $1 = (iup_t) $input;
+}
+
 
 %include <ius2DNonParametricSource.h>
 %include <ius2DParametricSource.h>
