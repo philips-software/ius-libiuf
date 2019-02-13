@@ -28,6 +28,28 @@
         $1 = (iup_t) $input;
 }
 
+%typemap(in) float *apodization {
+    int i;
+    Py_ssize_t length;
+    if (!PySequence_Check($input)) {
+        PyErr_SetString(PyExc_ValueError,"Expected a sequence");
+        return NULL;
+    }
+    length = PySequence_Length($input);
+    float *temp = calloc(length, sizeof(float));
+    printf("Got an array of length %d\n", (int)length);
+    for (i = 0; i < length; i++) {
+        PyObject *o = PySequence_GetItem($input,i);
+        if (PyNumber_Check(o)) {
+            temp[i] = (float) PyFloat_AsDouble(o);
+            printf("Element %d = %f\n",i, temp[i]);
+        } else {
+            PyErr_SetString(PyExc_ValueError,"Sequence elements must be numbers");
+        return NULL;
+        }
+    }
+    $1 = temp;
+}
 
 %include <ius2DNonParametricSource.h>
 %include <ius2DParametricSource.h>

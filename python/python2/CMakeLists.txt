@@ -33,6 +33,17 @@ if(Python2_FOUND)
             ${UUID_LIBRARIES}
             )
 
+#    if(MSVC)
+#        target_compile_options(${IUS_TARGET} PRIVATE /W4 /WX)
+#        set_target_properties(unitTests PROPERTIES LINK_FLAGS "/ignore:4100")
+#    else()
+#        if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
+#            target_compile_options(${IUS_TARGET} PRIVATE -Wall -Wextra -pedantic -Werror)
+#        endif()
+#    endif()
+
+
+
     file(GLOB_RECURSE PYTHON_FILES
             "${PROJECT_BINARY_DIR}/python/*PythonIus*")
     message("PROJECT_BINARY_DIR is ${PROJECT_BINARY_DIR}")
