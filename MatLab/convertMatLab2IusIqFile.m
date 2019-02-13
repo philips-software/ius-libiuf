@@ -33,29 +33,67 @@ function convert( h, iusIqStruct, iqData, mode )
 % Get ius functions directly into local namespace
 import py.Python3Ius.*
 
-SOURCE_LABEL = 'single_element';
 % sourceDict
-numLocations = iusIqStruct.DrivingScheme.numTransmitSources;
-if numLocations ~= 1
-    error('Single element recording expected.');
+% FIXME: correct interpretation of numLocations!
+if iusIqStruct.DrivingScheme.drivingSchemeType == 3 % Single element!
+    SOURCE_LABEL = 'single_element';
+    numLocations = iusIqStruct.DrivingScheme.numTransmitSources;
+    if numLocations ~= 1
+        error('Single element recording expected.');
+    end
+    source = ius2DParametricSourceCreate( numLocations, 0, 0, 0);
+else
+    error('Driving scheme type not implemented yet');
 end
-%sourceDict = iusSourceDictCreate();
-% Would be nice if a double holding an integer automatically gets converted
-% to int
-%%source = ius2DParametricSourceCreate( int32(numLocations), 0, 0, 0);
-%source is an Ius2DParametricSource * while ius_t is required
-%%iusSourceDictSet( sourceDict, SOURCE_LABEL, source);
-%%iusIqFileSetSourceDict( h, sourceDict );
+sourceDict = iusSourceDictCreate();
+if 0 ~= iusSourceDictSet( sourceDict, SOURCE_LABEL, source)
+    iusErrorPrint();
+end
+if 0 ~= iusIqFileSetSourceDict( h, sourceDict )
+    iusErrorPrint();
+end
 
 % pulseDict
+PULSE_LABEL = 'doppler';
+if iusIqStruct.DrivingScheme.TransmitPulse.numPulseValues == 0
+    pulseFrequency = iusIqStruct.DrivingScheme.TransmitPulse.pulseFrequency;
+    pulseAmplitude = iusIqStruct.DrivingScheme.TransmitPulse.pulseAmplitude;
+    numPulses = iusIqStruct.DrivingScheme.TransmitPulse.pulseCount;
+    pulse = iusParametricPulseCreate( pulseFrequency, pulseAmplitude, numPulses );
+else
+    assert('Non parametric pulse not implemented yet!');
+end
+pulseDict = iusPulseDictCreate();
+if 0 ~= iusPulseDictSet( pulseDict, PULSE_LABEL, pulse )
+    iusErrorPrint();
+end
+if 0 ~= iusIqFileSetPulseDict( h, pulseDict )
+   iusErrorPrint();
+end 
 
 % receiveSettingsDict
+%if 0 ~= iusIqFileSetReceiveSettingsDict( 
 
-% receiveChannelMapDict
+% receiveChannelMapDict ==> Demodulation scheme!
 
 % patternListDict
 
 % transmitApodizationDict
+% Convert from many TA's to a dict!
+TRANSMIT_APODIZATION_LABEL = 'doppler';
+ta = iusIqStruct.DrivingScheme.transmitApodization;
+transmitApodization = iusTransmitApodizationCreate( size(ta, 2) );
+% for c1 = 1:size(ta, 2)
+%     iusTransmitApodizationSetElement( transmitApodization, c1-1, ta(1, c1) );
+% end
+iusTransmitApodizationSetApodization( transmitApodization, ta(1,:) ); 
+transmitApodizationDict = iusTransmitApodizationDictCreate();
+if 0 ~= iusTransmitApodizationDictSet( transmitApodizationDict, TRANSMIT_APODIZATION_LABEL, transmitApodization );
+    iusErrorPrint();
+end
+if 0 ~= iusIqFileSetTransmitApodizationDict( h, transmitApodizationDict )
+    iusErrorPrint();
+end
 
 % acquisition
 speedOfSound = iusIqStruct.Experiment.speedOfSound;
