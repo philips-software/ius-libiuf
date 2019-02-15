@@ -17,5 +17,9 @@ data = load( fullfile(DATA_INPUT_PATH, infname) );
 
 convertMatLab2IusIqFile( outfname, data.iusIq, data.M );
 
+import py.Python3Ius.*
+iq = data.iusIq;
+iusIqStruct = data.iusIq;
+
 
 
