@@ -115,6 +115,33 @@ int ius3DTransducerGetNumElements
     return ius3DTransducerElementListGetSize(transducer->elements);
 }
 
+IusTransducerShape ius3DTransducerGetShape(
+	iu3dt_t transducer
+)
+{
+	IUS_ERR_CHECK_NULL_N_RETURN(transducer, -1);
+	return transducer->baseTransducer.shape;
+}
+
+char *ius3DTransducerGetName
+(
+	iu3dt_t transducer
+)
+{
+	IUS_ERR_CHECK_NULL_N_RETURN(transducer, NULL);
+	return transducer->baseTransducer.pTransducerName;
+}
+
+float ius3DTransducerGetCenterFrequency
+(
+	iu3dt_t transducer
+)
+{
+	IUS_ERR_CHECK_NULL_N_RETURN(transducer, 0.0f);
+	return transducer->baseTransducer.centerFrequency;
+}
+
+
 // setters
 int ius3DTransducerSetElement
 (

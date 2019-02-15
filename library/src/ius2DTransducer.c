@@ -112,6 +112,32 @@ int ius2DTransducerGetNumElements
 	return ius2DTransducerElementListGetSize(transducer->elements);
 }
 
+IusTransducerShape ius2DTransducerGetShape(
+	iu2dt_t transducer
+)
+{
+	IUS_ERR_CHECK_NULL_N_RETURN(transducer, -1);
+	return transducer->baseTransducer.shape;
+}
+
+char *ius2DTransducerGetName
+(
+	iu2dt_t transducer
+)
+{
+	IUS_ERR_CHECK_NULL_N_RETURN(transducer, NULL);
+	return transducer->baseTransducer.pTransducerName;
+}
+
+float ius2DTransducerGetCenterFrequency
+(
+	iu2dt_t transducer
+)
+{
+	IUS_ERR_CHECK_NULL_N_RETURN(transducer, 0.0f);
+	return transducer->baseTransducer.centerFrequency;
+}
+
 // setters
 int ius2DTransducerSetElement
 (
