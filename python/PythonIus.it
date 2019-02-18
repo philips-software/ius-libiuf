@@ -24,6 +24,24 @@
         $1 = (ius_t) $input;
 }
 
+%typemap(in) iup_t {
+        $1 = (iup_t) $input;
+}
+
+%typemap(in) iut_t {
+        $1 = (iut_t) $input;
+}
+
+%typemap(in) IusTransducerShape {
+        if (PyFloat_Check($input)) {
+            $1 = (int) PyFloat_AsDouble($input);
+            printf("warning, casting float to n = %d\n", $1);
+        }
+        else {
+            $1 = (int) PyInt_AsLong($input);
+        }
+}
+
 %typemap(in) float *apodization {
     int i;
     Py_ssize_t length;

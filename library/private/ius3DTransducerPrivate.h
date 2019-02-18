@@ -15,4 +15,19 @@ iu3dt_t ius3DTransducerLoad
     hid_t handle
 );
 
+IusTransducerShape ius3DTransducerGetShape(
+	iu3dt_t transducer
+);
+
+char *ius3DTransducerGetName
+(
+	iu3dt_t transducer
+);
+
+float ius3DTransducerGetCenterFrequency
+(
+	iu3dt_t transducer
+);
+
+
 #endif //IUSLIBRARY_IUSHL3DTRANSDUCERIMP_H

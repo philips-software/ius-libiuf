@@ -1,8 +1,9 @@
-@echo off
+@echo on
 set BinFolder=%~dp0..\..\
 pushd .
 cd %BinFolder%
 set BuildFolder=%CD%\build
+mkdir %BuildFolder% & pushd %BuildFolder%
 popd
 echo === Building ius in %BuildFolder%
 set PlatformFolder=%BuildFolder%\Windows
