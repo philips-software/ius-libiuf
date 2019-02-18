@@ -9,12 +9,15 @@
 
 iuta_t iusTransmitApodizationCreate
 (
+    float *apodization,
 	int numElements
 )
 {
 	int idx;
 	iuta_t transmitApodization;
+	int status = IUS_E_OK;
 
+    IUS_ERR_CHECK_NULL_N_RETURN(apodization, IUTA_INVALID);
 	if (numElements <= 0)
 	{
 		IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE, "numElements argument should be > 0 but was '%d'", numElements);
@@ -25,10 +28,17 @@ iuta_t iusTransmitApodizationCreate
 	IUS_ERR_ALLOC_NULL_N_RETURN(transmitApodization, IusTransmitApodization, IUTA_INVALID);
 	transmitApodization->numElements = numElements;
 	transmitApodization->apodization = calloc(numElements, sizeof(float));
-	for (idx = 0; idx < numElements; idx++)
-	{
-		transmitApodization->apodization[idx] = -1;
-	}
+
+    for (idx = 0; idx < transmitApodization->numElements; idx++)
+    {
+        status = iusTransmitApodizationSetElement(transmitApodization,idx,apodization[idx]);
+        if ( status == IUS_ERR_VALUE )
+        {
+            iusTransmitApodizationDelete(transmitApodization);
+            return IUTA_INVALID;
+        }
+    }
+
 	return transmitApodization;
 }
 
@@ -172,7 +182,6 @@ iuta_t iusTransmitApodizationLoad
 {
 	herr_t status;
 	iuta_t transmitApodization;
-	int idx = 0;
 	int numElements = 0;
 	float *apodization;
 
@@ -208,22 +217,7 @@ iuta_t iusTransmitApodizationLoad
         return IUTA_INVALID;
     }
 
-    status = 0;
-	transmitApodization = iusTransmitApodizationCreate(numElements);
-    if (transmitApodization != IUTA_INVALID)
-    {
-        for (idx = 0; idx < numElements; idx++)
-        {
-            status |= iusTransmitApodizationSetElement(transmitApodization, idx, apodization[idx]);
-        }
-    }
-
-	if (status != 0)
-    {
-        iusTransmitApodizationDelete(transmitApodization);
-        transmitApodization = IUTA_INVALID;
-    }
-
+	transmitApodization = iusTransmitApodizationCreate(apodization, numElements);
     free(apodization);
 	return transmitApodization;
 }

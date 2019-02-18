@@ -615,11 +615,9 @@ iutad_t dgGenerateTransmitApodizationDict
 	TEST_ASSERT(dict != IUTAD_INVALID);
 
 	// fill
-	iuta_t transmitApodization = iusTransmitApodizationCreate(numElements);
+	iuta_t transmitApodization = iusTransmitApodizationCreate(apodizaton, numElements);
 	TEST_ASSERT(transmitApodization != NULL);
 
-	status = iusTransmitApodizationSetApodization(transmitApodization, apodizaton);
-	TEST_ASSERT(status == IUS_E_OK);
 
 	status = iusTransmitApodizationDictSet(dict, label, transmitApodization);
 	TEST_ASSERT(status == IUS_E_OK);

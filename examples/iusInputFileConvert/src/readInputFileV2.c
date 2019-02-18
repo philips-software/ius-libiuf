@@ -417,8 +417,7 @@ static iutad_t extractTransmitApodizationDict(hid_t inputFile)
 	{
 		char pulseLabel[32];
 		float *apod = apodizations + i*numChannels;
-		iuta_t transmitApodization = iusTransmitApodizationCreate(numChannels);
-		status |= iusTransmitApodizationSetApodization(transmitApodization, apod);
+		iuta_t transmitApodization = iusTransmitApodizationCreate(apod, numChannels);
 		sprintf(pulseLabel, "pulse[%d]", i);
 		status |= iusTransmitApodizationDictSet(transmitApodizationDict, pulseLabel, transmitApodization);
 	}
