@@ -42,7 +42,7 @@
         }
 }
 
-%typemap(in) float *apodization {
+%typemap(in) (float *apodization, int numElements) {
     int i;
     Py_ssize_t length;
     if (!PySequence_Check($input)) {
@@ -62,8 +62,16 @@
         return NULL;
         }
     }
+    printf("Additional memory allocated at: %p\n", (void*)temp);
     $1 = temp;
+    $2 = length;
 }
+
+%typemap(freearg) (float *apodization, int numElements) {
+        printf("Additional memory freed from: %p\n", (void*)$1);
+        free($1);
+}
+
 
 %include <ius2DNonParametricSource.h>
 %include <ius2DParametricSource.h>
