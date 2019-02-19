@@ -22,13 +22,16 @@ void dgFillData
 )
 {
     int i;
-    float *pData = iusDataGetPointer(data);
     int numSamples = iusDataGetSize(data);
+    double *doubletjes = malloc(numSamples * sizeof(double));
 
     for (i=0; i<numSamples; i++)
     {
-        pData[i] = value;
+        doubletjes[i] = (float) value;
     }
+
+    iusDataFill(data, doubletjes, numSamples);
+    free(doubletjes);
 }
 
 iurs_t dgGenerateReceiveSettings

@@ -77,3 +77,21 @@ float *iusDataGetPointer
     IUS_ERR_CHECK_NULL_N_RETURN(data, NULL);
     return data->pData;
 }
+
+int iusDataFill
+(
+    iud_t data,
+    double *input,
+    int length
+)
+{
+    IUS_ERR_EVAL_N_RETURN(length != data->size, IUS_ERR_VALUE);
+    IUS_ERR_CHECK_NULL_N_RETURN(data, IUS_ERR_VALUE);
+    IUS_ERR_CHECK_NULL_N_RETURN(input, IUS_ERR_VALUE);
+    int j;
+    for (j=0;j<length;j++)
+    {
+        data->pData[j] = (float) input[j];
+    }
+    return IUS_E_OK;
+}
