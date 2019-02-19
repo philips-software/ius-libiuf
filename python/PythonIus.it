@@ -64,7 +64,7 @@
     }
     printf("Additional memory allocated at: %p\n", (void*)temp);
     $1 = temp;
-    $2 = length;
+    $2 = (int)length;
 }
 
 %typemap(freearg) (float *apodization, int numElements) {
