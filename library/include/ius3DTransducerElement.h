@@ -16,7 +16,7 @@ typedef Ius3DTransducerElement *iu3dte_t;
 #define  IU3DTE_INVALID (iu3dte_t) NULL
 
 /** \brief Creates a 3D transducer element that is decribed by a 3D position, a 3D angle (theta and phi) and a 3D size
-* \return returns the created element or #IU2DTE_INVALID in case of invalid parameters.
+* \return returns the created element or #IU3DTE_INVALID in case of invalid parameters.
 */
 iu3dte_t ius3DTransducerElementCreate
 (
@@ -50,15 +50,15 @@ int ius3DTransducerElementCompare
     iu3dte_t actual                 ///< The transducer to compare with
 );
 
-/** \brief returns the 3D position of the \p ius2DTransducerElement.
+/** \brief returns the 3D position of the \p ius3DTransducerElement.
 * \return the 3D position of the \p ius3DTransducerElement (x,y,z) in meters.
 */
 iu3dp_t ius3DTransducerElementGetPosition
 (
-	iu3dte_t elemen ///< The transducer element that has the requested position.
+	iu3dte_t element ///< The transducer element that has the requested position.
 );
 
-/** \brief returns the angles (theta,phi) of the \p ius2DTransducerElement.
+/** \brief returns the angles (theta,phi) of the \p ius3DTransducerElement.
 * \return the angles of the \p ius3DTransducerElement (theta, phi) in radians.
 */
 iu3da_t ius3DTransducerElementGetAngle
@@ -66,7 +66,7 @@ iu3da_t ius3DTransducerElementGetAngle
 	iu3dte_t element ///< The transducer element that has the requested angles.
 );
 
-/** \brief returns the 3D size of the \p ius2DTransducerElement.
+/** \brief returns the 3D size of the \p ius3DTransducerElement.
 * \return the 3D size of the \p ius3DTransducerElement (sx,sy,sz) in meters.
 */
 iu3ds_t ius3DTransducerElementGetSize
