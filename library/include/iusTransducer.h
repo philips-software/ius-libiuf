@@ -6,7 +6,7 @@
 #include <iusHDF5.h>
 
 // ADT
-typedef struct IusTransducer IusTransducer;
+typedef struct _IusTransducer IusTransducer;
 typedef IusTransducer *iut_t;
 #define  IUT_INVALID (iut_t) NULL
 

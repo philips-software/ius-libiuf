@@ -8,7 +8,7 @@
 #include <hdf5.h>
 #include <hdf5_hl.h>
 
-struct IusTransducer
+struct _IusTransducer
 {
     IusShape               type;			  /**< 2D or 3D transducer? */
     char *                 pTransducerName;   /**< descriptive name of the ultrasound probe */

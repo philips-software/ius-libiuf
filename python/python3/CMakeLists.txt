@@ -16,6 +16,7 @@ if(Python3_FOUND)
     INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/external/hashmap/src)
     INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/python)
     INCLUDE_DIRECTORIES(${HDF5_INCLUDE_DIR})
+    INCLUDE_DIRECTORIES("/usr/local/lib/python3.7/site-packages/numpy/core/include")
 
     SET(CMAKE_SWIG_FLAGS "")
     SET(UseSWIG_TARGET_NAME_PREFERENCE STANDARD)

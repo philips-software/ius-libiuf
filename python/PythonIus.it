@@ -1,3 +1,54 @@
+%{
+
+
+#include <ius2DSize.h>
+#include <ius2DSizePrivate.h>
+#include <iusPosition.h>
+#include <iusPositionPrivate.h>
+#include <iusTypes.h>
+#include <iusTransducer.h>
+#include <iusTransducerPrivate.h>
+
+#include <ius2DTransducerElement.h>
+#include <ius2DTransducerElementPrivate.h>
+#include <ius2DTransducerElementList.h>
+#include <ius2DTransducerElementListPrivate.h>
+#include <ius2DTransducerPrivate.h>
+#include <ius2DTransducer.h>
+%}
+
+//
+//typedef struct _IusTransducer IusTransducer;
+//typedef IusTransducer *iut_t;
+//typedef struct _Ius2DTransducer Ius2DTransducer;
+//typedef Ius2DTransducer *iu2dt_t;
+//
+//%typemap(in) iut_t {
+//    printf("%%typemap(in) iut_t in process...\n");
+//    $1 = $input;
+//
+//}
+
+
+%include <ius2DSize.h>
+%include <ius2DSizePrivate.h>
+%include <iusPosition.h>
+%include <iusPositionPrivate.h>
+%include <iusTypes.h>
+
+%include <ius2DTransducerElement.h>
+%include <ius2DTransducerElementPrivate.h>
+%include <ius2DTransducerElementList.h>
+%include <ius2DTransducerElementListPrivate.h>
+%include <ius2DTransducerPrivate.h>
+%include <ius2DTransducer.h>
+
+%include <iusTransducer.h>
+%include <iusTransducerPrivate.h>
+
+
+
+#if 0
 %include  extendDict.it
 
 %{
@@ -7,6 +58,17 @@
 #include "iusPatternListADT.h"
 #include "iusParameterDictADT.h"
 #include "iusDemodulationDictADT.h"
+
+typedef struct
+{
+    IusShape               type;			  /**< 2D or 3D transducer? */
+    char *                 pTransducerName;   /**< descriptive name of the ultrasound probe */
+    float                  centerFrequency;   /**< operating frequency of the transducer */
+    IusTransducerShape     shape;
+    IUS_BOOL               deepDelete;
+} IusTransducer ;
+typedef IusTransducer *iut_t;
+
 %}
 
 
@@ -27,6 +89,17 @@
 %typemap(in) iup_t {
         $1 = (iup_t) $input;
 }
+
+typedef struct
+{
+    IusShape               type;			  /**< 2D or 3D transducer? */
+    char *                 pTransducerName;   /**< descriptive name of the ultrasound probe */
+    float                  centerFrequency;   /**< operating frequency of the transducer */
+    IusTransducerShape     shape;
+    IUS_BOOL               deepDelete;
+} IusTransducer ;
+
+typedef IusTransducer *iut_t;
 
 %typemap(in) iut_t {
         $1 = (iut_t) $input;
@@ -71,6 +144,21 @@
         printf("Additional memory freed from: %p\n", (void*)$1);
         free($1);
 }
+
+//%include "numpy.i"
+//
+//%init %{
+//import_array();
+//%}
+//
+//%apply (double* IN_ARRAY1, int DIM1){(double* input, int length)};
+
+//int iusDataFill
+//        (
+//                iud_t data,
+//                double *input,
+//                int length
+//        );
 
 
 %include <ius2DNonParametricSource.h>
@@ -143,6 +231,10 @@ EXTEND_DICT_ADT(ParameterDict, char)
 EXTEND_DICT_ADT(DemodulationDict, IusDemodulation)
 
 
+
+
+
+
 %include <iusPatternListADT.h>
 
 %extend IusPatternList {
@@ -207,3 +299,5 @@ EXTEND_DICT_ADT(DemodulationDict, IusDemodulation)
             return &temp[0];
         }
 };
+
+#endif

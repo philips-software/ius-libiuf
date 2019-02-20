@@ -2,7 +2,15 @@
 #ifndef IUSLIBRARY_IUSHL2DTRANSDUCERIMP_H
 #define IUSLIBRARY_IUSHL2DTRANSDUCERIMP_H
 
+#include <iusTransducerPrivate.h>
 #include <ius2DTransducer.h>
+#include <ius2DTransducerElementList.h>
+
+struct _Ius2DTransducer
+{
+    struct _IusTransducer     baseTransducer;
+    iu2dtel_t                elements;         /**< an array of numElements transducer element (position, angle, size) */
+};
 
 herr_t ius2DTransducerSave
 (
@@ -28,6 +36,7 @@ float ius2DTransducerGetCenterFrequency
 (
 	iu2dt_t transducer
 );
+
 
 
 #endif //IUSLIBRARY_IUSHL2DTRANSDUCERIMP_H

@@ -12,7 +12,7 @@ building:linux:
   script:
     - ./ci/bin/build.sh
   tags:
-    - docker-mega
+    - docker
   artifacts:
     paths:
       - ./build/*
@@ -26,7 +26,7 @@ sonar:
     - ./ci/bin/memory_leak_detection.sh xml
     - sonar-scanner -Dsonar.login=${SONAR_LOGIN}  -Dsonar.host.url=https://sonarc.ta.philips.com/
   tags:
-    - docker-mega
+    - docker
   dependencies:
     - building:linux
   only:
@@ -40,7 +40,7 @@ testing_lib:linux:
   script:
     - ./ci/bin/unittests.sh
   tags:
-    - docker-mega
+    - docker
   dependencies:
     - building:linux
 
@@ -50,7 +50,7 @@ distribution:linux:
   script:
     - ./ci/bin/mk_os_distribution.sh
   tags:
-    - docker-mega
+    - docker
   artifacts:
     paths:
       - ./build/Linux/dist
@@ -94,7 +94,7 @@ sdk:
   script:
     - ./ci/bin/mksdk.sh
   tags:
-    - docker-mega
+    - docker
   dependencies:
     - distribution:windows
     - distribution:linux
@@ -121,7 +121,7 @@ sdk_test:linux:
     ci/bin/unittests.sh
 
   tags:
-    - docker-mega
+    - docker
   dependencies:
     - sdk
 
@@ -134,4 +134,4 @@ pages:
     paths:
     - public
   tags:
-    - docker-mega
+    - docker

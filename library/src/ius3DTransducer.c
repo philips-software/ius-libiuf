@@ -12,7 +12,7 @@
 
 struct Ius3DTransducer
 {
-  struct IusTransducer     baseTransducer;
+  struct _IusTransducer     baseTransducer;
   iu3dtel_t                elements;         /**< an array of numElements transducer element (position, angle, size) */
 }  ;
 
@@ -129,6 +129,7 @@ char *ius3DTransducerGetName
 )
 {
 	IUS_ERR_CHECK_NULL_N_RETURN(transducer, NULL);
+    printf("ius3DTransducerGetName at address: %p\n", (void *)transducer);
 	return transducer->baseTransducer.pTransducerName;
 }
 
