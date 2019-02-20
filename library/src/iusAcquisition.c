@@ -23,9 +23,9 @@ iua_t iusAcquisitionCreate
     pAcquisition->speedOfSound = speedOfSound;
     pAcquisition->date = date;
     if( pDescription == NULL )
-        pAcquisition->pDescription = "";
+        pAcquisition->description = "";
     else
-        pAcquisition->pDescription = strdup(pDescription);
+        pAcquisition->description = strdup(pDescription);
     return pAcquisition;
 }
 
@@ -35,7 +35,7 @@ int iusAcquisitionDelete
 )
 {
     IUS_ERR_CHECK_NULL_N_RETURN(acquisition, IUS_ERR_VALUE);
-    free(acquisition->pDescription);
+    free(acquisition->description);
     free(acquisition);
     return IUS_E_OK;
 }
@@ -54,7 +54,7 @@ IUS_BOOL iusAcquisitionCompare
         return IUS_FALSE;
     if( IUS_EQUAL_FLOAT(reference->speedOfSound, actual->speedOfSound) == IUS_FALSE )
         return IUS_FALSE;
-	if (strcmp(reference->pDescription, actual->pDescription) != 0)
+	if (strcmp(reference->description, actual->description) != 0)
 		return IUS_FALSE;
     return IUS_TRUE;
 }
@@ -84,7 +84,7 @@ char * iusAcquisitionGetDescription
 )
 {
     IUS_ERR_CHECK_NULL_N_RETURN(acquisition, NULL);
-    return acquisition->pDescription;
+    return acquisition->description;
 }
 
 // serialization
@@ -118,7 +118,7 @@ int iusAcquisitionSave
 
     status = iusHdf5WriteFloat(acquisition_id, IUS_INPUTFILE_PATH_ACQUISITION_SPEEDOFSOUND, &acquisition->speedOfSound, 1);
     status |= iusHdf5WriteInt(acquisition_id, IUS_INPUTFILE_PATH_ACQUISITION_DATE, &acquisition->date, 1);
-    status |= iusHdf5WriteString(acquisition_id, IUS_INPUTFILE_PATH_ACQUISITION_DESCRIPTION, acquisition->pDescription);
+    status |= iusHdf5WriteString(acquisition_id, IUS_INPUTFILE_PATH_ACQUISITION_DESCRIPTION, acquisition->description);
 
 	H5Gclose(acquisition_id);
     return status;

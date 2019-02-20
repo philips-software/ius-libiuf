@@ -1,74 +1,14 @@
 %{
-
-
-#include <ius2DSize.h>
-#include <ius2DSizePrivate.h>
-#include <iusPosition.h>
-#include <iusPositionPrivate.h>
-#include <iusTypes.h>
-#include <iusTransducer.h>
-#include <iusTransducerPrivate.h>
-
-#include <ius2DTransducerElement.h>
-#include <ius2DTransducerElementPrivate.h>
-#include <ius2DTransducerElementList.h>
-#include <ius2DTransducerElementListPrivate.h>
-#include <ius2DTransducerPrivate.h>
-#include <ius2DTransducer.h>
-%}
-
-//
-//typedef struct _IusTransducer IusTransducer;
-//typedef IusTransducer *iut_t;
-//typedef struct _Ius2DTransducer Ius2DTransducer;
-//typedef Ius2DTransducer *iu2dt_t;
-//
-//%typemap(in) iut_t {
-//    printf("%%typemap(in) iut_t in process...\n");
-//    $1 = $input;
-//
-//}
-
-
-%include <ius2DSize.h>
-%include <ius2DSizePrivate.h>
-%include <iusPosition.h>
-%include <iusPositionPrivate.h>
-%include <iusTypes.h>
-
-%include <ius2DTransducerElement.h>
-%include <ius2DTransducerElementPrivate.h>
-%include <ius2DTransducerElementList.h>
-%include <ius2DTransducerElementListPrivate.h>
-%include <ius2DTransducerPrivate.h>
-%include <ius2DTransducer.h>
-
-%include <iusTransducer.h>
-%include <iusTransducerPrivate.h>
-
-
-
-#if 0
-%include  extendDict.it
-
-%{
 #include <ius.h>
 #include "iusAcquisitionADT.h"
 #include "iusHistoryNodeADT.h"
 #include "iusPatternListADT.h"
 #include "iusParameterDictADT.h"
 #include "iusDemodulationDictADT.h"
-
-typedef struct
-{
-    IusShape               type;			  /**< 2D or 3D transducer? */
-    char *                 pTransducerName;   /**< descriptive name of the ultrasound probe */
-    float                  centerFrequency;   /**< operating frequency of the transducer */
-    IusTransducerShape     shape;
-    IUS_BOOL               deepDelete;
-} IusTransducer ;
-typedef IusTransducer *iut_t;
-
+#include <ius2DTransducerPrivate.h>
+#include <iusTransducerADT.h>
+#include <ius2DTransducerADT.h>
+#include <ius3DTransducerADT.h>
 %}
 
 
@@ -82,27 +22,18 @@ typedef IusTransducer *iut_t;
         }
 }
 
-%typemap(in) ius_t {
-        $1 = (ius_t) $input;
-}
 
 %typemap(in) iup_t {
         $1 = (iup_t) $input;
 }
 
-typedef struct
-{
-    IusShape               type;			  /**< 2D or 3D transducer? */
-    char *                 pTransducerName;   /**< descriptive name of the ultrasound probe */
-    float                  centerFrequency;   /**< operating frequency of the transducer */
-    IusTransducerShape     shape;
-    IUS_BOOL               deepDelete;
-} IusTransducer ;
-
-typedef IusTransducer *iut_t;
 
 %typemap(in) iut_t {
-        $1 = (iut_t) $input;
+        if (!SWIG_IsOK(SWIG_ConvertPtr($input, (void **) &$1, $descriptor(iu2dt_t), 0)) &&
+           (!SWIG_IsOK(SWIG_ConvertPtr($input, (void **) &$1, $descriptor(iu3dt_t), 0))))
+        {
+            SWIG_exception_fail(SWIG_TypeError, "in method '$symname', expecting type iu2dt_t or iu3dt_t");
+        }
 }
 
 %typemap(in) IusTransducerShape {
@@ -165,6 +96,7 @@ typedef IusTransducer *iut_t;
 %include <ius2DParametricSource.h>
 %include <ius2DSize.h>
 %include <ius2DTransducer.h>
+%include <ius2DTransducerPrivate.h>
 %include <ius2DTransducerElement.h>
 %include <ius2DTransducerElementList.h>
 %include <ius3DAngle.h>
@@ -227,77 +159,13 @@ typedef IusTransducer *iut_t;
 // is stored in a separate file
 // i.e. iusParameterDictADT.h for ParameterDict data type.
 //
+%include  extendDict.it
 EXTEND_DICT_ADT(ParameterDict, char)
 EXTEND_DICT_ADT(DemodulationDict, IusDemodulation)
 
 
-
-
-
-
+%include <iusTransducerADT.h>
 %include <iusPatternListADT.h>
-
-%extend IusPatternList {
-        IusPatternList() {
-            int numPatterns = 1;
-            iursd_t receiveSettingsDict = NULL;
-            iurcmd_t receiveChannelMapDict = NULL;
-            return iusPatternListCreate(numPatterns, receiveSettingsDict, receiveChannelMapDict);
-        }
-
-        ~IusPatternList() {
-            iusPatternListDelete($self);
-        }
-
-};
-
 %include <iusHistoryNodeADT.h>
-%extend IusHistoryNode {             // Attach these functions to struct Vector
-        IusHistoryNode(char *nodeType) {
-            return iusHistoryNodeCreate(nodeType);
-        }
-
-        ~IusHistoryNode() {
-            iusHistoryNodeDelete($self);
-        }
-
-        char *Type()
-        {
-            return iusHistoryNodeGetType($self);
-        }
-
-        int NumParams()
-        {
-            return iusHistoryNodeGetNumParams($self);
-        }
-
-        int NumParents()
-        {
-            return iusHistoryNodeGetNumParents($self);
-        }
-
-        char *__str__() {
-            static char temp[256];
-            sprintf(temp, "IusHistoryNode [%s]\n", $self->pType);
-            return &temp[0];
-        }
-};
-
 %include <iusAcquisitionADT.h>
 
-%extend IusAcquisition {             // Attach these functions to struct Vector
-        IusAcquisition(float speedOfSound, int date, char *description) {
-            return iusAcquisitionCreate(speedOfSound,date,description);
-        }
-        ~IusAcquisition() {
-            iusAcquisitionDelete($self);
-        }
-
-        char *__str__() {
-            static char temp[256];
-            sprintf(temp, "IusAcquisition [%g, %d, %s]\n", $self->speedOfSound, $self->date, $self->pDescription);
-            return &temp[0];
-        }
-};
-
-#endif

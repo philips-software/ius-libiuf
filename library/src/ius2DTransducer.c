@@ -7,7 +7,7 @@
 
 #include <ius.h>
 #include <iusTransducerPrivate.h>
-#include <ius2DTransducerPrivate.h>
+#include <ius2DTransducerADT.h>
 #include <iusPositionPrivate.h>
 #include <ius2DTransducerElementListPrivate.h>
 
@@ -38,7 +38,6 @@ iu2dt_t ius2DTransducerCreate
     created->baseTransducer.shape = shape;
     created->baseTransducer.centerFrequency = centerFrequency;
     created->baseTransducer.deepDelete = IUS_FALSE;
-    printf("ius2DTransducerCreate returns object at address: %p\n", (void *)created);
     return created;
 }
 
@@ -123,7 +122,6 @@ char *ius2DTransducerGetName
 )
 {
 	IUS_ERR_CHECK_NULL_N_RETURN(transducer, NULL);
-    printf("ius2DTransducerGetName at address: %p\n", (void *)transducer);
 	return transducer->baseTransducer.pTransducerName;
 }
 

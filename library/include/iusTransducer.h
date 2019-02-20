@@ -6,13 +6,13 @@
 #include <iusHDF5.h>
 
 // ADT
-typedef struct _IusTransducer IusTransducer;
+typedef struct IusTransducer IusTransducer;
 typedef IusTransducer *iut_t;
 #define  IUT_INVALID (iut_t) NULL
 
 //iut_t iusTransducerCreate
 //(
-//    char *name,
+//    const char *name,
 //    IusTransducerShape shape,
 //    float centerFrequency
 //);

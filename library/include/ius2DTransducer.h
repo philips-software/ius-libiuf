@@ -5,8 +5,9 @@
 #include <ius2DTransducerElement.h>
 
 // ADT
-typedef struct _Ius2DTransducer Ius2DTransducer;
-/** \brief A 2D transducer is described by a name, 2D shape, centerfrequency and a list of elements.   
+typedef struct Ius2DTransducer Ius2DTransducer;
+
+/** \brief A 2D transducer is described by a name, 2D shape, centerfrequency and a list of elements.
 * A transducer is created first by specifying these parameters with a call to #ius2DTransducerCreate(), 
 * followed by setting each of the elements using calls to #ius2DTransducerSetElement()
 */

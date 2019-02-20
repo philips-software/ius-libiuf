@@ -2,7 +2,7 @@
 
 %define EXTEND_DICT_ADT(name, type)
     %include <ius##name##ADT.h>
-
+    %include <ius##name.h>
     S02LIST(ius##name##GetKeys)
 
     %define TOSTR(name) #name
@@ -55,6 +55,5 @@
     }
 
     };
-    %include <ius##name.h>
 %enddef
 

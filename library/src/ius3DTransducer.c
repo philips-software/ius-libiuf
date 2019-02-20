@@ -10,13 +10,10 @@
 #include <iusTransducerPrivate.h>
 #include <ius3DTransducerElementListPrivate.h>
 
-struct Ius3DTransducer
-{
-  struct _IusTransducer     baseTransducer;
-  iu3dtel_t                elements;         /**< an array of numElements transducer element (position, angle, size) */
-}  ;
+#include <iusTransducerADT.h>
+#include <ius3DTransducerADT.h>
+#include <ius3DTransducerElementListPrivate.h>
 
-// ADT
 iu3dt_t ius3DTransducerCreate
 (
   char *name,
@@ -129,7 +126,6 @@ char *ius3DTransducerGetName
 )
 {
 	IUS_ERR_CHECK_NULL_N_RETURN(transducer, NULL);
-    printf("ius3DTransducerGetName at address: %p\n", (void *)transducer);
 	return transducer->baseTransducer.pTransducerName;
 }
 
