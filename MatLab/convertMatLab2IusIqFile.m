@@ -56,42 +56,51 @@ iusIqFileSetAcquisition( h, acquisition );
 
 % receiveChannelMapDict
 
-% transducer
-transducer = ius3DTransducerCreate( ...
-    iusIqStruct.Transducer.transducerName, ...
-    3, ... %IUS_PLANE
-    iusIqStruct.Transducer.centerFrequency, ...
-    iusIqStruct.Transducer.numElements ) ;
-
-elementPos = cell( iusIqStruct.Transducer.numElements, 1);
-elementSize = cell( iusIqStruct.Transducer.numElements, 1);
-elementTheta = cell( iusIqStruct.Transducer.numElements, 1);
-element = cell( iusIqStruct.Transducer.numElements, 1);
-for c1 = 1:iusIqStruct.Transducer.numElements
-    elementPos{c1} = ius3DPositionCreate( ...
-        iusIqStruct.Transducer.Elements.positions.x(c1), ...
-        iusIqStruct.Transducer.Elements.positions.y(c1), ...
-        iusIqStruct.Transducer.Elements.positions.z(c1) );
-    elementSize{c1} = ius3DSizeCreate( ...
-        iusIqStruct.Transducer.Elements.sizes.x(c1), ...
-        iusIqStruct.Transducer.Elements.sizes.y(c1), ...
-        iusIqStruct.Transducer.Elements.sizes.z(c1) );    
-    elementTheta{c1} = ius3DAngleCreate( ...
-        iusIqStruct.Transducer.Elements.angles.theta(c1), ...
-        iusIqStruct.Transducer.Elements.angles.phi(c1));
-    element{c1} = ius3DTransducerElementCreate( elementPos{c1}, elementTheta{c1}, elementSize{c1} );
-    ius3DTransducerSetElement( transducer, c1-1, element{c1} );
-end
-iusIqFileSetTransducer( h, transducer );
+% % % transducer
+% % transducer = ius3DTransducerCreate( ...
+% %     iusIqStruct.Transducer.transducerName, ...
+% %     3, ... %IUS_PLANE
+% %     iusIqStruct.Transducer.centerFrequency, ...
+% %     iusIqStruct.Transducer.numElements ) ;
+% % 
+% % elementPos = cell( iusIqStruct.Transducer.numElements, 1);
+% % elementSize = cell( iusIqStruct.Transducer.numElements, 1);
+% % elementTheta = cell( iusIqStruct.Transducer.numElements, 1);
+% % element = cell( iusIqStruct.Transducer.numElements, 1);
+% % for c1 = 1:iusIqStruct.Transducer.numElements
+% %     elementPos{c1} = ius3DPositionCreate( ...
+% %         iusIqStruct.Transducer.Elements.positions.x(c1), ...
+% %         iusIqStruct.Transducer.Elements.positions.y(c1), ...
+% %         iusIqStruct.Transducer.Elements.positions.z(c1) );
+% %     elementSize{c1} = ius3DSizeCreate( ...
+% %         iusIqStruct.Transducer.Elements.sizes.x(c1), ...
+% %         iusIqStruct.Transducer.Elements.sizes.y(c1), ...
+% %         iusIqStruct.Transducer.Elements.sizes.z(c1) );    
+% %     elementTheta{c1} = ius3DAngleCreate( ...
+% %         iusIqStruct.Transducer.Elements.angles.theta(c1), ...
+% %         iusIqStruct.Transducer.Elements.angles.phi(c1));
+% %     element{c1} = ius3DTransducerElementCreate( elementPos{c1}, elementTheta{c1}, elementSize{c1} );
+% %     ius3DTransducerSetElement( transducer, c1-1, element{c1} );
+% % end
+% % iusIqFileSetTransducer( h, transducer );
 
 % transmitApodizationDict
 ta = iusIqStruct.DrivingScheme.transmitApodization;
 if all(all(diff(ta,1) == 0)) % All transmit apodizations are the same.
-    transmitApodization = iusTransmitApodizationCreate( size( ta, 2 ) );
-    iusTransmitApodizationSetApodization( transmitApodization, ta );
+    iusErrorAutoReport( 1 );
+    transmitApodization = iusTransmitApodizationCreate( ta(1,:) );
+    x = 1.3;
+    transmitApodizationTest = iusTransmitApodizationCreate( x );
+    c = iusErrorGetCount() 
+    if iusErrorGetCount() ~= 0
+        iusErrorPrint()
+    end
+    
     transmitApodizationDict = iusTransmitApodizationDictCreate();
     iusTransmitApodizationDictSet( transmitApodizationDict, mode, ...
         transmitApodization );
+    iusTransmitApodizationDictSet( transmitApodizationDict, 'test', ...
+        transmitApodizationTest );
     iusIqFileSetTransmitApodizationDict( h, transmitApodizationDict );    
 else
     error('Different transmitApodizations per pulse not yet supported!');
@@ -102,6 +111,7 @@ iusIqFileNodeSave( h );
 
 % Cleanup memory
 iusAcquisitionDelete( acquisition );
+iusTransmitApodizationDelete( transmitApodizationTest );
 iusTransmitApodizationDelete( transmitApodization );
 iusTransmitApodizationDictDelete( transmitApodizationDict );
 
@@ -161,7 +171,7 @@ end
 % Convert from many TA's to a dict!
 TRANSMIT_APODIZATION_LABEL = 'doppler';
 ta = iusIqStruct.DrivingScheme.transmitApodization;
-transmitApodization = iusTransmitApodizationCreate( size(ta, 2) );
+transmitApodization = iusTransmitApodizationCreate( ta, size(ta, 2) );
 % for c1 = 1:size(ta, 2)
 %     iusTransmitApodizationSetElement( transmitApodization, c1-1, ta(1, c1) );
 % end
