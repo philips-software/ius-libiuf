@@ -56,6 +56,8 @@ add_library(ius STATIC
 		include/ius2DSize.h
 		private/ius2DSizePrivate.h
 		include/ius2DTransducer.h
+		private/ius2DTransducerADT.h
+		private/ius2DTransducerPrivate.h
 		include/ius2DTransducerElement.h
 		private/ius2DTransducerElementPrivate.h
 		include/ius2DTransducerElementList.h
@@ -67,6 +69,8 @@ add_library(ius STATIC
 		include/ius3DSize.h
 		private/ius3DSizePrivate.h
 		include/ius3DTransducer.h
+		private/ius3DTransducerADT.h
+		private/ius3DTransducerPrivate.h
 		include/ius3DTransducerElement.h
 		private/ius3DTransducerElementPrivate.h
 		include/ius3DTransducerElementList.h
@@ -127,6 +131,8 @@ add_library(ius STATIC
 		include/iusTGC.h
 		private/iusTGCPrivate.h
 		include/iusTransducer.h
+		private/iusTransducerADT.h
+		private/iusTransducerPrivate.h
 		include/iusTransducerElement.h
 		private/iusTransducerElementPrivate.h
 		private/iusTransducerPrivate.h

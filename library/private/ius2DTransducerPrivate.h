@@ -2,8 +2,6 @@
 #ifndef IUSLIBRARY_IUSHL2DTRANSDUCERIMP_H
 #define IUSLIBRARY_IUSHL2DTRANSDUCERIMP_H
 
-#include <ius2DTransducer.h>
-
 herr_t ius2DTransducerSave
 (
     iu2dt_t transducer,

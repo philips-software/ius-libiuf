@@ -4,15 +4,9 @@
 #include <stdlib.h>
 
 #include <ius.h>
+#include <ius2DTransducerElementListPrivate.h>
 #include <ius2DTransducerElementPrivate.h>
 
-// ADT
-struct Ius2DTransducerElementList
-{
-    int numElements;
-    iu2dte_t *   p2DTransducerElements ;
-    IUS_BOOL deepDelete;
-} ;
 
 // ADT
 iu2dtel_t ius2DTransducerElementListCreate

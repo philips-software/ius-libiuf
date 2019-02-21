@@ -8,15 +8,6 @@
 #include <hdf5.h>
 #include <hdf5_hl.h>
 
-struct IusTransducer
-{
-    IusShape               type;			  /**< 2D or 3D transducer? */
-    char *                 pTransducerName;   /**< descriptive name of the ultrasound probe */
-    float                  centerFrequency;   /**< operating frequency of the transducer */
-    IusTransducerShape     shape;
-    IUS_BOOL               deepDelete;
-} ;
-
 int iusBaseTransducerDelete
 (
 	iut_t transducer

@@ -5,6 +5,14 @@
 #include <hdf5.h>
 #include <ius2DTransducerElementList.h>
 
+// ADT
+struct Ius2DTransducerElementList
+{
+    int numElements;
+    iu2dte_t *   p2DTransducerElements ;
+    IUS_BOOL deepDelete;
+} ;
+
 
 int ius2DTransducerElementListSave
 (

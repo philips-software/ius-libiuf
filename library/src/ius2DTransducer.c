@@ -7,14 +7,10 @@
 
 #include <ius.h>
 #include <iusTransducerPrivate.h>
+#include <ius2DTransducerADT.h>
 #include <iusPositionPrivate.h>
 #include <ius2DTransducerElementListPrivate.h>
 
-struct Ius2DTransducer
-{
-  struct IusTransducer     baseTransducer;
-  iu2dtel_t                elements;         /**< an array of numElements transducer element (position, angle, size) */
-}  ;
 
 // ADT
 iu2dt_t ius2DTransducerCreate
