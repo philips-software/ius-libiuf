@@ -19,9 +19,11 @@ try
     %convert( iqFileHandle, iusIqStruct, iqData, 'doppler' );
     fillInstanceData( iqFileHandle, iusIqStruct, 'doppler' );
 catch ME
+    iusCleanupExceptions()
     iusIqFileClose(iqFileHandle);
-    rethrow(ME)
-end
+    rethrow(ME);
+    end
+
 % Close the file
 iusIqFileClose(iqFileHandle);
 % Free memory
@@ -87,21 +89,21 @@ iusIqFileSetAcquisition( h, acquisition );
 % transmitApodizationDict
 ta = iusIqStruct.DrivingScheme.transmitApodization;
 if all(all(diff(ta,1) == 0)) % All transmit apodizations are the same.
-    iusErrorAutoReport( 1 );
+
     transmitApodization = iusTransmitApodizationCreate( ta(1,:) );
-    x = 1.3;
-    transmitApodizationTest = iusTransmitApodizationCreate( x );
-    c = iusErrorGetCount() 
-    if iusErrorGetCount() ~= 0
-        iusErrorPrint()
-    end
-    
+
     transmitApodizationDict = iusTransmitApodizationDictCreate();
     iusTransmitApodizationDictSet( transmitApodizationDict, mode, ...
         transmitApodization );
-    iusTransmitApodizationDictSet( transmitApodizationDict, 'test', ...
-        transmitApodizationTest );
-    iusIqFileSetTransmitApodizationDict( h, transmitApodizationDict );    
+
+    if 0 
+    % Force an error!
+        x = 1.3;
+        transmitApodizationTest = iusTransmitApodizationCreate( x );
+        iusTransmitApodizationDictSet( transmitApodizationDict, 'test', ...
+           transmitApodizationTest );
+    end
+    iusIqFileSetTransmitApodizationDict( h, transmitApodizationDict );
 else
     error('Different transmitApodizations per pulse not yet supported!');
 end
@@ -111,7 +113,6 @@ iusIqFileNodeSave( h );
 
 % Cleanup memory
 iusAcquisitionDelete( acquisition );
-iusTransmitApodizationDelete( transmitApodizationTest );
 iusTransmitApodizationDelete( transmitApodization );
 iusTransmitApodizationDictDelete( transmitApodizationDict );
 
