@@ -38,10 +38,10 @@ TEST(Ius3DNonParametricSource, testIus3DNonParametricSourceCreate)
 {
     int numLocations = 5 ;
 
-    iu3dnps_t obj = ius3DNonParametricSourceCreate(numLocations);
-    iu3dnps_t notherObj = ius3DNonParametricSourceCreate(numLocations);
-    TEST_ASSERT(obj != IU3DNPS_INVALID);
-    TEST_ASSERT(notherObj != IU3DNPS_INVALID);
+    ius_t obj = ius3DNonParametricSourceCreate(numLocations);
+    ius_t notherObj = ius3DNonParametricSourceCreate(numLocations);
+    TEST_ASSERT(obj != IUS_INVALID);
+    TEST_ASSERT(notherObj != IUS_INVALID);
     ius3DNonParametricSourceDelete(obj);
     ius3DNonParametricSourceDelete(notherObj);
 
@@ -50,9 +50,9 @@ TEST(Ius3DNonParametricSource, testIus3DNonParametricSourceCreate)
     TEST_ASSERT_EQUAL(0,iusErrorGetCount());
 
     obj = ius3DNonParametricSourceCreate(0);
-    TEST_ASSERT(obj == IU3DNPS_INVALID);
+    TEST_ASSERT(obj == IUS_INVALID);
     obj = ius3DNonParametricSourceCreate(0);
-    TEST_ASSERT(obj == IU3DNPS_INVALID);
+    TEST_ASSERT(obj == IUS_INVALID);
 
     TEST_ASSERT_EQUAL(2,iusErrorGetCount());
     TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
@@ -63,8 +63,8 @@ TEST(Ius3DNonParametricSource, testIus3DNonParametricSourceDelete)
 {
     int numLocations = 5;
 
-    iu3dnps_t obj = ius3DNonParametricSourceCreate(numLocations);
-    TEST_ASSERT(obj != IU3DNPS_INVALID);
+    ius_t obj = ius3DNonParametricSourceCreate(numLocations);
+    TEST_ASSERT(obj != IUS_INVALID);
     int status = ius3DNonParametricSourceDelete(obj);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
@@ -77,22 +77,18 @@ TEST(Ius3DNonParametricSource, testIus3DNonParametricSourceDelete)
 
     TEST_ASSERT_EQUAL(1,iusErrorGetCount());
     TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
-
 }
-
-
 
 TEST(Ius3DNonParametricSource, testIus3DNonParametricSourceCompare)
 {
     IUS_BOOL equal;
     int numLocations = 5;
 
-    iu3dnps_t obj = ius3DNonParametricSourceCreate(numLocations);
-    iu3dnps_t notherObj = ius3DNonParametricSourceCreate(numLocations);
-    iu3dnps_t differentObj =
-    ius3DNonParametricSourceCreate(numLocations+1);
-    TEST_ASSERT(obj != IU3DNPS_INVALID);
-    TEST_ASSERT(notherObj != IU3DNPS_INVALID);
+    ius_t obj = ius3DNonParametricSourceCreate(numLocations);
+    ius_t notherObj = ius3DNonParametricSourceCreate(numLocations);
+    ius_t differentObj = ius3DNonParametricSourceCreate(numLocations+1);
+    TEST_ASSERT(obj != IUS_INVALID);
+    TEST_ASSERT(notherObj != IUS_INVALID);
     equal = ius3DNonParametricSourceCompare(obj,obj);
     TEST_ASSERT_EQUAL(IUS_TRUE,equal);
     equal = ius3DNonParametricSourceCompare(obj,notherObj);
@@ -108,7 +104,6 @@ TEST(Ius3DNonParametricSource, testIus3DNonParametricSourceCompare)
     ius3DNonParametricSourceSetPosition(notherObj,pos,0);
     equal = ius3DNonParametricSourceCompare(obj,notherObj);
     TEST_ASSERT_EQUAL(IUS_TRUE,equal);
-
 
     // invalid params
     equal = ius3DNonParametricSourceCompare(obj,NULL);
@@ -126,7 +121,7 @@ TEST(Ius3DNonParametricSource, testIus3DNonParametricSourceSetGet)
 {
     int p,numLocations = 5;
 
-    iu3dnps_t obj = ius3DNonParametricSourceCreate(numLocations);
+    ius_t obj = ius3DNonParametricSourceCreate(numLocations);
     TEST_ASSERT_EQUAL(numLocations, ius3DNonParametricSourceGetNumLocations(obj));
 
     // Set/Get location test
@@ -138,7 +133,6 @@ TEST(Ius3DNonParametricSource, testIus3DNonParametricSourceSetGet)
         TEST_ASSERT_EQUAL(IUS_TRUE, ius3DPositionCompare(pos,get));
         ius3DPositionDelete(pos);
     }
-
     // invalid param
     long filePos = ftell(fpErrorLogging);
     TEST_ASSERT_EQUAL(0,iusErrorGetCount());
@@ -150,7 +144,6 @@ TEST(Ius3DNonParametricSource, testIus3DNonParametricSourceSetGet)
     TEST_ASSERT_EQUAL(3,iusErrorGetCount());
     TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
 
-
     ius3DNonParametricSourceDelete(obj);
 }
 
@@ -159,10 +152,8 @@ TEST(Ius3DNonParametricSource, testIus3DNonParametricSourceSerialization)
     char *filename = "testIus3DNonParametricSourceSerialization.hdf5";
     int p, numLocations = 5, status;
 
-
     // create
-    iu3dnps_t
-    obj = ius3DNonParametricSourceCreate(numLocations);
+    ius_t obj = ius3DNonParametricSourceCreate(numLocations);
 
     // fill
     for (p = 0; p < numLocations; p++)
@@ -183,7 +174,7 @@ TEST(Ius3DNonParametricSource, testIus3DNonParametricSourceSerialization)
 
     // read back
     handle = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT );
-    iu3dnps_t savedObj = ius3DNonParametricSourceLoad(handle);
+    ius_t savedObj = ius3DNonParametricSourceLoad(handle);
     H5Fclose(handle);
 
     TEST_ASSERT_EQUAL(IUS_TRUE, ius3DNonParametricSourceCompare(obj,savedObj));

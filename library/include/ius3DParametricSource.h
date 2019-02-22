@@ -4,7 +4,9 @@
 #define IUSLIBRARY_IUSHL3DPARAMETRICSOURCE_H
 
 #include "iusPosition.h"
+#include <iusSourcePrivate.h>
 
+#if 0
 // ADT
 typedef struct Ius3DParametricSource Ius3DParametricSource;
 /** The 3D parametric sources describes source locations from which a pulse originates simulatanously with a set of parameters. 
@@ -12,6 +14,7 @@ typedef struct Ius3DParametricSource Ius3DParametricSource;
 */
 typedef Ius3DParametricSource *iu3dps_t;
 #define  IU3DPS_INVALID (iu3dps_t) NULL
+#endif
 
 /** \brief Construct a (number of) source point(s) using a parametric description of their locations 
  * 
@@ -20,7 +23,7 @@ typedef Ius3DParametricSource *iu3dps_t;
  * The total number of locations 
  *
 */
-iu3dps_t ius3DParametricSourceCreate
+ius_t ius3DParametricSourceCreate
 (
     int numThetaLocations,  ///< The number of sources in theta dimension
 	int numPhiLocations,    ///< The number of sources int phi dimension
@@ -37,7 +40,7 @@ iu3dps_t ius3DParametricSourceCreate
 */
 int ius3DParametricSourceDelete
 (
-    iu3dps_t source ///< The 3D source to be deleted
+    ius_t source ///< The 3D source to be deleted
 );
 
 
@@ -48,8 +51,8 @@ int ius3DParametricSourceDelete
 */
 int ius3DParametricSourceCompare
 (
-    iu3dps_t reference, ///< The 3D parametric source to compare with
-    iu3dps_t actual     ///< The 3D parametric source to compare
+    ius_t reference, ///< The 3D parametric source to compare with
+    ius_t actual     ///< The 3D parametric source to compare
 );
 
 /** \brief Return the FNumber of the 3D parametric source
@@ -58,7 +61,7 @@ int ius3DParametricSourceCompare
 */
 float ius3DParametricSourceGetFNumber
 (
-    iu3dps_t source ///< The 3D parametric source that holds the fNumber
+    ius_t source ///< The 3D parametric source that holds the fNumber
 );
 
 /** \brief Return the delta angle between two thetas of the 3D parametric source
@@ -67,7 +70,7 @@ float ius3DParametricSourceGetFNumber
 */
 float ius3DParametricSourceGetDeltaTheta
 (
-    iu3dps_t source ///< The 3D parametric source that holds the delta theta
+    ius_t source ///< The 3D parametric source that holds the delta theta
 );
 
 /** \brief Return the starting angle theta
@@ -76,7 +79,7 @@ float ius3DParametricSourceGetDeltaTheta
 */
 float ius3DParametricSourceGetStartTheta
 (
-    iu3dps_t source ///< The 3D parametric source that has the start theta
+    ius_t source ///< The 3D parametric source that has the start theta
 );
 
 /** \brief Return the delta angle between two phis of the 3D parametric source
@@ -85,7 +88,7 @@ float ius3DParametricSourceGetStartTheta
 */
 float ius3DParametricSourceGetDeltaPhi
 (
-    iu3dps_t source ///< The 3D parametric source that holds the dleta phi
+    ius_t source ///< The 3D parametric source that holds the dleta phi
 );
 
 /** \brief Return the number of sources in theta dimension
@@ -94,7 +97,7 @@ float ius3DParametricSourceGetDeltaPhi
 */
 int ius3DParametricSourceGetNumThetaLocations
 (
-    iu3dps_t source  ///< The source of interest
+    ius_t source  ///< The source of interest
 );
 
 /** \brief Return the number of sources in phi dimension
@@ -103,7 +106,7 @@ int ius3DParametricSourceGetNumThetaLocations
 */
 int ius3DParametricSourceGetNumPhiLocations
 (
-    iu3dps_t source  ///< The source of interest
+    ius_t source  ///< The source of interest
 );
 
 /** \brief Return the starting angle phi
@@ -112,7 +115,7 @@ int ius3DParametricSourceGetNumPhiLocations
 */
 float ius3DParametricSourceGetStartPhi
 (
-    iu3dps_t source ///< The 3D parametric source that holds the sarting phi
+    ius_t source ///< The 3D parametric source that holds the sarting phi
 );
 
 /** Set the fNumber of the provided 3D parametric source 
@@ -121,7 +124,7 @@ float ius3DParametricSourceGetStartPhi
 */
 int ius3DParametricSourceSetFNumber
 (
-    iu3dps_t source,  ///< The 3D parametric source of which the fNumber is set
+    ius_t source,  ///< The 3D parametric source of which the fNumber is set
     float FNumber                    ///< The fNumber is the ratio between source distance and the transducer's aperture width
 );
 
@@ -131,7 +134,7 @@ int ius3DParametricSourceSetFNumber
 */
 int ius3DParametricSourceSetDeltaTheta
 (
-    iu3dps_t source,  ///< The 3D parametric source of which the deltaTheta is set in theta dimension
+    ius_t source,  ///< The 3D parametric source of which the deltaTheta is set in theta dimension
     float deltaTheta                 ///< The angular delta is the arc-distance in rad between sources  
 );
 
@@ -141,7 +144,7 @@ int ius3DParametricSourceSetDeltaTheta
 */
 int ius3DParametricSourceSetStartTheta
 (
-    iu3dps_t source,  ///< The 3D parametric source of which the start angle is set in theta dimension
+    ius_t source,  ///< The 3D parametric source of which the start angle is set in theta dimension
     float startTheta                 ///< The start angle is the arc-offset in rad of the sources, i.e. the angle of the first source 
 );
 
@@ -151,7 +154,7 @@ int ius3DParametricSourceSetStartTheta
 */
 int ius3DParametricSourceSetDeltaPhi
 (
-    iu3dps_t source,  ///< The 3D parametric source of which the deltaPhi is set
+    ius_t source,  ///< The 3D parametric source of which the deltaPhi is set
     float deltaPhi					 ///< The angular delta is the arc-distance in rad between sources 
 );
 
@@ -161,7 +164,7 @@ int ius3DParametricSourceSetDeltaPhi
 */
 int ius3DParametricSourceSetStartPhi
 (
-    iu3dps_t source,  ///< The 3D parametric source of which the startPhi is set
+    ius_t source,  ///< The 3D parametric source of which the startPhi is set
     float startPhi					 ///< The start angle is the offset in rad of the first source 
 );
 

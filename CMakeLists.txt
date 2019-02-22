@@ -14,7 +14,6 @@ if(MSVC)
     add_definitions(/D _CRT_SECURE_NO_WARNINGS /D _CRT_NONSTDC_NO_DEPRECATE)
     set(HDF5_USE_STATIC_LIBRARIES "TRUE")
 else()
-    set(UUID_LIBRARIES -luuid)
     set(CMAKE_CXX_CPPCHECK "cppcheck")
 endif()
 

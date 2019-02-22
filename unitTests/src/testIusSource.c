@@ -81,17 +81,17 @@ TEST(IusSource, testIusSourceCompare)
 	float deltaPhi = angularDelta;
 	float startTheta = startAngle;
 	float deltaTheta = angularDelta;
-    ius_t _3dps = (ius_t) ius3DParametricSourceCreate(numLocationsTheta, numLocationsPhi, FNumber,
+    ius_t _3dps = ius3DParametricSourceCreate(numLocationsTheta, numLocationsPhi, FNumber,
 		deltaTheta, startTheta, deltaPhi, startPhi);
 
     TEST_ASSERT(_3dps != IUS_INVALID);
-    ius_t _nother3dps = (ius_t) ius3DParametricSourceCreate(numLocationsTheta, numLocationsPhi, FNumber,
+    ius_t _nother3dps = ius3DParametricSourceCreate(numLocationsTheta, numLocationsPhi, FNumber,
 		deltaTheta, startTheta, deltaPhi, startPhi);
 
     TEST_ASSERT(_3dps != IUS_INVALID);
-    ius_t _3dnps = (ius_t) ius3DNonParametricSourceCreate(numLocationsTheta*numLocationsPhi);
+    ius_t _3dnps = ius3DNonParametricSourceCreate(numLocationsTheta*numLocationsPhi);
     TEST_ASSERT(_3dnps != IUS_INVALID);
-    ius_t _2dps = (ius_t) ius2DParametricSourceCreate(numLocationsTheta*numLocationsPhi, FNumber,
+    ius_t _2dps = ius2DParametricSourceCreate(numLocationsTheta*numLocationsPhi, FNumber,
     angularDelta, startAngle);
     TEST_ASSERT(_2dps != IUS_INVALID);
 
@@ -126,7 +126,7 @@ TEST(IusSource, testIusSourceGetSet)
     int numLocations = 5;
 
     // Happy flow
-    ius_t obj = (ius_t) ius3DNonParametricSourceCreate(numLocations);
+    ius_t obj = ius3DNonParametricSourceCreate(numLocations);
     TEST_ASSERT(obj != IUS_INVALID);
     TEST_ASSERT_EQUAL(IUS_3D_NON_PARAMETRIC_SOURCE,iusSourceGetType(obj));
     iusSourceDelete(obj);

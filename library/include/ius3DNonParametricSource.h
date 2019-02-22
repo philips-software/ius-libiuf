@@ -5,6 +5,7 @@
 
 #include "iusPosition.h"
 
+#if 0
 // ADT
 typedef struct Ius3DNonParametricSource Ius3DNonParametricSource;
 /** The 3D Non-Parametric Sources describes a list of locations from which a pulse originates simulatanously. You can
@@ -12,9 +13,10 @@ typedef struct Ius3DNonParametricSource Ius3DNonParametricSource;
   * ius3DNonParametricSourceGetPosition() and ius3DNonParametricSourceGetPosition() respectively. */
 typedef Ius3DNonParametricSource *iu3dnps_t;
 #define  IU3DNPS_INVALID (iu3dnps_t) NULL
+#endif
 
 /** An invalid 3D Non-Parametric Source */
-iu3dnps_t ius3DNonParametricSourceCreate
+ius_t ius3DNonParametricSourceCreate
 (
     int numLocations						///< The number of points the source has.
 );
@@ -24,7 +26,7 @@ iu3dnps_t ius3DNonParametricSourceCreate
  */
 int ius3DNonParametricSourceDelete
 (
-    iu3dnps_t source		///< The source that is deleted
+    ius_t source		///< The source that is deleted
 );
 
 /** \brief Compares two 3D non-parametric sources.
@@ -32,8 +34,8 @@ int ius3DNonParametricSourceDelete
  */
 int ius3DNonParametricSourceCompare
 (
-    iu3dnps_t reference,					///< 3D non-parametric source to compare
-    iu3dnps_t actual						///< 2D non-parametric source to compare with
+    ius_t reference,					///< 3D non-parametric source to compare
+    ius_t actual						///< 2D non-parametric source to compare with
 );
 
 /** \brief Gets the \p index -th 3D position of a 3D non-parametric source.
@@ -41,7 +43,7 @@ int ius3DNonParametricSourceCompare
  */
 iu3dp_t ius3DNonParametricSourceGetPosition
 (
-    iu3dnps_t source,		///< 3D non-parametric source with positions
+    ius_t source,		///< 3D non-parametric source with positions
     int index								///< the index of the position list 
 );
 
@@ -50,7 +52,7 @@ iu3dp_t ius3DNonParametricSourceGetPosition
  */
 int ius3DNonParametricSourceGetNumLocations
 (
-    iu3dnps_t source     ///< 2D non-parametric source with positions
+    ius_t source     ///< 2D non-parametric source with positions
 );
 
 /** \brief Sets the 3D position \p pos on the \p index -th location for the 3D non-parametric source \p ius3DNonParametricSource.
@@ -58,7 +60,7 @@ int ius3DNonParametricSourceGetNumLocations
  */
 int ius3DNonParametricSourceSetPosition
 (
-    iu3dnps_t source,		///< the 3D non-parametric source
+    ius_t source,		///< the 3D non-parametric source
     iu3dp_t  pos,							///< the 3D position to be set 
     int index								///< the index of the position
 );

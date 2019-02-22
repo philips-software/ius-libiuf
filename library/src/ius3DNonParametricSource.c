@@ -9,44 +9,36 @@
 #include <iusSourcePrivate.h>
 #include <iusPositionPrivate.h>
 
-struct Ius3DNonParametricSource
-{
-    struct IusSource base;
-    int numLocations;
-    struct Ius3DPosition *pLocations;
-    IUS_BOOL deepDelete;
-} ;
-
 // ADT
-iu3dnps_t ius3DNonParametricSourceCreate
+ius_t ius3DNonParametricSourceCreate
 (
     int numLocations
 )
 {
-    IUS_ERR_EVAL_N_RETURN(numLocations <= 0, IU3DNPS_INVALID);
-    iu3dnps_t created = calloc(1,sizeof(Ius3DNonParametricSource));
-    IUS_ERR_ALLOC_NULL_N_RETURN(created, Ius3DNonParametricSource, IU3DNPS_INVALID);
-    created->pLocations = (struct Ius3DPosition *) calloc((size_t)numLocations, sizeof(Ius3DPosition));
-    if( created->pLocations == NULL )
+    IUS_ERR_EVAL_N_RETURN(numLocations <= 0, IUS_INVALID);
+    ius_t created = calloc(1,sizeof(IusSource));
+    IUS_ERR_ALLOC_NULL_N_RETURN(created, IusSource, IUS_INVALID);
+    created->locations3D = (struct Ius3DPosition *) calloc((size_t)numLocations, sizeof(Ius3DPosition));
+    if( created->locations3D == NULL )
     {
         IUS_ERROR_PUSH(IUS_ERR_MAJ_MEMORY, IUS_ERR_MIN_ALLOC, "calloc failed for pLocations member");
         free(created);
-        return IU3DNPS_INVALID;
+        return IUS_INVALID;
     }
 
-    created->deepDelete = IUS_FALSE;
-    created->base.type = IUS_3D_NON_PARAMETRIC_SOURCE;
+    created->type = IUS_3D_NON_PARAMETRIC_SOURCE;
     created->numLocations = numLocations;
     return created;
 }
 
 int ius3DNonParametricSourceDelete
 (
-    iu3dnps_t source
+    ius_t source
 )
 {
     IUS_ERR_CHECK_NULL_N_RETURN(source, IUS_ERR_VALUE);
-    free(source->pLocations);
+    IUS_ERR_EVAL_N_RETURN(IUS_3D_NON_PARAMETRIC_SOURCE!=source->type,IUS_ERR_VALUE);
+    free(source->locations3D);
     free(source);
     return IUS_E_OK;
 }
@@ -55,18 +47,19 @@ int ius3DNonParametricSourceDelete
 // operations
 int ius3DNonParametricSourceCompare
 (
-    iu3dnps_t reference,
-    iu3dnps_t actual
+    ius_t reference,
+    ius_t actual
 )
 {
     if (reference == actual ) return IUS_TRUE;
     if (reference == NULL || actual == NULL ) return IUS_FALSE;
+    IUS_ERR_EVAL_N_RETURN(IUS_3D_NON_PARAMETRIC_SOURCE!=reference->type,IUS_ERR_VALUE);
+    IUS_ERR_EVAL_N_RETURN(IUS_3D_NON_PARAMETRIC_SOURCE!=actual->type,IUS_ERR_VALUE);
     if (reference->numLocations != actual->numLocations) return IUS_FALSE;
-    if (iusBaseSourceCompare((ius_t)reference, (ius_t)actual) == IUS_FALSE ) return IUS_FALSE;
     int i;
     for( i = 0; i < reference->numLocations; i++ )
     {
-        if( ius3DPositionCompare(&reference->pLocations[i],&actual->pLocations[i]) == IUS_FALSE )
+        if( ius3DPositionCompare(&reference->locations3D[i],&actual->locations3D[i]) == IUS_FALSE )
         {
             return IUS_FALSE;
         }
@@ -77,43 +70,46 @@ int ius3DNonParametricSourceCompare
 // Getters
 iu3dp_t ius3DNonParametricSourceGetPosition
 (
-    iu3dnps_t source,
+    ius_t source,
     int index
 )
 {
     IUS_ERR_CHECK_NULL_N_RETURN(source, IU3DP_INVALID);
+    IUS_ERR_EVAL_N_RETURN(IUS_3D_NON_PARAMETRIC_SOURCE!=source->type,IU3DP_INVALID);
     IUS_ERR_EVAL_N_RETURN(index < 0 || index >= source->numLocations, IU3DP_INVALID);
-    return &source->pLocations[index];
+    return &source->locations3D[index];
 }
 
 int ius3DNonParametricSourceGetNumLocations
 (
-    iu3dnps_t source
+    ius_t source
 )
 {
     IUS_ERR_CHECK_NULL_N_RETURN(source, -1);
+    IUS_ERR_EVAL_N_RETURN(IUS_3D_NON_PARAMETRIC_SOURCE!=source->type,-1);
     return source->numLocations;
 }
 
 // Setters
 int ius3DNonParametricSourceSetPosition
 (
-    iu3dnps_t source,
+    ius_t source,
     iu3dp_t  pos,
     int index
 )
 {
     IUS_ERR_CHECK_NULL_N_RETURN(source, IUS_ERR_VALUE);
+    IUS_ERR_EVAL_N_RETURN(IUS_3D_NON_PARAMETRIC_SOURCE!=source->type,IUS_ERR_VALUE);
     IUS_ERR_CHECK_NULL_N_RETURN(pos, IUS_ERR_VALUE);
     IUS_ERR_EVAL_N_RETURN(index < 0 || index >= source->numLocations, IUS_ERR_VALUE);
-    source->pLocations[index] = *pos;
+    source->locations3D[index] = *pos;
     return IUS_E_OK;
 }
 
 // serialization
 static int ius3DNonParametricSourceSaveLocations
 (
-    iu3dnps_t source,
+    ius_t source,
     hid_t handle
 )
 {
@@ -121,6 +117,7 @@ static int ius3DNonParametricSourceSaveLocations
     char path[IUS_MAX_HDF5_PATH];
     iu3dp_t sourceElement;
     IUS_ERR_CHECK_NULL_N_RETURN(source, IUS_ERR_VALUE);
+    IUS_ERR_EVAL_N_RETURN(IUS_3D_NON_PARAMETRIC_SOURCE!=source->type,IUS_ERR_VALUE);
     IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUS_ERR_VALUE);
 
     hid_t locationList_id = H5Gcreate(handle, IUS_INPUTFILE_PATH_SOURCE_LOCATIONLIST, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
@@ -130,7 +127,7 @@ static int ius3DNonParametricSourceSaveLocations
     // iterate over source list elements and save'em
     for (i=0;i < size;i++)
     {
-        sourceElement = &source->pLocations[i];
+        sourceElement = &source->locations3D[i];
         if(sourceElement == IU3DP_INVALID) continue;
         sprintf(path, IUS_INPUTFILE_PATH_SOURCE_LOCATION, i);
 		location_id = H5Gcreate(locationList_id, path, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
@@ -145,7 +142,7 @@ static int ius3DNonParametricSourceSaveLocations
 
 static int ius3DNonParametricSourceLoadLocations
 (
-    iu3dnps_t source,
+    ius_t source,
     hid_t handle
 )
 {
@@ -153,6 +150,7 @@ static int ius3DNonParametricSourceLoadLocations
     char path[IUS_MAX_HDF5_PATH];
     iu3dp_t pos;
     IUS_ERR_CHECK_NULL_N_RETURN(source, IUS_ERR_VALUE);
+    IUS_ERR_EVAL_N_RETURN(IUS_3D_NON_PARAMETRIC_SOURCE!=source->type,IUS_ERR_VALUE);
     IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUS_ERR_VALUE);
 
     hid_t locationList_id = H5Gopen(handle, IUS_INPUTFILE_PATH_SOURCE_LOCATIONLIST, H5P_DEFAULT);
@@ -177,12 +175,13 @@ static int ius3DNonParametricSourceLoadLocations
 
 int ius3DNonParametricSourceSave
 (
-    iu3dnps_t source,
+    ius_t source,
     hid_t handle
 )
 {
     // Base
     IUS_ERR_CHECK_NULL_N_RETURN(source, IUS_ERR_VALUE);
+    IUS_ERR_EVAL_N_RETURN(IUS_3D_NON_PARAMETRIC_SOURCE!=source->type,IUS_ERR_VALUE);
     IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUS_ERR_VALUE);
     int status = iusBaseSourceSave((ius_t)source, handle);
 
@@ -192,24 +191,24 @@ int ius3DNonParametricSourceSave
 }
 
 
-iu3dnps_t ius3DNonParametricSourceLoad
+ius_t ius3DNonParametricSourceLoad
 (
     hid_t handle
 )
 {
     int numLocations;
-    iu3dnps_t  source;
-    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IU3DNPS_INVALID);
+    ius_t  source;
+    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUS_INVALID);
     hid_t locationList_id = H5Gopen(handle, IUS_INPUTFILE_PATH_SOURCE_LOCATIONLIST, H5P_DEFAULT);
     int status = iusHdf5ReadInt(locationList_id, IUS_INPUTFILE_PATH_SOURCE_LOCATIONLISTSIZE, &(numLocations));
 	H5Gclose(locationList_id);
     if (status < 0)
-        return IU3DNPS_INVALID;
+        return IUS_INVALID;
 
     source = ius3DNonParametricSourceCreate(numLocations);
     status = ius3DNonParametricSourceLoadLocations(source, handle);
-    source->deepDelete = IUS_TRUE;
+    
     if (status <-0)
-        return IU3DNPS_INVALID;
+        return IUS_INVALID;
     return source;
 }

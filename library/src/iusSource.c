@@ -29,38 +29,25 @@ int iusSourceDelete
     {
         case IUS_2D_NON_PARAMETRIC_SOURCE:
         {
-            return ius2DNonParametricSourceDelete((iu2dnps_t) source);
+            return ius2DNonParametricSourceDelete(source);
         }
         case IUS_2D_PARAMETRIC_SOURCE:
         {
-            return ius2DParametricSourceDelete((iu2dps_t) source);
+            return ius2DParametricSourceDelete(source);
         }
         case IUS_3D_NON_PARAMETRIC_SOURCE:
         {
-            return ius3DNonParametricSourceDelete((iu3dnps_t) source);
+            return ius3DNonParametricSourceDelete(source);
         }
         case IUS_3D_PARAMETRIC_SOURCE:
         {
-            return ius3DParametricSourceDelete((iu3dps_t) source);
+            return ius3DParametricSourceDelete(source);
         }
         case IUS_INVALID_SOURCE_TYPE:
             break;
     }
     IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE, "unsupported source type: '%d'", source->type);
     return IUS_ERR_VALUE;
-}
-
-
-IUS_BOOL iusBaseSourceCompare
-(
-  ius_t reference,
-  ius_t actual
-)
-{
-    if ( reference == actual ) return IUS_TRUE;
-    if ( reference == NULL || actual == NULL ) return IUS_FALSE;
-    if ( reference->type != actual->type ) return IUS_FALSE;
-    return IUS_TRUE;
 }
 
 IUS_BOOL iusSourceCompare
@@ -73,23 +60,25 @@ IUS_BOOL iusSourceCompare
         return IUS_TRUE;
     if( reference == NULL || actual == NULL )
         return IUS_FALSE;
+    if (reference->type != actual->type)
+        return IUS_FALSE;
     switch (reference->type)
     {
         case IUS_2D_NON_PARAMETRIC_SOURCE:
         {
-            return ius2DNonParametricSourceCompare((iu2dnps_t) reference, (iu2dnps_t)actual);
+            return ius2DNonParametricSourceCompare(reference,actual);
         }
         case IUS_2D_PARAMETRIC_SOURCE:
         {
-            return ius2DParametricSourceCompare((iu2dps_t) reference, (iu2dps_t)actual);
+            return ius2DParametricSourceCompare(reference, actual);
         }
         case IUS_3D_NON_PARAMETRIC_SOURCE:
         {
-            return ius3DNonParametricSourceCompare((iu3dnps_t) reference, (iu3dnps_t)actual);
+            return ius3DNonParametricSourceCompare(reference, actual);
         }
         case IUS_3D_PARAMETRIC_SOURCE:
         {
-            return ius3DParametricSourceCompare((iu3dps_t) reference, (iu3dps_t)actual);
+            return ius3DParametricSourceCompare(reference, actual);
         }
         case IUS_INVALID_SOURCE_TYPE:
             break;
@@ -271,19 +260,19 @@ int iusSourceSave
     {
         case IUS_2D_NON_PARAMETRIC_SOURCE:
         {
-            return ius2DNonParametricSourceSave((iu2dnps_t) source, handle);
+            return ius2DNonParametricSourceSave(source, handle);
         }
         case IUS_2D_PARAMETRIC_SOURCE:
         {
-            return ius2DParametricSourceSave((iu2dps_t) source, handle);
+            return ius2DParametricSourceSave(source, handle);
         }
         case IUS_3D_NON_PARAMETRIC_SOURCE:
         {
-            return ius3DNonParametricSourceSave((iu3dnps_t) source, handle);
+            return ius3DNonParametricSourceSave(source, handle);
         }
         case IUS_3D_PARAMETRIC_SOURCE:
         {
-            return ius3DParametricSourceSave((iu3dps_t) source, handle);
+            return ius3DParametricSourceSave(source, handle);
         }
 
         default:
