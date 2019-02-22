@@ -11,7 +11,44 @@
 #include <ius3DTransducerADT.h>
 %}
 
+%include "exception.i"
 
+// Run all commands using $action. Subsequently, check for an error and report
+// You can try / catch the error and free file io and memory
+%exception {
+    $action
+    if ( iusErrorGetCount() ) {
+        // If we can request an char * iusErrorGetMessages(), we can provide a more
+        // detailed report
+        SWIG_exception(SWIG_RuntimeError, "Runtime error occured!\n");
+        // Can we re-route stdout to sys.stdout, for example by replacing printf statements?
+        PySys_WriteStdout("Some error occured!\n");
+
+        //SWIG_fail will free memory, but we should first release file pointers... 
+        // How to we implement this?
+        //SWIG_fail;
+    }
+}
+
+%wrapper %{
+    void iusCleanupExceptions( void )
+    {
+        int count = iusErrorGetCount();
+        if (count > 0) {
+            PySys_WriteStdout("Cleaning up %d exceptions\n", count);
+            iusErrorPrint();            // Make sure it actually prints to sys.stdout()
+            iusErrorLogClear();
+            PyErr_Print();              // Make sure it actually prints to sys.stdout()
+            PyErr_Clear();
+        } else {
+            PySys_WriteStdout("Cleanup called, but no iusErrors found.\n");
+        }
+    }
+%}
+
+void iusCleanupExceptions( void );
+
+// Handle integer double values as int
 %typemap(in) int {
         if (PyFloat_Check($input)) {
             $1 = (int) PyFloat_AsDouble($input);
@@ -22,12 +59,7 @@
         }
 }
 
-
-%typemap(in) iup_t {
-        $1 = (iup_t) $input;
-}
-
-
+// One way to ensure correct typecasting of iu2dt_t and iu3dt_t as iut_t
 %typemap(in) iut_t {
         if (!SWIG_IsOK(SWIG_ConvertPtr($input, (void **) &$1, $descriptor(iu2dt_t), 0)) &&
            (!SWIG_IsOK(SWIG_ConvertPtr($input, (void **) &$1, $descriptor(iu3dt_t), 0))))
@@ -36,6 +68,7 @@
         }
 }
 
+// Converts the IusTransducerShape enum to integer values
 %typemap(in) IusTransducerShape {
         if (PyFloat_Check($input)) {
             $1 = (int) PyFloat_AsDouble($input);
@@ -46,31 +79,40 @@
         }
 }
 
+// Handle an input array for transmitApodization
+// Handle a double as an array of length 1
 %typemap(in) (float *apodization, int numElements) {
     int i;
     Py_ssize_t length;
-    if (!PySequence_Check($input)) {
-        PyErr_SetString(PyExc_ValueError,"Expected a sequence");
+    if (PySequence_Check($input)) {
+        length = PySequence_Length($input);
+    } else if (PyFloat_Check($input)) {
+        length = 1;
+    } else {
+        PyErr_SetString(PyExc_ValueError,"Expected a sequence or a float");
         return NULL;
     }
-    length = PySequence_Length($input);
-    float *temp = calloc(length, sizeof(float));
+    float * temp = calloc(length, sizeof(float));
     printf("Got an array of length %d\n", (int)length);
-    for (i = 0; i < length; i++) {
-        PyObject *o = PySequence_GetItem($input,i);
-        if (PyNumber_Check(o)) {
-            temp[i] = (float) PyFloat_AsDouble(o);
-            printf("Element %d = %f\n",i, temp[i]);
-        } else {
-            PyErr_SetString(PyExc_ValueError,"Sequence elements must be numbers");
-        return NULL;
+    if( length == 1 ) {
+        temp[0] = (float)PyFloat_AsDouble($input);
+    } else {
+        for (i = 0; i < 0; i++) {
+            PyObject *o = PySequence_GetItem($input,i);
+            if (PyNumber_Check(o)) {
+                temp[i] = (float)PyFloat_AsDouble(o);
+                printf("Element %d = %f\n",i,temp[i]);
+
+            } else {
+                PyErr_SetString(PyExc_ValueError,"Sequence elements must be numbers");
+            }
         }
     }
-    printf("Additional memory allocated at: %p\n", (void*)temp);
     $1 = temp;
     $2 = (int)length;
 }
 
+// Frees temporary memory for transmitApodization
 %typemap(freearg) (float *apodization, int numElements) {
         printf("Additional memory freed from: %p\n", (void*)$1);
         free($1);
