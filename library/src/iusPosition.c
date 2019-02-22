@@ -63,6 +63,24 @@ iu2dp_t ius2DPositionCreate
     return created;
 }
 
+float ius2DPositionGetX
+(
+   iu2dp_t pos
+)
+{
+    IUS_ERR_CHECK_NULL_N_RETURN(pos, NAN);
+    return pos->x;
+}
+
+float ius2DPositionGetZ
+(
+   iu2dp_t pos
+)
+{
+    IUS_ERR_CHECK_NULL_N_RETURN(pos, NAN);
+    return pos->z;
+}
+
 void ius3DPositionDelete
 (
     iu3dp_t pos
@@ -79,6 +97,33 @@ void ius2DPositionDelete
 {
     IUS_ERR_CHECK_NULL_N_RETURN(pos, /**/);
     free(pos);
+}
+
+float ius3DPositionGetX
+(
+   iu3dp_t pos
+)
+{
+    IUS_ERR_CHECK_NULL_N_RETURN(pos, NAN);
+    return pos->x;
+}
+
+float ius3DPositionGetY
+(
+   iu3dp_t pos
+)
+{
+    IUS_ERR_CHECK_NULL_N_RETURN(pos, NAN);
+    return pos->y;
+}
+
+float ius3DPositionGetZ
+(
+   iu3dp_t pos
+)
+{
+    IUS_ERR_CHECK_NULL_N_RETURN(pos, NAN);
+    return pos->z;
 }
 
 iu3dp_t ius3DPositionLoad
