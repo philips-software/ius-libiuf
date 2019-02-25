@@ -10,11 +10,11 @@
 
 int ius2DParametricSourceSave
 (
-    iu2dps_t source,
+    ius_t source,
     hid_t handle
 );
 
-iu2dps_t ius2DParametricSourceLoad
+ius_t ius2DParametricSourceLoad
 (
     hid_t handle
 );

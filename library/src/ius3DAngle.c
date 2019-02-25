@@ -48,6 +48,23 @@ int ius3DAngleCompare
     return IUS_TRUE;
 }
 
+float ius3DAngleGetTheta
+(
+    iu3da_t angle
+)
+{
+    IUS_ERR_CHECK_NULL_N_RETURN(angle, NAN);
+    return angle->theta;
+}
+
+float ius3DAngleGetPhi(
+    iu3da_t angle
+)
+{
+    IUS_ERR_CHECK_NULL_N_RETURN(angle, NAN);
+    return angle->phi;
+}
+
 int ius3DAngleSave
 (
     iu3da_t angle,

@@ -46,10 +46,10 @@ TEST(Ius3DParametricSource, testIus3DParametricSourceCreate)
     int numPhiLocations = 5 ;
 	int numThetaLocations = 3;
 
-    iu3dps_t obj = ius3DParametricSourceCreate(numThetaLocations, numPhiLocations, FNumber, deltaTheta, startTheta, deltaPhi, startPhi);
-    iu3dps_t notherObj = ius3DParametricSourceCreate(numThetaLocations, numPhiLocations, FNumber, deltaTheta, startTheta, deltaPhi, startPhi);
-    TEST_ASSERT(obj != IU3DPS_INVALID);
-    TEST_ASSERT(notherObj != IU3DPS_INVALID);
+    ius_t obj = ius3DParametricSourceCreate(numThetaLocations, numPhiLocations, FNumber, deltaTheta, startTheta, deltaPhi, startPhi);
+    ius_t notherObj = ius3DParametricSourceCreate(numThetaLocations, numPhiLocations, FNumber, deltaTheta, startTheta, deltaPhi, startPhi);
+    TEST_ASSERT(obj != IUS_INVALID);
+    TEST_ASSERT(notherObj != IUS_INVALID);
     ius3DParametricSourceDelete(obj);
     ius3DParametricSourceDelete(notherObj);
 
@@ -58,9 +58,9 @@ TEST(Ius3DParametricSource, testIus3DParametricSourceCreate)
     TEST_ASSERT_EQUAL(0,iusErrorGetCount());
 
     obj = ius3DParametricSourceCreate(1, 0, -1, 2.0f, 0, 0, 0);
-    TEST_ASSERT(obj == IU3DPS_INVALID);
+    TEST_ASSERT(obj == IUS_INVALID);
     obj = ius3DParametricSourceCreate(-1, 1, 1, -2.0f, 0, 0, 0);
-    TEST_ASSERT(obj == IU3DPS_INVALID);
+    TEST_ASSERT(obj == IUS_INVALID);
 
     TEST_ASSERT_EQUAL(2,iusErrorGetCount());
     TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
@@ -78,8 +78,8 @@ TEST(Ius3DParametricSource, testIus3DParametricSourceDelete)
 	int numPhiLocations = 5;
 	int numThetaLocations = 3;
 
-    iu3dps_t obj = ius3DParametricSourceCreate(numThetaLocations, numPhiLocations, FNumber, deltaTheta, startTheta, deltaPhi, startPhi);
-    TEST_ASSERT(obj != IU3DPS_INVALID);
+    ius_t obj = ius3DParametricSourceCreate(numThetaLocations, numPhiLocations, FNumber, deltaTheta, startTheta, deltaPhi, startPhi);
+    TEST_ASSERT(obj != IUS_INVALID);
     int status = ius3DParametricSourceDelete(obj);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
@@ -108,12 +108,12 @@ TEST(Ius3DParametricSource, testIus3DParametricSourceCompare)
 	int numPhiLocations = 5;
 	int numThetaLocations = 3;
 
-    iu3dps_t obj = ius3DParametricSourceCreate(numThetaLocations, numPhiLocations, FNumber, deltaTheta, startTheta, deltaPhi, startPhi);
-    iu3dps_t notherObj = ius3DParametricSourceCreate(numThetaLocations, numPhiLocations, FNumber, deltaTheta, startTheta, deltaPhi, startPhi);
-    iu3dps_t differentObj =
+    ius_t obj = ius3DParametricSourceCreate(numThetaLocations, numPhiLocations, FNumber, deltaTheta, startTheta, deltaPhi, startPhi);
+    ius_t notherObj = ius3DParametricSourceCreate(numThetaLocations, numPhiLocations, FNumber, deltaTheta, startTheta, deltaPhi, startPhi);
+    ius_t differentObj =
     ius3DParametricSourceCreate(numThetaLocations, numPhiLocations, FNumber+0.01f, deltaTheta, startTheta, deltaPhi, startPhi);
-    TEST_ASSERT(obj != IU3DPS_INVALID);
-    TEST_ASSERT(notherObj != IU3DPS_INVALID);
+    TEST_ASSERT(obj != IUS_INVALID);
+    TEST_ASSERT(notherObj != IUS_INVALID);
     equal = ius3DParametricSourceCompare(obj,obj);
     TEST_ASSERT_EQUAL(IUS_TRUE,equal);
     equal = ius3DParametricSourceCompare(obj,notherObj);
@@ -145,7 +145,7 @@ TEST(Ius3DParametricSource, testIus3DParametricSourceSetGet)
 	int numPhiLocations = 5;
 	int numThetaLocations = 3;
 
-    iu3dps_t obj = ius3DParametricSourceCreate(numThetaLocations, numPhiLocations, FNumber, deltaTheta, startTheta, deltaPhi, startPhi);
+    ius_t obj = ius3DParametricSourceCreate(numThetaLocations, numPhiLocations, FNumber, deltaTheta, startTheta, deltaPhi, startPhi);
 
     TEST_ASSERT_EQUAL_FLOAT(FNumber,ius3DParametricSourceGetFNumber(obj));
     TEST_ASSERT_EQUAL_FLOAT(deltaTheta,ius3DParametricSourceGetDeltaTheta(obj));
@@ -154,7 +154,6 @@ TEST(Ius3DParametricSource, testIus3DParametricSourceSetGet)
     TEST_ASSERT_EQUAL_FLOAT(startPhi,ius3DParametricSourceGetStartPhi(obj));
     TEST_ASSERT_EQUAL(numThetaLocations, ius3DParametricSourceGetNumThetaLocations(obj));
     TEST_ASSERT_EQUAL(numPhiLocations, ius3DParametricSourceGetNumPhiLocations(obj));
-
 
     // invalid param
     long filePos = ftell(fpErrorLogging);
@@ -170,7 +169,6 @@ TEST(Ius3DParametricSource, testIus3DParametricSourceSetGet)
 
     TEST_ASSERT_EQUAL(7,iusErrorGetCount());
     TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
-
 
     ius3DParametricSourceDelete(obj);
 }
@@ -188,10 +186,9 @@ TEST(Ius3DParametricSource, testIus3DParametricSourceSerialization)
 	int numPhiLocations = 5;
 	int numThetaLocations = 3;
 
-
     // create
-    iu3dps_t
-    obj = ius3DParametricSourceCreate(numThetaLocations, numPhiLocations, FNumber, deltaTheta, startTheta, deltaPhi, startPhi);
+    ius_t obj = ius3DParametricSourceCreate(numThetaLocations, 
+         numPhiLocations, FNumber, deltaTheta, startTheta, deltaPhi, startPhi);
 
     // fill
     TEST_ASSERT_EQUAL_FLOAT(FNumber, ius3DParametricSourceGetFNumber(obj));
@@ -209,7 +206,7 @@ TEST(Ius3DParametricSource, testIus3DParametricSourceSerialization)
 
     // read back
     handle = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT );
-    iu3dps_t savedObj = ius3DParametricSourceLoad(handle);
+    ius_t savedObj = ius3DParametricSourceLoad(handle);
     H5Fclose(handle);
 
     TEST_ASSERT_EQUAL(IUS_TRUE, ius3DParametricSourceCompare(obj,savedObj));

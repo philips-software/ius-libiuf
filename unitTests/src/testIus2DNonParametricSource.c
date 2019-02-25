@@ -38,10 +38,10 @@ TEST(Ius2DNonParametricSource, testIus2DNonParametricSourceCreate)
 {
     int numLocations = 5 ;
 
-    iu2dnps_t obj = ius2DNonParametricSourceCreate(numLocations);
-    iu2dnps_t notherObj = ius2DNonParametricSourceCreate(numLocations);
-    TEST_ASSERT(obj != IU2DNPS_INVALID);
-    TEST_ASSERT(notherObj != IU2DNPS_INVALID);
+    ius_t obj = ius2DNonParametricSourceCreate(numLocations);
+    ius_t notherObj = ius2DNonParametricSourceCreate(numLocations);
+    TEST_ASSERT(obj != IUS_INVALID);
+    TEST_ASSERT(notherObj != IUS_INVALID);
     ius2DNonParametricSourceDelete(obj);
     ius2DNonParametricSourceDelete(notherObj);
 
@@ -50,9 +50,9 @@ TEST(Ius2DNonParametricSource, testIus2DNonParametricSourceCreate)
     TEST_ASSERT_EQUAL(0,iusErrorGetCount());
 
     obj = ius2DNonParametricSourceCreate(0);
-    TEST_ASSERT(obj == IU2DNPS_INVALID);
+    TEST_ASSERT(obj == IUS_INVALID);
     obj = ius2DNonParametricSourceCreate(0);
-    TEST_ASSERT(obj == IU2DNPS_INVALID);
+    TEST_ASSERT(obj == IUS_INVALID);
 
     TEST_ASSERT_EQUAL(2,iusErrorGetCount());
     TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
@@ -63,8 +63,8 @@ TEST(Ius2DNonParametricSource, testIus2DNonParametricSourceDelete)
 {
     int numLocations = 5;
 
-    iu2dnps_t obj = ius2DNonParametricSourceCreate(numLocations);
-    TEST_ASSERT(obj != IU2DNPS_INVALID);
+    ius_t obj = ius2DNonParametricSourceCreate(numLocations);
+    TEST_ASSERT(obj != IUS_INVALID);
     int status = ius2DNonParametricSourceDelete(obj);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
@@ -86,11 +86,11 @@ TEST(Ius2DNonParametricSource, testIus2DNonParametricSourceCompare)
     IUS_BOOL equal;
     int numLocations = 5;
 
-    iu2dnps_t obj = ius2DNonParametricSourceCreate(numLocations);
-    iu2dnps_t notherObj = ius2DNonParametricSourceCreate(numLocations);
-    iu2dnps_t differentObj = ius2DNonParametricSourceCreate(numLocations+2);
-    TEST_ASSERT(obj != IU2DNPS_INVALID);
-    TEST_ASSERT(notherObj != IU2DNPS_INVALID);
+    ius_t obj = ius2DNonParametricSourceCreate(numLocations);
+    ius_t notherObj = ius2DNonParametricSourceCreate(numLocations);
+    ius_t differentObj = ius2DNonParametricSourceCreate(numLocations+2);
+    TEST_ASSERT(obj != IUS_INVALID);
+    TEST_ASSERT(notherObj != IUS_INVALID);
     equal = ius2DNonParametricSourceCompare(obj,obj);
     TEST_ASSERT_EQUAL(IUS_TRUE,equal);
     equal = ius2DNonParametricSourceCompare(obj,notherObj);
@@ -124,7 +124,7 @@ TEST(Ius2DNonParametricSource, testIus2DNonParametricSourceSetGet)
 {
     int p,numLocations = 5;
 
-    iu2dnps_t obj = ius2DNonParametricSourceCreate(numLocations);
+    ius_t obj = ius2DNonParametricSourceCreate(numLocations);
     TEST_ASSERT_EQUAL(numLocations, ius2DNonParametricSourceGetNumLocations(obj));
 
     // Set/Get location test
@@ -158,8 +158,7 @@ TEST(Ius2DNonParametricSource, testIus2DNonParametricSourceSerialization)
 
 
     // create
-    iu2dnps_t
-    obj = ius2DNonParametricSourceCreate(numLocations);
+    ius_t obj = ius2DNonParametricSourceCreate(numLocations);
 
     // fill
     for (p = 0; p < numLocations; p++)
@@ -180,7 +179,7 @@ TEST(Ius2DNonParametricSource, testIus2DNonParametricSourceSerialization)
 
     // read back
     handle = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT );
-    iu2dnps_t savedObj = ius2DNonParametricSourceLoad(handle);
+    ius_t savedObj = ius2DNonParametricSourceLoad(handle);
     H5Fclose(handle);
 
     TEST_ASSERT_EQUAL(IUS_TRUE, ius2DNonParametricSourceCompare(obj,savedObj));

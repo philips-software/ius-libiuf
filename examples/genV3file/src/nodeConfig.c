@@ -186,13 +186,13 @@ iusd_t ncFillSourceDict
     float startAngle = 3.14f;
     float startPhi = startAngle;
 	float startTheta = startAngle;
-    iu3dps_t parametricSource = ius3DParametricSourceCreate(locationCountTheta, locationCountPhi, FNumber, deltaTheta, startTheta, deltaPhi, startPhi);
+    ius_t parametricSource = ius3DParametricSourceCreate(locationCountTheta, locationCountPhi, FNumber, deltaTheta, startTheta, deltaPhi, startPhi);
 
     // create
     iusd_t dict = iusSourceDictCreate();
 
     // fill
-    iusSourceDictSet(dict, sourceLabel,(ius_t) parametricSource);
+    iusSourceDictSet(dict, sourceLabel, parametricSource);
     return dict;
 }
 

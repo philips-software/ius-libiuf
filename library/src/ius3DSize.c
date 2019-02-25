@@ -53,6 +53,33 @@ int ius3DSizeCompare
     return IUS_TRUE;
 }
 
+float ius3DSizeGetX
+(
+    iu3ds_t size
+)
+{
+    IUS_ERR_CHECK_NULL_N_RETURN(size, NAN);
+    return size->sx;
+}
+
+    float ius3DSizeGetY
+(
+    iu3ds_t size
+)
+{
+    IUS_ERR_CHECK_NULL_N_RETURN(size, NAN);
+    return size->sy;
+}
+
+float ius3DSizeGetZ
+(
+    iu3ds_t size
+)
+{
+    IUS_ERR_CHECK_NULL_N_RETURN(size, NAN);
+    return size->sz;
+}
+
 iu3ds_t ius3DSizeLoad
 (
     hid_t handle
