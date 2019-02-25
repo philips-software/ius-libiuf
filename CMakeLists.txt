@@ -39,7 +39,7 @@ endif()
 add_subdirectory(library)
 
 if(NOT CMAKE_CONFIG STREQUAL Debug)
-#    add_subdirectory(python)
+    add_subdirectory(python)
 #    install(DIRECTORY python DESTINATION ${PROJECT_BINARY_DIR}/dist)
 endif()
 
