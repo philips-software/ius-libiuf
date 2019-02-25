@@ -21,7 +21,7 @@ $CMAKE --build .
 $CTEST --verbose
 
 
-#export PYTHONPATH=$(pwd)/python/python3:$(pwd)/python/python2:$PYTHONPATH
-#cd -
-#python -m unittest discover python/test
+export PYTHONPATH=$(pwd)/python/python3:$(pwd)/python/python2:$PYTHONPATH
+cd -
+python -m unittest discover python/test
 
