@@ -14,6 +14,7 @@ if(MSVC)
     add_definitions(/D _CRT_SECURE_NO_WARNINGS /D _CRT_NONSTDC_NO_DEPRECATE)
     set(HDF5_USE_STATIC_LIBRARIES "TRUE")
 else()
+    set(UUID_LIBRARIES -luuid)
     set(CMAKE_CXX_CPPCHECK "cppcheck")
 endif()
 
@@ -38,7 +39,7 @@ endif()
 add_subdirectory(library)
 
 if(NOT CMAKE_CONFIG STREQUAL Debug)
-    add_subdirectory(python)
+#    add_subdirectory(python)
 #    install(DIRECTORY python DESTINATION ${PROJECT_BINARY_DIR}/dist)
 endif()
 
