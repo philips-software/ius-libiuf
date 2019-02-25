@@ -56,7 +56,7 @@ const char * iusPatternGetPulseLabel
  */
 const char * iusPatternGetSourceLabel
 (
-    iupa_t iusPattern   ///< The #IusPattern of interest
+    iupa_t pattern   ///< The #IusPattern of interest
 );
 
 /** \brief Get the receiveChannelMap label of the #IusPattern

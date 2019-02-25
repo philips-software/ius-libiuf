@@ -17,22 +17,22 @@ struct IusFile
 // ADT
 int iusFileDelete
 (
-    iuf_t iusFile
+    iuf_t file
 )
 {
-    if (iusFile == NULL)
+    if (file == NULL)
     {
         IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_FILENAME, "iusFile argument is NULL");
         return IUS_ERR_VALUE;
     }
 
-    if( strcmp( iusHistoryNodeGetType(iusFile->history), IUS_INPUT_TYPE ) == 0 )
+    if( strcmp( iusHistoryNodeGetType(file->history), IUS_INPUT_TYPE ) == 0 )
     {
-        iuifi_t instance = iusHistoryNodeGetInstanceData(iusFile->history);
+        iuifi_t instance = iusHistoryNodeGetInstanceData(file->history);
         iusInputFileInstanceDelete(instance);
     }
-    iusHistoryNodeDelete(iusFile->history);
-    free(iusFile);
+    iusHistoryNodeDelete(file->history);
+    free(file);
     return IUS_E_OK;
 }
 
@@ -89,37 +89,37 @@ iuf_t iusFileLoad
 // Getters
 iuhn_t iusFileGetHistoryTree
 (
-    iuf_t iusFile
+    iuf_t file
 )
 {
-    if (iusFile == NULL)
+    if (file == NULL)
     {
         IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "iusFile");
         return IUHN_INVALID;
     }
-    return iusFile->history;
+    return file->history;
 }
 
 const char *iusFileGetType
 (
-    iuf_t iusFile
+    iuf_t file
 )
 {
-    if (iusFile == NULL)
+    if (file == NULL)
     {
         IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "iusFile");
     }
-    return iusHistoryNodeGetType(iusFile->history);
+    return iusHistoryNodeGetType(file->history);
 }
 
 // Setters
 int iusFileSetHistoryTree
 (
-    iuf_t iusFile,
+    iuf_t file,
     iuhn_t history
 )
 {
-    if (iusFile == NULL)
+    if (file == NULL)
     {
         IUS_ERROR_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_NULL_VALUE, "iusFile");
         return IUS_ERR_VALUE;
@@ -130,6 +130,6 @@ int iusFileSetHistoryTree
         return IUS_ERR_VALUE;
     }
 
-    iusFile->history = history;
+    file->history = history;
     return IUS_E_OK;
 }
