@@ -11,5 +11,24 @@ struct Ius2DTransducer
     iu2dtel_t                elements;         /**< an array of numElements transducer element (position, angle, size) */
 };
 
+// SWIG binding
+#ifdef SWIG
+%extend Ius2DTransducer {
+        Ius2DTransducer
+        (
+            char *name,
+            IusTransducerShape shape,
+            float centerFrequency,
+            int numElements
+        )
+        {
+            return ius2DTransducerCreate(name, shape, centerFrequency, numElements);
+        }
+
+        ~Ius2DTransducer() {
+            iusTransducerDelete($self);
+        }
+}
+#endif
 
 #endif //IUSLIBRARY_IUSHL2DTRANSDUCERADT_H

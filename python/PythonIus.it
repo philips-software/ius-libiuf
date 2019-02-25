@@ -36,6 +36,14 @@
         }
 }
 
+%typemap(in) float centerFrequency {
+    if (PyFloat_Check($input)) {
+        $1 = (float) PyFloat_AsFloat($input);
+        printf("warning, casting float to n = %f\n", $1);
+    }
+}
+
+
 %typemap(in) IusTransducerShape {
         if (PyFloat_Check($input)) {
             $1 = (int) PyFloat_AsDouble($input);
@@ -165,6 +173,7 @@ EXTEND_DICT_ADT(DemodulationDict, IusDemodulation)
 
 
 %include <iusTransducerADT.h>
+%include <ius2DTransducerADT.h>
 %include <iusPatternListADT.h>
 %include <iusHistoryNodeADT.h>
 %include <iusAcquisitionADT.h>
