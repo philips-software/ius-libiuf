@@ -228,7 +228,7 @@ int iusIqFileSetFrameList
 int iusIqFileSetPatternListDict
 (
 	iuiqf_t iqFile,          ///< The #IusIqFile of interest
-	iuiqpald_t patternListDict   ///< The #IusPatternListDict to set
+	iuiqpald_t iqPatternListDict   ///< The #IusPatternListDict to set
 );
 
 /** \brief Sets the pulseDict of an iqFile.
