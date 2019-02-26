@@ -176,7 +176,7 @@ herr_t ius2DTransducerSave
         return status;
 
     status = ius2DTransducerElementListSave(transducer->elements, handle);
-    status |= H5Gclose(handle);
+//    status |= H5Gclose(handle);
     return status;
 }
 
