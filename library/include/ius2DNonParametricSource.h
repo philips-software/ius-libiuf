@@ -11,6 +11,7 @@
 #define IUSLIBRARY_IUSHL2DNONPARAMETRICSOURCE_H
 
 #include "iusPosition.h"
+#include <iusSource.h>
 
 #if 0
 #include <iusSourcePrivate.h>
