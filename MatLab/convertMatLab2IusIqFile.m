@@ -61,7 +61,7 @@ if iusIqStruct.DrivingScheme.TransmitPulse.numPulseValues == 0
     numPulses = iusIqStruct.DrivingScheme.TransmitPulse.pulseCount;
     pulse = iusParametricPulseCreate( pulseFrequency, pulseAmplitude, numPulses );
 else
-    assert('Non parametric pulse not implemented yet!');
+    error('Non parametric pulse not implemented yet!');
 end
 pulseDict = iusPulseDictCreate();
 iusPulseDictSet( pulseDict, mode, pulse );
@@ -72,9 +72,9 @@ iusIqFileSetPulseDict( h, pulseDict );
 % receiveChannelMapDict
 
 % transducer
-transducer = ius3DTransducerCreate( ...
+transducer = ius2DTransducerCreate( ...
     iusIqStruct.Transducer.transducerName, ...
-    3, ... %IUS_PLANE
+    IUS_LINE, ...
     iusIqStruct.Transducer.centerFrequency, ...
     iusIqStruct.Transducer.numElements ) ;
 
@@ -83,19 +83,15 @@ elementSize = cell( iusIqStruct.Transducer.numElements, 1);
 elementTheta = cell( iusIqStruct.Transducer.numElements, 1);
 element = cell( iusIqStruct.Transducer.numElements, 1);
 for c1 = 1:iusIqStruct.Transducer.numElements
-    elementPos{c1} = ius3DPositionCreate( ...
+    elementPos{c1} = ius2DPositionCreate( ...
         iusIqStruct.Transducer.Elements.positions.x(c1), ...
-        iusIqStruct.Transducer.Elements.positions.y(c1), ...
         iusIqStruct.Transducer.Elements.positions.z(c1) );
-    elementSize{c1} = ius3DSizeCreate( ...
+    elementSize{c1} = ius2DSizeCreate( ...
         iusIqStruct.Transducer.Elements.sizes.x(c1), ...
-        iusIqStruct.Transducer.Elements.sizes.y(c1), ...
         iusIqStruct.Transducer.Elements.sizes.z(c1) );    
-    elementTheta{c1} = ius3DAngleCreate( ...
-        iusIqStruct.Transducer.Elements.angles.theta(c1), ...
-        iusIqStruct.Transducer.Elements.angles.phi(c1));
-    element{c1} = ius3DTransducerElementCreate( elementPos{c1}, elementTheta{c1}, elementSize{c1} );
-    ius3DTransducerSetElement( transducer, c1-1, element{c1} );
+    elementTheta{c1} = iusIqStruct.Transducer.Elements.angles.theta(c1);
+    element{c1} = ius2DTransducerElementCreate( elementPos{c1}, elementTheta{c1}, elementSize{c1} );
+    ius2DTransducerSetElement( transducer, c1-1, element{c1} );
 end
 iusIqFileSetTransducer( h, transducer );
 
@@ -124,10 +120,9 @@ iusPulseDictDelete( pulseDict );
 
 % Transducer
 for c1 = 1:iusIqStruct.Transducer.numElements
-    ius3DPositionDelete( elementPos{c1} );
-    ius3DSizeDelete( elementSize{c1} );
-    ius3DAngleDelete( elementTheta{c1} );
-    ius3DTransducerElementDelete( element{c1} );
+    ius2DPositionDelete( elementPos{c1} );
+    ius2DSizeDelete( elementSize{c1} );
+    ius2DTransducerElementDelete( element{c1} );
 end
 iusTransducerDelete( transducer );
 
