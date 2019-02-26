@@ -11,9 +11,9 @@
 #define IUSLIBRARY_IUSHL2DNONPARAMETRICSOURCE_H
 
 #include "iusPosition.h"
-#include <iusSourcePrivate.h>
 
 #if 0
+#include <iusSourcePrivate.h>
 typedef struct Ius2DNonParametricSource Ius2DNonParametricSource;
 /** The 2D Non-Parametric Sources describes a list of locations from which a pulse originates simulatanously. You can 
   * create a source with a predefined number of locations and then get and set these locations with 
