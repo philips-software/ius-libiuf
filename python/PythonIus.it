@@ -40,7 +40,7 @@
 
 %typemap(in) float centerFrequency {
     if (PyFloat_Check($input)) {
-        $1 = (float) PyFloat_AsFloat($input);
+        $1 = (float) PyFloat_AsDouble($input);
         printf("warning, casting float to n = %f\n", $1);
     }
 }
