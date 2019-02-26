@@ -13,3 +13,5 @@ dox/html/*\.*
 *_wrap.*
 python/ius.py
 python/test.py
+.scannerwork/*
+*.pyc

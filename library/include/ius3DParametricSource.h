@@ -4,9 +4,9 @@
 #define IUSLIBRARY_IUSHL3DPARAMETRICSOURCE_H
 
 #include "iusPosition.h"
-#include <iusSourcePrivate.h>
 
 #if 0
+#include <iusSourcePrivate.h>
 // ADT
 typedef struct Ius3DParametricSource Ius3DParametricSource;
 /** The 3D parametric sources describes source locations from which a pulse originates simulatanously with a set of parameters. 

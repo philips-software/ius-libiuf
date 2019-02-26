@@ -4,9 +4,9 @@
 #define IUSLIBRARY_IUSHL2DPARAMETRICSOURCE_H
 
 #include "iusPosition.h"
-#include <iusSourcePrivate.h>
 
 #if 0
+#include <iusSourcePrivate.h>
 // ADT
 typedef struct Ius2DParametricSource Ius2DParametricSource;
 /** The 2D parametric Sources describes one or multiple point sources from which a pulse originates simulatanously. You can

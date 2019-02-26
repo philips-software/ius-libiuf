@@ -49,7 +49,7 @@ if(Python3_FOUND)
     file(GLOB_RECURSE PYTHON_FILES
             "${PROJECT_BINARY_DIR}/python/*PythonIus*")
     message("PROJECT_BINARY_DIR is ${PROJECT_BINARY_DIR}")
-    set(IUS_INSTALL_PATH "${PROJECT_BINARY_DIR}/dist/python3${Python3_VERSION_MINOR}/${CMAKE_SYSTEM_NAME}")
+    set(IUS_INSTALL_PATH "${PROJECT_BINARY_DIR}/dist/python/python3/${CMAKE_SYSTEM_NAME}")
     install(
             TARGETS ${IUS_TARGET}
             RUNTIME DESTINATION ${IUS_INSTALL_PATH}

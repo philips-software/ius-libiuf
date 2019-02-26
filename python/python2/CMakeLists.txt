@@ -47,7 +47,7 @@ if(Python2_FOUND)
     file(GLOB_RECURSE PYTHON_FILES
             "${PROJECT_BINARY_DIR}/python/*PythonIus*")
     message("PROJECT_BINARY_DIR is ${PROJECT_BINARY_DIR}")
-    set(IUS_INSTALL_PATH "${PROJECT_BINARY_DIR}/dist/python27/${CMAKE_SYSTEM_NAME}")
+    set(IUS_INSTALL_PATH "${PROJECT_BINARY_DIR}/dist/python/python2/${CMAKE_SYSTEM_NAME}")
     install(
     TARGETS ${IUS_TARGET}
     RUNTIME DESTINATION ${IUS_INSTALL_PATH}
