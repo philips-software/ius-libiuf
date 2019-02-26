@@ -20,18 +20,6 @@ iu2ds_t ius2DSizeCreate
   float sz  ///< the size in the z-direction in meters
 );
 
-/** \brief get the X component of the 2D Size */
-float ius2DSizeGetX
-(
-   iu2ds_t size
-);
-
-/** \brief get the Z component of the 2D Size */
-float ius2DSizeGetZ
-(
-   iu2ds_t size
-);
-
 /** \brief Delete a 2D size object */
 int ius2DSizeDelete
 (

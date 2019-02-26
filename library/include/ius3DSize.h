@@ -42,24 +42,4 @@ int ius3DSizeCompare
     iu3ds_t reference, ///< a 3D size to compare to
     iu3ds_t actual     ///< a 3D size to compare with
 );
-
-/** \brief Get the X component of the 3D size */
-float ius3DSizeGetX
-(
-    iu3ds_t size       ///< the 3D size of interest
-);
-/** \brief Get the Y component of the 3D size */
-float ius3DSizeGetY
-(
-    iu3ds_t size       ///< the 3D size of interest
-);
-/** \brief Get the Z component of the 3D size */
-float ius3DSizeGetZ
-(
-    iu3ds_t size       ///< the 3D size of interest
-);
-
-
-
-
 #endif //IUSLIBRARY_IUSHL3DSIZE_H

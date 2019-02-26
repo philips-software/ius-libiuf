@@ -5,8 +5,6 @@
 
 #include "iusPosition.h"
 
-#if 0
-#include <iusSourcePrivate.h>
 // ADT
 typedef struct Ius2DParametricSource Ius2DParametricSource;
 /** The 2D parametric Sources describes one or multiple point sources from which a pulse originates simulatanously. You can
@@ -18,13 +16,12 @@ typedef Ius2DParametricSource *iu2dps_t;
 
 /** An invalid 2D Non-Parametric Source */
 #define  IU2DPS_INVALID (iu2dps_t) NULL
-#endif
 
 /** \brief Create an ultrasound source for generating a pulseform based on \p numLocations points.
  * The points are described directly by their 2D position (i.e. not parametrically) .
  * \return returns the created 2D non-parameric source.
  */
-ius_t ius2DParametricSourceCreate
+iu2dps_t ius2DParametricSourceCreate
 (
     int numLocations,   ///< The number of source locations that are triggered simulatenously
     float fNumber,      ///< the fNumber is the Focal depth (radius of the circle where the sources are positions) over the aperture diameter.
@@ -37,7 +34,7 @@ ius_t ius2DParametricSourceCreate
  */
 int ius2DParametricSourceDelete
 (
-    ius_t source ///< the source that will be deleted
+    iu2dps_t source ///< the source that will be deleted
 );
 
 /** \brief Compares two 2D parametric sources. It does not matter which is the reference and the actual.
@@ -45,29 +42,29 @@ int ius2DParametricSourceDelete
  */
 int ius2DParametricSourceCompare
 (
-    ius_t reference, ///< 2D non-parametric source to compare
-    ius_t actual     ///< 2D non-parametric source to compare with.
+    iu2dps_t reference, ///< 2D non-parametric source to compare
+    iu2dps_t actual     ///< 2D non-parametric source to compare with.
 );
 
 /** \brief Returns the fNumber of this source, or NAN if the source is invalid
  */
 float ius2DParametricSourceGetFNumber
 (
-    ius_t source ///< The source of interest
+    iu2dps_t source ///< The source of interest
 );
 
 /** \brief Returns the angular delta in radians between source points or NAN if the source is invalid.
  */
 float ius2DParametricSourceGetDeltaTheta
 (
-    ius_t source ///< The source of interest
+    iu2dps_t source ///< The source of interest
 );
 
 /** \brief Returns the angle of the first source point or NAN if the source is invalid
  */
 float ius2DParametricSourceGetStartTheta
 (
-    ius_t source ///< The source of interest
+    iu2dps_t source ///< The source of interest
 );
 
 /** \brief  Gets the number of source locations that are triggered simulatenously.
@@ -75,7 +72,7 @@ float ius2DParametricSourceGetStartTheta
  */
 int ius2DParametricSourceGetNumLocations
 (
-    ius_t source     ///< The source of interest
+    iu2dps_t source     ///< The source of interest
 );
 
 
@@ -84,7 +81,7 @@ int ius2DParametricSourceGetNumLocations
 */
 int ius2DParametricSourceSetFNumber
 (
-    ius_t source, ///< The source of interest
+    iu2dps_t source, ///< The source of interest
     float FNumber                   ///< the value of the fNumber
 );
 
@@ -93,13 +90,13 @@ int ius2DParametricSourceSetFNumber
 */
 int ius2DParametricSourceSetDeltaTheta
 (
-    ius_t source, ///< The source of interest
+    iu2dps_t source, ///< The source of interest
     float deltaTheta                ///< the value of the delta angle
 );
 
 int ius2DParametricSourceSetStartTheta
 (
-    ius_t source, ///< The source of interest
+    iu2dps_t source, ///< The source of interest
     float startTheta                ///< the value of the starting angle
 );
 
