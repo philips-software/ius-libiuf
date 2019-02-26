@@ -294,14 +294,14 @@ herr_t iusTransducerSave
     if (transducer->type == IUS_3D_SHAPE)
     {
         status = ius3DTransducerSave((Ius3DTransducer *) transducer, transducer_id);
-        H5Fclose(transducer_id);
+        status |= H5Gclose(transducer_id);
         return status;
     }
 
     if (transducer->type == IUS_2D_SHAPE)
     {
         status = ius2DTransducerSave((Ius2DTransducer *) transducer, transducer_id);
-        H5Fclose(transducer_id);
+        status |= H5Gclose(transducer_id);
         return status;
     }
 
