@@ -42,10 +42,10 @@ TEST(Ius2DParametricSource, testIus2DParametricSourceCreate)
     float startTheta = 3.14f;
     int numLocations = 5 ;
 
-    ius_t obj = ius2DParametricSourceCreate(numLocations, FNumber, deltaTheta, startTheta);
-    ius_t notherObj = ius2DParametricSourceCreate(numLocations, FNumber, deltaTheta, startTheta);
-    TEST_ASSERT(obj != IUS_INVALID);
-    TEST_ASSERT(notherObj != IUS_INVALID);
+    iu2dps_t obj = ius2DParametricSourceCreate(numLocations, FNumber, deltaTheta, startTheta);
+    iu2dps_t notherObj = ius2DParametricSourceCreate(numLocations, FNumber, deltaTheta, startTheta);
+    TEST_ASSERT(obj != IU2DPS_INVALID);
+    TEST_ASSERT(notherObj != IU2DPS_INVALID);
     ius2DParametricSourceDelete(obj);
     ius2DParametricSourceDelete(notherObj);
 
@@ -54,9 +54,9 @@ TEST(Ius2DParametricSource, testIus2DParametricSourceCreate)
     TEST_ASSERT_EQUAL(0,iusErrorGetCount());
 
     obj = ius2DParametricSourceCreate(0, -1, 2.0f, 0);
-    TEST_ASSERT(obj == IUS_INVALID);
+    TEST_ASSERT(obj == IU2DPS_INVALID);
     obj = ius2DParametricSourceCreate(0, 1, -2.0f, 0);
-    TEST_ASSERT(obj == IUS_INVALID);
+    TEST_ASSERT(obj == IU2DPS_INVALID);
 
     TEST_ASSERT_EQUAL(2,iusErrorGetCount());
     TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
@@ -70,8 +70,8 @@ TEST(Ius2DParametricSource, testIus2DParametricSourceDelete)
     float startTheta = 3.14f;
     int numLocations = 5;
 
-    ius_t obj = ius2DParametricSourceCreate(numLocations, FNumber, deltaTheta, startTheta);
-    TEST_ASSERT(obj != IUS_INVALID);
+    iu2dps_t obj = ius2DParametricSourceCreate(numLocations, FNumber, deltaTheta, startTheta);
+    TEST_ASSERT(obj != IU2DPS_INVALID);
     int status = ius2DParametricSourceDelete(obj);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
 
@@ -97,12 +97,12 @@ TEST(Ius2DParametricSource, testIus2DParametricSourceCompare)
     float startTheta = 3.14f;
     int numLocations = 5;
 
-    ius_t obj = ius2DParametricSourceCreate(numLocations, FNumber, deltaTheta, startTheta);
-    ius_t notherObj = ius2DParametricSourceCreate(numLocations, FNumber, deltaTheta, startTheta);
-    ius_t differentObj =
+    iu2dps_t obj = ius2DParametricSourceCreate(numLocations, FNumber, deltaTheta, startTheta);
+    iu2dps_t notherObj = ius2DParametricSourceCreate(numLocations, FNumber, deltaTheta, startTheta);
+    iu2dps_t differentObj =
     ius2DParametricSourceCreate(numLocations, FNumber + 0.01f, deltaTheta, startTheta);
-    TEST_ASSERT(obj != IUS_INVALID);
-    TEST_ASSERT(notherObj != IUS_INVALID);
+    TEST_ASSERT(obj != IU2DPS_INVALID);
+    TEST_ASSERT(notherObj != IU2DPS_INVALID);
     equal = ius2DParametricSourceCompare(obj,obj);
     TEST_ASSERT_EQUAL(IUS_TRUE,equal);
     equal = ius2DParametricSourceCompare(obj,notherObj);
@@ -129,7 +129,7 @@ TEST(Ius2DParametricSource, testIus2DParametricSourceSetGet)
     float startTheta = 3.14f;
     int numLocations = 5;
 
-    ius_t obj = ius2DParametricSourceCreate(numLocations, FNumber, deltaTheta, startTheta);
+    iu2dps_t obj = ius2DParametricSourceCreate(numLocations, FNumber, deltaTheta, startTheta);
 
     TEST_ASSERT_EQUAL_FLOAT(FNumber,ius2DParametricSourceGetFNumber(obj));
     TEST_ASSERT_EQUAL_FLOAT(deltaTheta,ius2DParametricSourceGetDeltaTheta(obj));
@@ -166,7 +166,8 @@ TEST(Ius2DParametricSource, testIus2DParametricSourceSerialization)
 
 
     // create
-    ius_t obj = ius2DParametricSourceCreate(numLocations, FNumber, deltaTheta, startTheta);
+    iu2dps_t
+    obj = ius2DParametricSourceCreate(numLocations, FNumber, deltaTheta, startTheta);
 
     // fill
     TEST_ASSERT_EQUAL_FLOAT(FNumber, ius2DParametricSourceGetFNumber(obj));
@@ -182,7 +183,7 @@ TEST(Ius2DParametricSource, testIus2DParametricSourceSerialization)
 
     // read back
     handle = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT );
-    ius_t savedObj = ius2DParametricSourceLoad(handle);
+    iu2dps_t savedObj = ius2DParametricSourceLoad(handle);
     H5Fclose(handle);
 
     TEST_ASSERT_EQUAL(IUS_TRUE, ius2DParametricSourceCompare(obj,savedObj));

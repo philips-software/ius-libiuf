@@ -11,11 +11,11 @@
 
 int ius3DNonParametricSourceSave
 (
-    ius_t source,
+    iu3dnps_t source,
     hid_t handle
 );
 
-ius_t ius3DNonParametricSourceLoad
+iu3dnps_t ius3DNonParametricSourceLoad
 (
     hid_t handle
 );

@@ -14,21 +14,7 @@
 struct IusSource
 {
     IusSourceType type;
-    int numLocations;      // for 2D and non-parametric 3D
-
-    int numThetaLocations; //for parametric 3D
-    int numPhiLocations;   //for parametric 3D
-
-    //for Non parametric
-    struct Ius2DPosition *locations2D;
-    struct Ius3DPosition *locations3D;
-    float fNumber;        /**< distance in [m] of sources to transducer for POLAR */
-    float deltaTheta;     /**< angle in [rad] between sources */
-    float startTheta;     /**< angle in [rad] between sources */
-
-    float deltaPhi;       /**< angle in [rad] between sources */
-    float startPhi;       /**< angle in [rad] between sources */
-};
+} ;
 
 IUS_BOOL iusBaseSourceCompare
 (

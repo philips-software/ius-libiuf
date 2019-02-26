@@ -10,11 +10,11 @@
 
 int ius3DParametricSourceSave
 (
-    ius_t source,
+    iu3dps_t source,
     hid_t handle
 );
 
-ius_t ius3DParametricSourceLoad
+iu3dps_t ius3DParametricSourceLoad
 (
     hid_t handle
 );

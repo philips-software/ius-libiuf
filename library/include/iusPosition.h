@@ -4,7 +4,6 @@
 #ifndef IUSLIBRARY_IUSHLPOSITION_H
 #define IUSLIBRARY_IUSHLPOSITION_H
 
-#include <math.h>
 #include <iusTypes.h>
 
 // ADT
@@ -16,8 +15,6 @@ typedef  Ius3DPosition    * iu3dp_t;
 #define  IU3DP_INVALID (iu3dp_t) NULL
 
 typedef  struct Ius2DPosition Ius2DPosition;
-/** a 2D position has an x and z, x is along the transducer, 
- * z is the depth direction */
 typedef  Ius2DPosition    * iu2dp_t;
 #define  IU2DP_INVALID (iu2dp_t) NULL
 
@@ -30,23 +27,23 @@ iu2dp_t ius2DPositionCreate
     float z  ///< depth direction
 );
 
-/** \brief Get the X component of a 2D position
- * \return returns the 2D position or NAN in case of an error
+/** \brief Create a 3D position (x,y,z) 
+ * \return Returns (x,y,z).
  */
-float ius2DPositionGetX
+iu3dp_t ius3DPositionCreate
 (
-     iu2dp_t pos
+    float x, // along the transducer elements
+    float y, // perpendicular to the transducer elements
+    float z  // depth direction
 );
 
-/** \brief Get the Z component of a 2D position
- * \return returns the 2D position or NAN in case of an error
- */
-float ius2DPositionGetZ
+/** \brief Delete a 3D position */
+void ius3DPositionDelete
 (
-     iu2dp_t pos
+    iu3dp_t pos ///< The position of interest
 );
 
-/** \brief Delete a 2D position */
+/** \brief Delete a 3D position */
 void ius2DPositionDelete
 (
     iu2dp_t pos ///< The position of interest
@@ -60,47 +57,6 @@ IUS_BOOL ius2DPositionCompare
     iu2dp_t reference, ///< The position two compare to
     iu2dp_t actual     ///< The position two compare with
 );
-
-/** \brief Create a 3D position (x,y,z) 
- * \return Returns (x,y,z).
- */
-iu3dp_t ius3DPositionCreate
-(
-    float x, // along the transducer elements
-    float y, // perpendicular to the transducer elements
-    float z  // depth direction
-);
-
-/** \brief Get the X component of a 3D position
- * \return returns the 3D position or NAN in case of an error
- */
-float ius3DPositionGetX
-(
-     iu3dp_t pos
-);
-
-/** \brief Get the Y component of a 3D position
- * \return returns the 3D position or NAN in case of an error
- */
-float ius3DPositionGetY
-(
-     iu3dp_t pos
-);
-
-/** \brief Get the Z component of a 3D position
- * \return returns the 3D position or NAN in case of an error
- */
-float ius3DPositionGetZ
-(
-     iu3dp_t pos
-);
-
-/** \brief Delete a 3D position */
-void ius3DPositionDelete
-(
-    iu3dp_t pos ///< The position of interest
-);
-
 
 /** \brief compare two 3D positions with each other
  * \return Return #IUS_TRUE when the positions are equal and #IUS_FALSE otherwise

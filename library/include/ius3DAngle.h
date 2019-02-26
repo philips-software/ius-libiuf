@@ -43,16 +43,4 @@ int ius3DAngleCompare
     iu3da_t actual      ///< a 3D angle to compare with
 );
 
-/** \brief return theta component of 3D angle */
-float ius3DAngleGetTheta
-(
-     iu3da_t angle      ///< The 3D angle of interest
-);
-
-/** \brief return theta component of 3D angle */
-float ius3DAngleGetPhi
-(
-     iu3da_t phi        ///< The 3D angle of interest
-);
-
 #endif //IUSLIBRARY_IUSHL3DANGLE_H

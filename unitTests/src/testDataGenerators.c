@@ -501,20 +501,20 @@ iusd_t dgGenerateSourceDict
     char *_3d_non_parametric_label = "label for 3d non parametric source";
     char *_3d_parametric_label = "label for 3d parametric source";
 
-    ius_t parametricSource = ius3DParametricSourceCreate(numLocationsTheta, numLocationsPhi, FNumber, deltaTheta, startTheta, deltaPhi, startPhi);
+    iu3dps_t parametricSource = ius3DParametricSourceCreate(numLocationsTheta, numLocationsPhi, FNumber, deltaTheta, startTheta, deltaPhi, startPhi);
 
-    TEST_ASSERT(parametricSource != IUS_INVALID);
-    ius_t nonParametricSource = ius3DNonParametricSourceCreate(numLocationsTheta*numLocationsPhi);
-    TEST_ASSERT(nonParametricSource != IUS_INVALID);
+    TEST_ASSERT(parametricSource != IU3DPS_INVALID);
+    iu3dnps_t nonParametricSource = ius3DNonParametricSourceCreate(numLocationsTheta*numLocationsPhi);
+    TEST_ASSERT(nonParametricSource != IU3DNPS_INVALID);
 
     // create
     iusd_t dict = iusSourceDictCreate();
     TEST_ASSERT(dict != IUSD_INVALID);
 
     // fill
-    int status = iusSourceDictSet(dict, _3d_parametric_label, parametricSource);
+    int status = iusSourceDictSet(dict, _3d_parametric_label,(ius_t) parametricSource);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
-    status = iusSourceDictSet(dict, _3d_non_parametric_label, nonParametricSource);
+    status = iusSourceDictSet(dict, _3d_non_parametric_label,(ius_t) nonParametricSource);
     TEST_ASSERT_EQUAL(IUS_E_OK,status);
     return dict;
 }

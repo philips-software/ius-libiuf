@@ -49,23 +49,6 @@ int ius2DSizeCompare
     return IUS_TRUE;
 }
 
-float ius2DSizeGetX
-(
-    iu2ds_t size
-)
-{
-    IUS_ERR_CHECK_NULL_N_RETURN(size, NAN);
-    return size->sx;
-}
-
-float ius2DSizeGetZ
-(
-    iu2ds_t size
-)
-{
-    IUS_ERR_CHECK_NULL_N_RETURN(size, NAN);
-    return size->sz;
-}
 
 iu2ds_t ius2DSizeLoad
 (

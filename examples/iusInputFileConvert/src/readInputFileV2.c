@@ -183,8 +183,8 @@ static iusd_t extractSource(hid_t inputFile)
 		return IUSD_INVALID;
 	}
 
-	ius_t source = ius2DParametricSourceCreate(numLocations, fNumber, deltaTheta, startTheta); // the only one implemented
-	status = iusSourceDictSet(sourceDict, SOURCE_LABEL, source);
+	iu2dps_t source = ius2DParametricSourceCreate(numLocations, fNumber, deltaTheta, startTheta); // the only one implemented
+	status = iusSourceDictSet(sourceDict, SOURCE_LABEL, (ius_t)source);
 	if (status != IUS_E_OK)
 	{
 		return IUSD_INVALID;
