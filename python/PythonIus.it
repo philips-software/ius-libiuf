@@ -15,6 +15,7 @@
 // Write to python's stdout, used to write to MatLab console
 #define printf PySys_WriteStdout
 
+// Allow for using a MatLab double as int.
 %typemap(in) int {
         if (PyFloat_Check($input)) {
             $1 = (int) PyFloat_AsDouble($input);
@@ -25,11 +26,11 @@
         }
 }
 
+// Handle both iupp_t and iunpp_t as iup_t
+typedef iup_t iupp_t;
+typedef iup_t iunpp_t;
 
-%typemap(in) iup_t {
-        $1 = (iup_t) $input;
-}
-
+// Handle both iu3Dt_t and iu2Dt_t as iut_t
 %typemap(in) iut_t {
         if (!SWIG_IsOK(SWIG_ConvertPtr($input, (void **) &$1, $descriptor(iu2dt_t), 0)) &&
            (!SWIG_IsOK(SWIG_ConvertPtr($input, (void **) &$1, $descriptor(iu3dt_t), 0))))

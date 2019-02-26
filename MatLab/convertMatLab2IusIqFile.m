@@ -55,6 +55,17 @@ iusIqFileSetAcquisition( h, acquisition );
 % iqPatternListDict
 
 % pulseDict
+if iusIqStruct.DrivingScheme.TransmitPulse.numPulseValues == 0
+    pulseFrequency = iusIqStruct.DrivingScheme.TransmitPulse.pulseFrequency;
+    pulseAmplitude = iusIqStruct.DrivingScheme.TransmitPulse.pulseAmplitude;
+    numPulses = iusIqStruct.DrivingScheme.TransmitPulse.pulseCount;
+    pulse = iusParametricPulseCreate( pulseFrequency, pulseAmplitude, numPulses );
+else
+    assert('Non parametric pulse not implemented yet!');
+end
+pulseDict = iusPulseDictCreate();
+iusPulseDictSet( pulseDict, mode, pulse );
+iusIqFileSetPulseDict( h, pulseDict );
 
 % pulseSourceDict
 
@@ -103,7 +114,15 @@ end
 % Store instance data to disk
 iusIqFileNodeSave( h );
 
-% Cleanup memory
+%% Cleanup memory
+% Acquisition
+iusAcquisitionDelete( acquisition );
+
+% Pulse
+iusPulseDelete( pulse );
+iusPulseDictDelete( pulseDict );
+
+% Transducer
 for c1 = 1:iusIqStruct.Transducer.numElements
     ius3DPositionDelete( elementPos{c1} );
     ius3DSizeDelete( elementSize{c1} );
@@ -111,7 +130,8 @@ for c1 = 1:iusIqStruct.Transducer.numElements
     ius3DTransducerElementDelete( element{c1} );
 end
 iusTransducerDelete( transducer );
-iusAcquisitionDelete( acquisition );
+
+% TransmitApodization
 iusTransmitApodizationDelete( transmitApodization );
 iusTransmitApodizationDictDelete( transmitApodizationDict );
 end
