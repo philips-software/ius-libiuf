@@ -12,6 +12,9 @@
 %}
 
 
+// Write to python's stdout, used to write to MatLab console
+#define printf PySys_WriteStdout
+
 %typemap(in) int {
         if (PyFloat_Check($input)) {
             $1 = (int) PyFloat_AsDouble($input);
@@ -26,7 +29,6 @@
 %typemap(in) iup_t {
         $1 = (iup_t) $input;
 }
-
 
 %typemap(in) iut_t {
         if (!SWIG_IsOK(SWIG_ConvertPtr($input, (void **) &$1, $descriptor(iu2dt_t), 0)) &&
@@ -54,29 +56,39 @@
         }
 }
 
+// Handle an input array for transmitApodization
+// Handle a double as an array of length 1
 %typemap(in) (float *apodization, int numElements) {
-    int i;
+    Py_ssize_t i;
     Py_ssize_t length;
-    if (!PySequence_Check($input)) {
-        PyErr_SetString(PyExc_ValueError,"Expected a sequence");
+    if (PySequence_Check($input)) {
+        length = PySequence_Length($input);
+    } else if (PyFloat_Check($input)) {
+        length = (Py_ssize_t)1;
+    } else {
+        PyErr_SetString(PyExc_ValueError,"Expected a sequence or a float");
         return NULL;
     }
-    length = PySequence_Length($input);
-    float *temp = calloc(length, sizeof(float));
+    float * temp = calloc(length, sizeof(float));
     printf("Got an array of length %d\n", (int)length);
-    for (i = 0; i < length; i++) {
-        PyObject *o = PySequence_GetItem($input,i);
-        if (PyNumber_Check(o)) {
-            temp[i] = (float) PyFloat_AsDouble(o);
-            printf("Element %d = %f\n",i, temp[i]);
-        } else {
-            PyErr_SetString(PyExc_ValueError,"Sequence elements must be numbers");
-        return NULL;
+    if( length == (Py_ssize_t)1 ) {
+        temp[0] = (float)PyFloat_AsDouble($input);
+        printf("Processing length %d\n", (int)length);
+    } else {
+        printf("Else found for array of length %d\n", (int)length);
+        for (i = 0; i < length; i++) {
+            PyObject *o = PySequence_GetItem($input,i);
+            if (PyNumber_Check(o)) {
+                temp[i] = (float)PyFloat_AsDouble(o);
+                printf("Element %lld = %f\n",i,temp[i]);
+            } else {
+                PyErr_SetString(PyExc_ValueError,"Sequence elements must be numbers");
+            }
         }
     }
     printf("Additional memory allocated at: %p\n", (void*)temp);
     $1 = temp;
-    $2 = length;
+    $2 = (int)length;
 }
 
 %typemap(freearg) (float *apodization, int numElements) {

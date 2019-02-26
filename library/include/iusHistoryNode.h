@@ -22,7 +22,7 @@ typedef IusHistoryNode *iuhn_t;
  * \return It returns the history node when successful or #IUHN_INVALID in case the node type was invalid */ 
 iuhn_t iusHistoryNodeCreate
 (
-    char *nodeType          ///< The node type description
+    char *pNodeType          ///< The node type description
 );
 
 /** \brief Delete a history node  

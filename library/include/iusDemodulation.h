@@ -72,7 +72,7 @@ int iusDemodulationGetNumTGCentries
 */
 int iusDemodulationGetPreFilterKernelSize
 (
-	iudm_t iusDemodulation     ///< the receive settings of interest
+	iudm_t demodulation     ///< the receive settings of interest
 );
 
 /** \brief Gets the TGC object of the demodulation
@@ -88,7 +88,7 @@ iutgc_t iusDemodulationGetTGC
 */
 iuff_t iusDemodulationGetPreFilter
 (
-	iudm_t iusDemodulation  ///< the receive settings of interest
+	iudm_t demodulation  ///< the receive settings of interest
 );
 
 #endif //IUSLIBRARY_IUSHLRECEIVESETTINGS_H

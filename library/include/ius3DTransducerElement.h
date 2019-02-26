@@ -55,7 +55,7 @@ int ius3DTransducerElementCompare
 */
 iu3dp_t ius3DTransducerElementGetPosition
 (
-	iu3dte_t elemen ///< The transducer element that has the requested position.
+	iu3dte_t element ///< The transducer element that has the requested position.
 );
 
 /** \brief returns the angles (theta,phi) of the \p ius2DTransducerElement.
