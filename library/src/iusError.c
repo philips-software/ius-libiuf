@@ -257,3 +257,27 @@ int iusErrorSetStream
     state->errorStream = stream;
     return 0;
 }
+
+int iusErrorSetStreamToFile
+(
+    const char * pFileName
+)
+{
+    FILE * fp = fopen(pFileName, "w+");
+    if (fp == NULL)
+    {
+        return 1;
+    }
+    iusErrorSetStream(fp);
+    return 0;
+}
+
+int iusErrorCloseFileStream
+(
+)
+{
+    iue_t state = iusErrorGetState();
+    int rv = fclose(state->errorStream);
+    state->errorStream = stderr;
+    return rv;
+}
