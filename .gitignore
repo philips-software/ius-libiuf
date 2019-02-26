@@ -14,4 +14,4 @@ dox/html/*\.*
 python/ius.py
 python/test.py
 .scannerwork/*
-
+*.pyc
