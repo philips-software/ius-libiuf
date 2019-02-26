@@ -30,6 +30,12 @@
 typedef iup_t iupp_t;
 typedef iup_t iunpp_t;
 
+// Handle iu2dps_t, iu2dnps_t, iu3dps_t and iu3dnps_t as ius_t
+typedef ius_t iu2dps_t;
+typedef ius_t iu2dnps_t;
+typedef ius_t iu3dps_t;
+typedef ius_t iu3dnps_t;
+
 // Handle both iu3Dt_t and iu2Dt_t as iut_t
 %typemap(in) iut_t {
         if (!SWIG_IsOK(SWIG_ConvertPtr($input, (void **) &$1, $descriptor(iu2dt_t), 0)) &&

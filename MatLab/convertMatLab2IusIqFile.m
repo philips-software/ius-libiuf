@@ -68,6 +68,18 @@ iusPulseDictSet( pulseDict, mode, pulse );
 iusIqFileSetPulseDict( h, pulseDict );
 
 % pulseSourceDict
+if iusIqStruct.DrivingScheme.drivingSchemeType == 3 % Single element!
+    numLocations = iusIqStruct.DrivingScheme.numTransmitSources;
+    if numLocations ~= 1
+        error('Single element recording expected.');
+    end
+    source = ius2DParametricSourceCreate( numLocations, 0, 0, 0);
+else
+    error('Driving scheme type not implemented yet');
+end
+sourceDict = iusSourceDictCreate();
+iusSourceDictSet( sourceDict, mode, source );
+iusIqFileSetSourceDict( h, sourceDict );
 
 % receiveChannelMapDict
 
@@ -117,6 +129,10 @@ iusAcquisitionDelete( acquisition );
 % Pulse
 iusPulseDelete( pulse );
 iusPulseDictDelete( pulseDict );
+
+% Source
+iusSourceDelete( source );
+iusSourceDictDelete( sourceDict );
 
 % Transducer
 for c1 = 1:iusIqStruct.Transducer.numElements
