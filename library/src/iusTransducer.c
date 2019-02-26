@@ -245,6 +245,7 @@ static herr_t iusBaseTransducerSaveShape(hid_t group_id,
 	status |= H5Tenum_insert(hdf_shapeType, TRANSDUCER_SHAPE_SPHERE, (enumValue = IUS_SPHERE, &enumValue));
 	enumValue = shape;
 	status |= H5LTmake_dataset(group_id, pVariableString, 1, dims, hdf_shapeType, &enumValue);
+	status |= H5Tclose(hdf_shapeType);
 	return status;
 }
 
@@ -297,7 +298,10 @@ herr_t iusTransducerSave
 		return ius2DTransducerSave((Ius2DTransducer *) transducer, transducer_id);
 
     IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE, "invalid transducer transducer shape: '%d'", transducer->type );
-	return IUS_ERR_VALUE;
+
+    /* Close must be called in the transducer type specific save function*/
+    H5Gclose(transducer_id);
+    return IUS_ERR_VALUE;
 }
 
 static int iusTransducerLoadShape
@@ -318,6 +322,7 @@ static int iusTransducerLoadShape
     status |= H5Tenum_insert(hdf_shapeType, TRANSDUCER_SHAPE_SPHERE, (enumValue = IUS_SPHERE, &enumValue));
     *pShape = 0;
     status |= H5LTread_dataset( handle, pVariableString , hdf_shapeType, pShape );
+    status |= H5Tclose(hdf_shapeType);
     return status;
 }
 
