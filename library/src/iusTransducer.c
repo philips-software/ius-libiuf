@@ -292,10 +292,18 @@ herr_t iusTransducerSave
     }
 
     if (transducer->type == IUS_3D_SHAPE)
-        return ius3DTransducerSave((Ius3DTransducer *) transducer, transducer_id);
+    {
+        status = ius3DTransducerSave((Ius3DTransducer *) transducer, transducer_id);
+        H5Fclose(transducer_id);
+        return status;
+    }
 
     if (transducer->type == IUS_2D_SHAPE)
-        return ius2DTransducerSave((Ius2DTransducer *) transducer, transducer_id);
+    {
+        status = ius2DTransducerSave((Ius2DTransducer *) transducer, transducer_id);
+        H5Fclose(transducer_id);
+        return status;
+    }
 
     IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE, "invalid transducer transducer shape: '%d'", transducer->type );
 
