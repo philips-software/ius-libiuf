@@ -26,7 +26,7 @@ struct Ius2DTransducer
         }
 
         ~Ius2DTransducer() {
-            iusTransducerDelete($self);
+            ius2DTransducerDelete($self);
         }
 }
 #endif
