@@ -238,7 +238,16 @@ int iusHDF5ErrorLog(IUS_BOOL enable)
     return status;
 }
 
-int iusErrorAutoReport
+IUS_BOOL iusErrorAutoReportGet
+(
+    void
+)
+{
+    iue_t state = iusErrorGetState();
+    return state->autoReport;
+}
+
+int iusErrorAutoReportSet
 (
     IUS_BOOL enable
 )

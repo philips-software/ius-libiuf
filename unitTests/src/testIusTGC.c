@@ -21,7 +21,7 @@ TEST_SETUP(IusTGC)
 {
     iusErrorLogClear();
     iusErrorLog(IUS_TRUE);
-    iusErrorAutoReport(IUS_TRUE);
+    iusErrorAutoReportSet(IUS_TRUE);
     fpErrorLogging = fopen(pErrorFilename, "w+");
     iusErrorSetStream(fpErrorLogging);
 }

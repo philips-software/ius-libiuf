@@ -103,6 +103,20 @@ typedef ius_t iu3dnps_t;
         free($1);
 }
 
+%exception {
+    char *err;
+    iusErrorLogClear();
+    $action
+    if (iusErrorGetCount() > 0 && iusErrorAutoReportGet() == IUS_TRUE ) {
+        PyErr_Format(PyExc_Exception,
+        "Call %s failed: %s", \
+        __func__, "not implemented"
+        );
+//        PyErr_SetString(PyExc_Exception, "Exception in call");
+        SWIG_fail;
+    }
+}
+
 //%include "numpy.i"
 //
 //%init %{

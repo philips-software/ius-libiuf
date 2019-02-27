@@ -18,7 +18,7 @@ TEST_SETUP(IusErrorHandling)
 {
     iusErrorLogClear();
     iusErrorLog(IUS_TRUE);
-    iusErrorAutoReport(IUS_TRUE);
+    iusErrorAutoReportSet(IUS_TRUE);
 }
 
 TEST_TEAR_DOWN(IusErrorHandling)
@@ -31,7 +31,7 @@ TEST_TEAR_DOWN(IusErrorHandling)
 
 TEST(IusErrorHandling, testIusErrorManualReportScenario)
 {
-    iusErrorAutoReport(IUS_FALSE);
+    iusErrorAutoReportSet(IUS_FALSE);
 
     // Force error condition
     int numIusErrors = iusErrorGetCount();
@@ -135,7 +135,7 @@ TEST(IusErrorHandling, testIusErrorLogDisabledEnabledScenario)
 
 TEST(IusErrorHandling, testIusErrorAutoReport)
 {
-    iusErrorAutoReport(IUS_TRUE);
+    iusErrorAutoReportSet(IUS_TRUE);
     FILE *fp = fopen(pErrorFilename, "w+");
     long filePos = ftell(fp);
     iusErrorSetStream(fp);
@@ -145,7 +145,7 @@ TEST(IusErrorHandling, testIusErrorAutoReport)
     TEST_ASSERT_EQUAL(1,iusErrorGetCount());
 
     // Ok, let's try again, with auto-reporting disabled
-    iusErrorAutoReport(IUS_FALSE);
+    iusErrorAutoReportSet(IUS_FALSE);
     filePos = ftell(fp);
     inputFile = iusFileLoad(NULL);
     TEST_ASSERT(inputFile == IUFI_INVALID);

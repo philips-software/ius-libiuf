@@ -127,10 +127,19 @@ int iusErrorCloseFileStream
 /** \brief Error messages wil printed when encountered by the library calls.
 * \return Returns #IUS_E_OK when successful or #IUS_ERR_VALUE in case of an error.
 */
-int iusErrorAutoReport
+int iusErrorAutoReportSet
 (
     IUS_BOOL enable                 ///< IUS_TRUE enables / IUS_FALSE disables automatic error logging
 );
+
+/** \brief Error messages wil printed when encountered by the library calls.
+* \return Returns the value #IUS_TRUE when auto reporting is enabled, #IUS_FALSE when disabled.
+*/
+IUS_BOOL iusErrorAutoReportGet
+(
+    void
+);
+
 
 extern hid_t  IUS_ERR_MAJ_GENERAL;  ///< Major error handling class for general errors
 extern hid_t  IUS_ERR_MAJ_MEMORY;   ///< Major error handling class for memory errors

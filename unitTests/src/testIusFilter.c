@@ -17,7 +17,7 @@ TEST_SETUP(IusFirFilter)
 {
     iusErrorLogClear();
     iusErrorLog(IUS_TRUE);
-    iusErrorAutoReport(IUS_TRUE);
+    iusErrorAutoReportSet(IUS_TRUE);
     fpErrorLogging = fopen(pErrorFilename, "w+");
     iusErrorSetStream(fpErrorLogging);
 }
