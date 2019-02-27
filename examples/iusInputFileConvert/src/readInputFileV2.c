@@ -320,7 +320,7 @@ static 	iurcmd_t extractReceiveChannelMapDict(hid_t inputFile, char *mode)
 {
 	int numChannels;
 	int status;
-	int numDelays=0; // equal to numtransmitPulses
+	int numDelays=0; // equal to numtransmitPulses, while we use only the first one
 
 	hid_t receiveSettingsHandle = H5Gopen(inputFile, "ReceiveSettings", H5P_DEFAULT); //
 	hid_t transducerHandle = H5Gopen(inputFile, "Transducer", H5P_DEFAULT);
@@ -368,12 +368,8 @@ static 	iurcmd_t extractReceiveChannelMapDict(hid_t inputFile, char *mode)
 	iurcm_t receiveChannelMap = iusReceiveChannelMapCreate(numChannels);
 	for (int i = 0; i < numChannels; i++)
 	{
-		iusReceiveChannelMapSetChannel(receiveChannelMap, i, i); //strainght forward 1 to 1 mapping
-	}
-
-	for (int i = 0; i < numDelays; i++)
-	{
-		status |= iusReceiveChannelMapSetStartDelay(receiveChannelMap, i, startDelays[i]);
+		status |= iusReceiveChannelMapSetChannel(receiveChannelMap, i, i); //strainght forward 1 to 1 mapping
+        status |= iusReceiveChannelMapSetStartDelay(receiveChannelMap, i, startDelays[ 0 ]); // Only use the first one
 	}
 
 	status = iusReceiveChannelMapDictSet(receiveChannelMapDict, mode, receiveChannelMap);
