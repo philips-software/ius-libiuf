@@ -3,6 +3,7 @@
 //
 #include <stdarg.h>
 #include <memory.h>
+#include <string.h>
 
 #include "ius.h"
 #include "library_config.h"
