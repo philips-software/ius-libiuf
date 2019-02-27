@@ -46,6 +46,18 @@ class TestErrorHandling(TestCase):
         self.assertTrue('pFilename argument is NULL' in str(context.exception))
         #
 
+    def test_clearstack(self):
+        iusErrorAutoReportSet(IUS_FALSE)
+        try:
+            inputFile = iusFileLoad(None);
+        except Exception as ex:
+            pass
+
+        errorMsg = iusErrorString()
+        iusErrorLogClear()
+        self.assertEqual("", iusErrorString())
+        pass
+
 # def test_spike(self):
     #     import ctypes
     #     libc = ctypes.CDLL(None)

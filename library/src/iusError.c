@@ -58,6 +58,8 @@ struct IusError
     // HDF5 error handling
     H5E_auto2_t func;
     void *client_data;
+    char error_buffer[IUS_MAX_STRING_LENGTH];
+
 };
 
 // ADT
@@ -123,6 +125,7 @@ static int iusErrorInit
 
     state->iusErrorStack = H5Ecreate_stack();
     state->errorStream = stderr;
+    state->error_buffer[0] = '\0';
     H5Eget_auto2(H5E_DEFAULT,&state->func,&state->client_data);
     iusHDF5ErrorLog(IUS_FALSE);
     return IUS_E_OK;
@@ -255,16 +258,16 @@ int iusErrorLogClear
     iue_t state = iusErrorGetState();
     herr_t status = H5Eclear2(H5E_DEFAULT);
     status |= H5Eclear2(state->iusErrorStack);
+    state->error_buffer[0] = '\0';
     return (int) status;
 }
 
 char *iusErrorString()
 {
-    static char buffer[IUS_MAX_STRING_LENGTH];
     // Turn off error handling permanently
     iue_t state = iusErrorGetState();
-    H5Ewalk2(state->iusErrorStack, H5E_WALK_UPWARD, build_error_string, buffer);
-    return strdup(buffer);
+    H5Ewalk2(state->iusErrorStack, H5E_WALK_UPWARD, build_error_string, state->error_buffer);
+    return state->error_buffer;
 }
 
 int iusErrorLog(IUS_BOOL enable)

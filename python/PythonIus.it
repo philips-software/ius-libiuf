@@ -118,7 +118,6 @@ typedef ius_t iu3dnps_t;
         "Call %s failed: %s", \
         __func__, err
         );
-        free(err);
         SWIG_fail;
     }
 }
