@@ -82,6 +82,21 @@ iusSourceDictSet( sourceDict, mode, source );
 iusIqFileSetSourceDict( h, sourceDict );
 
 % receiveChannelMapDict
+numChannels = iusIqStruct.Transducer.numElements;
+startDelays = iusIqStruct.ReceiveSettings.startDepth;
+if all(diff(startDelays) == 0) % All transmit apodizations are the same.
+    startDelay = startDelays(1);
+else
+    error('Different startDelays per pulse not yet supported!');
+end
+receiveChannelMap = iusReceiveChannelMapCreate( numChannels );
+for c1 = 1:numChannels
+    iusReceiveChannelMapSetChannel( receiveChannelMap, c1-1, c1-1 );
+    iusReceiveChannelMapSetChannel( receiveChannelMap, c1-1, startDelay );
+end
+receiveChannelMapDict = iusReceiveChannelMapDictCreate();
+iusReceiveChannelMapDictSet( receiveChannelMapDict, mode, receiveChannelMap );
+iusIqFileSetReceiveChannelMapDict( h, receiveChannelMapDict );
 
 % transducer
 transducer = ius2DTransducerCreate( ...
@@ -133,6 +148,10 @@ iusPulseDictDelete( pulseDict );
 % Source
 iusSourceDelete( source );
 iusSourceDictDelete( sourceDict );
+
+% ReceiveChannelMap
+iusReceiveChannelMapDelete( receiveChannelMap );
+iusReceiveChannelMapDictDelete( receiveChannelMapDict );
 
 % Transducer
 for c1 = 1:iusIqStruct.Transducer.numElements
