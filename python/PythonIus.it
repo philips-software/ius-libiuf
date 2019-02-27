@@ -109,6 +109,15 @@ typedef ius_t iu3dnps_t;
         free($1);
 }
 
+
+// IMPORTANT NOTE:
+//
+// Prevent the error stack from getting cleared by
+// the invocation of the iusError routines themselves.
+// (i.e. do not wrap exception handling code in
+// error module for now).
+//
+%include <iusError.h>
 %exception {
     iusErrorLogClear();
     $action
@@ -156,7 +165,6 @@ typedef ius_t iu3dnps_t;
 %include <iusData.h>
 %include <iusDataStream.h>
 %include <iusDemodulation.h>
-%include <iusError.h>
 %include <iusAcquisition.h>
 %include <iusFile.h>
 %include <iusFilter.h>

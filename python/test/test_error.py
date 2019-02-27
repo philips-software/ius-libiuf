@@ -48,46 +48,14 @@ class TestErrorHandling(TestCase):
 
     def test_clearstack(self):
         iusErrorAutoReportSet(IUS_FALSE)
+        iusErrorLogClear()
+        self.assertEqual("", iusErrorString())
         try:
             inputFile = iusFileLoad(None);
         except Exception as ex:
             pass
 
         errorMsg = iusErrorString()
+        self.assertTrue('pFilename argument is NULL' in errorMsg)
         iusErrorLogClear()
         self.assertEqual("", iusErrorString())
-        pass
-
-# def test_spike(self):
-    #     import ctypes
-    #     libc = ctypes.CDLL(None)
-    #     old_stdout = sys.stdout
-    #     f = io.StringIO()
-    #     with stdout_redirector_1(f):
-    #         print('foobar')
-    #         print(12)
-    #         libc.puts(b'this comes from C')
-    #         os.system('echo and this is from echo')
-    #         # sys.stderr.write
-    #
-    #     sys.stdout = old_stdout
-    #     print('\n=>>>> Got stdout:\n"{0}"'.format(f.getvalue()))
-    #
-    #
-    #     old_stdout = sys.stdout
-    #     f = io.BytesIO()
-    #     with stdout_redirector(f):
-    #         print('foobar')
-    #         print(12)
-    #         libc.puts(b'this comes from C')
-    #         os.system('echo and this is from echo')
-    #         # sys.stderr.write
-    #
-    #     sys.stdout = old_stdout
-    #     print('\n=>>>> Got stdout:\n"{0}"'.format(f.getvalue()))
-    #
-    #
-    #     c = Capture()
-    #     c.start()
-    #     os.system('echo 10')
-    #     x = c.stop()
