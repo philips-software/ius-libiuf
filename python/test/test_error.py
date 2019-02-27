@@ -33,17 +33,20 @@ else:
 class TestErrorHandling(TestCase):
     def test_auto_report(self):
         iusErrorAutoReportSet(IUS_FALSE)
-        try:
-            inputFile = iusFileLoad(None);
-        except(Exception):
-            self.fail("Should not Raise an exception when autoreporting is disabled!")
-
-        iusErrorAutoReportSet(IUS_TRUE)
         with self.assertRaises(Exception) as context:
             inputFile = iusFileLoad(None);
-        self.assertTrue('not implemented' in str(context.exception))
+        self.assertTrue('pFilename argument is NULL' in str(context.exception))
 
-    # def test_spike(self):
+    def test_walk(self):
+        iusErrorAutoReportSet(IUS_FALSE)
+        with self.assertRaises(Exception) as context:
+            inputFile = iusFileLoad(None);
+            inputFile = iusFileLoad(None);
+
+        self.assertTrue('pFilename argument is NULL' in str(context.exception))
+        #
+
+# def test_spike(self):
     #     import ctypes
     #     libc = ctypes.CDLL(None)
     #     old_stdout = sys.stdout

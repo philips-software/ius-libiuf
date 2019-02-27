@@ -45,6 +45,13 @@ int iusErrorPrint
 (
 );
 
+/** \brief Create a string representation of the current Error stack
+* \return Returns a string representation of the current Error stack.
+*/
+char * iusErrorString
+(
+);
+
 /** \brief Pushes an Error context onto the IUS error stack.
 * \return Returns #IUS_E_OK when successful or #IUS_ERR_VALUE in case of an error.
 */

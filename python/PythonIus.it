@@ -110,15 +110,15 @@ typedef ius_t iu3dnps_t;
 }
 
 %exception {
-    char *err;
     iusErrorLogClear();
     $action
-    if (iusErrorGetCount() > 0 && iusErrorAutoReportGet() == IUS_TRUE ) {
+    if (iusErrorGetCount() > 0) {
+        char *err = iusErrorString();
         PyErr_Format(PyExc_Exception,
         "Call %s failed: %s", \
-        __func__, "not implemented"
+        __func__, err
         );
-//        PyErr_SetString(PyExc_Exception, "Exception in call");
+        free(err);
         SWIG_fail;
     }
 }

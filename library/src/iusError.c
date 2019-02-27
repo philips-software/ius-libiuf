@@ -190,6 +190,48 @@ int iusErrorGetCount
     return (int) H5Eget_num(state->iusErrorStack);
 }
 
+/* This routine prints the information for an error on the error stack */
+/* Note that it uses the following H5E_error_t struct, which is updated from
+ * the current H5E_error_t:
+ *
+ * typedef struct H5E_error_t {
+ *    hid_t 	  cls_id;	// Error class ID
+ *    hid_t 	  maj_id;	// Major error ID
+ *    hid_t       min_id;	// Minor error ID
+ *    const char *func_name;	// Function in which error occurred
+ *    const char *file_name;	// File in which error occurred
+ *    unsigned	  line;		// Line in file where error occurs
+ *    const char *desc;		// Optional supplied description
+ * } H5E_error_t;
+ *
+ */
+int build_error_string(unsigned int n, const struct H5E_error2_t *err_desc, void *cb_data)
+{
+    char class_name[32];
+    const char *maj_name;
+    const char *min_name;
+    char *fillme = (char *)cb_data;
+
+    IUS_UNUSED(cb_data);
+    /* Get the error class's name */
+    H5Eget_class_name(err_desc->cls_id,class_name,32);
+
+    /* Get the major error description */
+    maj_name = H5Eget_major (err_desc->maj_num);
+    min_name = H5Eget_minor (err_desc->min_num);
+
+    /* Print error information */
+    sprintf(fillme + strlen(fillme), "%s-DIAG: Error detected in IUS-SDK:\n", class_name);
+    sprintf(fillme + strlen(fillme), "  #%03d: %s line %d in %s(): %s\n",
+                                     n,
+                                     err_desc->file_name,
+                                     err_desc->line,
+                                     err_desc->func_name,
+                                     err_desc->desc);
+    sprintf(fillme + strlen(fillme), "   major: %s\n", maj_name);
+    sprintf(fillme + strlen(fillme), "   minor: %s\n", min_name);
+    return 0;
+}
 
 int iusErrorPrint
 (
@@ -213,6 +255,15 @@ int iusErrorLogClear
     herr_t status = H5Eclear2(H5E_DEFAULT);
     status |= H5Eclear2(state->iusErrorStack);
     return (int) status;
+}
+
+char *iusErrorString()
+{
+    static char buffer[IUS_MAX_STRING_LENGTH];
+    // Turn off error handling permanently
+    iue_t state = iusErrorGetState();
+    H5Ewalk2(state->iusErrorStack, H5E_WALK_UPWARD, build_error_string, buffer);
+    return strdup(buffer);
 }
 
 int iusErrorLog(IUS_BOOL enable)
