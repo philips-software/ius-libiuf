@@ -21,6 +21,6 @@ class Test2DTransducer(TestCase):
         t = Ius2DTransducer(name, shape, centerFrequency, 128)
         self.assertEqual(name, iusTransducerGetName(t))
         self.assertEqual(shape, iusTransducerGetShape(t))
-        # self.assertEqual(centerFrequency, ius2DTransducerGetCenterFrequency(t))
+        self.assertAlmostEqual(centerFrequency, ius2DTransducerGetCenterFrequency(t), places=4)
 
 
