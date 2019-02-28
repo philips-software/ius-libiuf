@@ -1,26 +1,3 @@
-# TEST(IusErrorHandling, testIusErrorAutoReport)
-# {
-#     iusErrorAutoReport(IUS_TRUE);
-# FILE *fp = fopen(pErrorFilename, "w+");
-# long filePos = ftell(fp);
-# iusErrorSetStream(fp);
-# iuf_t inputFile = iusFileLoad(NULL);
-# TEST_ASSERT(inputFile == IUFI_INVALID);
-# TEST_ASSERT_NOT_EQUAL(filePos,ftell(fp));
-# TEST_ASSERT_EQUAL(1,iusErrorGetCount());
-#
-# // Ok, let's try again, with auto-reporting disabled
-# iusErrorAutoReport(IUS_FALSE);
-# filePos = ftell(fp);
-# inputFile = iusFileLoad(NULL);
-# TEST_ASSERT(inputFile == IUFI_INVALID);
-# TEST_ASSERT_EQUAL(filePos,ftell(fp));
-# TEST_ASSERT_EQUAL(2,iusErrorGetCount());
-# fclose(fp);
-# iusFileDelete(inputFile);
-# }
-import io
-import os
 from unittest import TestCase
 
 import sys
