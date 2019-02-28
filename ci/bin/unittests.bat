@@ -22,3 +22,6 @@ if errorlevel 1 exit /B 1
 ctest --verbose
 if errorlevel 1 exit /B 1
 popd
+
+%~dp0\py_unittests.bat
+if errorlevel 1 exit /B 1

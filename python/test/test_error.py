@@ -58,4 +58,4 @@ class TestErrorHandling(TestCase):
         errorMsg = iusErrorString()
         self.assertTrue('pFilename argument is NULL' in errorMsg)
         iusErrorLogClear()
-        self.assertEqual("", iusErrorString())
+        self.assertEqual("123", iusErrorString())
