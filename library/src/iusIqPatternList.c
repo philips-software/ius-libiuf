@@ -41,7 +41,7 @@ iuiqpal_t iusIqPatternListCreate
 	list->pIqPatterns = (iuiqpa_t *)calloc((size_t)numPatterns, sizeof(iuiqpa_t));
 	if (list->pIqPatterns == NULL)
 	{
-		IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_MEMORY, IUS_ERR_MIN_ALLOC, "could not alocate patterns for list");
+		IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_MEMORY, IUS_ERR_MIN_ALLOC, "could not allocate %d patterns for list", numPatterns);
 		list = IUIQPAL_INVALID;
 	}
 	return list;
@@ -175,7 +175,7 @@ int iusIqPatternListSet
 		IUS_BOOL validDimensions = iusIqPatternListValidateDimensions(list, member);
 		if (validDimensions == IUS_FALSE)
 		{
-			IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE, "inconsistent dimensions");
+			IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE, "inconsistent dimensions for member %d", index);
 			return IUS_ERR_VALUE;
 		}
 	}

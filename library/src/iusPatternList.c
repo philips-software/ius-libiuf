@@ -167,7 +167,7 @@ int iusPatternListSet
 		IUS_BOOL validDimensions = iusPatternListValidateDimensions(list, member);
 		if (validDimensions == IUS_FALSE)
 		{
-			IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE, "inconsistent dimensions");
+			IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE, "inconsistent dimensions for member %d", index);
 			return IUS_ERR_VALUE;
 		}
 	}
