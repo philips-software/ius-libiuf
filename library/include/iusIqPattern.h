@@ -31,7 +31,7 @@ iuiqpa_t iusIqPatternCreate
  */ 
 int iusIqPatternDelete
 (
-    iuiqpa_t pattern ///< The #IusPattern of interest
+    iuiqpa_t iusIqPattern ///< The #IusPattern of interest
 );
 
 /** \brief Compare two patterns with each other
@@ -48,7 +48,7 @@ int iusIqPatternCompare
  */
 const char * iusIqPatternGetPulseLabel
 (
-    iuiqpa_t pattern   ///< The #IusPattern of interest
+    iuiqpa_t iusIqPattern   ///< The #IusPattern of interest
 );
 
 /** \brief Get the source label of the #IusPattern
@@ -56,7 +56,7 @@ const char * iusIqPatternGetPulseLabel
  */
 const char * iusIqPatternGetSourceLabel
 (
-    iuiqpa_t pattern   ///< The #IusPattern of interest
+    iuiqpa_t iusIqPattern   ///< The #IusPattern of interest
 );
 
 /** \brief Get the receiveChannelMap label of the #IusPattern
@@ -64,7 +64,7 @@ const char * iusIqPatternGetSourceLabel
  */
 const char * iusIqPatternGetChannelMapLabel
 (
-    iuiqpa_t pattern   ///< The #IusPattern of interest
+    iuiqpa_t iusIqPattern   ///< The #IusPattern of interest
 );
 
 /** \brief Get the apodization label of the #IusPattern
@@ -72,7 +72,7 @@ const char * iusIqPatternGetChannelMapLabel
  */
 const char * iusIqPatternGetApodizationLabel
 (
-    iuiqpa_t pattern   ///< The #IusPattern of interest
+    iuiqpa_t iusIqPattern   ///< The #IusPattern of interest
 );
 
 /** \brief Get the receiveSettings label of the #IusPattern
@@ -80,7 +80,7 @@ const char * iusIqPatternGetApodizationLabel
  */
 const char * iusIqPatternGetDemodulationLabel
 (
-    iuiqpa_t pattern   ///< The #IusPattern of interest
+    iuiqpa_t iusIqPattern   ///< The #IusPattern of interest
 );
 
 /** \brief Get the time of the #IusPattern in the frame
@@ -88,7 +88,7 @@ const char * iusIqPatternGetDemodulationLabel
  */
 float iusIqPatternGetTimeInFrame
 (
-    iuiqpa_t pattern   ///< The #IusPattern of interest
+    iuiqpa_t iusIqPattern   ///< The #IusPattern of interest
 );
 
 
