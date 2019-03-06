@@ -37,7 +37,7 @@ iupal_t iusPatternListCreate
 		if (list->pPatterns == NULL)
 		{
 		
-			IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_MEMORY, IUS_ERR_MIN_ALLOC, "could not alocate patterns for list");
+			IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_MEMORY, IUS_ERR_MIN_ALLOC, "could not allocate %d patterns for list", numPatterns);
 			list = NULL;
 		}
 	}
