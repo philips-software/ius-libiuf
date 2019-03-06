@@ -3,6 +3,7 @@
 #include "iusAcquisitionADT.h"
 #include "iusHistoryNodeADT.h"
 #include "iusPatternListADT.h"
+#include "iusIqPatternListADT.h"
 #include "iusParameterDictADT.h"
 #include "iusDemodulationDictADT.h"
 #include <ius2DTransducerPrivate.h>
