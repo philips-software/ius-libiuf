@@ -7,7 +7,7 @@
  *
  *  ==============================================================================
  */
-#include <include/ius.h>
+#include <ius.h>
 
 
 
@@ -284,9 +284,7 @@ iutad_t ncFillTransmitApodizationDict
     iutad_t dict = iusTransmitApodizationDictCreate();
 
     // fill
-    iuta_t transmitApodization = iusTransmitApodizationCreate(numElements);
-
-    iusTransmitApodizationSetApodization(transmitApodization, apodizaton);
+    iuta_t transmitApodization = iusTransmitApodizationCreate(apodizaton, numElements);
     iusTransmitApodizationDictSet(dict, label, transmitApodization);
 
     return dict;

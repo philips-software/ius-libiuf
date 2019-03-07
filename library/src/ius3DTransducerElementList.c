@@ -156,7 +156,7 @@ iu3dtel_t ius3DTransducerElementListLoad
     int i,size;
 
     IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IU3DTEL_INVALID);
-	hid_t elements_id = H5Gopen(handle, IUS_INPUTFILE_PATH_TRANSDUCER_ELEMENTLIST, H5P_DEFAULT);
+    hid_t elements_id = H5Gopen(handle, IUS_INPUTFILE_PATH_TRANSDUCER_ELEMENTLIST, H5P_DEFAULT);
     IUS_ERR_EVAL_N_RETURN(elements_id == H5I_INVALID_HID, IU3DTEL_INVALID);
 
     int status = iusHdf5ReadInt(elements_id, IUS_INPUTFILE_PATH_TRANSDUCER_ELEMENTLIST_SIZE, &(size));
@@ -168,7 +168,7 @@ iu3dtel_t ius3DTransducerElementListLoad
     for (i=0;i < size;i++)
     {
         sprintf(path, IUS_INPUTFILE_PATH_TRANSDUCER_ELEMENT, i);
-		hid_t element_id = H5Gopen(elements_id, path, H5P_DEFAULT);
+        hid_t element_id = H5Gopen(elements_id, path, H5P_DEFAULT);
         loadedElement = ius3DTransducerElementLoad(element_id);
         if(loadedElement == IU3DTE_INVALID)
         {
@@ -220,9 +220,9 @@ int ius3DTransducerElementListSave
         if(sourceElement == IU3DTE_INVALID) continue;
 
         sprintf(path, IUS_INPUTFILE_PATH_TRANSDUCER_ELEMENT, i);
-		hid_t singleElementId = H5Gcreate(group_id, path, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+        hid_t singleElementId = H5Gcreate(group_id, path, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
         status = ius3DTransducerElementSave(sourceElement, singleElementId);
-		H5Gclose(singleElementId);
+        H5Gclose(singleElementId);
 
         if(status != IUS_E_OK) break;
     }

@@ -4,15 +4,9 @@
 #include <stdlib.h>
 
 #include <ius.h>
+#include <ius2DTransducerElementListPrivate.h>
 #include <ius2DTransducerElementPrivate.h>
 
-// ADT
-struct Ius2DTransducerElementList
-{
-    int numElements;
-    iu2dte_t *   p2DTransducerElements ;
-    IUS_BOOL deepDelete;
-} ;
 
 // ADT
 iu2dtel_t ius2DTransducerElementListCreate
@@ -146,7 +140,7 @@ IUS_BOOL ius2DTransducerElementListFull
 
 iu2dtel_t ius2DTransducerElementListLoad
 (
-	hid_t handle
+    hid_t handle
 )
 {
     char path[IUS_MAX_HDF5_PATH];
@@ -155,7 +149,7 @@ iu2dtel_t ius2DTransducerElementListLoad
     if(handle == H5I_INVALID_HID) return IU2DTEL_INVALID;
 
     IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IU2DTEL_INVALID);
-	hid_t elements_id = H5Gopen(handle, IUS_INPUTFILE_PATH_TRANSDUCER_ELEMENTLIST, H5P_DEFAULT);
+    hid_t elements_id = H5Gopen(handle, IUS_INPUTFILE_PATH_TRANSDUCER_ELEMENTLIST, H5P_DEFAULT);
     IUS_ERR_EVAL_N_RETURN(elements_id == H5I_INVALID_HID, IU2DTEL_INVALID);
 
     int status = iusHdf5ReadInt(elements_id, IUS_INPUTFILE_PATH_TRANSDUCER_ELEMENTLIST_SIZE, &(size));
@@ -167,20 +161,20 @@ iu2dtel_t ius2DTransducerElementListLoad
     for (i=0;i < size;i++)
     {
         sprintf(path, IUS_INPUTFILE_PATH_TRANSDUCER_ELEMENT, i);
-		hid_t element_single_id = H5Gopen(elements_id, path, H5P_DEFAULT);
+        hid_t element_single_id = H5Gopen(elements_id, path, H5P_DEFAULT);
         loadedElement = ius2DTransducerElementLoad(element_single_id);
         if(loadedElement == IU2DTE_INVALID)
         {
             status = IUS_ERR_VALUE;
             break;
         }
-		H5Gclose(element_single_id);
+        H5Gclose(element_single_id);
         status = ius2DTransducerElementListSet(elementList,loadedElement, i);
         if( status == IUS_ERR_VALUE )
             break;
     }
 
-	H5Gclose(elements_id);
+    H5Gclose(elements_id);
     elementList->deepDelete = IUS_TRUE;
     if( status == IUS_ERR_VALUE )
     {
@@ -210,8 +204,8 @@ int ius2DTransducerElementListSave
     }
 
     iu2dte_t sourceElement;
-	hid_t elements_id = H5Gcreate(handle, IUS_INPUTFILE_PATH_TRANSDUCER_ELEMENTLIST, 
-							H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+    hid_t elements_id = H5Gcreate(handle, IUS_INPUTFILE_PATH_TRANSDUCER_ELEMENTLIST, 
+                            H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
     status |= iusHdf5WriteInt(elements_id, IUS_INPUTFILE_PATH_TRANSDUCER_ELEMENTLIST_SIZE, &(list->numElements), 1);
 
     // iterate over source list elements and save'em
@@ -221,11 +215,11 @@ int ius2DTransducerElementListSave
         if(sourceElement == IU2DTE_INVALID) continue;
 
         sprintf(path, IUS_INPUTFILE_PATH_TRANSDUCER_ELEMENT, i);
-		hid_t element_single_id = H5Gcreate(elements_id, path, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+        hid_t element_single_id = H5Gcreate(elements_id, path, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
         status = ius2DTransducerElementSave(sourceElement, element_single_id);
-		H5Gclose(element_single_id);
+        H5Gclose(element_single_id);
         if(status != IUS_E_OK) break;
     }
-	H5Gclose(elements_id);
+    H5Gclose(elements_id);
     return status;
 }

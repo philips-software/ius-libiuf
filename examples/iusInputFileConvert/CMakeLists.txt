@@ -16,7 +16,7 @@ target_link_libraries(iusv2tov3
 target_include_directories(iusv2tov3 PUBLIC
         ${CMAKE_CURRENT_LIST_DIR}
         ${CMAKE_CURRENT_LIST_DIR}/include
-        ${CMAKE_SOURCE_DIR}/include
+        ${CMAKE_SOURCE_DIR}/library/include
         ${IUS_INCLUDE_DIR}
         )
 

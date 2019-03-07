@@ -1,7 +1,7 @@
 //
 // Created by Ruijzendaal on 16/04/2018.
 //
-#include <include/ius.h>
+#include <ius.h>
 
 #define SOURCE_LABEL "V2_Source"
 #define PULSE_LABEL "V2_Pulse"
@@ -417,8 +417,7 @@ static iutad_t extractTransmitApodizationDict(hid_t inputFile)
 	{
 		char pulseLabel[32];
 		float *apod = apodizations + i*numChannels;
-		iuta_t transmitApodization = iusTransmitApodizationCreate(numChannels);
-		status |= iusTransmitApodizationSetApodization(transmitApodization, apod);
+		iuta_t transmitApodization = iusTransmitApodizationCreate(apod, numChannels);
 		sprintf(pulseLabel, "pulse[%d]", i);
 		status |= iusTransmitApodizationDictSet(transmitApodizationDict, pulseLabel, transmitApodization);
 	}

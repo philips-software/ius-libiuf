@@ -109,6 +109,20 @@ int iusErrorSetStream
     FILE *stream                    ///< Valid FILE stream like from fopen or constants like stderr/stdout
 );
 
+/** \brief Error messages wil be printed to the file with name pFileName.
+* \return Returns #IUS_E_OK when successful or #IUS_ERR_VALUE in case of an error.
+*/
+int iusErrorSetStreamToFile
+(
+    const char * pFileName
+);
+
+/** \brief Closes the filestream opened with iusErrorSetStreamToFile() and resets the stream to stderr.
+* \return Returns #IUS_E_OK when successful or #IUS_ERR_VALUE in case of an error.
+*/
+int iusErrorCloseFileStream
+(
+);
 
 /** \brief Error messages wil printed when encountered by the library calls.
 * \return Returns #IUS_E_OK when successful or #IUS_ERR_VALUE in case of an error.

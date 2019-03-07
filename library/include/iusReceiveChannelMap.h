@@ -101,7 +101,7 @@ int iusReceiveChannelMapSetMap
  */
 int iusReceiveChannelMapSetStartDelay
 (
-	iurcm_t ch, ///< the #IusReceiveChannelMap of interest
+	iurcm_t channelMap, ///< the #IusReceiveChannelMap of interest
     int index,                 ///< the channel index
     float delay                ///< the channel delay in seconds
 );

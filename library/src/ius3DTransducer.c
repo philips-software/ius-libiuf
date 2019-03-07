@@ -10,13 +10,10 @@
 #include <iusTransducerPrivate.h>
 #include <ius3DTransducerElementListPrivate.h>
 
-struct Ius3DTransducer
-{
-  struct IusTransducer     baseTransducer;
-  iu3dtel_t                elements;         /**< an array of numElements transducer element (position, angle, size) */
-}  ;
+#include <iusTransducerADT.h>
+#include <ius3DTransducerADT.h>
+#include <ius3DTransducerElementListPrivate.h>
 
-// ADT
 iu3dt_t ius3DTransducerCreate
 (
   char *name,
@@ -115,6 +112,33 @@ int ius3DTransducerGetNumElements
     return ius3DTransducerElementListGetSize(transducer->elements);
 }
 
+IusTransducerShape ius3DTransducerGetShape(
+	iu3dt_t transducer
+)
+{
+	IUS_ERR_CHECK_NULL_N_RETURN(transducer, -1);
+	return transducer->baseTransducer.shape;
+}
+
+char *ius3DTransducerGetName
+(
+	iu3dt_t transducer
+)
+{
+	IUS_ERR_CHECK_NULL_N_RETURN(transducer, NULL);
+	return transducer->baseTransducer.pTransducerName;
+}
+
+float ius3DTransducerGetCenterFrequency
+(
+	iu3dt_t transducer
+)
+{
+	IUS_ERR_CHECK_NULL_N_RETURN(transducer, 0.0f);
+	return transducer->baseTransducer.centerFrequency;
+}
+
+
 // setters
 int ius3DTransducerSetElement
 (
@@ -157,6 +181,7 @@ herr_t ius3DTransducerSave
         return status;
 
     status = ius3DTransducerElementListSave(transducer->elements, handle);
+//    status |= H5Gclose(handle);
     return status;
 }
 

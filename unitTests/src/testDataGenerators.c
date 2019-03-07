@@ -3,7 +3,7 @@
 //
 #include <unity.h>
 
-#include <include/ius.h>
+#include <ius.h>
 #include <testDataGenerators.h>
 
 
@@ -22,13 +22,16 @@ void dgFillData
 )
 {
     int i;
-    float *pData = iusDataGetPointer(data);
     int numSamples = iusDataGetSize(data);
+    double *doubletjes = malloc(numSamples * sizeof(double));
 
     for (i=0; i<numSamples; i++)
     {
-        pData[i] = value;
+        doubletjes[i] = (float) value;
     }
+
+    iusDataFill(data, doubletjes, numSamples);
+    free(doubletjes);
 }
 
 iurs_t dgGenerateReceiveSettings
@@ -141,7 +144,7 @@ int dgDeleteIqFile
 	status |= iusReceiveChannelMapDictDeepDelete(iusIqFileGetReceiveChannelMapDict(iusIqFile));
 	status |= iusTransducerDeepDelete(iusIqFileGetTransducer(iusIqFile));
 	status |= iusTransmitApodizationDictDeepDelete(iusIqFileGetTransmitApodizationDict(iusIqFile));
-	status |= iusIqPatternListDictDeepDelete(iusIqFileGetPatternListDict(iusIqFile));
+	status |= iusIqPatternListDictDeepDelete(iusIqFileGetIqPatternListDict(iusIqFile));
 	status |= iusPulseDictDeepDelete(iusIqFileGetPulseDict(iusIqFile));
 	status |= iusSourceDictDeepDelete(iusIqFileGetSourceDict(iusIqFile));
 	status |= iusAcquisitionDelete(iusIqFileGetAcquisition(iusIqFile));
@@ -334,7 +337,7 @@ int dgIqFileAddGeneratedData
 	status = iusIqFileSetDemodulationDict(iqFile, demodulationDict);
 	TEST_ASSERT(status == IUS_E_OK);
 
-	iuiqpald_t patternListDict = iusIqFileGetPatternListDict(iqFile);
+	iuiqpald_t patternListDict = iusIqFileGetIqPatternListDict(iqFile);
 	iuiqpal_t patternList = dgGenerateIqPatternList(8, 0.08f, demodulationDict, receiveChannelMapDict);
 	iusIqPatternListDictSet(patternListDict, label, patternList);
 	status = iusIqFileSetPatternListDict(iqFile, patternListDict);
@@ -615,11 +618,9 @@ iutad_t dgGenerateTransmitApodizationDict
 	TEST_ASSERT(dict != IUTAD_INVALID);
 
 	// fill
-	iuta_t transmitApodization = iusTransmitApodizationCreate(numElements);
+	iuta_t transmitApodization = iusTransmitApodizationCreate(apodizaton, numElements);
 	TEST_ASSERT(transmitApodization != NULL);
 
-	status = iusTransmitApodizationSetApodization(transmitApodization, apodizaton);
-	TEST_ASSERT(status == IUS_E_OK);
 
 	status = iusTransmitApodizationDictSet(dict, label, transmitApodization);
 	TEST_ASSERT(status == IUS_E_OK);

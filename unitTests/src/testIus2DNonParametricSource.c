@@ -6,8 +6,8 @@
 #include <unity_internals.h>
 #include <unity_fixture.h>
 
-#include <include/ius.h>
-#include "include/ius2DNonParametricSourcePrivate.h"
+#include <ius.h>
+#include <ius2DNonParametricSourcePrivate.h>
 
 static char *pErrorFilename = "Ius2DNonParametricSource.errlog";
 static FILE *fpErrorLogging = NULL;

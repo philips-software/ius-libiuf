@@ -5,7 +5,7 @@
 #ifndef IUSLIBRARY_IUSHLRECEIVECHANNELMAPDICTIMP_H
 #define IUSLIBRARY_IUSHLRECEIVECHANNELMAPDICTIMP_H
 
-#include <include/iusReceiveChannelMapDict.h>
+#include <iusReceiveChannelMapDict.h>
 
 herr_t iusReceiveChannelMapDictSave
 (

@@ -44,5 +44,13 @@ float *iusDataGetPointer
     iud_t data
 );
 
+int iusDataFill
+(
+    iud_t data,
+    double *input,
+    int length
+);
+
+
 #endif //IUSLIBRARY_IUSDATA_H
 

@@ -19,4 +19,6 @@ cd $BuildFolder
 $CMAKE -DCMAKE_BUILD_TYPE=Debug ../..
 $CMAKE --build .
 $CTEST --verbose
+cd -
 
+$ScriptPath/py_unittests.sh

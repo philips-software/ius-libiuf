@@ -3,3 +3,15 @@ dist/
 .idea/
 cmake-build*/
 public/
+*.html
+*.js
+Testing/
+dox/html/search/*
+dox/html/*\.*
+*__pycache__*
+*.so
+*_wrap.*
+python/ius.py
+python/test.py
+.scannerwork/*
+*.pyc

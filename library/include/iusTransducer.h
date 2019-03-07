@@ -12,7 +12,7 @@ typedef IusTransducer *iut_t;
 
 //iut_t iusTransducerCreate
 //(
-//    char *name,
+//    const char *name,
 //    IusTransducerShape shape,
 //    float centerFrequency
 //);

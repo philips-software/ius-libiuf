@@ -2,7 +2,7 @@
 #ifndef IUSLIBRARY_IUSHISTORYNODELIST_H
 #define IUSLIBRARY_IUSHISTORYNODELIST_H
 
-#include <include/iusHistoryNode.h>
+#include <iusHistoryNode.h>
 
 /** \brief Create an empty list of #IusHistoryNode for \p numHistoryNode nodes 
  * \return Returns the allocated list or #IUHNL_INVALID in case of an invalid argument 

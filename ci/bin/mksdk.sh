@@ -60,7 +60,6 @@ cd ${DocSource}
 doxygen 2>&1 | grep -iv Warning
 if [[ -d html ]]
 then
-    mv html ${DocFolder}
-    cp -r img ${DocFolder}
+    tar cfz - html | (cd ${DocFolder}; tar xfz -)
 fi
 echo === Done

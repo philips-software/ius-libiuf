@@ -33,7 +33,7 @@ iuiqf_t iusIqFileCreate
     const char *filename  ///< The filename for the file instance.
 );
 
-/** \brief Creates a datablock for a frame for the acquisition with the name \p label.
+/** \brief Creates a datablock for the I or Q Component of a frame for the acquisition with the name \p label. Typically called on both components.
  *  \return Returns an allocated memory block of a "label"-frame or IUD_INVALID in case of an error.
  */
 iud_t iusIqFileFrameCreate
@@ -42,8 +42,9 @@ iud_t iusIqFileFrameCreate
     char *label             ///< The acquisition type
 );
 
+
 /** \brief Creates a datablock for a response (numSamplesPerLine * numChannels) for the acquisition with
- * the name \p label.
+ * the name \p label. Typically called on both components.
  * \return Returns an allocated memory block of a "label"-response or IUD_INVALID in case of an error.
  */
 iud_t iusIqFileResponseCreate
@@ -52,8 +53,8 @@ iud_t iusIqFileResponseCreate
     char *label             ///< The acquisition type
 );
 
-/** \brief Creates a datablock for a single channel (i.e. numSamplesPerLine floats) for the acquisition with
- * the name \p label.
+/** \brief Creates a datablock for an single I channel (i.e. numSamplesPerLine floats) for the acquisition with
+ * the name \p label. Typically called on both components.
  * \return Returns an allocated memory block of a "label"-channel or IUD_INVALID in case of an error.
  */
 iud_t iusIqFileChannelCreate
@@ -115,7 +116,7 @@ iufl_t iusIqFileGetFrameList
 /** \brief Gets the #IusPatternListDict object from an iqFile.
  * \return Returns the requested #IusPatternListDict or NULL in case of an error.
  */
-iuiqpald_t iusIqFileGetPatternListDict
+iuiqpald_t iusIqFileGetIqPatternListDict
 (
 	iuiqf_t iqFile       ///< The #IusIqFile of interest
 );
@@ -228,7 +229,7 @@ int iusIqFileSetFrameList
 int iusIqFileSetPatternListDict
 (
 	iuiqf_t iqFile,          ///< The #IusIqFile of interest
-	iuiqpald_t patternListDict   ///< The #IusPatternListDict to set
+	iuiqpald_t iqPatternListDict   ///< The #IusPatternListDict to set
 );
 
 /** \brief Sets the pulseDict of an iqFile.
@@ -301,6 +302,7 @@ int iusIqFileChannelSave
 (
     iuiqf_t iqFile,                       ///< The #IusIqFile of interest
     char *label,                            ///< The label of the patternList
+    IusComponent component,                 ///< Is it an I or a Q component?
     iud_t channel,                          ///< The channel data to save
     iuo_t channel_offset                    ///< The offsets in the datablock
 );
@@ -312,6 +314,7 @@ int iusIqFileChannelLoad
 (
     iuiqf_t iqFile,                       ///< The #IusIqFile of interest
     char *label,                            ///< The label of the patternList
+    IusComponent component,                 ///< Is it an I or a Q component?
     iud_t channel,                          ///< The channel data block to be filled
     iuo_t channel_offset                    ///< The offset in the datablock
 );
@@ -323,6 +326,7 @@ int iusIqFileResponseSave
 (
 	iuiqf_t iqFile,                       ///< The #IusIqFile of interest
 	char *label,                            ///< The label of the patternList
+    IusComponent component,                 ///< Is it an I or a Q component?
 	iud_t response,                         ///< the response data to save
 	iuo_t response_offset                   ///< The offset in the datablock
 );
@@ -334,6 +338,7 @@ int iusIqFileResponseLoad
 (
     iuiqf_t iqFile,                       ///< The #IusIqFile of interest
     char *label,                            ///< The label of the patternList
+    IusComponent component,                 ///< Is it an I or a Q component?
     iud_t response,                         ///< The response data to load
     iuo_t response_offset                   ///< The offset in the datablock
 );
@@ -343,10 +348,11 @@ int iusIqFileResponseLoad
  */
 int iusIqFileFrameSave
 (
-	iuiqf_t iqFile,                       ///< The #IusIqFile of interest
+	iuiqf_t iqFile,                         ///< The #IusIqFile of interest
 	char *label,                            ///< The label of the patternList
+    IusComponent component,                 ///< Is it an I or a Q component?
 	iud_t frame,                            ///< The frame of data
-	iuo_t frame_offset                            ///< The offset in the datablock
+	iuo_t frame_offset                      ///< The offset in the datablock
 );
 
 /** \brief Loads a frame of data to an iqFile.
@@ -356,6 +362,7 @@ int iusIqFileFrameLoad
 (
 	iuiqf_t iqFile,                       ///< The #IusIqFile of interest
 	char *label,                            ///< The label of the patternList
+    IusComponent component,                 ///< Is it an I or a Q component?
 	iud_t frame,                            ///< The frame of data
 	iuo_t frame_offset                      ///< The offset in the datablock
 );

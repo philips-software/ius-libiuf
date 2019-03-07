@@ -53,11 +53,10 @@ TEST(IusTransmitApodizationDict, testIusTransmitApodizationDictSetGet)
 	float ones[8] = {1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f};
 	int status;
 	char *pObjLabel = "ones";
-	iuta_t obj = iusTransmitApodizationCreate(numElements);
+	iuta_t obj = iusTransmitApodizationCreate(ones, numElements);
 
 	iutad_t dict = iusTransmitApodizationDictCreate();
-	status = iusTransmitApodizationSetApodization(obj, ones);
-	status |= iusTransmitApodizationDictSet(dict, pObjLabel, obj);
+	status = iusTransmitApodizationDictSet(dict, pObjLabel, obj);
 	TEST_ASSERT(status == IUS_E_OK);
 
 
@@ -88,10 +87,9 @@ TEST(IusTransmitApodizationDict, testIusTransmitApodizationDictKeys)
     float ones[8] = {1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f};
     int status;
     char *labels[] = { "one" , "two" , "three", "four" , "five"};
-    iuta_t obj = iusTransmitApodizationCreate(numElements);
+    iuta_t obj = iusTransmitApodizationCreate(ones, numElements);
 
     iutad_t dict = iusTransmitApodizationDictCreate();
-    status = iusTransmitApodizationSetApodization(obj, ones);
 
     // Fill dict
     int i;
@@ -133,17 +131,15 @@ TEST(IusTransmitApodizationDict, testIusTransmitApodizationDictCompare)
 	float ones[8] = { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f};
 	float ramp[8] = { 0.1f, 0.2f, 0.3f, 0.4f, 0.4f, 0.3f, 0.2f, 0.1f };
 	int     status;
-	iuta_t transmitApodization = iusTransmitApodizationCreate(numElements);
-	iuta_t otherTransmitApodization = iusTransmitApodizationCreate(numElements);
+	iuta_t transmitApodization = iusTransmitApodizationCreate(ones, numElements);
+	iuta_t otherTransmitApodization = iusTransmitApodizationCreate(ramp, numElements);
 
 	iutad_t dict = iusTransmitApodizationDictCreate();
-	status = iusTransmitApodizationSetApodization(transmitApodization, ones);
-	status |= iusTransmitApodizationDictSet(dict, "ones", transmitApodization);
+	status = iusTransmitApodizationDictSet(dict, "ones", transmitApodization);
 	TEST_ASSERT(status == IUS_E_OK);
 
 	iutad_t notherDict = iusTransmitApodizationDictCreate();
-	status = iusTransmitApodizationSetApodization(otherTransmitApodization, ramp);
-	status |= iusTransmitApodizationDictSet(dict, "triangle", transmitApodization);
+	status = iusTransmitApodizationDictSet(dict, "triangle", transmitApodization);
     TEST_ASSERT(status == IUS_E_OK);
 
 	TEST_ASSERT(dict != IUTAD_INVALID);
@@ -176,11 +172,10 @@ TEST(IusTransmitApodizationDict, testIusTransmitApodizationDictSerialization)
 	float ones[8] = { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f };
 
 	// create and save
-	iuta_t obj = iusTransmitApodizationCreate(numElements);
-	int status = iusTransmitApodizationSetApodization(obj, ones);
+	iuta_t obj = iusTransmitApodizationCreate(ones, numElements);
 
 	iutad_t transmitApodizationDict = iusTransmitApodizationDictCreate();
-	status |= iusTransmitApodizationDictSet(transmitApodizationDict, label, obj);
+	int status = iusTransmitApodizationDictSet(transmitApodizationDict, label, obj);
     TEST_ASSERT(status == IUS_E_OK);
 
 	hid_t handle = H5Fcreate(filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);

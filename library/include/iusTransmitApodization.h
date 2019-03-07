@@ -17,10 +17,14 @@ typedef  IusTransmitApodization    * iuta_t;
 #define  IUTA_INVALID (iuta_t) NULL
 
 /** \brief Construct an #IusTransmitApodization of size \p numElements.
+ *
+ *   The attenuation values are checked that they are within the allowed range [0.0,1.0]. The \p apodization
+ *    should contain \p numElements float values.
 */
 iuta_t  iusTransmitApodizationCreate
 (
-	int numElements /// The number of ekements that the transducer has. 
+    float *apodization,           ///< The transmit apodization values (numElements items)
+	int numElements              /// The number of ekements that the transducer has.
 );
 
 /** \brief Delete a #IusTransmitApodization of size numElements
@@ -70,20 +74,6 @@ int iusTransmitApodizationSetElement
 	iuta_t transmitApodization,  ///< The transmit apodization of interest
 	int idx,                     ///< The index of the vlaue to be set
 	float attenuation            ///< The attenuation value to set.
-);
-
-
-/** \brief Set the transmit apodization function.
- *   
- *   The attenuation values are checked that they are within the allowed range [0.0,1.0]. The \p apodization  
- *    should contain \p numElements float values. 
- *   
- *   \return Returns #IUS_E_OK in case the elements were set, #IUS_ERR_VALUE otherwise.
- */ 
-int iusTransmitApodizationSetApodization
-(
-	iuta_t transmitApodization,   ///< The transmit apodization of interest
-	float *apodization            ///< The transmit apodization values (numElements items)
 );
 
 #endif //IUSLIBRARY_IUSHLRECEIVECHANNELMAP_H

@@ -736,7 +736,7 @@ static void fillChunkDims
     }
 }
 
-hid_t iusInputFileGetWriteSpace
+static hid_t iusInputFileGetWriteSpace
 (
     iuif_t inputFile,
     char *label,

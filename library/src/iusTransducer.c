@@ -6,6 +6,7 @@
 #include <stdlib.h>
 
 #include <ius.h>
+#include <iusTransducerADT.h>
 #include <iusTransducerPrivate.h>
 #include <ius2DTransducerPrivate.h>
 #include <ius3DTransducerPrivate.h>
@@ -140,7 +141,12 @@ float iusTransducerGetCenterFrequency
 )
 {
     IUS_ERR_CHECK_NULL_N_RETURN(transducer, NAN);
-    return transducer->centerFrequency;
+    if (transducer->type == IUS_2D_SHAPE)
+      return ius2DTransducerGetCenterFrequency((iu2dt_t)transducer);
+    if (transducer->type == IUS_3D_SHAPE)
+        return ius3DTransducerGetCenterFrequency((iu3dt_t)transducer);
+    IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE, "invalid transducer transducer shape: '%d'", transducer->type);
+    return 0.0f;
 }
 
 int iusTransducerGetNumElements
@@ -151,7 +157,6 @@ int iusTransducerGetNumElements
     IUS_ERR_CHECK_NULL_N_RETURN(transducer, -1);
     if( transducer->type == IUS_2D_SHAPE )
         return ius2DTransducerGetNumElements((iu2dt_t)transducer);
-
     if( transducer->type == IUS_3D_SHAPE )
         return ius3DTransducerGetNumElements((iu3dt_t)transducer);
 
@@ -165,7 +170,12 @@ char *iusTransducerGetName
 )
 {
     IUS_ERR_CHECK_NULL_N_RETURN(transducer, NULL);
-    return transducer->pTransducerName;
+    if (transducer->type == IUS_2D_SHAPE)
+        return ius2DTransducerGetName((iu2dt_t)transducer);
+    if (transducer->type == IUS_3D_SHAPE)
+        return ius3DTransducerGetName((iu3dt_t)transducer);
+    IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE, "invalid transducer transducer shape: '%d'", transducer->type);
+    return NULL;
 }
 
 IusTransducerShape iusTransducerGetShape
@@ -174,7 +184,13 @@ IusTransducerShape iusTransducerGetShape
 )
 {
     IUS_ERR_CHECK_NULL_N_RETURN(transducer, IUS_INVALID_TRANSDUCER_SHAPE);
-    return transducer->shape;
+    if (transducer->type == IUS_2D_SHAPE)
+        return ius2DTransducerGetShape((iu2dt_t)transducer);
+    if (transducer->type == IUS_3D_SHAPE)
+        return ius3DTransducerGetShape((iu3dt_t)transducer);
+    
+    IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE, "invalid transducer transducer shape: '%d'", transducer->type);
+    return -1;
 }
 
 iute_t iusTransducerGetElement
@@ -217,19 +233,20 @@ static herr_t iusBaseTransducerSaveShape(hid_t group_id,
                                            const char *pVariableString,
                                            IusTransducerShape shape)
 {
-	herr_t status = 0;
-	hsize_t dims[1] = { 1 };
-	/* Based on a native signed short */
-	hid_t hdf_shapeType = H5Tcreate(H5T_ENUM, sizeof(short));
-	short enumValue;
-	status |= H5Tenum_insert(hdf_shapeType, TRANSDUCER_SHAPE_LINE, (enumValue = IUS_LINE, &enumValue));
-	status |= H5Tenum_insert(hdf_shapeType, TRANSDUCER_SHAPE_CIRCLE, (enumValue = IUS_CIRCLE, &enumValue));
-	status |= H5Tenum_insert(hdf_shapeType, TRANSDUCER_SHAPE_PLANE, (enumValue = IUS_PLANE, &enumValue));
-	status |= H5Tenum_insert(hdf_shapeType, TRANSDUCER_SHAPE_CYLINDER, (enumValue = IUS_CYLINDER, &enumValue));
-	status |= H5Tenum_insert(hdf_shapeType, TRANSDUCER_SHAPE_SPHERE, (enumValue = IUS_SPHERE, &enumValue));
-	enumValue = shape;
-	status |= H5LTmake_dataset(group_id, pVariableString, 1, dims, hdf_shapeType, &enumValue);
-	return status;
+    herr_t status = 0;
+    hsize_t dims[1] = { 1 };
+    /* Based on a native signed short */
+    hid_t hdf_shapeType = H5Tcreate(H5T_ENUM, sizeof(short));
+    short enumValue;
+    status |= H5Tenum_insert(hdf_shapeType, TRANSDUCER_SHAPE_LINE, (enumValue = IUS_LINE, &enumValue));
+    status |= H5Tenum_insert(hdf_shapeType, TRANSDUCER_SHAPE_CIRCLE, (enumValue = IUS_CIRCLE, &enumValue));
+    status |= H5Tenum_insert(hdf_shapeType, TRANSDUCER_SHAPE_PLANE, (enumValue = IUS_PLANE, &enumValue));
+    status |= H5Tenum_insert(hdf_shapeType, TRANSDUCER_SHAPE_CYLINDER, (enumValue = IUS_CYLINDER, &enumValue));
+    status |= H5Tenum_insert(hdf_shapeType, TRANSDUCER_SHAPE_SPHERE, (enumValue = IUS_SPHERE, &enumValue));
+    enumValue = shape;
+    status |= H5LTmake_dataset(group_id, pVariableString, 1, dims, hdf_shapeType, &enumValue);
+    status |= H5Tclose(hdf_shapeType);
+    return status;
 }
 
 herr_t iusBaseTransducerSave
@@ -238,19 +255,19 @@ herr_t iusBaseTransducerSave
     hid_t handle
 )
 {
-	herr_t status = IUS_E_OK;
+    herr_t status = IUS_E_OK;
     IUS_ERR_CHECK_NULL_N_RETURN(transducer, IUS_ERR_VALUE);
     IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUS_ERR_VALUE);
-	status |= iusBaseTransducerSaveShape(handle, IUS_INPUTFILE_PATH_TRANSDUCER_SHAPE, transducer->shape);
-	status |= iusHdf5WriteString(handle, IUS_INPUTFILE_PATH_TRANSDUCER_NAME, transducer->pTransducerName);
-	status |= iusHdf5WriteFloat(handle, IUS_INPUTFILE_PATH_TRANSDUCER_CENTERFREQUENCY, &(transducer->centerFrequency), 1);
+    status |= iusBaseTransducerSaveShape(handle, IUS_INPUTFILE_PATH_TRANSDUCER_SHAPE, transducer->shape);
+    status |= iusHdf5WriteString(handle, IUS_INPUTFILE_PATH_TRANSDUCER_NAME, transducer->pTransducerName);
+    status |= iusHdf5WriteFloat(handle, IUS_INPUTFILE_PATH_TRANSDUCER_CENTERFREQUENCY, &(transducer->centerFrequency), 1);
 
 
-	if (status != IUS_E_OK)
+    if (status != IUS_E_OK)
     {
         IUS_ERROR_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "during write of shape, name or center frequency of transducer");
     }
-	return status;
+    return status;
 }
 
 
@@ -260,14 +277,14 @@ herr_t iusTransducerSave
     hid_t handle
 )
 {
-	/* write the /Transducer data in "Transducer" */
-	hid_t transducer_id;
+    /* write the /Transducer data in "Transducer" */
+    hid_t transducer_id;
     herr_t status = H5Gget_objinfo(handle, IUS_INPUTFILE_PATH_TRANSDUCER, 0, NULL);
     IUS_ERR_CHECK_NULL_N_RETURN(transducer, IUS_ERR_VALUE);
     if (status != 0) // the group does not exist yet
-		transducer_id = H5Gcreate(handle, IUS_INPUTFILE_PATH_TRANSDUCER, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-	else
-		transducer_id = H5Gopen(handle, IUS_INPUTFILE_PATH_TRANSDUCER, H5P_DEFAULT);
+        transducer_id = H5Gcreate(handle, IUS_INPUTFILE_PATH_TRANSDUCER, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+    else
+        transducer_id = H5Gopen(handle, IUS_INPUTFILE_PATH_TRANSDUCER, H5P_DEFAULT);
     if (transducer_id == H5I_INVALID_HID)
     {
         IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "Error getting handle for path: %s", IUS_INPUTFILE_PATH_TRANSDUCER);
@@ -275,13 +292,24 @@ herr_t iusTransducerSave
     }
 
     if (transducer->type == IUS_3D_SHAPE)
-		return ius3DTransducerSave((Ius3DTransducer *) transducer, transducer_id);
+    {
+        status = ius3DTransducerSave((Ius3DTransducer *) transducer, transducer_id);
+        status |= H5Gclose(transducer_id);
+        return status;
+    }
 
-	if (transducer->type == IUS_2D_SHAPE)
-		return ius2DTransducerSave((Ius2DTransducer *) transducer, transducer_id);
+    if (transducer->type == IUS_2D_SHAPE)
+    {
+        status = ius2DTransducerSave((Ius2DTransducer *) transducer, transducer_id);
+        status |= H5Gclose(transducer_id);
+        return status;
+    }
 
     IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_VALUE, "invalid transducer transducer shape: '%d'", transducer->type );
-	return IUS_ERR_VALUE;
+
+    /* Close must be called in the transducer type specific save function*/
+    H5Gclose(transducer_id);
+    return IUS_ERR_VALUE;
 }
 
 static int iusTransducerLoadShape
@@ -302,6 +330,7 @@ static int iusTransducerLoadShape
     status |= H5Tenum_insert(hdf_shapeType, TRANSDUCER_SHAPE_SPHERE, (enumValue = IUS_SPHERE, &enumValue));
     *pShape = 0;
     status |= H5LTread_dataset( handle, pVariableString , hdf_shapeType, pShape );
+    status |= H5Tclose(hdf_shapeType);
     return status;
 }
 
@@ -334,24 +363,24 @@ iut_t iusTransducerLoad
     hid_t handle
 )
 {
-	int status = 0;
-	IusTransducerShape shape;
+    int status = 0;
+    IusTransducerShape shape;
 
     IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUT_INVALID);
     iut_t transducer=IUT_INVALID;
-	hid_t group_id = H5Gopen(handle, IUS_INPUTFILE_PATH_TRANSDUCER, H5P_DEFAULT);
+    hid_t group_id = H5Gopen(handle, IUS_INPUTFILE_PATH_TRANSDUCER, H5P_DEFAULT);
 
-	status |= iusTransducerLoadShape(group_id, IUS_INPUTFILE_PATH_TRANSDUCER_SHAPE, &(shape));
-	if (status < 0)
-		return IUT_INVALID;
+    status |= iusTransducerLoadShape(group_id, IUS_INPUTFILE_PATH_TRANSDUCER_SHAPE, &(shape));
+    if (status < 0)
+        return IUT_INVALID;
 
     if( shape == IUS_LINE || shape == IUS_CIRCLE )
         transducer = (iut_t) ius2DTransducerLoad(group_id);
     if( shape == IUS_PLANE || shape == IUS_CYLINDER || shape == IUS_SPHERE)
         transducer = (iut_t) ius3DTransducerLoad(group_id);
-	H5Gclose(group_id);
+    H5Gclose(group_id);
 
-	if( transducer != IUT_INVALID )
+    if( transducer != IUT_INVALID )
     {
         transducer->deepDelete = IUS_TRUE;
     }

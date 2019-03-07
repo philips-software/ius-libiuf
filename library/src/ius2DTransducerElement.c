@@ -12,13 +12,6 @@
 #include <iusPositionPrivate.h>
 #include <iusTransducerElementPrivate.h>
 
-struct Ius2DTransducerElement
-{
-  iu2dp_t   position;
-  float     theta;
-  iu2ds_t   size;
-  IUS_BOOL  deepDelete;
-} ;
 
 // ADT
 iu2dte_t ius2DTransducerElementCreate

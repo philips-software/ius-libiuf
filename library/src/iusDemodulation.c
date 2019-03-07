@@ -7,6 +7,7 @@
 
 #include <ius.h>
 #include <iusFilterPrivate.h>
+#include <iusIqFileStructure.h>
 #include <iusDemodulationPrivate.h>
 #include <iusTGCPrivate.h>
 
@@ -176,23 +177,23 @@ int iusDemodulationSave
     IUS_ERR_CHECK_NULL_N_RETURN(demodulation, IUS_ERR_VALUE);
     IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUS_ERR_VALUE);
 
-	status |= iusHdf5WriteFloat(handle, IUS_IQFILE_PATH_DEMODULATION_SAMPLEFREQUENCY, &(demodulation->sampleFrequency), 1);
-	status |= iusHdf5WriteInt(handle, IUS_IQFILE_PATH_DEMODULATION_NUMSAMPLESPERLINE, &(demodulation->numSamplesPerLine), 1);
-	status |= iusHdf5WriteInt(handle, IUS_IQFILE_PATH_DEMODULATION_METHOD, &method, 1);
+	status |= iusHdf5WriteFloat(handle, IUS_PATH_DEMODULATION_SAMPLEFREQUENCY, &(demodulation->sampleFrequency), 1);
+	status |= iusHdf5WriteInt(handle, IUS_PATH_DEMODULATION_NUMSAMPLESPERLINE, &(demodulation->numSamplesPerLine), 1);
+	status |= iusHdf5WriteInt(handle, IUS_PATH_DEMODULATION_METHOD, &method, 1);
     if (status != 0)
     {
         IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "write failed for %s, %s and/or %s",
-                           IUS_INPUTFILE_PATH_RECEIVESETTINGS_SAMPLEFREQUENCY,
-                           IUS_INPUTFILE_PATH_RECEIVESETTINGS_NUMSAMPLESPERLINE,
-                           IUS_IQFILE_PATH_DEMODULATION_METHOD);
+							IUS_PATH_DEMODULATION_SAMPLEFREQUENCY,
+							IUS_PATH_DEMODULATION_NUMSAMPLESPERLINE,
+                           IUS_PATH_DEMODULATION_METHOD);
         return IUS_ERR_VALUE;
     }
 
-	hid_t tgc_id = H5Gcreate(handle, IUS_IQFILE_PATH_DEMODULATION_TGC, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+	hid_t tgc_id = H5Gcreate(handle, IUS_PATH_DEMODULATION_TGC, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 	status |= iusTGCSave(demodulation->TGC, tgc_id);
 	H5Gclose(tgc_id);
 
-	hid_t filter_id = H5Gcreate(handle, IUS_IQFILE_PATH_DEMODULATION_PREFILTER, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+	hid_t filter_id = H5Gcreate(handle, IUS_PATH_DEMODULATION_PREFILTER, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 	status |= iusFirFilterSave(demodulation->preFilter, filter_id);
 	H5Gclose(filter_id);
 
@@ -214,24 +215,24 @@ iudm_t iusDemodulationLoad
 	iudm_t iusDemodulation;
 
     IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUDM_INVALID);
-	status |= iusHdf5ReadFloat(handle, IUS_IQFILE_PATH_DEMODULATION_SAMPLEFREQUENCY, &sampleFrequency);
-	status |= iusHdf5ReadInt(handle, IUS_IQFILE_PATH_DEMODULATION_NUMSAMPLESPERLINE, &numSamplesPerLine);
-	status |= iusHdf5ReadInt(handle, IUS_IQFILE_PATH_DEMODULATION_METHOD, &method);
+	status |= iusHdf5ReadFloat(handle, IUS_PATH_DEMODULATION_SAMPLEFREQUENCY, &sampleFrequency);
+	status |= iusHdf5ReadInt(handle, IUS_PATH_DEMODULATION_NUMSAMPLESPERLINE, &numSamplesPerLine);
+	status |= iusHdf5ReadInt(handle, IUS_PATH_DEMODULATION_METHOD, &method);
     if (status != 0)
     {
         IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "read failed for %s, %s or %s",
-                           IUS_IQFILE_PATH_DEMODULATION_SAMPLEFREQUENCY,
-                           IUS_IQFILE_PATH_DEMODULATION_NUMSAMPLESPERLINE,
-                           IUS_IQFILE_PATH_DEMODULATION_METHOD);
+                           IUS_PATH_DEMODULATION_SAMPLEFREQUENCY,
+                           IUS_PATH_DEMODULATION_NUMSAMPLESPERLINE,
+                           IUS_PATH_DEMODULATION_METHOD);
         return IUDM_INVALID;
     }
 
-	hid_t tgc_id = H5Gopen(handle, IUS_IQFILE_PATH_DEMODULATION_TGC, H5P_DEFAULT);
+	hid_t tgc_id = H5Gopen(handle, IUS_PATH_DEMODULATION_TGC, H5P_DEFAULT);
 	tgc = iusTGCLoad(tgc_id);
 	H5Gclose(tgc_id);
 	if (tgc == IUTGC_INVALID) return IUDM_INVALID;
 
-	hid_t filter_id = H5Gopen(handle, IUS_IQFILE_PATH_DEMODULATION_PREFILTER, H5P_DEFAULT);
+	hid_t filter_id = H5Gopen(handle, IUS_PATH_DEMODULATION_PREFILTER, H5P_DEFAULT);
 	filter = iusFirFilterLoad(filter_id);
 	H5Gclose(filter_id);
 	if (filter == IUFIRFILTER_INVALID) return IUDM_INVALID;

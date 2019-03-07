@@ -7,23 +7,11 @@
 #include <hashmap.h>
 
 #include <ius.h>
+#include <iusIqFileStructure.h>
 #include <iusDemodulationPrivate.h>
+#include <iusDemodulationDictADT.h>
 
-// ADT
-struct HashableDemodulation
-{
-	iudm_t demodulation;
-	char key[256];
-};
 
-typedef struct HashableDemodulation HashableDemodulation;
-
-struct IusDemodulationDict
-{
-	struct hashmap map;
-	IUS_BOOL deepDelete;
-    char **keys;
-};
 
 /* Declare type-specific blob_hashmap_* functions with this handy macro */
 HASHMAP_FUNCS_CREATE(HashableDemodulation, const char, struct HashableDemodulation)
@@ -37,7 +25,7 @@ iudmd_t iusDemodulationDictCreate
     IUS_ERR_ALLOC_NULL_N_RETURN(dict, IusDemodulationDict, IUDMD_INVALID);
     hashmap_init(&dict->map, hashmap_hash_string, hashmap_compare_string, 0);
     dict->deepDelete = IUS_FALSE;
-    dict->keys = NULL;
+    dict->kys = NULL;
 	return dict;
 }
 
@@ -56,8 +44,8 @@ static void iusDemodulationDictDeleteKeys
     iudmd_t dict
 )
 {
-    if (dict->keys != NULL)
-        free(dict->keys);
+    if (dict->kys != NULL)
+        free(dict->kys);
 }
 
 int iusDemodulationDictDelete
@@ -166,7 +154,7 @@ char **iusDemodulationDictGetKeys
 )
 {
     IUS_ERR_CHECK_NULL_N_RETURN(dict, NULL);
-    return dict->keys;
+    return dict->kys;
 }
 
 static int iusDemodulationDictUpdateKeys
@@ -175,10 +163,10 @@ static int iusDemodulationDictUpdateKeys
 )
 {
     iusDemodulationDictDeleteKeys(dict);
-    // allocate memory for the keys
+    // allocate memory for the kys
     int keyIndex;
     size_t size = iusDemodulationDictGetSize(dict);
-    dict->keys = calloc(size+1, sizeof(char*));
+    dict->kys = calloc(size+1, sizeof(char*));
     IUS_ERR_ALLOC_NULL_N_RETURN(dict, char *, IUS_ERR_VALUE);
 
     struct hashmap_iter *iter;
@@ -188,9 +176,9 @@ static int iusDemodulationDictUpdateKeys
     for (iter = hashmap_iter(&dict->map), keyIndex=0; iter; iter = hashmap_iter_next(&dict->map, iter), keyIndex++)
     {
         iterElement = HashableDemodulation_hashmap_iter_get_data(iter);
-        dict->keys[keyIndex] = iterElement->key;
+        dict->kys[keyIndex] = iterElement->key;
     }
-    dict->keys[keyIndex] = NULL;
+    dict->kys[keyIndex] = NULL;
     return IUS_E_OK;
 }
 
@@ -230,19 +218,19 @@ int iusDemodulationDictSave
     IUS_ERR_CHECK_NULL_N_RETURN(dict, IUS_ERR_VALUE);
     IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUS_ERR_VALUE);
 
-	status = H5Gget_objinfo(handle, IUS_IQFILE_PATH_DEMODULATIONDICT, 0, NULL);
+	status = H5Gget_objinfo(handle, IUS_PATH_DEMODULATIONDICT, 0, NULL);
 	if (status != 0) // the group does not exist yet
 	{
-		group_id = H5Gcreate(handle, IUS_IQFILE_PATH_DEMODULATIONDICT, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+		group_id = H5Gcreate(handle, IUS_PATH_DEMODULATIONDICT, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 	}
 	else
 	{
-		group_id = H5Gopen(handle, IUS_IQFILE_PATH_DEMODULATIONDICT, H5P_DEFAULT);
+		group_id = H5Gopen(handle, IUS_PATH_DEMODULATIONDICT, H5P_DEFAULT);
 	}
 
     if (group_id == H5I_INVALID_HID)
     {
-        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "Error getting handle for path: %s", IUS_IQFILE_PATH_DEMODULATIONDICT);
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "Error getting handle for path: %s", IUS_PATH_DEMODULATIONDICT);
         return IUS_ERR_VALUE;
     }
 
@@ -273,7 +261,7 @@ iudmd_t iusDemodulationDictLoad
 	char member_name[IUS_MAX_HDF5_PATH];
 
     IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUDMD_INVALID);
-	hid_t grpid = H5Gopen(handle, IUS_IQFILE_PATH_DEMODULATIONDICT, H5P_DEFAULT);
+	hid_t grpid = H5Gopen(handle, IUS_PATH_DEMODULATIONDICT, H5P_DEFAULT);
 	if (handle == H5I_INVALID_HID)
 		return NULL;
 
