@@ -52,22 +52,24 @@ TEST(IusIqFile, testIusIqFileCreate)
     // Create file that is already open should result in error
     iuif_t ifh2 = iusIqFileCreate(pFilename);
     TEST_ASSERT(ifh2 == IUIF_INVALID);
+	TEST_ASSERT_EQUAL(1, iusErrorGetCount());
 
     int status = iusIqFileClose(ifh);
     TEST_ASSERT(status == IUS_E_OK);
 
     // Closing file that has already been closed results in error
     status = iusIqFileClose(ifh);
+	TEST_ASSERT_EQUAL(2, iusErrorGetCount());
     iusIqFileDelete(ifh);
     TEST_ASSERT(status != IUS_E_OK);
 
     // Invalid argument should result in error.
     ifh = iusIqFileCreate(pEmptyFilename);
+	TEST_ASSERT_EQUAL(3, iusErrorGetCount());
     TEST_ASSERT(ifh == IUIF_INVALID);
     ifh = iusIqFileCreate(pSpecialCharsFilename);
     TEST_ASSERT(ifh == IUIF_INVALID);
-
-    //TEST_ASSERT_EQUAL(3,iusErrorGetCount()); TDO understand why this is 3?
+    TEST_ASSERT_EQUAL(4,iusErrorGetCount());
     TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
 }
 

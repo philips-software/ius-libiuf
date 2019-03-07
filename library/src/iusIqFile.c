@@ -125,6 +125,7 @@ iuiqf_t iusIqFileCreate
     instanceData->handle = H5Fcreate(filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
 	if (instanceData->handle == H5I_INVALID_HID)
 	{
+		IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_ERROR, IUS_ERR_MIN_HDF5, "unable to create file %s", filename);
         iusIqFileInstanceDelete(instanceData);
 		return IUIQF_INVALID;
 	}
