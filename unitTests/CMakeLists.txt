@@ -7,10 +7,13 @@ include_directories(${CMAKE_CURRENT_LIST_DIR})
 include_directories(${CMAKE_CURRENT_LIST_DIR}/include)
 link_directories(${CMAKE_SOURCE_DIR}/library/${CMAKE_SYSTEM_NAME})
 
+#add_library(dg STATIC
+#        include/dataGenerators.h
+#        src/dataGenerators.c)
+add_subdirectory(dg)
+
 
 add_executable(unitTests
-        include/testDataGenerators.h
-        src/testDataGenerators.c
         src/unitTests.c
         src/testIus2DNonParametricSource.c
         src/testIus2DParametricSource.c
@@ -83,6 +86,7 @@ target_link_libraries(unitTests
         ${HDF5_LIBRARIES}
         ${HDF5_HL_LIBRARIES}
         ${UUID_LIBRARIES}
+        dg
         )
 
 set_property(TARGET unitTests PROPERTY C_STANDARD 99)

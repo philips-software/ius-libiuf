@@ -8,7 +8,7 @@
 #include <ius.h>
 #include <util.h>
 #include <iusReceiveSettingsDictPrivate.h>
-#include <testDataGenerators.h>
+#include <dg/dataGenerators.h>
 
 static char *pErrorFilename = "IusReceiveSettingsDict.errlog";
 static FILE *fpErrorLogging = NULL;

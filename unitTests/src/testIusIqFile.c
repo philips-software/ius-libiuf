@@ -8,7 +8,7 @@
 #include <unity_fixture.h>
 
 #include <ius.h>
-#include <testDataGenerators.h>
+#include <dg/dataGenerators.h>
 
 static const char *pFilename = "IusIqFile.hdf5";
 static const char *pNotherFilename = "AnotherIusIqFile.hdf5";

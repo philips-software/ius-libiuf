@@ -1,5 +1,4 @@
 
-
 //
 // Created by nlv09165 on 11/07/2018.
 //
@@ -8,7 +7,7 @@
 #include <unity_fixture.h>
 
 #include <ius.h>
-#include <testDataGenerators.h>
+#include <dg/dataGenerators.h>
 
 static const char *pFilename = "IusInputFile.hdf5";
 static const char *pNotherFilename = "AnotherIusInputFile.hdf5";

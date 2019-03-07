@@ -4,7 +4,7 @@
 #include <unity.h>
 
 #include <ius.h>
-#include <testDataGenerators.h>
+#include <dg/dataGenerators.h>
 
 
 
@@ -292,23 +292,31 @@ int dgInputFileAddGeneratedData
 )
 {
     // fill
+    printf("Debug %d@%s, Error = %s\n", __LINE__, __func__, iusErrorString());
     iurcmd_t receiveChannelMapDict = iusInputFileGetReceiveChannelMapDict(inputFile);
     iurcm_t receiveChannelMap = dgGenerateReceiveChannelMap(numChannels);
     iusReceiveChannelMapDictSet(receiveChannelMapDict,label,receiveChannelMap);
     int status = iusInputFileSetReceiveChannelMapDict(inputFile, receiveChannelMapDict);
     TEST_ASSERT(status == IUS_E_OK);
 
+    printf("Debug %d@%s, Error = %s\n", __LINE__, __func__, iusErrorString());
     iursd_t receiveSettingsDict = iusInputFileGetReceiveSettingsDict(inputFile);
     iurs_t receiveSettings = dgGenerateReceiveSettings(numSamplesPerLine);
     iusReceiveSettingsDictSet(receiveSettingsDict,label,receiveSettings);
     status = iusInputFileSetReceiveSettingsDict(inputFile, receiveSettingsDict);
     TEST_ASSERT_EQUAL(IUS_E_OK, status);
 
+    printf("Debug %d@%s, Error = %s\n", __LINE__, __func__, iusErrorString());
     iupald_t patternListDict = iusInputFileGetPatternListDict(inputFile);
+    printf("Debug %d@%s, Error = %s\n", __LINE__, __func__, iusErrorString());
     iupal_t patternList = dgGeneratePatternList(8,0.08f,receiveSettingsDict,receiveChannelMapDict);
-    iusPatternListDictSet(patternListDict,label,patternList);
+    printf("Debug %d@%s, Error = %s\n", __LINE__, __func__, iusErrorString());
+//    iusPatternListDictSet(patternListDict,label,patternList);
+    printf("Debug %d@%s, Error = %s\n", __LINE__, __func__, iusErrorString());
     status = iusInputFileSetPatternListDict(inputFile,patternListDict);
+    printf("Debug %d@%s, Error = %s\n", __LINE__, __func__, iusErrorString());
     TEST_ASSERT(status == IUS_E_OK);
+    printf("Debug %d@%s, Error = %s\n", __LINE__, __func__, iusErrorString());
 
     return status;
 }
@@ -374,11 +382,14 @@ iupal_t dgGeneratePatternList
 )
 {
     int i,status;
+    printf("%s -- Debug %d@%s, Error = %s\n", __FILE__, __LINE__, __func__, iusErrorString());
     iupal_t patternList = iusPatternListCreate(numPatterns,receiveSettingsDict,receiveChannelMapDict);
     TEST_ASSERT_NOT_EQUAL(IUPAL_INVALID, patternList);
+    printf("%s -- Debug %d@%s, Error = %s\n", __FILE__, __LINE__, __func__, iusErrorString());
 
     for (i=0;i<numPatterns;i++)
     {
+        printf("%s -- Debug %d@%s, Error = %s\n", __FILE__, __LINE__, __func__, iusErrorString());
         iupa_t pattern = iusPatternCreate((i + 1) * timeInterval,
                                           pPulseLabel,
                                           pSourceLabel,
@@ -388,6 +399,7 @@ iupal_t dgGeneratePatternList
         status = iusPatternListSet(patternList, pattern, i);
         TEST_ASSERT_EQUAL(IUS_E_OK, status);
     }
+    printf("%s -- Debug %d@%s, Error = %s\n", __FILE__, __LINE__, __func__, iusErrorString());
 
     return patternList;
 }
