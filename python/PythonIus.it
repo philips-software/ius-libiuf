@@ -1,6 +1,6 @@
 %{
 #include <ius.h>
-#include <dataGenerators.h>
+#include "dataGenerators.h"
 #include "iusAcquisitionADT.h"
 #include "iusInputFile.h"
 #include "iusHistoryNodeADT.h"
