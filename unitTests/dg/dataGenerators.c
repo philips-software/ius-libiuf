@@ -144,7 +144,7 @@ int dgDeleteIqFile
 	status |= iusReceiveChannelMapDictDeepDelete(iusIqFileGetReceiveChannelMapDict(iusIqFile));
 	status |= iusTransducerDeepDelete(iusIqFileGetTransducer(iusIqFile));
 	status |= iusTransmitApodizationDictDeepDelete(iusIqFileGetTransmitApodizationDict(iusIqFile));
-	status |= iusIqPatternListDictDeepDelete(iusIqFileGetPatternListDict(iusIqFile));
+	status |= iusIqPatternListDictDeepDelete(iusIqFileGetIqPatternListDict(iusIqFile));
 	status |= iusPulseDictDeepDelete(iusIqFileGetPulseDict(iusIqFile));
 	status |= iusSourceDictDeepDelete(iusIqFileGetSourceDict(iusIqFile));
 	status |= iusAcquisitionDelete(iusIqFileGetAcquisition(iusIqFile));
@@ -336,7 +336,7 @@ int dgIqFileAddGeneratedData
 	status = iusIqFileSetDemodulationDict(iqFile, demodulationDict);
 	TEST_ASSERT(status == IUS_E_OK);
 
-	iuiqpald_t patternListDict = iusIqFileGetPatternListDict(iqFile);
+	iuiqpald_t patternListDict = iusIqFileGetIqPatternListDict(iqFile);
 	iuiqpal_t patternList = dgGenerateIqPatternList(8, 0.08f, demodulationDict, receiveChannelMapDict);
 	iusIqPatternListDictSet(patternListDict, label, patternList);
 	status = iusIqFileSetPatternListDict(iqFile, patternListDict);

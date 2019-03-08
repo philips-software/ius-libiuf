@@ -7,6 +7,7 @@
 #include <hashmap.h>
 
 #include <ius.h>
+#include <iusIqFileStructure.h>
 #include <iusDemodulationPrivate.h>
 #include <iusDemodulationDictADT.h>
 
@@ -217,19 +218,19 @@ int iusDemodulationDictSave
     IUS_ERR_CHECK_NULL_N_RETURN(dict, IUS_ERR_VALUE);
     IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUS_ERR_VALUE);
 
-	status = H5Gget_objinfo(handle, IUS_IQFILE_PATH_DEMODULATIONDICT, 0, NULL);
+	status = H5Gget_objinfo(handle, IUS_PATH_DEMODULATIONDICT, 0, NULL);
 	if (status != 0) // the group does not exist yet
 	{
-		group_id = H5Gcreate(handle, IUS_IQFILE_PATH_DEMODULATIONDICT, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+		group_id = H5Gcreate(handle, IUS_PATH_DEMODULATIONDICT, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 	}
 	else
 	{
-		group_id = H5Gopen(handle, IUS_IQFILE_PATH_DEMODULATIONDICT, H5P_DEFAULT);
+		group_id = H5Gopen(handle, IUS_PATH_DEMODULATIONDICT, H5P_DEFAULT);
 	}
 
     if (group_id == H5I_INVALID_HID)
     {
-        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "Error getting handle for path: %s", IUS_IQFILE_PATH_DEMODULATIONDICT);
+        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "Error getting handle for path: %s", IUS_PATH_DEMODULATIONDICT);
         return IUS_ERR_VALUE;
     }
 
@@ -260,7 +261,7 @@ iudmd_t iusDemodulationDictLoad
 	char member_name[IUS_MAX_HDF5_PATH];
 
     IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUDMD_INVALID);
-	hid_t grpid = H5Gopen(handle, IUS_IQFILE_PATH_DEMODULATIONDICT, H5P_DEFAULT);
+	hid_t grpid = H5Gopen(handle, IUS_PATH_DEMODULATIONDICT, H5P_DEFAULT);
 	if (handle == H5I_INVALID_HID)
 		return NULL;
 
