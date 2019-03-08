@@ -11,7 +11,7 @@ if(Python2_FOUND)
     LINK_DIRECTORIES(${Python2_LIBRARY_DIRS})
 
 
-    INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/unittests/dg)
+    INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/unitTests/dg)
     INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/library/include)
     INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/library/private)
     INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/external/hashmap/src)
@@ -36,8 +36,6 @@ if(Python2_FOUND)
             Unity
             dg
             )
-
-    set_property(TARGET ${IUS_TARGET} PROPERTY SWIG_INCLUDE_DIRECTORIES ${CMAKE_SOURCE_DIR}/unittests/dg)
 
 #    if(MSVC)
 #        target_compile_options(${IUS_TARGET} PRIVATE /W4 /WX)
