@@ -15,7 +15,7 @@ building:linux:
   script:
     - ./ci/bin/build.sh
   tags:
-    - docker-mega
+    - docker
   artifacts:
     paths:
       - ./build/*
