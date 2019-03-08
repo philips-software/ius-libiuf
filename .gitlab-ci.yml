@@ -1,5 +1,5 @@
-variables:
-  CMAKE_BUILD_PARALLEL_LEVEL: 1
+#variables:
+#  CMAKE_BUILD_PARALLEL_LEVEL: 1
 
 stages:
   - build
