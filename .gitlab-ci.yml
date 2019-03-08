@@ -1,5 +1,5 @@
-#variables:
-#  CMAKE_BUILD_PARALLEL_LEVEL: 1
+variables:
+  CMAKE_BUILD_PARALLEL_LEVEL: 4
 
 stages:
   - build
@@ -15,7 +15,7 @@ building:linux:
   script:
     - ./ci/bin/build.sh
   tags:
-    - docker
+    - docker-mega
   artifacts:
     paths:
       - ./build/*
