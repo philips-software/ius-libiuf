@@ -10,6 +10,7 @@ if(Python3_FOUND)
     INCLUDE_DIRECTORIES(${Python3_INCLUDE_DIRS})
     LINK_DIRECTORIES(${Python3_LIBRARY_DIRS})
 
+
     INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/unittests/dg)
     INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/library/include)
     INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/library/private)
@@ -39,7 +40,9 @@ if(Python3_FOUND)
             dg
             )
 
-#    if(MSVC)
+    set_property(TARGET ${IUS_TARGET} PROPERTY SWIG_INCLUDE_DIRECTORIES ${CMAKE_SOURCE_DIR}/unittests/dg)
+
+    #    if(MSVC)
 #        target_compile_options(${IUS_TARGET} PRIVATE /W4 /WX)
 #        set_target_properties(unitTests PROPERTIES LINK_FLAGS "/ignore:4100")
 #    else()

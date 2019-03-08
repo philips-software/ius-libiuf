@@ -750,15 +750,11 @@ hid_t iusInputFileGetWriteSpace
     IUS_ERR_CHECK_NULL_N_RETURN(inputFile, H5I_INVALID_HID);
     IUS_ERR_CHECK_NULL_N_RETURN(label, H5I_INVALID_HID);
 
-    printf("%s -- Debug %d@%s, Error = %s\n", __FILE__, __LINE__, __func__, iusErrorString());
     iuifi_t instance = iusHistoryNodeGetInstanceData((iuhn_t)inputFile);
-    printf("%s -- Debug %d@%s, Error = %s\n", __FILE__, __LINE__, __func__, iusErrorString());
     iuds_t dataStream = iusDataStreamDictGet(instance->dataStreamDict,label);
     if ( dataStream == IUDS_INVALID)
     {
-        printf("%s -- Debug %d@%s, Error = %s\n", __FILE__, __LINE__, __func__, iusErrorString());
         iusErrorLogClear();
-        printf("%s -- Debug %d@%s, Error = %s\n", __FILE__, __LINE__, __func__, iusErrorString());
         // Entry does not exist, create
         rfDataDims[0] = (hsize_t) iusInputFileGetNumChannels(inputFile,label);    // colums in memory
         rfDataDims[1] = (hsize_t) iusInputFileGetSamplesPerLine(inputFile,label); // rows in memory

@@ -26,6 +26,7 @@ if(Python2_FOUND)
     SWIG_ADD_LIBRARY(${IUS_TARGET}
             LANGUAGE python
             SOURCES Python2Ius.i ../extendDict.it ../s0list.it ../PythonIus.it)
+
     TARGET_LINK_LIBRARIES(${IUS_TARGET}
             ${Python2_LIBRARIES}
             ${IUS_LIBRARIES}
@@ -36,6 +37,7 @@ if(Python2_FOUND)
             dg
             )
 
+    set_property(TARGET ${IUS_TARGET} PROPERTY SWIG_INCLUDE_DIRECTORIES ${CMAKE_SOURCE_DIR}/unittests/dg)
 
 #    if(MSVC)
 #        target_compile_options(${IUS_TARGET} PRIVATE /W4 /WX)
