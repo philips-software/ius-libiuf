@@ -36,8 +36,8 @@ if(Python3_FOUND)
             ${HDF5_LIBRARIES}
             ${HDF5_HL_LIBRARIES}
             ${UUID_LIBRARIES}
-            Unity
             dg
+            Unity
             )
 
     #    if(MSVC)
