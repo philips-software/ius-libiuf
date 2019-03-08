@@ -1,6 +1,6 @@
 %{
 #include <ius.h>
-//#include "dataGenerators.h"
+#include <dataGenerators.h>
 #include "iusAcquisitionADT.h"
 #include "iusInputFile.h"
 #include "iusHistoryNodeADT.h"
@@ -229,5 +229,5 @@ EXTEND_DICT_ADT(DemodulationDict, IusDemodulation)
 %include <iusPatternListADT.h>
 %include <iusHistoryNodeADT.h>
 %include <iusAcquisitionADT.h>
-//%include <dataGenerators.h>
+%include <dataGenerators.h>
 
