@@ -11,6 +11,7 @@ if(Python3_FOUND)
     LINK_DIRECTORIES(${Python3_LIBRARY_DIRS})
 
 
+    INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/unitTests/dg)
     INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/library/include)
     INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/library/private)
     INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/external/hashmap/src)
@@ -35,9 +36,11 @@ if(Python3_FOUND)
             ${HDF5_LIBRARIES}
             ${HDF5_HL_LIBRARIES}
             ${UUID_LIBRARIES}
+            dg
+            Unity
             )
 
-#    if(MSVC)
+    #    if(MSVC)
 #        target_compile_options(${IUS_TARGET} PRIVATE /W4 /WX)
 #        set_target_properties(unitTests PROPERTIES LINK_FLAGS "/ignore:4100")
 #    else()

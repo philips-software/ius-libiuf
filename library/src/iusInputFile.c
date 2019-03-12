@@ -736,7 +736,7 @@ static void fillChunkDims
     }
 }
 
-hid_t iusInputFileGetWriteSpace
+static hid_t iusInputFileGetWriteSpace
 (
     iuif_t inputFile,
     char *label,
@@ -754,6 +754,7 @@ hid_t iusInputFileGetWriteSpace
     iuds_t dataStream = iusDataStreamDictGet(instance->dataStreamDict,label);
     if ( dataStream == IUDS_INVALID)
     {
+        iusErrorLogClear();
         // Entry does not exist, create
         rfDataDims[0] = (hsize_t) iusInputFileGetNumChannels(inputFile,label);    // colums in memory
         rfDataDims[1] = (hsize_t) iusInputFileGetSamplesPerLine(inputFile,label); // rows in memory

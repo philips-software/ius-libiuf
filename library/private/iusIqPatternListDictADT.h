@@ -7,7 +7,7 @@
 // ADT
 struct HashableIqPatternList
 {
-    iuiqpal_t patternList;
+    iuiqpal_t iqPatternList;
     char key[256];
 };
 

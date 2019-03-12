@@ -1,6 +1,8 @@
 %{
 #include <ius.h>
+#include <dataGenerators.h>
 #include "iusAcquisitionADT.h"
+#include "iusInputFile.h"
 #include "iusHistoryNodeADT.h"
 #include "iusPatternListADT.h"
 #include "iusPatternListDictADT.h"
@@ -43,6 +45,12 @@ typedef ius_t iu2dps_t;
 typedef ius_t iu2dnps_t;
 typedef ius_t iu3dps_t;
 typedef ius_t iu3dnps_t;
+typedef iuhn_t iuif_t;
+%ignore iu2dps_t;
+%ignore iu2dnps_t;
+%ignore iu3dps_t;
+%ignore iu3dnps_t;
+%ignore iuif_t;
 
 // Handle both iu3Dt_t and iu2Dt_t as iut_t
 %typemap(in) iut_t {
@@ -109,6 +117,29 @@ typedef ius_t iu3dnps_t;
 %typemap(freearg) (float *apodization, int numElements) {
         printf("Additional memory freed from: %p\n", (void*)$1);
         free($1);
+}
+
+// IMPORTANT NOTE:
+//
+//      Keep %include <iusError.h> before %exception
+//
+// Prevent the error stack from getting cleared by
+// the invocation of the iusError routines themselves.
+// (i.e. do not wrap exception handling code in
+// error module for now).
+//
+%include <iusError.h>
+%exception {
+    iusErrorLogClear();
+    $action
+    if (iusErrorGetCount() > 0) {
+        char *err = iusErrorString();
+        PyErr_Format(PyExc_Exception,
+        "Call %s failed: %s", \
+        __func__, err
+        );
+        SWIG_fail;
+    }
 }
 
 //%include "numpy.i"
@@ -218,4 +249,5 @@ EXTEND_DICT_ADT(DemodulationDict, IusDemodulation);
 //%include <iusIqPatternListADT.h>
 %include <iusHistoryNodeADT.h>
 %include <iusAcquisitionADT.h>
+%include <dataGenerators.h>
 

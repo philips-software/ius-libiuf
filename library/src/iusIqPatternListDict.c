@@ -19,10 +19,10 @@ iuiqpald_t iusIqPatternListDictCreate
 )
 {
 	iuiqpald_t dict = calloc(1, sizeof(IusIqPatternListDict));
-    IUS_ERR_ALLOC_NULL_N_RETURN(dict, IusPatternListDict, IUIQPALD_INVALID);
-    hashmap_init(&dict->map, hashmap_hash_string, hashmap_compare_string, 0);
-    dict->deepDelete = IUS_FALSE;
-    dict->keys = NULL;
+	IUS_ERR_ALLOC_NULL_N_RETURN(dict, IusIqPatternListDict, IUIQPALD_INVALID);
+	hashmap_init(&dict->map, hashmap_hash_string, hashmap_compare_string, 0);
+	dict->deepDelete = IUS_FALSE;
+	dict->keys = NULL;
 	return dict;
 }
 
@@ -33,18 +33,18 @@ int iusIqPatternListDictDeepDelete
     iuiqpald_t dict
 )
 {
-    IUS_ERR_CHECK_NULL_N_RETURN(dict, IUS_ERR_VALUE);
-    dict->deepDelete = IUS_TRUE;
-    return iusIqPatternListDictDelete(dict);
+	IUS_ERR_CHECK_NULL_N_RETURN(dict, IUS_ERR_VALUE);
+	dict->deepDelete = IUS_TRUE;
+	return iusIqPatternListDictDelete(dict);
 }
 
-static void iusPatternListDictDeleteKeys
+static void iusIqPatternListDictDeleteKeys
 (
-        iuiqpald_t dict
+	iuiqpald_t dict
 )
 {
-    if (dict->keys != NULL)
-        free(dict->keys);
+	if (dict->keys != NULL)
+		free(dict->keys);
 }
 
 int iusIqPatternListDictDelete
@@ -52,19 +52,20 @@ int iusIqPatternListDictDelete
 	iuiqpald_t dict
 )
 {
-    HashableIqPatternList *iterElement;
-    struct hashmap_iter *iter;
-    IUS_ERR_CHECK_NULL_N_RETURN(dict, IUS_ERR_VALUE);
+	HashableIqPatternList *iterElement;
+	struct hashmap_iter *iter;
+	IUS_ERR_CHECK_NULL_N_RETURN(dict, IUS_ERR_VALUE);
+
 	/* Free all allocated resources associated with map and reset its state */
-    for (iter = hashmap_iter(&dict->map); iter; iter = hashmap_iter_next(&dict->map, iter))
-    {
-        iterElement = HashableIqPatternList_hashmap_iter_get_data(iter);
-        if (dict->deepDelete == IUS_TRUE)
-            iusIqPatternListDeepDelete(iterElement->patternList);
-        free(iterElement);
-    }
+	for (iter = hashmap_iter(&dict->map); iter; iter = hashmap_iter_next(&dict->map, iter))
+	{
+		iterElement = HashableIqPatternList_hashmap_iter_get_data(iter);
+		if (dict->deepDelete == IUS_TRUE)
+			iusIqPatternListDeepDelete(iterElement->iqPatternList);
+		free(iterElement);
+	}
 	hashmap_destroy(&dict->map);
-    iusPatternListDictDeleteKeys(dict);
+	iusIqPatternListDictDeleteKeys(dict);
 	free(dict);
 	return IUS_E_OK;
 }
@@ -86,7 +87,7 @@ static int iusIqPatternListDictSourceInTarget
 	// iterate over source list elements using the hash double linked list
 	for (iter = hashmap_iter(&source->map); iter; iter = hashmap_iter_next(&source->map, iter)) {
 		iterElement = HashableIqPatternList_hashmap_iter_get_data(iter);
-		sourceElement = iterElement->patternList;
+		sourceElement = iterElement->iqPatternList;
 		targetElement = iusIqPatternListDictGet(target, iterElement->key);
 		if (targetElement == IUIQPAL_INVALID)
 			return IUS_FALSE;
@@ -125,8 +126,17 @@ size_t iusIqPatternListDictGetSize
 	iuiqpald_t dict
 )
 {
-    IUS_ERR_CHECK_NULL_N_RETURN(dict, (size_t) -1);
+	IUS_ERR_CHECK_NULL_N_RETURN(dict, (size_t)-1);
 	return (int)hashmap_size(&dict->map);
+}
+
+char **iusIqPatternListDictGetKeys
+(
+	iuiqpald_t dict
+)
+{
+	IUS_ERR_CHECK_NULL_N_RETURN(dict, NULL);
+	return dict->keys;
 }
 
 iuiqpal_t iusIqPatternListDictGet
@@ -135,50 +145,41 @@ iuiqpal_t iusIqPatternListDictGet
 	char * key
 )
 {
-    IUS_ERR_CHECK_NULL_N_RETURN(dict, IUIQPAL_INVALID);
-    IUS_ERR_CHECK_NULL_N_RETURN(key, IUIQPAL_INVALID);
-    HashableIqPatternList * search;
+	IUS_ERR_CHECK_NULL_N_RETURN(dict, IUIQPAL_INVALID);
+	IUS_ERR_CHECK_NULL_N_RETURN(key, IUIQPAL_INVALID);
+	HashableIqPatternList * search;
 	search = HashableIqPatternList_hashmap_get(&dict->map, key);
-    if (search == NULL)
-    {
-        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_INVALID_KEY, "for key '%s'", key);
-        return IUIQPAL_INVALID;
-    }
-	return search->patternList;
+	if (search == NULL)
+	{
+		IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_INVALID_KEY, "for key '%s'", key);
+		return IUIQPAL_INVALID;
+	}
+	return search->iqPatternList;
 }
 
-char **iusIqPatternListDictGetKeys
+static int iusIqPatternListDictUpdateKeys
 (
-    iuiqpald_t dict
+	iuiqpald_t dict
 )
 {
-    IUS_ERR_CHECK_NULL_N_RETURN(dict, NULL);
-    return dict->keys;
-}
+	iusIqPatternListDictDeleteKeys(dict);
+	// allocate memory for the keys
+	int keyIndex;
+	size_t size = iusIqPatternListDictGetSize(dict);
+	dict->keys = calloc(size + 1, sizeof(char*));
+	IUS_ERR_ALLOC_NULL_N_RETURN(dict, char *, IUS_ERR_VALUE);
 
-static int iusPatternListDictUpdateKeys
-(
-    iuiqpald_t dict
-)
-{
-    iusPatternListDictDeleteKeys(dict);
-    // allocate memory for the keys
-    int keyIndex;
-    size_t size = iusIqPatternListDictGetSize(dict);
-    dict->keys = calloc(size+1, sizeof(char*));
-    IUS_ERR_ALLOC_NULL_N_RETURN(dict, char *, IUS_ERR_VALUE);
-
-    struct hashmap_iter *iter;
-    HashableIqPatternList *iterElement;
-    IUS_ERR_CHECK_NULL_N_RETURN(dict, IUS_ERR_VALUE);
-    /* Free all allocated resources associated with map and reset its state */
-    for (iter = hashmap_iter(&dict->map), keyIndex=0; iter; iter = hashmap_iter_next(&dict->map, iter), keyIndex++)
-    {
-        iterElement = HashableIqPatternList_hashmap_iter_get_data(iter);
-        dict->keys[keyIndex] = iterElement->key;
-    }
-    dict->keys[keyIndex] = NULL;
-    return IUS_E_OK;
+	struct hashmap_iter *iter;
+	HashableIqPatternList *iterElement;
+	IUS_ERR_CHECK_NULL_N_RETURN(dict, IUS_ERR_VALUE);
+	/* Free all allocated resources associated with map and reset its state */
+	for (iter = hashmap_iter(&dict->map), keyIndex = 0; iter; iter = hashmap_iter_next(&dict->map, iter), keyIndex++)
+	{
+		iterElement = HashableIqPatternList_hashmap_iter_get_data(iter);
+		dict->keys[keyIndex] = iterElement->key;
+	}
+	dict->keys[keyIndex] = NULL;
+	return IUS_E_OK;
 }
 
 int iusIqPatternListDictSet
@@ -188,19 +189,19 @@ int iusIqPatternListDictSet
 	iuiqpal_t member
 )
 {
-    IUS_ERR_CHECK_NULL_N_RETURN(dict, IUS_ERR_VALUE);
-    IUS_ERR_CHECK_NULL_N_RETURN(key, IUS_ERR_VALUE);
+	IUS_ERR_CHECK_NULL_N_RETURN(dict, IUS_ERR_VALUE);
+	IUS_ERR_CHECK_NULL_N_RETURN(key, IUS_ERR_VALUE);
 
 	HashableIqPatternList *newMember = calloc(1, sizeof(HashableIqPatternList));
-	newMember->patternList = member;
+	newMember->iqPatternList = member;
 	strcpy(newMember->key, key);
 	if (HashableIqPatternList_hashmap_put(&dict->map, newMember->key, newMember) != newMember)
-    {
-        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_DUPLICATE_KEY, "discarding blob with duplicate key: %s", key);
-        free(newMember);
-        return IUS_ERR_VALUE;
-    }
-	return iusPatternListDictUpdateKeys(dict);
+	{
+		IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_VALUE, IUS_ERR_MIN_ARG_DUPLICATE_KEY, "discarding blob with duplicate key: %s", key);
+		free(newMember);
+		return IUS_ERR_VALUE;
+	}
+	return iusIqPatternListDictUpdateKeys(dict);;
 }
 
 
@@ -214,35 +215,38 @@ int iusIqPatternListDictSave
 	int status = 0;
 	struct hashmap_iter *iter;
 
-    IUS_ERR_CHECK_NULL_N_RETURN(dict, IUS_ERR_VALUE);
-    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUS_ERR_VALUE);
+	IUS_ERR_CHECK_NULL_N_RETURN(dict, IUS_ERR_VALUE);
+	IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUS_ERR_VALUE);
 
 	hid_t group_id;
-	status = H5Gget_objinfo(handle, IUS_IQFILE_PATH_PATTERNLISTDICT, 0, NULL);
+	status = H5Gget_objinfo(handle, IUS_PATH_PATTERNLISTDICT, 0, NULL);
 	if (status != 0) // the group does not exist yet
 	{
-		group_id = H5Gcreate(handle, IUS_IQFILE_PATH_PATTERNLISTDICT, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+		group_id = H5Gcreate(handle, IUS_PATH_PATTERNLISTDICT, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 	}
 	else
 	{
-		group_id = H5Gopen(handle, IUS_IQFILE_PATH_PATTERNLISTDICT, H5P_DEFAULT);
+		group_id = H5Gopen(handle, IUS_PATH_PATTERNLISTDICT, H5P_DEFAULT);
 	}
-
-    if (group_id == H5I_INVALID_HID)
-    {
-        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "Error getting handle for path: %s", IUS_IQFILE_PATH_PATTERNLISTDICT);
-        return IUS_ERR_VALUE;
-    }
-
-    status = 0;
-	HashableIqPatternList *patternListDictItem;
+	if (group_id == H5I_INVALID_HID)
+	{
+		IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "Error getting handle for path: %s", IUS_PATH_PATTERNLISTDICT);
+		return IUS_ERR_VALUE;
+	}
+	status = 0;
+	HashableIqPatternList *iqPatternListDictItem;
 
 	// iterate over source list elements and save'em
 	for (iter = hashmap_iter(&dict->map); iter && status == IUS_E_OK; iter = hashmap_iter_next(&dict->map, iter))
 	{
-		patternListDictItem = HashableIqPatternList_hashmap_iter_get_data(iter);
-		hid_t subgroup_id = H5Gcreate(group_id, patternListDictItem->key, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-		iusIqPatternListSave(patternListDictItem->patternList, subgroup_id);
+		iqPatternListDictItem = HashableIqPatternList_hashmap_iter_get_data(iter);
+		hid_t subgroup_id = H5Gcreate(group_id, iqPatternListDictItem->key, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+		if (subgroup_id <= 0)
+		{
+			H5Gclose(group_id);
+			return IUS_ERR_VALUE;
+		}
+		iusIqPatternListSave(iqPatternListDictItem->iqPatternList, subgroup_id);
 		status |= H5Gclose(subgroup_id);
 	}
 	status |= H5Gclose(group_id);
@@ -260,14 +264,14 @@ iuiqpald_t iusIqPatternListDictLoad
     hsize_t i;
 	int status;
 	char memb_name[MAX_NAME];
-    IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUIQPALD_INVALID);
 
-	hid_t grpid = H5Gopen(handle, IUS_IQFILE_PATH_PATTERNLISTDICT, H5P_DEFAULT);
-	if (handle == H5I_INVALID_HID || grpid == H5I_INVALID_HID)
-    {
-        IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "Error getting handle for path: %s", IUS_IQFILE_PATH_PATTERNLISTDICT);
-        return IUIQPALD_INVALID;
-    }
+	IUS_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUIQPALD_INVALID);
+	hid_t grpid = H5Gopen(handle, IUS_PATH_PATTERNLISTDICT, H5P_DEFAULT);
+	if (grpid == H5I_INVALID_HID)
+	{
+		IUS_ERROR_FMT_PUSH(IUS_ERR_MAJ_HDF5, IUS_ERR_MIN_HDF5, "Error getting handle for path: %s", IUS_PATH_PATTERNLISTDICT);
+		return IUIQPALD_INVALID;
+	}
 
 	hsize_t nobj;
 	status = H5Gget_num_objs(grpid, &nobj);

@@ -8,7 +8,7 @@
 
 #include <ius.h>
 #include <iusPatternListPrivate.h>
-#include <testDataGenerators.h>
+#include <dg/dataGenerators.h>
 
 static const char *pPulseLabel = "pulseLabel";
 static const char *pSourceLabel = "sourceLabel";

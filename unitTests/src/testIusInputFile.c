@@ -1,5 +1,4 @@
 
-
 //
 // Created by nlv09165 on 11/07/2018.
 //
@@ -8,7 +7,7 @@
 #include <unity_fixture.h>
 
 #include <ius.h>
-#include <testDataGenerators.h>
+#include <dg/dataGenerators.h>
 
 static const char *pFilename = "IusInputFile.hdf5";
 static const char *pNotherFilename = "AnotherIusInputFile.hdf5";
@@ -52,21 +51,22 @@ TEST(IusInputFile, testIusInputFileCreate)
     // Create file that is already open should result in error
     iuif_t ifh2 = iusInputFileCreate(pFilename);
     TEST_ASSERT(ifh2 == IUIF_INVALID);
+	TEST_ASSERT_EQUAL(1, iusErrorGetCount());
 
     int status = iusInputFileClose(ifh);
     TEST_ASSERT(status == IUS_E_OK);
 
     // Closing file that has already been closed results in error
     status = iusInputFileClose(ifh);
+	TEST_ASSERT_EQUAL(2, iusErrorGetCount());
     iusInputFileDelete(ifh);
     TEST_ASSERT(status != IUS_E_OK);
-
     // Invalid argument should result in error.
     ifh = iusInputFileCreate(pEmptyFilename);
     TEST_ASSERT(ifh == IUIF_INVALID);
+	TEST_ASSERT_EQUAL(3, iusErrorGetCount());
     ifh = iusInputFileCreate(pSpecialCharsFilename);
     TEST_ASSERT(ifh == IUIF_INVALID);
-
     TEST_ASSERT_EQUAL(4,iusErrorGetCount());
     TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
 

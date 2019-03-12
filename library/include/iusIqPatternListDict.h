@@ -37,6 +37,14 @@ int iusIqPatternListDictDeepDelete
 	iuiqpald_t dict ///< The dictionary to be deleted
 );
 
+/** \brief Return an array of char * containing the keys in the dictionary
+ * \return Returns the keys as char * array
+*/
+char **iusIqPatternListDictGetKeys
+(
+	iuiqpald_t dict
+);
+
 /** \brief Compare two dictionaries of #IusIqPatternList objects.
  * \return Returns #IUS_TRUE in case the dictionaries are equal and #IUS_FALSE otherwise.
  */
@@ -62,15 +70,6 @@ iuiqpal_t iusIqPatternListDictGet
 	iuiqpald_t dict, ///< The dictionary of interest
 	char * key       ///< The label of the #IusIqPatternList
 );
-
-/** \brief Get the #IusPatternList object with label \p key from the dictionary.
- * \return Returns #IusPatternList \p key or #IUPALD_INVALID if it is not found.
- */
-char **iusIqPatternListDictGetKeys
-(
-    iuiqpald_t dict   ///< The dictionary of interest
-);
-
 
 /** \brief Add the #IusIqPatternList object with label \p key to the dictionary.
  * \return Returns #IUS_E_OK when successful  or #IUS_ERR_VALUE in case of an error.

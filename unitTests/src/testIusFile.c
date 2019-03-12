@@ -7,7 +7,7 @@
 #include <unity_fixture.h>
 
 #include <ius.h>
-#include <testDataGenerators.h>
+#include <dg/dataGenerators.h>
 
 static char *pErrorFilename = "IusFile.errlog";
 static FILE *fpErrorLogging = NULL;

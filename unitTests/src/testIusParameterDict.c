@@ -8,7 +8,7 @@
 #include <ius.h>
 #include <util.h>
 #include <iusParameterDictPrivate.h>
-#include <testDataGenerators.h>
+#include <dg/dataGenerators.h>
 
 
 static char *pErrorFilename = "IusParameterDict.errlog";

@@ -7,7 +7,7 @@
 
 #include <ius.h>
 #include <iusNonParametricPulsePrivate.h>
-#include <testDataGenerators.h>
+#include <dg/dataGenerators.h>
 
 static char *pErrorFilename = "IusNonParametricPulse.errlog";
 static FILE *fpErrorLogging = NULL;

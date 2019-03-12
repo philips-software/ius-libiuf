@@ -67,6 +67,12 @@ enum IusGridType
     IUS_GRID_SPARSE_CARTESIAN
 };
 
+typedef enum 
+{
+  IUS_IQ_COMPONENT_I = 0,
+  IUS_IQ_COMPONENT_Q
+} IusComponent;
+
 //! A 3D grid contains a number of points along each dimension plus the
 //! position of these points. According to the IUS convention:
 //! - 1st dimension is elevational position (phi or y)

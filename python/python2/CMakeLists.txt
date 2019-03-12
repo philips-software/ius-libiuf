@@ -11,6 +11,7 @@ if(Python2_FOUND)
     LINK_DIRECTORIES(${Python2_LIBRARY_DIRS})
 
 
+    INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/unitTests/dg)
     INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/library/include)
     INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/library/private)
     INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/external/hashmap/src)
@@ -25,12 +26,15 @@ if(Python2_FOUND)
     SWIG_ADD_LIBRARY(${IUS_TARGET}
             LANGUAGE python
             SOURCES Python2Ius.i ../extendDict.it ../s0list.it ../PythonIus.it)
+
     TARGET_LINK_LIBRARIES(${IUS_TARGET}
             ${Python2_LIBRARIES}
             ${IUS_LIBRARIES}
             ${HDF5_LIBRARIES}
             ${HDF5_HL_LIBRARIES}
             ${UUID_LIBRARIES}
+            dg
+            Unity
             )
 
 #    if(MSVC)

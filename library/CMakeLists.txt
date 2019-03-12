@@ -94,7 +94,11 @@ add_library(ius STATIC
 		private/iusHistoryNodeListPrivate.h
 		include/iusHDF5.h
 		include/iusInputFile.h
+		private/iusInputFilePrivate.h
+		include/iusInputFileStructure.h
 		include/iusIqFile.h
+		private/iusIqFilePrivate.h
+		include/iusIqFileStructure.h
 		include/iusIqPattern.h
 		private/iusIqPatternPrivate.h
 		include/iusIqPatternList.h
@@ -102,7 +106,6 @@ add_library(ius STATIC
 		include/iusIqPatternListDict.h
 		private/iusIqPatternListDictADT.h
 		private/iusIqPatternListDictPrivate.h
-		private/iusInputFilePrivate.h
 		include/iusNonParametricPulse.h
 		private/iusNonParametricPulsePrivate.h
 		include/iusOffset.h

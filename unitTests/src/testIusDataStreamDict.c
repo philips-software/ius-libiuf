@@ -7,7 +7,7 @@
 
 #include <ius.h>
 #include <iusDataStreamDictPrivate.h>
-#include <testDataGenerators.h>
+#include <dg/dataGenerators.h>
 
 static char *pErrorFilename = "IusDataStreamDict.errlog";
 static FILE *fpErrorLogging = NULL;
