@@ -53,6 +53,7 @@ TEST(IusDemodulationDict, testIusSetGetDict)
 {
 	char *pObjLabel = "bmode";
 	float sampleFrequency = 4000;
+	float centerFrequency = 2000;
 	int numSamplesPerLine = 10;
 	int numTGCentries = 1;
 	IusDemodulationMethod method = IUS_DEMODULATION_FOURX;
@@ -60,7 +61,7 @@ TEST(IusDemodulationDict, testIusSetGetDict)
 	int status;
 
 
-	iudm_t obj = iusDemodulationCreate(method, sampleFrequency, numSamplesPerLine, numTGCentries, kernelSize);
+	iudm_t obj = iusDemodulationCreate(method, sampleFrequency, centerFrequency, numSamplesPerLine, numTGCentries, kernelSize);
 
 
 	// Create
@@ -93,6 +94,7 @@ TEST(IusDemodulationDict, testIusDictGetKeys)
 {
     char *labels[] = { "one" , "two" , "three", "four" , "five"};
     float sampleFrequency = 4000;
+    float centerFrequency = 2000;
     int numSamplesPerLine = 10;
     int numTGCentries = 1;
     IusDemodulationMethod method = IUS_DEMODULATION_FOURX;
@@ -100,7 +102,7 @@ TEST(IusDemodulationDict, testIusDictGetKeys)
     int status;
 
 
-    iudm_t obj = iusDemodulationCreate(method, sampleFrequency, numSamplesPerLine, numTGCentries, kernelSize);
+    iudm_t obj = iusDemodulationCreate(method, sampleFrequency, centerFrequency, numSamplesPerLine, numTGCentries, kernelSize);
 
 
     // Create
@@ -145,15 +147,16 @@ TEST(IusDemodulationDict, testIusCompareDict)
 	char *pNotherObjLabel = "Another Label for IusDemodulationDict, created in testIusCompareSourceDict";
 	char *pDifferentLabel = "Different Label for IusDemodulationDict, created in testIusCompareSourceDict";
 	float sampleFrequency = 4000;
+	float centerFrequency = 2000;
 	int numSamplesPerLine = 10;
 	int numTGCentries = 1;
 	IusDemodulationMethod method = IUS_DEMODULATION_FOURX;
 	int kernelSize = 5;
 	int status;
 
-	iudm_t obj = iusDemodulationCreate(method, sampleFrequency, numSamplesPerLine, numTGCentries, kernelSize);
-	iudm_t notherObj = iusDemodulationCreate(method, sampleFrequency, numSamplesPerLine, numTGCentries, kernelSize);
-	iudm_t differentObj = iusDemodulationCreate(method, sampleFrequency, numSamplesPerLine, numTGCentries + 1, kernelSize);
+	iudm_t obj = iusDemodulationCreate(method, sampleFrequency, centerFrequency, numSamplesPerLine, numTGCentries, kernelSize);
+	iudm_t notherObj = iusDemodulationCreate(method, sampleFrequency, centerFrequency, numSamplesPerLine, numTGCentries, kernelSize);
+	iudm_t differentObj = iusDemodulationCreate(method, sampleFrequency, centerFrequency, numSamplesPerLine, numTGCentries + 1, kernelSize);
 
 	// Create
 	iudmd_t  dict = iusDemodulationDictCreate();

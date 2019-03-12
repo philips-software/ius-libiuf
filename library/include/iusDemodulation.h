@@ -10,17 +10,19 @@ typedef struct IusDemodulation IusDemodulation;
 typedef IusDemodulation *iudm_t;
 #define  IUDM_INVALID (iudm_t) NULL
 
-iudm_t iusDemodulationCreateWithoutTGCandFilter
-(
-	IusDemodulationMethod method,		///< The downsampling method
-	float sampleFrequency,				///< The sampling frequency in Hz
-	int numSamplesPerLine				///< The number of samples per acquired line
-);
+//iudm_t iusDemodulationCreateWithoutTGCandFilter
+//(
+//	IusDemodulationMethod method,		///< The downsampling method
+//	float sampleFrequency,				///< The sampling frequency in Hz
+//	float centerFrequency,				///< The center frequency in Hz after modulation
+//	int numSamplesPerLine				///< The number of samples per acquired line
+//);
 
 iudm_t iusDemodulationCreate
 (
 	IusDemodulationMethod method,       ///< The downsampling method
 	float sampleFrequency,				///< The sampling frequency in Hz
+	float centerFrequency,				///< The center frequency in Hz after demodulation
 	int numSamplesPerLine,				///< The number of samples per acquired line 
 	int numTGCentries,					///< The size of the TGC function
 	int filterKernelSize				///< The size of the preFilter
@@ -48,7 +50,15 @@ int iusDemodulationCompare
 */
 float iusDemodulationGetSampleFrequency
 (
-	iudm_t demodulation     ///< the receive settings of interest
+	iudm_t demodulation     ///< the demodulation of interest
+);
+
+/** \brief Returns the centerFrequency (after demodulation)
+*  \return The center frequency after demodulation in Hz
+*/
+float iusDemodulationGetCenterFrequency
+(
+	iudm_t demodulation     ///< the demodulation of interest
 );
 
 /** \brief Returns the number of samples per line
@@ -56,7 +66,7 @@ float iusDemodulationGetSampleFrequency
 */
 int iusDemodulationGetNumSamplesPerLine
 (
-	iudm_t demodulation     ///< the receive settings of interest
+	iudm_t demodulation     ///< the demodulation of interest
 );
 
 /** \brief Gets the number of \p [time,gain] paira that the TGC has
@@ -64,7 +74,7 @@ int iusDemodulationGetNumSamplesPerLine
 */
 int iusDemodulationGetNumTGCentries
 (
-	iudm_t demodulation     ///< the receive settings of interest
+	iudm_t demodulation     ///< the demodulation of interest
 );
 
 /** \brief Gets the number of filter coefficients of the preFilter
@@ -72,7 +82,7 @@ int iusDemodulationGetNumTGCentries
 */
 int iusDemodulationGetPreFilterKernelSize
 (
-	iudm_t demodulation     ///< the receive settings of interest
+	iudm_t demodulation     ///< the demodulation of interest
 );
 
 /** \brief Gets the TGC object of the demodulation
@@ -80,7 +90,7 @@ int iusDemodulationGetPreFilterKernelSize
 */
 iutgc_t iusDemodulationGetTGC
 (
-	iudm_t demodulation  ///< the receive settings of interest
+	iudm_t demodulation  ///< the demodulation of interest
 );
 
 /** \brief Gets the fir filter object of the demodulation
@@ -88,7 +98,26 @@ iutgc_t iusDemodulationGetTGC
 */
 iuff_t iusDemodulationGetPreFilter
 (
-	iudm_t demodulation  ///< the receive settings of interest
+	iudm_t demodulation  ///< the demodulation of interest
 );
 
+/** \brief set the TGC of #IusDemodulation
+ * \return Returns IUS_E_OK when successful and IUS_ERR_VALUE otherwise
+ */
+int iusDemodulationSetTGC
+(
+   iudm_t demodulation,
+   iutgc_t tgc
+);
+
+/** \brief set the TGC of #IusDemodulation
+ * \return Returns IUS_E_OK when successful and IUS_ERR_VALUE otherwise
+ */
+int iusDemodulationSetPreFilter
+(
+   iudm_t demodulation,
+   iuff_t preFilter
+);
+
+ 
 #endif //IUSLIBRARY_IUSHLRECEIVESETTINGS_H

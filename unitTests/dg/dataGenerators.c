@@ -40,8 +40,8 @@ iurs_t dgGenerateReceiveSettings
 )
 {
     float sampleFrequency=4000;
-    int numTGCentries = 1;
-    iurs_t obj = iusReceiveSettingsCreate(sampleFrequency, numSamplesPerLine, numTGCentries);
+    int numTGCEntries = 1;
+    iurs_t obj = iusReceiveSettingsCreate(sampleFrequency, numSamplesPerLine, numTGCEntries);
 
     return obj;
 }
@@ -52,12 +52,25 @@ iudm_t dgGenerateDemodulation
 )
 {
 	float sampleFrequency = 4000;
-	int numTGCentries = 1;
+	float centerFrequency = 4000;
+	int numTGCEntries = 1;
 	IusDemodulationMethod method = IUS_DEMODULATION_FOURX;
 	int kernelSize = 7;
+    int i;
 
-	iudm_t obj = iusDemodulationCreate(method, sampleFrequency, numSamplesPerLine, numTGCentries, kernelSize);
-	// Note: more realistically call iusDemodulationCreateWithoutTGCAndFilter() and add a TGC and a PreFilter separately.
+	iudm_t obj = iusDemodulationCreate(method, sampleFrequency, centerFrequency, numSamplesPerLine, numTGCEntries, kernelSize);
+
+    iutgc_t myTGC = iusTGCCreate(numTGCEntries);
+    iusTGCSet(myTGC, 0, 0.0, 1.0); //idx, time, gain
+    iusDemodulationSetTGC(obj, myTGC);
+
+    iuff_t preFilter = iusFirFilterCreate(kernelSize);
+    for (i=0; i<kernelSize; i++)
+    {
+      iusFirFilterSetCoefficient(preFilter, i, 1.0/(float)kernelSize); //an averaging filter
+    }
+    iusDemodulationSetPreFilter(obj, preFilter);
+
 	return obj;
 }
 
