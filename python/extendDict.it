@@ -34,14 +34,14 @@
         return ius ## name ## Get($self, key);
     }
 
-    int __contains__(char *key)
+    int __contains__(char *item)
     {
-       return ius ## name ## Get($self,key) != NULL;
+        return ius ## name ## Get($self,item) != NULL;
     }
 
     int __eq__(Ius ## name *a)
     {
-      return ius ## name ## Compare($self,a);
+    return ius ## name ## Compare($self,a);
     }
 
     int __ne__(Ius ## name *a)
@@ -49,7 +49,7 @@
     return !ius ## name ## Compare($self,a);
     }
 
-    char **kys()
+    char **keys()
     {
         return ius ## name ## GetKeys($self);
     }

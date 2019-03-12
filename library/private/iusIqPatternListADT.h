@@ -22,7 +22,7 @@ struct IusIqPatternList
             return iusIqPatternListCreate(numPatterns, demodulationDict, receiveChannelMapDict);
         }
 
-        ~IusPatternList() {
+        ~IusIqPatternList() {
             iusPatternListDelete($self);
         }
 
