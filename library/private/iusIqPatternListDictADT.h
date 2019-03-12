@@ -17,7 +17,7 @@ struct IusIqPatternListDict
 {
     struct hashmap map;
     IUS_BOOL deepDelete;
-    char **keys;
+    char **kys;
 };
 #endif //IUSLIBRARY_IUSIQPATTERNLISTADT_H
 

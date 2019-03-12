@@ -17,6 +17,6 @@ struct IusReceiveSettingsDict
 {
     struct hashmap map;
     IUS_BOOL deepDelete;
-    char **keys;
+    char **kys;
 };
 #endif //IUSLIBRARY_IUSRECEIVESETTINGSDICTADT_H

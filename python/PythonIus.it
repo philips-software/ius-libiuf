@@ -237,11 +237,11 @@ typedef iuhn_t iuif_t;
 %include  extendDict.it
 EXTEND_DICT_ADT(ParameterDict, char);
 EXTEND_DICT_ADT(DemodulationDict, IusDemodulation);
-//EXTEND_DICT_ADT(ReceiveSettingsDict, IusReceiveSettings);
-//EXTEND_DICT_ADT(IqPatternListDict, IusIqPatternList)
-//EXTEND_DICT_ADT(PatternListDict, IusPatternList)
-//EXTEND_DICT_ADT(ReceiveChannelMapDict, IusReceiveChannelMap)
-//EXTEND_DICT_ADT(TransmitApodizationDict, IusTransmitApodization)
+EXTEND_DICT_ADT(ReceiveSettingsDict, IusReceiveSettings);
+EXTEND_DICT_ADT(IqPatternListDict, IusIqPatternList)
+EXTEND_DICT_ADT(PatternListDict, IusPatternList)
+EXTEND_DICT_ADT(ReceiveChannelMapDict, IusReceiveChannelMap)
+EXTEND_DICT_ADT(TransmitApodizationDict, IusTransmitApodization)
 
 %include <iusTransducerADT.h>
 %include <ius2DTransducerADT.h>

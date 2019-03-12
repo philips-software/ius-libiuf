@@ -19,7 +19,7 @@ iursd_t iusReceiveSettingsDictCreate
     IUS_ERR_ALLOC_NULL_N_RETURN(dict, IusReceiveSettingsDict, IURSD_INVALID);
     hashmap_init(&dict->map, hashmap_hash_string, hashmap_compare_string, 0);
     dict->deepDelete = IUS_FALSE;
-    dict->keys = NULL;
+    dict->kys = NULL;
     return dict;
 }
 
@@ -38,8 +38,8 @@ static void iusReceiveSettingsDictDeleteKeys
         iursd_t dict
 )
 {
-    if (dict->keys != NULL)
-        free(dict->keys);
+    if (dict->kys != NULL)
+        free(dict->kys);
 }
 
 int iusReceiveSettingsDictDelete
@@ -148,7 +148,7 @@ char **iusReceiveSettingsDictGetKeys
 )
 {
     IUS_ERR_CHECK_NULL_N_RETURN(dict, NULL);
-    return dict->keys;
+    return dict->kys;
 }
 
 static int iusReceiveSettingsUpdateKeys
@@ -160,7 +160,7 @@ static int iusReceiveSettingsUpdateKeys
     // allocate memory for the keys
     int keyIndex;
     size_t size = iusReceiveSettingsDictGetSize(dict);
-    dict->keys = calloc(size+1, sizeof(char*));
+    dict->kys = calloc(size+1, sizeof(char*));
     IUS_ERR_ALLOC_NULL_N_RETURN(dict, char *, IUS_ERR_VALUE);
 
     struct hashmap_iter *iter;
@@ -170,9 +170,9 @@ static int iusReceiveSettingsUpdateKeys
     for (iter = hashmap_iter(&dict->map), keyIndex=0; iter; iter = hashmap_iter_next(&dict->map, iter), keyIndex++)
     {
         iterElement = HashableReceiveSettings_hashmap_iter_get_data(iter);
-        dict->keys[keyIndex] = iterElement->key;
+        dict->kys[keyIndex] = iterElement->key;
     }
-    dict->keys[keyIndex] = NULL;
+    dict->kys[keyIndex] = NULL;
     return IUS_E_OK;
 }
 

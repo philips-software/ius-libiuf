@@ -5,10 +5,10 @@
     %include <ius##name.h>
     S02LIST(ius##name##GetKeys)
 
-    %define TOSTR(name) #name
-    %enddef
+//    %define TOSTR(name) #name
+//    %enddef
 
-    %extend Ius ## name {
+   %extend Ius ## name {
     S02LIST(keys)
 
     Ius ## name() {
@@ -19,7 +19,7 @@
         ius ## name ## Delete($self);
     }
 
-    size_t __len__()
+   size_t __len__()
     {
         return (int) ius ## name ## GetSize($self);
     }

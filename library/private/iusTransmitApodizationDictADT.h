@@ -17,7 +17,7 @@ struct IusTransmitApodizationDict
 {
 	struct hashmap map;
 	IUS_BOOL deepDelete;
-    char **keys;
+    char **kys;
 };
 
 #endif

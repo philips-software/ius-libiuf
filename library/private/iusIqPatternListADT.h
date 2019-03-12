@@ -23,7 +23,7 @@ struct IusIqPatternList
         }
 
         ~IusIqPatternList() {
-            iusPatternListDelete($self);
+            iusIqPatternListDelete($self);
         }
 
 };
