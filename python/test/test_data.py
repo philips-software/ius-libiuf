@@ -14,7 +14,7 @@ def saveFrames(inputFile, label, numFrames):
 
     for i in range(numFrames):
         dgFillData(frame, 1 + i * 1.0)
-        # offset->t = i;
+        offset.t = i;
         status |= iusInputFileFrameSave(inputFile, label, frame, offset)
 
     iusOffsetDelete(offset)
