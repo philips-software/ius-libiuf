@@ -100,6 +100,7 @@ add_library(ius STATIC
 		include/iusIqPatternList.h
 		private/iusIqPatternListPrivate.h
 		include/iusIqPatternListDict.h
+		private/iusIqPatternListDictADT.h
 		private/iusIqPatternListDictPrivate.h
 		private/iusInputFilePrivate.h
 		include/iusNonParametricPulse.h
@@ -113,6 +114,7 @@ add_library(ius STATIC
 		include/iusPatternList.h
 		private/iusPatternListPrivate.h
 		include/iusPatternListDict.h
+		private/iusPatternListDictADT.h
 		private/iusPatternListDictPrivate.h
 		include/iusPosition.h
 		include/iusPulse.h
@@ -121,9 +123,11 @@ add_library(ius STATIC
 		private/iusPulsePrivate.h
 		include/iusReceiveChannelMap.h
 		include/iusReceiveChannelMapDict.h
+		private/iusReceiveChannelMapDictADT.h
 		private/iusReceiveChannelMapPrivate.h
 		include/iusReceiveSettings.h
 		include/iusReceiveSettingsDict.h
+		private/iusReceiveSettingsDictADT.h
 		private/iusReceiveSettingsDictPrivate.h
 		include/iusSource.h
 		include/iusSourceDict.h
@@ -140,6 +144,7 @@ add_library(ius STATIC
 		private/ius3DTransducerPrivate.h
 		include/iusTransmitApodization.h
 		include/iusTransmitApodizationDict.h
+		private/iusTransmitApodizationDictADT.h
 		private/iusTransmitApodizationPrivate.h
 		include/iusTypes.h
 		include/iusUtil.h

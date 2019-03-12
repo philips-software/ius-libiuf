@@ -7,23 +7,8 @@
 #include <hashmap.h>
 
 #include <ius.h>
+#include <iusTransmitApodizationDictADT.h>
 #include <iusTransmitApodizationPrivate.h>
-
-// ADT
-struct HashableTransmitApodization
-{
-	iuta_t transmitApodization;
-	char key[256];
-};
-
-typedef struct HashableTransmitApodization HashableTransmitApodization;
-
-struct IusTransmitApodizationDict
-{
-	struct hashmap map;
-    IUS_BOOL deepDelete;
-    char **keys;
-};
 
 /* Declare type-specific blob_hashmap_* functions with this handy macro */
 HASHMAP_FUNCS_CREATE(HashableTransmitApodization, const char, struct HashableTransmitApodization)

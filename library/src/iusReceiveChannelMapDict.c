@@ -7,23 +7,8 @@
 #include <hashmap.h>
 
 #include <ius.h>
+#include <iusReceiveChannelMapDictADT.h>
 #include <iusReceiveChannelMapPrivate.h>
-
-// ADT
-struct HashableReceiveChannelMap
-{
-	iurcm_t receiveChannelMap;
-	char key[256];
-};
-
-typedef struct HashableReceiveChannelMap HashableReceiveChannelMap;
-
-struct IusReceiveChannelMapDict
-{
-	struct hashmap map;
-	IUS_BOOL deepDelete;
-    char **keys;
-};
 
 /* Declare type-specific blob_hashmap_* functions with this handy macro */
 HASHMAP_FUNCS_CREATE(HashableReceiveChannelMap, const char, struct HashableReceiveChannelMap)
@@ -42,9 +27,9 @@ iurcmd_t iusReceiveChannelMapDictCreate
 }
 
 static void iusReceiveChannelMapDictDeleteKeys
-        (
-                iurcmd_t dict
-        )
+(
+    iurcmd_t dict
+)
 {
     if (dict->keys != NULL)
         free(dict->keys);

@@ -7,12 +7,6 @@
 #include <hdf5.h>
 #include <iusReceiveChannelMap.h>
 
-struct IusReceiveChannelMap
-{
-	int numChannels;
-	int *map;
-	float   *startDelay;            /**< The start delay of RFlines, array length is the number of pulses per frame, values are in seconds */
-};
 
 int iusReceiveChannelMapSave
 (

@@ -7,23 +7,10 @@
 #include <hashmap.h>
 
 #include <ius.h>
+#include <iusPatternListDictADT.h>
 #include <iusPatternListPrivate.h>
 
-// ADT
-struct HashablePatternList
-{
-	iupal_t patternList;
-	char key[256];
-};
 
-typedef struct HashablePatternList HashablePatternList;
-
-struct IusPatternListDict
-{
-	struct hashmap map;
-	IUS_BOOL deepDelete;
-    char **keys;
-};
 
 /* Declare type-specific blob_hashmap_* functions with this handy macro */
 HASHMAP_FUNCS_CREATE(HashablePatternList, const char, struct HashablePatternList)

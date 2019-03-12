@@ -4,31 +4,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <hashmap.h>
-
 #include <ius.h>
 #include <iusReceiveSettingsPrivate.h>
-
-// ADT
-struct HashableReceiveSettings
-{
-    iurs_t receiveSettings;
-    char key[256];
-} ;
-
-typedef struct HashableReceiveSettings HashableReceiveSettings;
-
-struct IusReceiveSettingsDict
-{
-    struct hashmap map;
-    IUS_BOOL deepDelete;
-    char **keys;
-} ;
+#include <iusReceiveSettingsDictADT.h>
 
 /* Declare type-specific blob_hashmap_* functions with this handy macro */
 HASHMAP_FUNCS_CREATE(HashableReceiveSettings, const char, struct HashableReceiveSettings)
 
-// ADT
 iursd_t iusReceiveSettingsDictCreate
 (
 )

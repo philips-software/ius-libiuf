@@ -7,23 +7,8 @@
 #include <hashmap.h>
 
 #include <ius.h>
+#include <iusIqPatternListDictADT.h>
 #include <iusIqPatternListPrivate.h>
-
-// ADT
-struct HashableIqPatternList
-{
-	iuiqpal_t patternList;
-	char key[256];
-};
-
-typedef struct HashableIqPatternList HashableIqPatternList;
-
-struct IusIqPatternListDict
-{
-	struct hashmap map;
-	IUS_BOOL deepDelete;
-    char **keys;
-};
 
 /* Declare type-specific blob_hashmap_* functions with this handy macro */
 HASHMAP_FUNCS_CREATE(HashableIqPatternList, const char, struct HashableIqPatternList)

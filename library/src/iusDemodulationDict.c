@@ -24,7 +24,7 @@ iudmd_t iusDemodulationDictCreate
     IUS_ERR_ALLOC_NULL_N_RETURN(dict, IusDemodulationDict, IUDMD_INVALID);
     hashmap_init(&dict->map, hashmap_hash_string, hashmap_compare_string, 0);
     dict->deepDelete = IUS_FALSE;
-    dict->kys = NULL;
+    dict->keys = NULL;
 	return dict;
 }
 
@@ -43,8 +43,8 @@ static void iusDemodulationDictDeleteKeys
     iudmd_t dict
 )
 {
-    if (dict->kys != NULL)
-        free(dict->kys);
+    if (dict->keys != NULL)
+        free(dict->keys);
 }
 
 int iusDemodulationDictDelete
@@ -153,7 +153,7 @@ char **iusDemodulationDictGetKeys
 )
 {
     IUS_ERR_CHECK_NULL_N_RETURN(dict, NULL);
-    return dict->kys;
+    return dict->keys;
 }
 
 static int iusDemodulationDictUpdateKeys
@@ -162,10 +162,10 @@ static int iusDemodulationDictUpdateKeys
 )
 {
     iusDemodulationDictDeleteKeys(dict);
-    // allocate memory for the kys
+    // allocate memory for the keys
     int keyIndex;
     size_t size = iusDemodulationDictGetSize(dict);
-    dict->kys = calloc(size+1, sizeof(char*));
+    dict->keys = calloc(size+1, sizeof(char*));
     IUS_ERR_ALLOC_NULL_N_RETURN(dict, char *, IUS_ERR_VALUE);
 
     struct hashmap_iter *iter;
@@ -175,9 +175,9 @@ static int iusDemodulationDictUpdateKeys
     for (iter = hashmap_iter(&dict->map), keyIndex=0; iter; iter = hashmap_iter_next(&dict->map, iter), keyIndex++)
     {
         iterElement = HashableDemodulation_hashmap_iter_get_data(iter);
-        dict->kys[keyIndex] = iterElement->key;
+        dict->keys[keyIndex] = iterElement->key;
     }
-    dict->kys[keyIndex] = NULL;
+    dict->keys[keyIndex] = NULL;
     return IUS_E_OK;
 }
 

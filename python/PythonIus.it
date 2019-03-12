@@ -3,12 +3,20 @@
 #include "iusAcquisitionADT.h"
 #include "iusHistoryNodeADT.h"
 #include "iusPatternListADT.h"
+#include "iusPatternListDictADT.h"
+#include "iusIqPatternListADT.h"
+#include "iusIqPatternListDictADT.h"
 #include "iusParameterDictADT.h"
 #include "iusDemodulationDictADT.h"
+#include "iusReceiveSettingsDictADT.h"
+#include <iusReceiveChannelMapADT.h>
+#include <iusReceiveChannelMapDictADT.h>
 #include <ius2DTransducerPrivate.h>
 #include <iusTransducerADT.h>
 #include <ius2DTransducerADT.h>
 #include <ius3DTransducerADT.h>
+#include <iusTransmitApodizationADT.h>
+#include <iusTransmitApodizationDictADT.h>
 %}
 
 
@@ -29,18 +37,12 @@
 // Handle both iupp_t and iunpp_t as iup_t
 typedef iup_t iupp_t;
 typedef iup_t iunpp_t;
-%ignore iupp_t;
-%ignore iunpp_t;
 
 // Handle iu2dps_t, iu2dnps_t, iu3dps_t and iu3dnps_t as ius_t
 typedef ius_t iu2dps_t;
 typedef ius_t iu2dnps_t;
 typedef ius_t iu3dps_t;
 typedef ius_t iu3dnps_t;
-%ignore iu2dps_t;
-%ignore iu2dnps_t;
-%ignore iu3dps_t;
-%ignore iu3dnps_t;
 
 // Handle both iu3Dt_t and iu2Dt_t as iut_t
 %typemap(in) iut_t {
@@ -109,28 +111,6 @@ typedef ius_t iu3dnps_t;
         free($1);
 }
 
-
-// IMPORTANT NOTE:
-//
-// Prevent the error stack from getting cleared by
-// the invocation of the iusError routines themselves.
-// (i.e. do not wrap exception handling code in
-// error module for now).
-//
-%include <iusError.h>
-%exception {
-    iusErrorLogClear();
-    $action
-    if (iusErrorGetCount() > 0) {
-        char *err = iusErrorString();
-        PyErr_Format(PyExc_Exception,
-        "Call %s failed: %s", \
-        __func__, err
-        );
-        SWIG_fail;
-    }
-}
-
 //%include "numpy.i"
 //
 //%init %{
@@ -165,6 +145,7 @@ typedef ius_t iu3dnps_t;
 %include <iusData.h>
 %include <iusDataStream.h>
 %include <iusDemodulation.h>
+%include <iusError.h>
 %include <iusAcquisition.h>
 %include <iusFile.h>
 %include <iusFilter.h>
@@ -177,20 +158,27 @@ typedef ius_t iu3dnps_t;
 %include <iusInputFileStructure.h>
 %include <iusIqFile.h>
 %include <iusIqFileStructure.h>
+%include <iusIqPattern.h>
+%include <iusIqPatternList.h>
+%include <iusIqPatternListDict.h>
+%include <iusIqPatternListADT.h>
+%include <iusIqPatternListDictADT.h>
 %include <iusNonParametricPulse.h>
 %include <iusOffset.h>
 %include <iusParametricPulse.h>
 %include <iusPattern.h>
 %include <iusPatternList.h>
 %include <iusPatternListDict.h>
-%include <iusIqPattern.h>
-%include <iusIqPatternList.h>
-%include <iusIqPatternListDict.h>
+%include <iusPatternListADT.h>
+%include <iusPatternListDictADT.h>
 %include <iusPosition.h>
 %include <iusPulse.h>
 %include <iusPulseDict.h>
 %include <iusReceiveChannelMap.h>
 %include <iusReceiveChannelMapDict.h>
+%include <iusReceiveChannelMapADT.h>
+%include <iusReceiveChannelMapDictADT.h>
+%include <iusReceiveSettingsDictADT.h>
 %include <iusReceiveSettings.h>
 %include <iusReceiveSettingsDict.h>
 %include <iusSource.h>
@@ -200,6 +188,8 @@ typedef ius_t iu3dnps_t;
 %include <iusTransducerElement.h>
 %include <iusTransmitApodization.h>
 %include <iusTransmitApodizationDict.h>
+%include <iusTransmitApodizationADT.h>
+%include <iusTransmitApodizationDictADT.h>
 %include <iusTypes.h>
 %include <iusUtil.h>
 %include <iusUuid.h>
@@ -214,13 +204,18 @@ typedef ius_t iu3dnps_t;
 // i.e. iusParameterDictADT.h for ParameterDict data type.
 //
 %include  extendDict.it
-EXTEND_DICT_ADT(ParameterDict, char)
-EXTEND_DICT_ADT(DemodulationDict, IusDemodulation)
-
+EXTEND_DICT_ADT(ParameterDict, char);
+EXTEND_DICT_ADT(DemodulationDict, IusDemodulation);
+//EXTEND_DICT_ADT(ReceiveSettingsDict, IusReceiveSettings);
+//EXTEND_DICT_ADT(IqPatternListDict, IusIqPatternList)
+//EXTEND_DICT_ADT(PatternListDict, IusPatternList)
+//EXTEND_DICT_ADT(ReceiveChannelMapDict, IusReceiveChannelMap)
+//EXTEND_DICT_ADT(TransmitApodizationDict, IusTransmitApodization)
 
 %include <iusTransducerADT.h>
 %include <ius2DTransducerADT.h>
-%include <iusPatternListADT.h>
+//%include <iusPatternListADT.h>
+//%include <iusIqPatternListADT.h>
 %include <iusHistoryNodeADT.h>
 %include <iusAcquisitionADT.h>
 

@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include <ius.h>
+#include <iusReceiveChannelMapADT.h>
 #include <iusReceiveChannelMapPrivate.h>
 #include <math.h>
 

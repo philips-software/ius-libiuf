@@ -17,7 +17,7 @@ struct IusDemodulationDict
 {
     struct hashmap map;
     IUS_BOOL deepDelete;
-    char **kys;
+    char **keys;
 };
 #endif //IUSLIBRARY_IUSHLDEMODULATIONDICTADT_H
 
