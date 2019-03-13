@@ -15,7 +15,7 @@ outfname = strrep(infname, '.mat', '.iq');
 
 data = load( fullfile(DATA_INPUT_PATH, infname) );
 
-convertMatLab2IusIqFile( outfname, data.iusIq, data.M );
+convertMatLab2IusIqFile( outfname, data.iusIq, data.M, data.Receive(1) );
 
 import py.Python3Ius.*
 iq = data.iusIq;
