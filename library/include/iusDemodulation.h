@@ -110,7 +110,7 @@ int iusDemodulationSetTGC
    iutgc_t tgc
 );
 
-/** \brief set the TGC of #IusDemodulation
+/** \brief set the preFilter of #IusDemodulation
  * \return Returns IUS_E_OK when successful and IUS_ERR_VALUE otherwise
  */
 int iusDemodulationSetPreFilter
