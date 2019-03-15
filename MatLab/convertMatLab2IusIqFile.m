@@ -20,7 +20,7 @@ if iqFileHandle == py.None
 end
 try
     %convert( iqFileHandle, iusIqStruct, iqData, 'doppler' );
-    fillInstanceData( iqFileHandle, iusIqStruct, 'doppler' );
+    fillInstanceData( iqFileHandle, iusIqStruct, Receive, 'doppler' );
 catch ME
     iusIqFileClose(iqFileHandle);
     rethrow(ME);
@@ -34,7 +34,7 @@ iusErrorCloseFileStream();
 disp('done');
 end
 
-function fillInstanceData( h, iusIqStruct, mode )
+function fillInstanceData( h, iusIqStruct, Receive, mode )
 
 % Get ius functions directly into local namespace
 import py.Python3Ius.*
@@ -127,13 +127,35 @@ else
 end
 
 %% demodulationDict
+numTGCValues = iusIqStruct.ReceiveSettings.TimeGainControl.numValues;
+tgc = iusTGCCreate( numTGCValues );
+for c1 = 1:numTGCValues
+    iusTGCSet( tgc, c1-1, ...
+        iusIqStruct.ReceiveSettings.TimeGainControl.timings(c1), ...
+        iusIqStruct.ReceiveSettings.TimeGainControl.gains(c1) );
+end
+filter = [Receive.InputFilter Receive.InputFilter((end-1):-1:1)];
+kernelSize = length(filter);
+preFilter = iusFirFilterCreate( kernelSize );
+for c1 = 1:kernelSize
+    iusFirFilterSetCoefficient( preFilter, c1-1, filter(c1) );
+end
+
+centerFrequency = 0.0;
+if Receive.quadDecim == 1
+    error('Is demodulation applied?');
+end
 demodulationDict = iusDemodulationDictCreate();
-demodulation = iusDemodulationCreateWithoutTGCandFilter( ...
+demodulation = iusDemodulationCreate( ...
     IUS_DEMODULATION_QUADRATURE, ...
     iusIqStruct.ReceiveSettings.sampleFrequency, ...
-    iusIqStruct.DrivingScheme.numSamplesPerLine / 2 ); % I and Q samples!
-    %iusIqStruct.ReceiveSettings.TimeGainControl.numValues, ...
-    %filterKernelSize);
+    centerFrequency, ...
+    Receive.demodFrequency, ...
+    numTGCValues, ...
+    kernelSize);
+iusDemodulationSetTGC( demodulation, tgc );
+iusDemodulationSetPreFilter( demodulation, preFilter );
+
 iusDemodulationDictSet( demodulationDict, mode, demodulation );
 iusIqFileSetDemodulationDict( h, demodulationDict );
 
@@ -193,6 +215,8 @@ iusTransmitApodizationDelete( transmitApodization );
 iusTransmitApodizationDictDelete( transmitApodizationDict );
 
 % Demodulation
+iusTGCDelete( tgc );
+iusFirFilterDelete( preFilter );
 iusDemodulationDelete( demodulation );
 iusDemodulationDictDelete( demodulationDict );
 
