@@ -1,11 +1,11 @@
 //
 // Created by Ruijzendaal on 20/03/2018.
 //
-#include <ius.h>
+#include <iuf.h>
 #include <string.h>
 
 
-IUS_BOOL  aInB
+IUF_BOOL  aInB
 (
     char *a,
     char **b
@@ -17,14 +17,14 @@ IUS_BOOL  aInB
     {
         if (strcmp(a,b[i])==0)
         {
-            return IUS_TRUE;
+            return IUF_TRUE;
         }
         i++;
     }
-    return IUS_FALSE;
+    return IUF_FALSE;
 }
 
-iu3dte_t iusUtilCreate3DElement
+iu3dte_t iufUtilCreate3DElement
     (
         float x,
         float y,
@@ -36,21 +36,21 @@ iu3dte_t iusUtilCreate3DElement
         float phi
     )
 {
-    iu3dp_t pos = ius3DPositionCreate(
+    iu3dp_t pos = iuf3DPositionCreate(
     x,
     y,
     z
     );
-    iu3da_t ang = ius3DAngleCreate(
+    iu3da_t ang = iuf3DAngleCreate(
     theta,
     phi
     );
-    iu3ds_t siz = ius3DSizeCreate(
+    iu3ds_t siz = iuf3DSizeCreate(
     sx,
     sy,
     sz
     );
-    iu3dte_t ele = ius3DTransducerElementCreate(
+    iu3dte_t ele = iuf3DTransducerElementCreate(
     pos,
     ang,
     siz
@@ -58,7 +58,7 @@ iu3dte_t iusUtilCreate3DElement
     return ele;
 }
 
-iu2dte_t iusUtilCreate2DElement
+iu2dte_t iufUtilCreate2DElement
     (
         float x,
         float z,
@@ -67,9 +67,9 @@ iu2dte_t iusUtilCreate2DElement
         float phi
     )
 {
-    iu2dp_t pos = ius2DPositionCreate(x, z);
-    iu2ds_t siz = ius2DSizeCreate(sx, sz);
-    iu2dte_t ele = ius2DTransducerElementCreate(pos, phi, siz);
+    iu2dp_t pos = iuf2DPositionCreate(x, z);
+    iu2ds_t siz = iuf2DSizeCreate(sx, sz);
+    iu2dte_t ele = iuf2DTransducerElementCreate(pos, phi, siz);
     return ele;
 }
 

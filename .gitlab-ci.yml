@@ -35,7 +35,7 @@ sonar:
   only:
     - develop
     - master
-    - /^feature/IUS-160.*$/
+    - /^feature/IUF-160.*$/
 
 testing_lib:linux:
   stage: qa
@@ -108,7 +108,7 @@ sdk:
 sdk_test:windows:
   stage: sdk_test
   script: |
-    cd dist\IUS-SDK*
+    cd dist\IUF-SDK*
     ci\bin\unittests.bat
 
   tags:
@@ -120,7 +120,7 @@ sdk_test:linux:
   stage: sdk_test
   image: gitlab.ta.philips.com:5432/forest/docker/centos-ci:0.5.1
   script: |
-    cd dist/IUS-SDK*
+    cd dist/IUF-SDK*
     ci/bin/unittests.sh
 
   tags:

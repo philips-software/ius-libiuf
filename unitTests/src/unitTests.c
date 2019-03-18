@@ -4,61 +4,61 @@
 
 #include <stdio.h>
 #include <unity_fixture.h>
-#include <ius.h>
+#include <iuf.h>
 
 static void RunAllTests(void)
 {
-    RUN_TEST_GROUP(Ius2DNonParametricSource);
-    RUN_TEST_GROUP(Ius2DParametricSource);
-    RUN_TEST_GROUP(Ius2DTransducer);
-    RUN_TEST_GROUP(Ius2DTransducerElement);
-    RUN_TEST_GROUP(Ius2DTransducerElementList);
-    RUN_TEST_GROUP(Ius3DNonParametricSource);
-    RUN_TEST_GROUP(Ius3DParametricSource);
-    RUN_TEST_GROUP(Ius3DTransducer);
-    RUN_TEST_GROUP(Ius3DTransducerElement);
-    RUN_TEST_GROUP(Ius3DTransducerElementList);
-    RUN_TEST_GROUP(IusAcquisition);
-    //RUN_TEST_GROUP(IusCompoundFile);
-    RUN_TEST_GROUP(IusDataStream);
-    RUN_TEST_GROUP(IusDataStreamDict);
-    RUN_TEST_GROUP(IusDemodulation);
-    RUN_TEST_GROUP(IusDemodulationDict);
-//    RUN_TEST_GROUP(IusErrorHandling);
-    RUN_TEST_GROUP(IusFile);
-	RUN_TEST_GROUP(IusFirFilter);
-    RUN_TEST_GROUP(IusFrame);
-    RUN_TEST_GROUP(IusFrameList);
-    RUN_TEST_GROUP(IusInputFile);
-	RUN_TEST_GROUP(IusIqFile);
-    RUN_TEST_GROUP(IusIqPattern);
-    RUN_TEST_GROUP(IusIqPatternList);
-    RUN_TEST_GROUP(IusIqPatternListDict);
-    RUN_TEST_GROUP(IusHistoryNodeList);
-    RUN_TEST_GROUP(IusHistoryNode);
-    RUN_TEST_GROUP(IusParameterDict);
-    RUN_TEST_GROUP(IusNonParametricPulse);
-    RUN_TEST_GROUP(IusParametricPulse);
-    RUN_TEST_GROUP(IusPattern);
-    RUN_TEST_GROUP(IusPatternList);
-    RUN_TEST_GROUP(IusPatternListDict);
-    RUN_TEST_GROUP(IusPulse);
-    RUN_TEST_GROUP(IusPulseDict);
-    RUN_TEST_GROUP(IusReceiveChannelMap);
-    RUN_TEST_GROUP(IusReceiveChannelMapDict);
-    RUN_TEST_GROUP(IusReceiveSettings);
-    RUN_TEST_GROUP(IusReceiveSettingsDict);
-    RUN_TEST_GROUP(IusSource);
-    RUN_TEST_GROUP(IusSourceDict);
-    RUN_TEST_GROUP(IusTGC);
-    RUN_TEST_GROUP(IusTransducer);
-    RUN_TEST_GROUP(IusTransmitApodization);
-    RUN_TEST_GROUP(IusTransmitApodizationDict);
+    RUN_TEST_GROUP(Iuf2DNonParametricSource);
+    RUN_TEST_GROUP(Iuf2DParametricSource);
+    RUN_TEST_GROUP(Iuf2DTransducer);
+    RUN_TEST_GROUP(Iuf2DTransducerElement);
+    RUN_TEST_GROUP(Iuf2DTransducerElementList);
+    RUN_TEST_GROUP(Iuf3DNonParametricSource);
+    RUN_TEST_GROUP(Iuf3DParametricSource);
+    RUN_TEST_GROUP(Iuf3DTransducer);
+    RUN_TEST_GROUP(Iuf3DTransducerElement);
+    RUN_TEST_GROUP(Iuf3DTransducerElementList);
+    RUN_TEST_GROUP(IufAcquisition);
+    //RUN_TEST_GROUP(IufCompoundFile);
+    RUN_TEST_GROUP(IufDataStream);
+    RUN_TEST_GROUP(IufDataStreamDict);
+    RUN_TEST_GROUP(IufDemodulation);
+    RUN_TEST_GROUP(IufDemodulationDict);
+//    RUN_TEST_GROUP(IufErrorHandling);
+    RUN_TEST_GROUP(IufFile);
+	RUN_TEST_GROUP(IufFirFilter);
+    RUN_TEST_GROUP(IufFrame);
+    RUN_TEST_GROUP(IufFrameList);
+    RUN_TEST_GROUP(IufInputFile);
+	RUN_TEST_GROUP(IufIqFile);
+    RUN_TEST_GROUP(IufIqPattern);
+    RUN_TEST_GROUP(IufIqPatternList);
+    RUN_TEST_GROUP(IufIqPatternListDict);
+    RUN_TEST_GROUP(IufHistoryNodeList);
+    RUN_TEST_GROUP(IufHistoryNode);
+    RUN_TEST_GROUP(IufParameterDict);
+    RUN_TEST_GROUP(IufNonParametricPulse);
+    RUN_TEST_GROUP(IufParametricPulse);
+    RUN_TEST_GROUP(IufPattern);
+    RUN_TEST_GROUP(IufPatternList);
+    RUN_TEST_GROUP(IufPatternListDict);
+    RUN_TEST_GROUP(IufPulse);
+    RUN_TEST_GROUP(IufPulseDict);
+    RUN_TEST_GROUP(IufReceiveChannelMap);
+    RUN_TEST_GROUP(IufReceiveChannelMapDict);
+    RUN_TEST_GROUP(IufReceiveSettings);
+    RUN_TEST_GROUP(IufReceiveSettingsDict);
+    RUN_TEST_GROUP(IufSource);
+    RUN_TEST_GROUP(IufSourceDict);
+    RUN_TEST_GROUP(IufTGC);
+    RUN_TEST_GROUP(IufTransducer);
+    RUN_TEST_GROUP(IufTransmitApodization);
+    RUN_TEST_GROUP(IufTransmitApodizationDict);
 }
 
 int main(int argc, const char * argv[])
 {
-    iusHDF5ErrorLog(IUS_FALSE);
-    iusErrorLog(IUS_FALSE);
+    iufHDF5ErrorLog(IUF_FALSE);
+    iufErrorLog(IUF_FALSE);
     return UnityMain(argc, argv, RunAllTests);
 }

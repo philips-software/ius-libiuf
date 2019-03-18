@@ -15,5 +15,5 @@ dist/
 dox/html/*\.*
 dox/html/search/*
 public/
-python/ius.py
+python/iuf.py
 python/test.py

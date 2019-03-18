@@ -7,8 +7,8 @@
  *
  *  ===========================================================================
 */
-#include "ius.h"
-#include <iusInputFilePrivate.h>
+#include "iuf.h"
+#include <iufInputFilePrivate.h>
 #include "mxHandleList.h"
 
 #include "mex.h"
@@ -33,15 +33,15 @@ static double mxif_id = MXIF_IDBASE;
 static iuif_t LF_getHandle(const mxArray * prhs)
 {
     double handleId;
-    iuif_t iusInputFile;
+    iuif_t iufInputFile;
     
     handleId = mxGetScalar(prhs);
-    iusInputFile = (iuif_t)mxHandleListGetById(&inputFileList, handleId);
-    if (iusInputFile == IUIF_INVALID)
+    iufInputFile = (iuif_t)mxHandleListGetById(&inputFileList, handleId);
+    if (iufInputFile == IUIF_INVALID)
     {
         mexErrMsgIdAndTxt("mxInputFile:close", "Unable to find file, file already closed?");
     }
-    return iusInputFile;
+    return iufInputFile;
 }
 
 static void LF_returnDouble(mxArray * plhs[], double returnValue)
@@ -59,7 +59,7 @@ static void LF_returnDict(mxArray * plhs[], iud_t dict, mwIndex numItems)
     double * pDouble;
 
     /*iuta_t ta;
-    ta = iusTransmitApodizationDictGet(dict, "bmode")*/
+    ta = iufTransmitApodizationDictGet(dict, "bmode")*/
 
 
 
@@ -80,21 +80,21 @@ static void LF_returnDict(mxArray * plhs[], iud_t dict, mwIndex numItems)
 
 static void LF_cleanup(void)
 {
-    iuif_t iusInputFile;
+    iuif_t iufInputFile;
     while (inputFileList != MXH_INVALID)
     {   
-        iusInputFile = (iuif_t)mxHandleListRemoveFirst(&inputFileList);        
+        iufInputFile = (iuif_t)mxHandleListRemoveFirst(&inputFileList);
         
-        if (iusInputFile == IUIF_INVALID)
+        if (iufInputFile == IUIF_INVALID)
         {
-            mexErrMsgIdAndTxt("mxInputFile:mexatexit", "Invalid iusInputFile handle.");
+            mexErrMsgIdAndTxt("mxInputFile:mexatexit", "Invalid iufInputFile handle.");
         }
 
-        if (iusInputFileClose(iusInputFile) != IUS_E_OK)
+        if (iufInputFileClose(iufInputFile) != IUF_E_OK)
         {
             mexErrMsgIdAndTxt("mxInputFile:mexatexit", "Unable to close file, file already closed?");
         }
-        if (iusInputFileDelete(iusInputFile) != IUS_E_OK)
+        if (iufInputFileDelete(iufInputFile) != IUF_E_OK)
         {
             mexErrMsgIdAndTxt("mxInputFile:mexatexit", "Unable to delete instance.");
         }
@@ -136,13 +136,13 @@ static void create(int nlhs, mxArray * plhs[], int nrhs, const mxArray * prhs[])
 {
     char * filename;
     double handleId;
-    iuif_t iusInputFile;
+    iuif_t iufInputFile;
 
     filename = LF_getFileName(prhs[1]);
 
     /* Create new input file */
-    iusInputFile = iusInputFileCreate(filename);
-    if (iusInputFile == IUIF_INVALID)
+    iufInputFile = iufInputFileCreate(filename);
+    if (iufInputFile == IUIF_INVALID)
     {
         mexErrMsgIdAndTxt("mxInputFile:create", "Unable to create file, file already open?");
     }
@@ -150,12 +150,12 @@ static void create(int nlhs, mxArray * plhs[], int nrhs, const mxArray * prhs[])
     mexAtExit(LF_cleanup);
 
     /* Add file handle to a handle list */
-    handleId = mxHandleListAppend(&inputFileList, iusInputFile );
+    handleId = mxHandleListAppend(&inputFileList, iufInputFile );
 
     /* Return file identifier */
     LF_returnDouble(plhs, handleId);
 
-    mexPrintf("iusInputFile '%s' opened.\n", filename);
+    mexPrintf("iufInputFile '%s' opened.\n", filename);
 
     /* Cleanup memory */
     mxFree(filename);
@@ -179,29 +179,29 @@ static void channelCreate(int nlhs, mxArray * plhs[], int nrhs, const mxArray * 
 static void delete(int nlhs, mxArray * plhs[], int nrhs, const mxArray * prhs[])
 {
     double handleId;
-    iuif_t iusInputFile;
+    iuif_t iufInputFile;
 
     handleId = mxGetScalar(prhs[1]);
 
-    iusInputFile = (iuif_t)mxHandleListGetById(&inputFileList, handleId);    
-    if (iusInputFileDelete(iusInputFile) != IUS_E_OK)
+    iufInputFile = (iuif_t)mxHandleListGetById(&inputFileList, handleId);
+    if (iufInputFileDelete(iufInputFile) != IUF_E_OK)
     {
         mexErrMsgIdAndTxt("mxInputFile:close", "Unable to delete instance.");
     }
-    iusInputFile = (iuif_t)mxHandleListRemoveById(&inputFileList, handleId);
-    mexPrintf("iusInputFile data deleted.\n");
+    iufInputFile = (iuif_t)mxHandleListRemoveById(&inputFileList, handleId);
+    mexPrintf("iufInputFile data deleted.\n");
 }
 
 static void nodeLoad(int nlhs, mxArray * plhs[], int nrhs, const mxArray * prhs[])
 {
     char * filename;
     double handleId;
-    iuif_t iusInputFile;
+    iuif_t iufInputFile;
 
     filename = LF_getFileName(prhs[1]);
 
-    iusInputFile = iusInputFileNodeLoad(filename);
-    if (iusInputFile == IUIF_INVALID)
+    iufInputFile = iufInputFileNodeLoad(filename);
+    if (iufInputFile == IUIF_INVALID)
     {
         mexErrMsgIdAndTxt("mxInputFile:nodeload", "Unable to load node");
     }
@@ -209,12 +209,12 @@ static void nodeLoad(int nlhs, mxArray * plhs[], int nrhs, const mxArray * prhs[
     mexAtExit(LF_cleanup);
 
     /* Add file handle to a handle list */
-    handleId = mxHandleListAppend(&inputFileList, iusInputFile);
+    handleId = mxHandleListAppend(&inputFileList, iufInputFile);
 
     /* Return file identifier */
     LF_returnDouble(plhs, handleId);
 
-    mexPrintf("iusInputFile '%s' loaded.\n", filename);
+    mexPrintf("iufInputFile '%s' loaded.\n", filename);
 
     /* Cleanup memory */
     mxFree(filename);
@@ -227,13 +227,13 @@ static void nodeSave(int nlhs, mxArray * plhs[], int nrhs, const mxArray * prhs[
 
 static void close(int nlhs, mxArray * plhs[], int nrhs, const mxArray * prhs[])
 {
-    iuif_t iusInputFile;
-    iusInputFile = LF_getHandle(prhs[1]);
-    if (iusInputFileClose(iusInputFile) != IUS_E_OK)
+    iuif_t iufInputFile;
+    iufInputFile = LF_getHandle(prhs[1]);
+    if (iufInputFileClose(iufInputFile) != IUF_E_OK)
     {
         mexErrMsgIdAndTxt("mxInputFile:close", "Unable to close file, file already closed?");
     }
-    mexPrintf("iusInputFile closed.\n");
+    mexPrintf("iufInputFile closed.\n");
 }
 
 static void compare(int nlhs, mxArray * plhs[], int nrhs, const mxArray * prhs[])
@@ -244,7 +244,7 @@ static void compare(int nlhs, mxArray * plhs[], int nrhs, const mxArray * prhs[]
 
     reference = LF_getHandle(prhs[1]);
     actual = LF_getHandle(prhs[2]);
-    isEqual = iusInputFileCompare(reference, actual);
+    isEqual = iufInputFileCompare(reference, actual);
     
     LF_returnDouble(plhs, (double)isEqual);
 }
@@ -277,13 +277,13 @@ static void getReceiveChannelMapDict(int nlhs, mxArray * plhs[], int nrhs, const
 static void getTransmitApodizationDict(int nlhs, mxArray * plhs[], int nrhs, const mxArray * prhs[])
 {
 
-    iuif_t iusInputFile;    
+    iuif_t iufInputFile;
     iutad_t tad;
     size_t numItems;
 
-    iusInputFile = LF_getHandle(prhs[1]);
-    tad = iusInputFileGetTransmitApodizationDict(iusInputFile);
-    numItems = iusTransmitApodizationDictGetSize(tad);
+    iufInputFile = LF_getHandle(prhs[1]);
+    tad = iufInputFileGetTransmitApodizationDict(iufInputFile);
+    numItems = iufTransmitApodizationDictGetSize(tad);
     
     mexPrintf("Number of elements: %d.\n", numItems);
 

@@ -3,29 +3,29 @@
 //=============================================================================
 //
 //  Source Name   : mxSpectralDoppler.c
-//                  MatLab mex calling iusSpectralDoppler.c
-//  iusVersion    : 255.255.255.255
+//                  MatLab mex calling iufSpectralDoppler.c
+//  iufVersion    : 255.255.255.255
 //
 //=============================================================================
 
-#include "iusSpectralDoppler.h"
-#include "base/iusVector.h"
-#include "base/iusMatrix.h"
-#include "base/iusBasicFunctions.h" /* iusIsPowerOfTwo */
+#include "iufSpectralDoppler.h"
+#include "base/iufVector.h"
+#include "base/iufMatrix.h"
+#include "base/iufBasicFunctions.h" /* iufIsPowerOfTwo */
 #include "mex.h"
 #include <string.h> /* strcmp */
 
 //-----------------------------------------------------------------------------
 // G L O B A L S
 //-----------------------------------------------------------------------------
-static IUSSpectralDopplerInstance *		pInst				= NULL;
+static IUFSpectralDopplerInstance *		pInst				= NULL;
 //---------------------------------------------------------------------
 // Intermediate arrays for passing RF & IQ data
 // These are initated upon calling "Create"
 //---------------------------------------------------------------------
 static int *							pPacketStartIndex	= NULL;
 static float **							ppRfLinesIn			= NULL;
-// IQ Lines in can make use of the array within the iusSpectralDoppler class
+// IQ Lines in can make use of the array within the iufSpectralDoppler class
 static float **							ppPowerSpectrumOut	= NULL;
 static float *							pVOut				= NULL;
 static float *							pSigmaVOut			= NULL;
@@ -184,9 +184,9 @@ void mexFunction
             // get int* to packetStartIndex array
             pDoubleMexMatrixInPacketStartIndex = mxGetPr(prhs[3]); 
             // allocate memory
-            pPacketStartIndex = iusAllocIntVector( numPackets );
+            pPacketStartIndex = iufAllocIntVector( numPackets );
             // copy the values
-            iusCopyDoubleVector2IntVector( pPacketStartIndex, pDoubleMexMatrixInPacketStartIndex, numPackets );
+            iufCopyDoubleVector2IntVector( pPacketStartIndex, pDoubleMexMatrixInPacketStartIndex, numPackets );
 
 
             if (ensembleSize <= 1)
@@ -202,12 +202,12 @@ void mexFunction
                 mexErrMsgTxt("mxSpectralDoppler Create: packetSize larger than numSamplesPerRfLine makes no sense");
             }
 
-            pInst = iusSpectralDopplerCreate( numSamplesPerRfLine, ensembleSize, pPacketStartIndex, numPackets, packetSize, samplesPerWave );
+            pInst = iufSpectralDopplerCreate( numSamplesPerRfLine, ensembleSize, pPacketStartIndex, numPackets, packetSize, samplesPerWave );
             // initialize the input and output arrays
-            ppRfLinesIn         = iusAllocFloatMatrix( ensembleSize, numSamplesPerRfLine );
-            ppPowerSpectrumOut  = iusAllocFloatMatrix( numPackets, ensembleSize );
-            pVOut               = iusAllocFloatVector( numPackets );
-            pSigmaVOut          = iusAllocFloatVector( numPackets );
+            ppRfLinesIn         = iufAllocFloatMatrix( ensembleSize, numSamplesPerRfLine );
+            ppPowerSpectrumOut  = iufAllocFloatMatrix( numPackets, ensembleSize );
+            pVOut               = iufAllocFloatVector( numPackets );
+            pSigmaVOut          = iufAllocFloatVector( numPackets );
         }
         
     }
@@ -226,10 +226,10 @@ void mexFunction
         {
             mexErrMsgTxt("mxSpectralDoppler RunOnRfData: you try to call RunOnRfData method before calling Create.");
         }
-        IUS_ASSERT_MEMORY( ppRfLinesIn != NULL );
-        IUS_ASSERT_MEMORY( ppPowerSpectrumOut != NULL );
-        IUS_ASSERT_MEMORY( pVOut != NULL );
-        IUS_ASSERT_MEMORY( pSigmaVOut != NULL );
+        IUF_ASSERT_MEMORY( ppRfLinesIn != NULL );
+        IUF_ASSERT_MEMORY( ppPowerSpectrumOut != NULL );
+        IUF_ASSERT_MEMORY( pVOut != NULL );
+        IUF_ASSERT_MEMORY( pSigmaVOut != NULL );
 
 
         // verify input arguments (i.e. prhs[n], n=1,2,3,...)
@@ -268,7 +268,7 @@ void mexFunction
 			for (i = 0; i < numLines; i++)
 			{
 				// cast double input vector coming from matlab workspace to a float vector
-				iusCopyDoubleVector2FloatVector(iusMatrixRow(ppRfLinesIn, i),
+				iufCopyDoubleVector2FloatVector(iufMatrixRow(ppRfLinesIn, i),
 					pDblMexMatrixRFDataIn + i * numSamplesPerRfLine, numSamplesPerRfLine);
 			}
 		}
@@ -277,7 +277,7 @@ void mexFunction
 			float*      pFltMexMatrixRfDataIn = (float*)mxGetData(prhs[1]);
 			for (i = 0; i < numLines; i++)
 			{
-				iusCopyFloatVector(ppRfLinesIn[i], pFltMexMatrixRfDataIn + i * numSamplesPerRfLine, numSamplesPerRfLine);
+				iufCopyFloatVector(ppRfLinesIn[i], pFltMexMatrixRfDataIn + i * numSamplesPerRfLine, numSamplesPerRfLine);
 			}
 		}
 
@@ -290,7 +290,7 @@ void mexFunction
 		pDblMexMatrixSigmaVOut = mxGetPr(plhs[2]); // get double* to output array
 
         // Run spectral Doppler on RF data
-        iusSpectralDopplerRunOnRfData( pInst, ppRfLinesIn, numLines, numSamplesPerRfLine, ppPowerSpectrumOut, pVOut, pSigmaVOut, pInst->numPackets );
+        iufSpectralDopplerRunOnRfData( pInst, ppRfLinesIn, numLines, numSamplesPerRfLine, ppPowerSpectrumOut, pVOut, pSigmaVOut, pInst->numPackets );
 
         // cast float output vector to a double vector going to matlab workspace as a column of outputmatrix
 		for (i = 0; i < pInst->ensembleSize; i++)
@@ -300,8 +300,8 @@ void mexFunction
 				*(pDblMexMatrixPowerSpectrumOut + i*pInst->numPackets + j) = (double)ppPowerSpectrumOut[j][i];
 			}
 		}
-		iusCopyFloatVector2DoubleVector(pDblMexMatrixVOut, pVOut, pInst->numPackets);
-        iusCopyFloatVector2DoubleVector( pDblMexMatrixSigmaVOut, pSigmaVOut, pInst->numPackets );
+		iufCopyFloatVector2DoubleVector(pDblMexMatrixVOut, pVOut, pInst->numPackets);
+        iufCopyFloatVector2DoubleVector( pDblMexMatrixSigmaVOut, pSigmaVOut, pInst->numPackets );
 
 	}
     else if (strcmp(sMethod, "RunOnIqData") == 0)
@@ -319,10 +319,10 @@ void mexFunction
         {
             mexErrMsgTxt("mxSpectralDoppler RunOnIqData: you try to call RunOnIqData method before calling Create.");
         }
-        IUS_ASSERT_MEMORY( pInst->pIqData != NULL ); // We won't need a new array
-        IUS_ASSERT_MEMORY( ppPowerSpectrumOut != NULL );
-        IUS_ASSERT_MEMORY( pVOut != NULL );
-        IUS_ASSERT_MEMORY( pSigmaVOut != NULL );
+        IUF_ASSERT_MEMORY( pInst->pIqData != NULL ); // We won't need a new array
+        IUF_ASSERT_MEMORY( ppPowerSpectrumOut != NULL );
+        IUF_ASSERT_MEMORY( pVOut != NULL );
+        IUF_ASSERT_MEMORY( pSigmaVOut != NULL );
 
 
         // verify input arguments (i.e. prhs[n], n=1,2,3,...)
@@ -362,10 +362,10 @@ void mexFunction
 			for (i = 0; i < numLines; i++)
 			{
 				// cast double input vector coming from matlab workspace to a float vector
-				iusCopyDoubleVector2FloatVector( iusMatrixRow(pInst->pIqData->ppRe, i),
+				iufCopyDoubleVector2FloatVector( iufMatrixRow(pInst->pIqData->ppRe, i),
 					pDblMexMatrixIDataIn + i * numSamplesPerIqLine, numSamplesPerIqLine );
 				// cast double input vector coming from matlab workspace to a float vector
-				iusCopyDoubleVector2FloatVector( iusMatrixRow(pInst->pIqData->ppIm, i),
+				iufCopyDoubleVector2FloatVector( iufMatrixRow(pInst->pIqData->ppIm, i),
 					pDblMexMatrixQDataIn + i * numSamplesPerIqLine, numSamplesPerIqLine );
 			}
 		}
@@ -376,8 +376,8 @@ void mexFunction
 			for (i = 0; i < numLines; i++)
 			{
 				// No type casting needed; just copy the data to pInst->pIqData
-				iusCopyFloatVector(pInst->pIqData->ppRe[i], pFltMexMatrixIDataIn + i * numSamplesPerIqLine, numSamplesPerIqLine);
-				iusCopyFloatVector(pInst->pIqData->ppIm[i], pFltMexMatrixQDataIn + i * numSamplesPerIqLine, numSamplesPerIqLine);
+				iufCopyFloatVector(pInst->pIqData->ppRe[i], pFltMexMatrixIDataIn + i * numSamplesPerIqLine, numSamplesPerIqLine);
+				iufCopyFloatVector(pInst->pIqData->ppIm[i], pFltMexMatrixQDataIn + i * numSamplesPerIqLine, numSamplesPerIqLine);
 			}
 		}
 
@@ -389,7 +389,7 @@ void mexFunction
         pDblMexMatrixSigmaVOut = mxGetPr(plhs[2]); // get double* to output array
 
 		// Run spectral Doppler on IQ data
-		iusSpectralDopplerRunOnIqData( pInst, pInst->pIqData, numLines, numSamplesPerIqLine, ppPowerSpectrumOut, pVOut, pSigmaVOut, pInst->numPackets );
+		iufSpectralDopplerRunOnIqData( pInst, pInst->pIqData, numLines, numSamplesPerIqLine, ppPowerSpectrumOut, pVOut, pSigmaVOut, pInst->numPackets );
 
 		// cast float output vector to a double vector going to matlab workspace as a column of outputmatrix
 		for (i = 0; i < pInst->ensembleSize; i++)
@@ -399,8 +399,8 @@ void mexFunction
 				*(pDblMexMatrixPowerSpectrumOut + i*pInst->numPackets + j) = (double)ppPowerSpectrumOut[j][i];
 			}
 		}
-		iusCopyFloatVector2DoubleVector(pDblMexMatrixVOut, pVOut, pInst->numPackets);
-		iusCopyFloatVector2DoubleVector( pDblMexMatrixSigmaVOut, pSigmaVOut, pInst->numPackets );
+		iufCopyFloatVector2DoubleVector(pDblMexMatrixVOut, pVOut, pInst->numPackets);
+		iufCopyFloatVector2DoubleVector( pDblMexMatrixSigmaVOut, pSigmaVOut, pInst->numPackets );
 
     }
     else if (strcmp(sMethod, "Destroy") == 0)
@@ -410,13 +410,13 @@ void mexFunction
         {
 
             // Free memory that was allocated
-            iusFreeIntVector( pPacketStartIndex );
-            iusFreeFloatMatrix( ppRfLinesIn, pInst->ensembleSize );
-            iusFreeFloatMatrix( ppPowerSpectrumOut, pInst->numPackets );
-            iusFreeFloatVector( pVOut );
-            iusFreeFloatVector( pSigmaVOut );
+            iufFreeIntVector( pPacketStartIndex );
+            iufFreeFloatMatrix( ppRfLinesIn, pInst->ensembleSize );
+            iufFreeFloatMatrix( ppPowerSpectrumOut, pInst->numPackets );
+            iufFreeFloatVector( pVOut );
+            iufFreeFloatVector( pSigmaVOut );
 
-            iusSpectralDopplerDestroy( pInst );
+            iufSpectralDopplerDestroy( pInst );
             pInst = NULL;
 
         }
@@ -458,12 +458,12 @@ void mexFunction
 			pDoubleMexMatrixInPacketStartIndex = mxGetPr(prhs[1]); 
 			int packetSize = (int)mxGetScalar(prhs[2]);
 			// allocate memory
-			pPacketStartIndex = iusAllocIntVector( numPackets );
+			pPacketStartIndex = iufAllocIntVector( numPackets );
 			// copy the values
-			iusCopyDoubleVector2IntVector( pPacketStartIndex, pDoubleMexMatrixInPacketStartIndex, numPackets );
+			iufCopyDoubleVector2IntVector( pPacketStartIndex, pDoubleMexMatrixInPacketStartIndex, numPackets );
 
 			// call setPacket function
-			iusSpectralDopplerSetPacket( pInst, pPacketStartIndex, numPackets, packetSize );
+			iufSpectralDopplerSetPacket( pInst, pPacketStartIndex, numPackets, packetSize );
 		}
 
 	}

@@ -2,37 +2,37 @@ from unittest import TestCase
 
 import sys
 if sys.version_info < (3, 0):
-    from Python2Ius import *
+    from Python2Iuf import *
 else:
-    from Python3Ius import *
+    from Python3Iuf import *
 
 
 class TestErrorHandling(TestCase):
     def test_auto_report(self):
-        iusErrorAutoReportSet(IUS_FALSE)
+        iufErrorAutoReportSet(IUF_FALSE)
         with self.assertRaises(Exception) as context:
-            inputFile = iusFileLoad(None);
+            inputFile = iufFileLoad(None);
         self.assertTrue('pFilename argument is NULL' in str(context.exception))
 
     def test_walk(self):
-        iusErrorAutoReportSet(IUS_FALSE)
+        iufErrorAutoReportSet(IUF_FALSE)
         with self.assertRaises(Exception) as context:
-            inputFile = iusFileLoad(None);
-            inputFile = iusFileLoad(None);
+            inputFile = iufFileLoad(None);
+            inputFile = iufFileLoad(None);
 
         self.assertTrue('pFilename argument is NULL' in str(context.exception))
         #
 
     def test_clearstack(self):
-        iusErrorAutoReportSet(IUS_FALSE)
-        iusErrorLogClear()
-        self.assertEqual("", iusErrorString())
+        iufErrorAutoReportSet(IUF_FALSE)
+        iufErrorLogClear()
+        self.assertEqual("", iufErrorString())
         try:
-            inputFile = iusFileLoad(None);
+            inputFile = iufFileLoad(None);
         except Exception as ex:
             pass
 
-        errorMsg = iusErrorString()
+        errorMsg = iufErrorString()
         self.assertTrue('pFilename argument is NULL' in errorMsg)
-        iusErrorLogClear()
-        self.assertEqual("", iusErrorString())
+        iufErrorLogClear()
+        self.assertEqual("", iufErrorString())

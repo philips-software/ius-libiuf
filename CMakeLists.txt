@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.00)
-project(iusLibrary C)
+project(iufLibrary C)
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/external/cmake_modules" ${CMAKE_MODULE_PATH})
@@ -20,7 +20,7 @@ else()
     set(CMAKE_CXX_CPPCHECK "cppcheck")
 endif()
 
-set (IUS_LIBRARIES ius)
+set (IUF_LIBRARIES iuf)
 set (HASHMAP_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/external/hashmap/src")
 set (HASHMAP_SOURCES "${PROJECT_SOURCE_DIR}/external/hashmap/src/hashmap.c")
 FIND_PACKAGE(HDF5 1.8 COMPONENTS C HL REQUIRED)

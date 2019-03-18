@@ -20,8 +20,8 @@ ScriptPath=$(dirname $(realpath $0))
 BuildFolder=$(realpath ${ScriptPath}/../..)/build
 StartFolder=$(pwd)
 DistFolder=${StartFolder}/dist
-IUSRelease="IUS-SDK-$(releaseNumber)"
-ReleaseFolder="${DistFolder}/${IUSRelease}"
+IUFRelease="IUF-SDK-$(releaseNumber)"
+ReleaseFolder="${DistFolder}/${IUFRelease}"
 DocFolder="${ReleaseFolder}/documentation"
 DocSource="${StartFolder}/dox"
 
@@ -46,7 +46,7 @@ do
     tar xfz $i/dist.tgz
 done
 
-echo === Creating release package ${IUSRelease}
+echo === Creating release package ${IUFRelease}
 [[ ! -d ${DistFolder} ]] && echo "Error: No distribution data found" >&2 && exit 1
 [[ -d ${ReleaseFolder} ]] && rm -rf ${ReleaseFolder}
 

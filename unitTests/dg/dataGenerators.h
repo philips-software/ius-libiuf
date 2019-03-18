@@ -1,22 +1,22 @@
 //
 // Created by Ruijzendaal on 16/04/2018.
 //
-#ifndef IUSLIBRARY_TESTDATAGENERATORS_H
-#define IUSLIBRARY_TESTDATAGENERATORS_H
+#ifndef IUFLIBRARY_TESTDATAGENERATORS_H
+#define IUFLIBRARY_TESTDATAGENERATORS_H
 
-#include <iusAcquisition.h>
-#include <iusPatternList.h>
-#include <iusPulseDict.h>
-#include <iusReceiveChannelMapDict.h>
-#include <iusTransmitApodizationDict.h>
-#include <iusReceiveSettingsDict.h>
-#include <iusFrameList.h>
-#include <iusSourceDict.h>
-#include <iusTransducer.h>
-#include <iusInputFile.h>
-#include <iusIqFile.h>
-#include <iusParameterDict.h>
-#include <iusHistoryNode.h>
+#include <iufAcquisition.h>
+#include <iufPatternList.h>
+#include <iufPulseDict.h>
+#include <iufReceiveChannelMapDict.h>
+#include <iufTransmitApodizationDict.h>
+#include <iufReceiveSettingsDict.h>
+#include <iufFrameList.h>
+#include <iufSourceDict.h>
+#include <iufTransducer.h>
+#include <iufInputFile.h>
+#include <iufIqFile.h>
+#include <iufParameterDict.h>
+#include <iufHistoryNode.h>
 
 
 void dgFillData
@@ -74,12 +74,12 @@ iuiqf_t dgGenerateIqFile
 
 int dgDeleteInputFile
 (
-	iuif_t iusInputFile
+	iuif_t iufInputFile
 );
 
 int dgDeleteIqFile
 (
-	iuiqf_t iusIqFile
+	iuiqf_t iufIqFile
 );
 
 iufl_t dgGenerateFrameList
@@ -176,4 +176,4 @@ iut_t dgGenerateTransducer
 );
 
 
-#endif //IUSLIBRARY_TESTDATAGENERATORS_H
+#endif //IUFLIBRARY_TESTDATAGENERATORS_H

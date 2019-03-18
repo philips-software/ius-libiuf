@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 ScriptPath=$(dirname $(realpath $0))
 SdkRoot=$(realpath ${ScriptPath}/../..)
-Python3Module=Python3Ius.py
-Python2Module=Python2Ius.py
+Python3Module=Python3Iuf.py
+Python2Module=Python2Iuf.py
 
 ModuleFolder=$SdkRoot/build/$(uname)/python/python2
 [[ -f $ModuleFolder/$Python2Module ]] && export PYTHONPATH=$ModuleFolder:$PYTHONPATH

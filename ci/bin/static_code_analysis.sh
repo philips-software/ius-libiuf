@@ -15,7 +15,7 @@ else
     CTEST=ctest
 fi
 
-echo === Static code analysis for ius in $BuildFolder
+echo === Static code analysis for iuf in $BuildFolder
 mkdir -p $BuildFolder
 cd $BuildFolder
 $CMAKE -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ../..
