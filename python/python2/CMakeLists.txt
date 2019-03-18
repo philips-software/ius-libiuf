@@ -16,8 +16,10 @@ if(Python2_FOUND)
     INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/library/private)
     INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/external/hashmap/src)
     INCLUDE_DIRECTORIES(${HDF5_INCLUDE_DIR})
+    INCLUDE_DIRECTORIES('/System/Library/Frameworks/Python.framework/Versions/2.7/Extras/lib/python/numpy/core/include')
 
-    SET(CMAKE_SWIG_FLAGS "")
+
+SET(CMAKE_SWIG_FLAGS "")
     SET(UseSWIG_TARGET_NAME_PREFERENCE STANDARD)
     SET(IUS_TARGET "Python2Ius")
     set_property(SOURCE Python2Ius.i PROPERTY DEPENDS ../PythonIus.it)

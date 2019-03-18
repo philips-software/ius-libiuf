@@ -149,7 +149,7 @@ typedef iuhn_t iuif_t;
 //%}
 //
 //%apply (double* IN_ARRAY1, int DIM1){(double* input, int length)};
-
+//
 //int iusDataFill
 //        (
 //                iud_t data,

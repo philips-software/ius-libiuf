@@ -13,7 +13,7 @@ def saveFrames(inputFile, label, numFrames):
     offset = iusOffsetCreate();
 
     for i in range(numFrames):
-        dgFillData(frame, 1 + i * 1.0)
+        dgFillData(frame, 99 + i * 1.0)
         offset.t = i;
         status |= iusInputFileFrameSave(inputFile, label, frame, offset)
 
@@ -67,6 +67,3 @@ class TestData(TestCase):
         status = saveFrames(ifh, dopplerLabel, numFrames)
         self.assertEqual(0, status)
         iusInputFileClose(ifh)
-
-# status = dgInputFileAddGeneratedData(ifh, bmodeLabel, numSamplesPerLine, numChannels)
-        # self.assertEqual(0, status)
