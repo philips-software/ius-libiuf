@@ -1,7 +1,10 @@
 %{
+#include <numpy/arrayobject.h>
+
 #include <iuf.h>
 #include <dataGenerators.h>
 #include "iufAcquisitionADT.h"
+#include "iufDataADT.h"
 #include "iufInputFile.h"
 #include "iufHistoryNodeADT.h"
 #include "iufPatternListADT.h"
@@ -19,6 +22,7 @@
 #include <iuf3DTransducerADT.h>
 #include <iufTransmitApodizationADT.h>
 #include <iufTransmitApodizationDictADT.h>
+
 %}
 
 
@@ -142,20 +146,20 @@ typedef iuhn_t iuif_t;
     }
 }
 
-//%include "numpy.i"
-//
-//%init %{
-//import_array();
-//%}
-//
-//%apply (double* IN_ARRAY1, int DIM1){(double* input, int length)};
-//
-//int iufDataFill
-//        (
-//                iud_t data,
-//                double *input,
-//                int length
-//        );
+%include "numpy.i"
+
+%init %{
+import_array();
+%}
+
+%apply (double* IN_ARRAY1, int DIM1){(double* input, int length)};
+
+int iufDataFill
+        (
+                iud_t data,
+                double *input,
+                int length
+        );
 
 
 %include <iuf2DNonParametricSource.h>
@@ -250,4 +254,4 @@ EXTEND_DICT_ADT(TransmitApodizationDict, IufTransmitApodization)
 %include <iufHistoryNodeADT.h>
 %include <iufAcquisitionADT.h>
 %include <dataGenerators.h>
-
+%include <iufDataADT.h>

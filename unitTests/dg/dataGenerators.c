@@ -235,7 +235,6 @@ iuif_t dgGenerateInputFile
     iut_t transducer = dgGenerateTransducer(transducerName);
     status = iufInputFileSetTransducer(inputFile, transducer);
     TEST_ASSERT(status == IUF_E_OK);
-
     return inputFile;
 }
 

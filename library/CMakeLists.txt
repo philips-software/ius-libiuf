@@ -76,6 +76,7 @@ add_library(iuf STATIC
 		include/iuf3DTransducerElementList.h
 		private/iuf3DTransducerElementListPrivate.h
         include/iufData.h
+		private/iufDataADT.h
 		include/iufDataStream.h
 		private/iufDataStreamDictPrivate.h
 		include/iufDemodulation.h

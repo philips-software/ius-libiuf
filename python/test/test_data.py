@@ -1,6 +1,7 @@
 from unittest import TestCase
 
 import sys
+import numpy as np
 if sys.version_info < (3, 0):
     from Python2Iuf import *
 else:
@@ -11,9 +12,11 @@ def saveFrames(inputFile, label, numFrames):
     status=0
     frame = iufInputFileFrameCreate(inputFile, label);
     offset = iufOffsetCreate();
+    array = np.ones(frame.size)
 
     for i in range(numFrames):
-        dgFillData(frame, 99 + i * 1.0)
+        array.fill(i*i)
+        iufDataFill(frame, array)
         offset.t = i;
         status |= iufInputFileFrameSave(inputFile, label, frame, offset)
 
