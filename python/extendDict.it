@@ -1,57 +1,57 @@
 %import s0list.it
 
 %define EXTEND_DICT_ADT(name, type)
-    %include <ius##name##ADT.h>
-    %include <ius##name.h>
-    S02LIST(ius##name##GetKeys)
+    %include <iuf##name##ADT.h>
+    %include <iuf##name.h>
+    S02LIST(iuf##name##GetKeys)
 
-    %define TOSTR(name) #name
-    %enddef
+//    %define TOSTR(name) #name
+//    %enddef
 
-    %extend Ius ## name {
+   %extend Iuf ## name {
     S02LIST(keys)
 
-    Ius ## name() {
-        return ius ## name ## Create();
+    Iuf ## name() {
+        return iuf ## name ## Create();
     }
 
-    ~Ius ## name() {
-        ius ## name ## Delete($self);
+    ~Iuf ## name() {
+        iuf ## name ## Delete($self);
     }
 
-    size_t __len__()
+   size_t __len__()
     {
-        return (int) ius ## name ## GetSize($self);
+        return (int) iuf ## name ## GetSize($self);
     }
 
     void __setitem__(char *key, type *value)
     {
-        ius ## name ## Set($self, key, value);
+        iuf ## name ## Set($self, key, value);
     }
 
     type *__getitem__(char *key)
     {
-        return ius ## name ## Get($self, key);
+        return iuf ## name ## Get($self, key);
     }
 
     int __contains__(char *item)
     {
-        return ius ## name ## Get($self,item) != NULL;
+        return iuf ## name ## Get($self,item) != NULL;
     }
 
-    int __eq__(Ius ## name *a)
+    int __eq__(Iuf ## name *a)
     {
-    return ius ## name ## Compare($self,a);
+    return iuf ## name ## Compare($self,a);
     }
 
-    int __ne__(Ius ## name *a)
+    int __ne__(Iuf ## name *a)
     {
-    return !ius ## name ## Compare($self,a);
+    return !iuf ## name ## Compare($self,a);
     }
 
     char **keys()
     {
-        return ius ## name ## GetKeys($self);
+        return iuf ## name ## GetKeys($self);
     }
 
     };

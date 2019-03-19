@@ -1,4 +1,4 @@
-# Instructions for the building and use IUS-SDK Software
+# Instructions for the building and use IUF-SDK Software
 
 This distribution contains a cross-platform binary distribution of the Interventional Ultrasound Library SDK. 
 This document contains instructions on
@@ -24,7 +24,7 @@ When installed, the sdk contains a file structure that is similar to:
 │   └── img
 ├── examples
 │   ├── genV3file
-│   └── iusInputFileConvert
+│   └── iufInputFileConvert
 ├── external
 │   ├── Unity
 │   ├── cmake_modules
@@ -56,19 +56,19 @@ The html folder contains the generated API documentation. Main file
 is index.html.
 
 ### examples
-The examples folder contains examples that demonstrate the use of the IUS fileio 
+The examples folder contains examples that demonstrate the use of the IUF fileio
 library.
-* iusInputFileConvert - converts the V2 input file to V3 input file
-* genV3file - just a ius file generator, with some arbitrary data
+* iufInputFileConvert - converts the V2 input file to V3 input file
+* genV3file - just a iuf file generator, with some arbitrary data
 
 ### external
 This folder needs the external dependencies, needed to build the software.
 
 ### include
-This folder contains the IUS-SDK header files.
+This folder contains the IUF-SDK header files.
 
 ### library
-This folder contains the IUS-SDK platform specific static library files, both 
+This folder contains the IUF-SDK platform specific static library files, both
 compiled for debug and release mode.
 
 ### unitTests
@@ -116,8 +116,8 @@ In order to build and test the code, the required packages need to be installed:
     $ cadenv -r 2.7-64 python
     
     # extract SDK
-    $ unzip IUS-SDK-3.1.0.zip
-    $ cd dist/IUS-SDK-3.1.0
+    $ unzip IUF-SDK-3.1.0.zip
+    $ cd dist/IUF-SDK-3.1.0
 ```
 
 ### Build instructions for Mac/Linux
@@ -162,10 +162,10 @@ In order to build and test the code, the required packages need to be installed:
 ## How to create you own program
 The examples folder can be used to integrate you own program into 
 build process. Steps are as follows:
-- Create a new sub-folder of the examples folder, say myIUSapp
-- Add subfolder myIUSapp to the build process by extendig the examples/CmakeLists.txt 
-file with the statement: add_subdirectory(myIUSapp)
-- Create your sources and CMakeLists.txt in the myIUSapp folder, similar to 
+- Create a new sub-folder of the examples folder, say myIUFapp
+- Add subfolder myIUFapp to the build process by extendig the examples/CmakeLists.txt
+file with the statement: add_subdirectory(myIUFapp)
+- Create your sources and CMakeLists.txt in the myIUFapp folder, similar to
 the other examples.
 
 ## Where to find SDK documentation

@@ -7,10 +7,10 @@
  *
  *  ==============================================================================
  */
-#ifndef IUS_EXAMPLE_NODE_CONFIG_H
-#define IUS_EXAMPLE_NODE_CONFIG_H
+#ifndef IUF_EXAMPLE_NODE_CONFIG_H
+#define IUF_EXAMPLE_NODE_CONFIG_H
 
-#include "ius.h"
+#include "iuf.h"
 
 int ncInputFileNodeConfig
 (
@@ -19,4 +19,4 @@ int ncInputFileNodeConfig
     char *transducerName,
     char *label
 );
-#endif //IUS_EXAMPLE_NODE_CONFIG_H
+#endif //IUF_EXAMPLE_NODE_CONFIG_H

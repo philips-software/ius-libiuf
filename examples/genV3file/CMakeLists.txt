@@ -7,16 +7,17 @@ add_executable(genV3file
         )
 
 target_link_libraries(genV3file
-        ${IUS_LIBRARIES}
+        ${IUF_LIBRARIES}
         ${HDF5_LIBRARIES}
         ${HDF5_HL_LIBRARIES}
+        ${UUID_LIBRARIES}
         )
 
 target_include_directories(genV3file PUBLIC
         ${CMAKE_CURRENT_LIST_DIR}
         ${CMAKE_CURRENT_LIST_DIR}/include
         ${CMAKE_SOURCE_DIR}/library/include
-        ${IUS_INCLUDE_DIR}
+        ${IUF_INCLUDE_DIR}
         )
 
 

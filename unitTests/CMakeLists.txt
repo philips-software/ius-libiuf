@@ -7,56 +7,59 @@ include_directories(${CMAKE_CURRENT_LIST_DIR})
 include_directories(${CMAKE_CURRENT_LIST_DIR}/include)
 link_directories(${CMAKE_SOURCE_DIR}/library/${CMAKE_SYSTEM_NAME})
 
+#add_library(dg STATIC
+#        include/dataGenerators.h
+#        src/dataGenerators.c)
+add_subdirectory(dg)
+
 
 add_executable(unitTests
-        include/testDataGenerators.h
-        src/testDataGenerators.c
         src/unitTests.c
-        src/testIus2DNonParametricSource.c
-        src/testIus2DParametricSource.c
-        src/testIus2DTransducer.c
-        src/testIus2DTransducerElement.c
-        src/testIus2DTransducerElementList.c
-        src/testIus3DNonParametricSource.c
-        src/testIus3DParametricSource.c
-        src/testIus3DTransducer.c
-        src/testIus3DTransducerElement.c
-        src/testIus3DTransducerElementList.c
-        src/testIusAcquisition.c
-        src/testIusDataStream.c
-        src/testIusDataStreamDict.c
-		src/testIusDemodulation.c
-        src/testIusDemodulationDict.c
-        src/testIusErrorHandling.c
-        src/testIusFile.c
-        src/testIusFilter.c
-        src/testIusFrame.c
-        src/testIusFrameList.c
-        src/testIusInputFile.c
-		src/testIusIqFile.c
-        src/testIusIqPattern.c
-        src/testIusIqPatternList.c
-        src/testIusIqPatternListDict.c
-        src/testIusHistoryNode.c
-        src/testIusHistoryNodeList.c
-        src/testIusNonParametricPulse.c
-        src/testIusParameterDict.c
-        src/testIusParametricPulse.c
-        src/testIusPattern.c
-        src/testIusPatternList.c
-        src/testIusPatternListDict.c
-        src/testIusPulseDict.c
-        src/testIusPulse.c
-        src/testIusReceiveSettings.c
-        src/testIusReceiveSettingsDict.c
-        src/testIusReceiveChannelMap.c
-        src/testIusReceiveChannelMapDict.c
-        src/testIusSourceDict.c
-        src/testIusSource.c
-        src/testIusTransducer.c
-        src/testIusTransmitApodization.c
-        src/testIusTransmitApodizationDict.c
-        src/testIusTGC.c
+        src/testIuf2DNonParametricSource.c
+        src/testIuf2DParametricSource.c
+        src/testIuf2DTransducer.c
+        src/testIuf2DTransducerElement.c
+        src/testIuf2DTransducerElementList.c
+        src/testIuf3DNonParametricSource.c
+        src/testIuf3DParametricSource.c
+        src/testIuf3DTransducer.c
+        src/testIuf3DTransducerElement.c
+        src/testIuf3DTransducerElementList.c
+        src/testIufAcquisition.c
+        src/testIufDataStream.c
+        src/testIufDataStreamDict.c
+		src/testIufDemodulation.c
+        src/testIufDemodulationDict.c
+        src/testIufErrorHandling.c
+        src/testIufFile.c
+        src/testIufFilter.c
+        src/testIufFrame.c
+        src/testIufFrameList.c
+        src/testIufInputFile.c
+		src/testIufIqFile.c
+        src/testIufIqPattern.c
+        src/testIufIqPatternList.c
+        src/testIufIqPatternListDict.c
+        src/testIufHistoryNode.c
+        src/testIufHistoryNodeList.c
+        src/testIufNonParametricPulse.c
+        src/testIufParameterDict.c
+        src/testIufParametricPulse.c
+        src/testIufPattern.c
+        src/testIufPatternList.c
+        src/testIufPatternListDict.c
+        src/testIufPulseDict.c
+        src/testIufPulse.c
+        src/testIufReceiveSettings.c
+        src/testIufReceiveSettingsDict.c
+        src/testIufReceiveChannelMap.c
+        src/testIufReceiveChannelMapDict.c
+        src/testIufSourceDict.c
+        src/testIufSource.c
+        src/testIufTransducer.c
+        src/testIufTransmitApodization.c
+        src/testIufTransmitApodizationDict.c
+        src/testIufTGC.c
         src/util.c
         )
 
@@ -78,11 +81,12 @@ else()
 endif()
 
 target_link_libraries(unitTests
-        ${IUS_LIBRARIES}
+        ${IUF_LIBRARIES}
         Unity
         ${HDF5_LIBRARIES}
         ${HDF5_HL_LIBRARIES}
         ${UUID_LIBRARIES}
+        dg
         )
 
 set_property(TARGET unitTests PROPERTY C_STANDARD 99)

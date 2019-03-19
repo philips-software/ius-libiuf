@@ -5,7 +5,7 @@ cd %BinFolder%
 set BuildFolder=%CD%\build
 mkdir %BuildFolder% & pushd %BuildFolder%
 popd
-echo === Building ius in %BuildFolder%
+echo === Building iuf in %BuildFolder%
 set PlatformFolder=%BuildFolder%\Windows
 mkdir %PlatformFolder% & pushd %PlatformFolder%
 set Config=Debug
@@ -22,3 +22,6 @@ if errorlevel 1 exit /B 1
 ctest --verbose
 if errorlevel 1 exit /B 1
 popd
+
+%~dp0\py_unittests.bat
+if errorlevel 1 exit /B 1

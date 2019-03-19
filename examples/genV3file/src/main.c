@@ -8,7 +8,7 @@
  *
  *  ==============================================================================
  */
-#include "ius.h"
+#include "iuf.h"
 #include "nodeConfig.h"
 
 
@@ -20,8 +20,8 @@ void dgFillData
 )
 {
     int i;
-    float *pData = iusDataGetPointer(data);
-    int numSamples = iusDataGetSize(data);
+    float *pData = iufDataGetPointer(data);
+    int numSamples = iufDataGetSize(data);
 
     for (i=0; i<numSamples; i++)
     {
@@ -38,17 +38,17 @@ int saveFrames
 {
     int status=0;
     int i;
-    iud_t frame = iusInputFileFrameCreate(inputFile, label);
-    iuo_t offset = iusOffsetCreate();
+    iud_t frame = iufInputFileFrameCreate(inputFile, label);
+    iuo_t offset = iufOffsetCreate();
 
     for (i=0; i<numFrames; i++)
     {
         dgFillData(frame, 1 + i * 1.0f);
         offset->t = i;
-        status |= iusInputFileFrameSave(inputFile, label, frame, offset);
+        status |= iufInputFileFrameSave(inputFile, label, frame, offset);
     }
 
-    iusDataDelete(frame);
+    iufDataDelete(frame);
     return status;
 }
 
@@ -58,10 +58,10 @@ int main
     char *argv[]
 )
 {
-    int version = iusGetVersionMajor();
+    int version = iufGetVersionMajor();
     int numFrames = 10;
     char *ultrasoundMode = "bmode";
-    iusErrorLog(IUS_TRUE);
+    iufErrorLog(IUF_TRUE);
 
     if (argc != 2)
     {
@@ -69,30 +69,30 @@ int main
         return -1;
     }
     printf("Creating file %s, for version %d\n", argv[1], version);
-    iuif_t ifh = iusInputFileCreate(argv[1]);
+    iuif_t ifh = iufInputFileCreate(argv[1]);
     if (ifh == IUIF_INVALID)
     {
-        IUS_ERROR_FMT_PRINT(IUS_ERR_MAJ_GENERAL, IUS_ERR_MIN_ARG_VALUE, "Unable to create file %s", argv[1]);
+        IUF_ERROR_FMT_PRINT(IUF_ERR_MAJ_GENERAL, IUF_ERR_MIN_ARG_VALUE, "Unable to create file %s", argv[1]);
         return -1;
     }
 
     int status = ncInputFileNodeConfig(ifh, numFrames, "S5-1", ultrasoundMode);
-    status |= iusInputFileNodeSave(ifh);
+    status |= iufInputFileNodeSave(ifh);
     if( status != 0 )
     {
-        IUS_ERROR_FMT_PRINT(IUS_ERR_MAJ_GENERAL, IUS_ERR_MIN_ARG_VALUE, "Configuring node for file  %s", argv[1]);
+        IUF_ERROR_FMT_PRINT(IUF_ERR_MAJ_GENERAL, IUF_ERR_MIN_ARG_VALUE, "Configuring node for file  %s", argv[1]);
         return -1;
     }
 
     status = saveFrames(ifh,ultrasoundMode,numFrames);
     if( status != 0 )
     {
-        IUS_ERROR_FMT_PRINT(IUS_ERR_MAJ_GENERAL, IUS_ERR_MIN_ARG_VALUE, "Saving frames for file  %s", argv[1]);
+        IUF_ERROR_FMT_PRINT(IUF_ERR_MAJ_GENERAL, IUF_ERR_MIN_ARG_VALUE, "Saving frames for file  %s", argv[1]);
         return -1;
     }
 
     // Create Meta data in Node
-    iusInputFileClose(ifh);
-    iusInputFileDelete(ifh);
+    iufInputFileClose(ifh);
+    iufInputFileDelete(ifh);
     return 0;
 }

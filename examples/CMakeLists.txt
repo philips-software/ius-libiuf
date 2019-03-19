@@ -1,2 +1,2 @@
 add_subdirectory(genV3file)
-add_subdirectory(iusInputFileConvert)
+add_subdirectory(iufInputFileConvert)

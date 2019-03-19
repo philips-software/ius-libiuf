@@ -63,9 +63,9 @@ function [] = mkInputFile( g )
     if isunix  
         
         if( g == 0 )            
-            iuslib = fullfile(here, sprintf('build/Linux/library/libius-%s.a', version'));
+            iuflib = fullfile(here, sprintf('build/Linux/library/libiuf-%s.a', version'));
         else
-            iuslib = fullfile(here, sprintf('build/Linux/library/libius-%sd.a', version));
+            iuflib = fullfile(here, sprintf('build/Linux/library/libiuf-%sd.a', version));
         end                
         hdf5path = fullfile('/cadappl', 'python', '2.7-64');
         hdf5lib = fullfile(hdf5path, 'lib', 'libhdf5.so');
@@ -76,9 +76,9 @@ function [] = mkInputFile( g )
         
     elseif ispc
         if( g == 0 )
-            iuslib  = fullfile(here, sprintf('build/Windows/library/Release/ius-%s.lib',version) );
+            iuflib  = fullfile(here, sprintf('build/Windows/library/Release/iuf-%s.lib',version) );
         else            
-            iuslib  = fullfile(here, sprintf('build/Windows/library/Debug/ius-%sd.lib', version) );
+            iuflib  = fullfile(here, sprintf('build/Windows/library/Debug/iuf-%sd.lib', version) );
         end
         hdf5path = fullfile('c:', 'Program Files', 'HDF_Group', 'HDF5', '1.8.20');
         hdf5lib = fullfile(hdf5path, 'lib', 'libhdf5.lib');
@@ -91,18 +91,18 @@ function [] = mkInputFile( g )
        
     if (g == 0)
         fprintf( 'creating %s.mexw64 (RELEASE)\n', mxAlgo);
-        %mex('-largeArrayDims', inclPath1, inclPath2, hdf5incl, '-output', mxAlgo, mxcAlgo, mxcDep, iuslib, hdf5lib, hdf5_hllib, libzlib, libszip );
+        %mex('-largeArrayDims', inclPath1, inclPath2, hdf5incl, '-output', mxAlgo, mxcAlgo, mxcDep, iuflib, hdf5lib, hdf5_hllib, libzlib, libszip );
         if ispc 
-            mex('-largeArrayDims', inclPath1, inclPath2, inclPath3, hdf5incl, '-output', mxAlgo, mxcAlgo, mxcDep, iuslib, hdf5lib, hdf5_hllib, libzlib, libszip, '-luuid');
+            mex('-largeArrayDims', inclPath1, inclPath2, inclPath3, hdf5incl, '-output', mxAlgo, mxcAlgo, mxcDep, iuflib, hdf5lib, hdf5_hllib, libzlib, libszip, '-luuid');
         else
-            mex('-largeArrayDims', inclPath1, inclPath2, inclPath3, hdf5incl, '-output', mxAlgo, mxcAlgo, mxcDep, iuslib, hdf5lib, hdf5_hllib, libzlib, '-lgcov', '-luuid');
+            mex('-largeArrayDims', inclPath1, inclPath2, inclPath3, hdf5incl, '-output', mxAlgo, mxcAlgo, mxcDep, iuflib, hdf5lib, hdf5_hllib, libzlib, '-lgcov', '-luuid');
         end
     else
         fprintf( 'creating %s.mexw64 (DEBUG)\n', mxAlgo);
         if ispc
-            mex('-g', '-largeArrayDims', inclPath1, inclPath2, inclPath3, hdf5incl, '-output', mxAlgo, mxcAlgo, mxcDep, iuslib, hdf5lib, hdf5_hllib, libzlib, libszip, '-luuid');
+            mex('-g', '-largeArrayDims', inclPath1, inclPath2, inclPath3, hdf5incl, '-output', mxAlgo, mxcAlgo, mxcDep, iuflib, hdf5lib, hdf5_hllib, libzlib, libszip, '-luuid');
         else
-            mex('-g', '-largeArrayDims', inclPath1, inclPath2, inclPath3, hdf5incl, '-output', mxAlgo, mxcAlgo, mxcDep, iuslib, hdf5lib, hdf5_hllib, libzlib, '-lgcov', '-luuid');
+            mex('-g', '-largeArrayDims', inclPath1, inclPath2, inclPath3, hdf5incl, '-output', mxAlgo, mxcAlgo, mxcDep, iuflib, hdf5lib, hdf5_hllib, libzlib, '-lgcov', '-luuid');
         end
     end
 end
@@ -116,13 +116,13 @@ end
 % %     mxAlgo = fullfile(here, ['mex' filesep 'm' filesep], ['mx' Algo]);
 %     mxAlgo      = fullfile( '..\m', filesep, ['mx' Algo]);
 %     mxcAlgo     = ['mx' Algo '.c'];
-%     cAlgo       = fullfile(here, ['src' filesep], ['ius' Algo '.c']);
-%     cMatrix     = fullfile(here, ['src' filesep 'base/iusMatrix.c']);
-%     cVector     = fullfile(here, ['src' filesep 'base/iusVector.c']);
-%     cVectorC    = fullfile(here, ['src' filesep 'base/iusVectorC.c']);
-%     cLUT        = fullfile(here, ['src' filesep 'base/iusLUT.c']);
-%     cBasic      = fullfile(here, ['src' filesep 'base/iusBasicFunctions.c']);
-%     cFFTC       = fullfile(here, ['src' filesep 'base/iusFFTC.c']);
+%     cAlgo       = fullfile(here, ['src' filesep], ['iuf' Algo '.c']);
+%     cMatrix     = fullfile(here, ['src' filesep 'base/iufMatrix.c']);
+%     cVector     = fullfile(here, ['src' filesep 'base/iufVector.c']);
+%     cVectorC    = fullfile(here, ['src' filesep 'base/iufVectorC.c']);
+%     cLUT        = fullfile(here, ['src' filesep 'base/iufLUT.c']);
+%     cBasic      = fullfile(here, ['src' filesep 'base/iufBasicFunctions.c']);
+%     cFFTC       = fullfile(here, ['src' filesep 'base/iufFFTC.c']);
 %     if (g == 0)
 %         fprintf( 'creating %s.mexw64 (RELEASE)\n', mxAlgo);
 %         mex('-largeArrayDims', inclPath, '-output', mxAlgo, mxcAlgo, cAlgo, cMatrix, cVector, cVectorC, cLUT, cBasic, cFFTC);
@@ -141,14 +141,14 @@ end
 % %     mxAlgo = fullfile(here, ['mex' filesep 'm' filesep], ['mx' Algo]);
 %     mxAlgo   = fullfile( '..\m', filesep, ['mx' Algo]);
 %     mxcAlgo  = ['mx' Algo '.c'];
-%     cAlgo    = fullfile(here, ['src' filesep './' ], ['ius' Algo '.c']);
-%     cMatrix        = fullfile(here, ['src' filesep 'base/iusMatrix.c']);
-%     cVector        = fullfile(here, ['src' filesep 'base/iusVector.c']);
-%     cVectorC       = fullfile(here, ['src' filesep 'base/iusVectorC.c']);
-%     cFFT           = fullfile(here, ['src' filesep 'base/iusFFT.c']);
-%     cFFTC          = fullfile(here, ['src' filesep 'base/iusFFTC.c']);
-%     cDFT           = fullfile(here, ['src' filesep 'base/iusDFT.c']);
-%     cBasic         = fullfile(here, ['src' filesep 'base/iusBasicFunctions.c']);
+%     cAlgo    = fullfile(here, ['src' filesep './' ], ['iuf' Algo '.c']);
+%     cMatrix        = fullfile(here, ['src' filesep 'base/iufMatrix.c']);
+%     cVector        = fullfile(here, ['src' filesep 'base/iufVector.c']);
+%     cVectorC       = fullfile(here, ['src' filesep 'base/iufVectorC.c']);
+%     cFFT           = fullfile(here, ['src' filesep 'base/iufFFT.c']);
+%     cFFTC          = fullfile(here, ['src' filesep 'base/iufFFTC.c']);
+%     cDFT           = fullfile(here, ['src' filesep 'base/iufDFT.c']);
+%     cBasic         = fullfile(here, ['src' filesep 'base/iufBasicFunctions.c']);
 %     if (g == 0)
 %         fprintf( 'creating %s.mexw64 (RELEASE)\n', mxAlgo);
 %         mex('-largeArrayDims', inclPath, '-output', mxAlgo, mxcAlgo, cAlgo, cMatrix, cVector, cVectorC, cFFT, cFFTC, cDFT, cBasic);
@@ -168,17 +168,17 @@ end
 % %     mxAlgo = fullfile(here, ['mex' filesep 'm' filesep], ['mx' Algo]);
 %     mxAlgo   = fullfile( '..\m', filesep, ['mx' Algo]);
 %     mxcAlgo  = ['mx' Algo '.c'];
-%     cAlgo    = fullfile(here, ['src' filesep './' ], ['ius' Algo '.c']);
-%     cMatrix        = fullfile(here, ['src' filesep 'base/iusMatrix.c']);
-%     cMatrixC       = fullfile(here, ['src' filesep 'base/iusMatrixC.c']);
-%     cVector        = fullfile(here, ['src' filesep 'base/iusVector.c']);
-%     cVectorC       = fullfile(here, ['src' filesep 'base/iusVectorC.c']);
-%     cFFT           = fullfile(here, ['src' filesep 'base/iusFFT.c']);
-%     cFFTC          = fullfile(here, ['src' filesep 'base/iusFFTC.c']);
-%     cDFT           = fullfile(here, ['src' filesep 'base/iusDFT.c']);
-%     cBasic         = fullfile(here, ['src' filesep 'base/iusBasicFunctions.c']);
-%     cHilbert       = fullfile(here, ['src' filesep 'iusHilbertDetect.c']);
-%     cQuadratureDetectUtilsC = fullfile(here, ['src' filesep 'base/iusQuadratureDetectUtils.c']);
+%     cAlgo    = fullfile(here, ['src' filesep './' ], ['iuf' Algo '.c']);
+%     cMatrix        = fullfile(here, ['src' filesep 'base/iufMatrix.c']);
+%     cMatrixC       = fullfile(here, ['src' filesep 'base/iufMatrixC.c']);
+%     cVector        = fullfile(here, ['src' filesep 'base/iufVector.c']);
+%     cVectorC       = fullfile(here, ['src' filesep 'base/iufVectorC.c']);
+%     cFFT           = fullfile(here, ['src' filesep 'base/iufFFT.c']);
+%     cFFTC          = fullfile(here, ['src' filesep 'base/iufFFTC.c']);
+%     cDFT           = fullfile(here, ['src' filesep 'base/iufDFT.c']);
+%     cBasic         = fullfile(here, ['src' filesep 'base/iufBasicFunctions.c']);
+%     cHilbert       = fullfile(here, ['src' filesep 'iufHilbertDetect.c']);
+%     cQuadratureDetectUtilsC = fullfile(here, ['src' filesep 'base/iufQuadratureDetectUtils.c']);
 %     if (g == 0)
 %         fprintf( 'creating %s.mexw64 (RELEASE)\n', mxAlgo);
 %         mex('-largeArrayDims', inclPath, '-output', mxAlgo, mxcAlgo, cAlgo, cHilbert, cMatrix, cMatrixC, cVector, cVectorC, cFFT, cFFTC, cDFT, cBasic, cQuadratureDetectUtilsC);
@@ -198,16 +198,16 @@ end
 % %     mxAlgo = fullfile(here, ['mex' filesep 'm' filesep], ['mx' Algo]);
 %     mxAlgo   = fullfile( '..\m', filesep, ['mx' Algo]);
 %     mxcAlgo  = ['mx' Algo '.c'];
-%     cAlgo    = fullfile(here, ['src' filesep './' ], ['ius' Algo '.c']);
-%     cMatrix        = fullfile(here, ['src' filesep 'base/iusMatrix.c']);
-%     cMatrixC       = fullfile(here, ['src' filesep 'base/iusMatrixC.c']);
-%     cVector        = fullfile(here, ['src' filesep 'base/iusVector.c']);
-%     cVectorC       = fullfile(here, ['src' filesep 'base/iusVectorC.c']);
-%     cFFT           = fullfile(here, ['src' filesep 'base/iusFFT.c']);
-%     cFFTC          = fullfile(here, ['src' filesep 'base/iusFFTC.c']);
-%     cDFT           = fullfile(here, ['src' filesep 'base/iusDFT.c']);
-%     cBasic         = fullfile(here, ['src' filesep 'base/iusBasicFunctions.c']);
-%     cQuadratureDetectUtilsC = fullfile(here, ['src' filesep 'base/iusQuadratureDetectUtils.c']);
+%     cAlgo    = fullfile(here, ['src' filesep './' ], ['iuf' Algo '.c']);
+%     cMatrix        = fullfile(here, ['src' filesep 'base/iufMatrix.c']);
+%     cMatrixC       = fullfile(here, ['src' filesep 'base/iufMatrixC.c']);
+%     cVector        = fullfile(here, ['src' filesep 'base/iufVector.c']);
+%     cVectorC       = fullfile(here, ['src' filesep 'base/iufVectorC.c']);
+%     cFFT           = fullfile(here, ['src' filesep 'base/iufFFT.c']);
+%     cFFTC          = fullfile(here, ['src' filesep 'base/iufFFTC.c']);
+%     cDFT           = fullfile(here, ['src' filesep 'base/iufDFT.c']);
+%     cBasic         = fullfile(here, ['src' filesep 'base/iufBasicFunctions.c']);
+%     cQuadratureDetectUtilsC = fullfile(here, ['src' filesep 'base/iufQuadratureDetectUtils.c']);
 %     if (g == 0)
 %         fprintf( 'creating %s.mexw64 (RELEASE)\n', mxAlgo);
 %         mex('-largeArrayDims', inclPath, '-output', mxAlgo, mxcAlgo, cAlgo, cMatrix, cMatrixC, cVector, cVectorC, cFFT, cFFTC, cDFT, cBasic, cQuadratureDetectUtilsC);
@@ -227,12 +227,12 @@ end
 % %     mxAlgo = fullfile(here, ['mex' filesep 'm' filesep], ['mx' Algo]);
 %     mxAlgo = fullfile( '..\m', filesep, ['mx' Algo]);
 %     mxcAlgo  = ['mx' Algo '.c'];
-%     cAlgo    = fullfile(here, ['src' filesep], ['ius' Algo '.c']);
-%     cFilter        = fullfile(here, ['src' filesep 'iusFilter.c']);
-%     cMatrix        = fullfile(here, ['src' filesep 'base/iusMatrix.c']);
-%     cVector        = fullfile(here, ['src' filesep 'base/iusVector.c']);
-%     cFFT           = fullfile(here, ['src' filesep 'base/iusFFT.c']);
-%     cBasic         = fullfile(here, ['src' filesep 'base/iusBasicFunctions.c']);
+%     cAlgo    = fullfile(here, ['src' filesep], ['iuf' Algo '.c']);
+%     cFilter        = fullfile(here, ['src' filesep 'iufFilter.c']);
+%     cMatrix        = fullfile(here, ['src' filesep 'base/iufMatrix.c']);
+%     cVector        = fullfile(here, ['src' filesep 'base/iufVector.c']);
+%     cFFT           = fullfile(here, ['src' filesep 'base/iufFFT.c']);
+%     cBasic         = fullfile(here, ['src' filesep 'base/iufBasicFunctions.c']);
 %     cDSP_HilbMag   = fullfile(here, ['src' filesep 'DSP_hilbmag_r8_h16_cn.c']);
 %     if (g == 0)
 %         fprintf( 'creating %s.mexw64 (RELEASE)\n', mxAlgo);
@@ -252,10 +252,10 @@ end
 % %     mxAlgo = fullfile(here, ['mex' filesep 'm' filesep], ['mx' Algo]);
 %     mxAlgo = fullfile( '..\m', filesep, ['mx' Algo]);
 %     mxcAlgo  = ['mx' Algo '.c'];
-%     cAlgo    = fullfile(here, ['src' filesep], ['ius' Algo '.c']);
-%     cMatrix        = fullfile(here, ['src' filesep 'base/iusMatrix.c']);
-%     cVector        = fullfile(here, ['src' filesep 'base/iusVector.c']);
-%     cBasic         = fullfile(here, ['src' filesep 'base/iusBasicFunctions.c']);
+%     cAlgo    = fullfile(here, ['src' filesep], ['iuf' Algo '.c']);
+%     cMatrix        = fullfile(here, ['src' filesep 'base/iufMatrix.c']);
+%     cVector        = fullfile(here, ['src' filesep 'base/iufVector.c']);
+%     cBasic         = fullfile(here, ['src' filesep 'base/iufBasicFunctions.c']);
 %     if (g == 0)
 %         fprintf( 'creating %s.mexw64 (RELEASE)\n', mxAlgo);
 %         mex('-largeArrayDims', inclPath, '-output', mxAlgo, mxcAlgo, cAlgo, cMatrix, cVector, cBasic);
@@ -274,11 +274,11 @@ end
 % %     mxAlgo = fullfile(here, ['mex' filesep 'm' filesep], ['mx' Algo]);
 %     mxAlgo = fullfile( '..\m', filesep, ['mx' Algo]);
 %     mxcAlgo  = ['mx' Algo '.c'];
-%     cAlgo    = fullfile(here, ['src' filesep], ['ius' Algo '.c']);
-%     cMatrixUtils   = fullfile(here, ['src' filesep 'base/iusMatrixUtils.c']);
-%     cMatrix        = fullfile(here, ['src' filesep 'base/iusMatrix.c']);
-%     cVector        = fullfile(here, ['src' filesep 'base/iusVector.c']);
-%     cBasic         = fullfile(here, ['src' filesep 'base/iusBasicFunctions.c']);
+%     cAlgo    = fullfile(here, ['src' filesep], ['iuf' Algo '.c']);
+%     cMatrixUtils   = fullfile(here, ['src' filesep 'base/iufMatrixUtils.c']);
+%     cMatrix        = fullfile(here, ['src' filesep 'base/iufMatrix.c']);
+%     cVector        = fullfile(here, ['src' filesep 'base/iufVector.c']);
+%     cBasic         = fullfile(here, ['src' filesep 'base/iufBasicFunctions.c']);
 %     if (g == 0)
 %         fprintf( 'creating %s.mexw64 (RELEASE)\n', mxAlgo);
 %         mex('-largeArrayDims', inclPath, '-output', mxAlgo, mxcAlgo, cAlgo, cMatrixUtils, cMatrix, cVector, cBasic);
@@ -297,11 +297,11 @@ end
 % %     mxAlgo = fullfile(here, ['mex' filesep 'm' filesep], ['mx' Algo]);
 %     mxAlgo = fullfile( '..\m', filesep, ['mx' Algo]);
 %     mxcAlgo  = ['mx' Algo '.c'];
-%     cAlgo    = fullfile(here, ['src' filesep], ['ius' Algo '.c']);
-%     cMatrixUtils   = fullfile(here, ['src' filesep 'base/iusMatrixUtils.c']);
-%     cMatrix        = fullfile(here, ['src' filesep 'base/iusMatrix.c']);
-%     cVector        = fullfile(here, ['src' filesep 'base/iusVector.c']);
-%     cBasic         = fullfile(here, ['src' filesep 'base/iusBasicFunctions.c']);
+%     cAlgo    = fullfile(here, ['src' filesep], ['iuf' Algo '.c']);
+%     cMatrixUtils   = fullfile(here, ['src' filesep 'base/iufMatrixUtils.c']);
+%     cMatrix        = fullfile(here, ['src' filesep 'base/iufMatrix.c']);
+%     cVector        = fullfile(here, ['src' filesep 'base/iufVector.c']);
+%     cBasic         = fullfile(here, ['src' filesep 'base/iufBasicFunctions.c']);
 %     if (g == 0)
 %         fprintf( 'creating %s.mexw64 (RELEASE)\n', mxAlgo);
 %         mex('-largeArrayDims', inclPath, '-output', mxAlgo, mxcAlgo, cAlgo, cMatrixUtils, cMatrix, cVector, cBasic);
@@ -319,9 +319,9 @@ end
 %     
 %     mxAlgo = fullfile( '..\m', filesep, ['mx' Algo]);
 %     mxcAlgo  = ['mx' Algo '.c'];
-%     cAlgo    = fullfile(here, ['src' filesep 'fileio' filesep], ['ius' Algo 'Reader.c']);
-%     cMatrix  = fullfile(here, ['src' filesep 'base/iusMatrix.c']);
-%     cVector  = fullfile(here, ['src' filesep 'base/iusVector.c']);
+%     cAlgo    = fullfile(here, ['src' filesep 'fileio' filesep], ['iuf' Algo 'Reader.c']);
+%     cMatrix  = fullfile(here, ['src' filesep 'base/iufMatrix.c']);
+%     cVector  = fullfile(here, ['src' filesep 'base/iufVector.c']);
 %     if (g == 0)
 %         fprintf( 'creating %s.mexw64 (RELEASE)\n', mxAlgo);
 %         mex('-largeArrayDims', inclPath, '-output', mxAlgo, mxcAlgo, cAlgo, cMatrix, cVector );
@@ -339,10 +339,10 @@ end
 %     
 %     mxAlgo = fullfile( '..\m', filesep, ['mx' Algo]);
 %     mxcAlgo  = ['mx' Algo '.c'];
-%     cAlgo    = fullfile(here, ['src' filesep], ['ius' Algo '.c']);
-%     cMatrix        = fullfile(here, ['src' filesep 'base/iusMatrix.c']);
-%     cVector        = fullfile(here, ['src' filesep 'base/iusVector.c']);
-%     cBasic         = fullfile(here, ['src' filesep 'base/iusBasicFunctions.c']);
+%     cAlgo    = fullfile(here, ['src' filesep], ['iuf' Algo '.c']);
+%     cMatrix        = fullfile(here, ['src' filesep 'base/iufMatrix.c']);
+%     cVector        = fullfile(here, ['src' filesep 'base/iufVector.c']);
+%     cBasic         = fullfile(here, ['src' filesep 'base/iufBasicFunctions.c']);
 %     if (g == 0)
 %         fprintf( 'creating %s.mexw64 (RELEASE)\n', mxAlgo);
 %         mex('-largeArrayDims', inclPath, '-output', mxAlgo, mxcAlgo, cAlgo, cMatrix, cVector, cBasic);

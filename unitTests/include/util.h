@@ -2,18 +2,18 @@
 // Created by Ruijzendaal on 20/03/2018.
 //
 
-#ifndef IUSUNITTESTS_UTIL_H
-#define IUSUNITTESTS_UTIL_H
-#include <ius2DTransducerElement.h>
-#include <ius3DTransducerElement.h>
+#ifndef IUFUNITTESTS_UTIL_H
+#define IUFUNITTESTS_UTIL_H
+#include <iuf2DTransducerElement.h>
+#include <iuf3DTransducerElement.h>
 
-IUS_BOOL  aInB
+IUF_BOOL  aInB
 (
     char *a,
     char **b
 );
 
-iu3dte_t iusUtilCreate3DElement
+iu3dte_t iufUtilCreate3DElement
 (
     float x,
     float y,
@@ -26,7 +26,7 @@ iu3dte_t iusUtilCreate3DElement
 );
 
 
-iu2dte_t iusUtilCreate2DElement
+iu2dte_t iufUtilCreate2DElement
 (
     float x,
     float z,
@@ -35,4 +35,4 @@ iu2dte_t iusUtilCreate2DElement
     float phi
 );
 
-#endif //IUSUNITTESTS_UTIL_H
+#endif //IUFUNITTESTS_UTIL_H
