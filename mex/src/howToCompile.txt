@@ -10,7 +10,7 @@ B) MS Windows and Visual Studio
 
   1) Open MS Visual Studio Command prompt
        Start Menu -> Visual Studio 2015 -> Visual Studio Tools -> Developer Command Prompt for VS2015
-  2) chdir to ius/C_v3/mex/src directory
+  2) chdir to iuf/C_v3/mex/src directory
   3) Type 'nmake /a'
 
 
@@ -18,7 +18,7 @@ C) Linux (e-science)
 ====================
 
   1) Open a unix prompt
-  2) chdir to ius/C_v3/mex/src directory
+  2) chdir to iuf/C_v3/mex/src directory
   3) Type 'PATH=/cadappl/matlab/R2014b/bin:$PATH make -f Makefile.unix'
 
 

@@ -1,5 +1,5 @@
 # The version number.
-set (IUS_VERSION_MAJOR 3)
+set (IUF_VERSION_MAJOR 3)
 set (CMAKE_C_STANDARD 99)
 
 FIND_PACKAGE(Git)
@@ -23,18 +23,18 @@ IF(GIT_FOUND)
 
     if(GIT_TAG)
 		# Tag found
-		set (IUS_LIB_VERSION_STRING ${IUS_VERSION_MAJOR}.${GIT_TAG})
+		set (IUF_LIB_VERSION_STRING ${IUF_VERSION_MAJOR}.${GIT_TAG})
 	else()
-		set (IUS_LIB_VERSION_STRING ${IUS_VERSION_MAJOR}.${GIT_COMMIT_HASH})
+		set (IUF_LIB_VERSION_STRING ${IUF_VERSION_MAJOR}.${GIT_COMMIT_HASH})
 	endif()
-	FILE(WRITE ${PROJECT_BINARY_DIR}/library/VERSION "${IUS_LIB_VERSION_STRING}")
+	FILE(WRITE ${PROJECT_BINARY_DIR}/library/VERSION "${IUF_LIB_VERSION_STRING}")
 ELSE(GIT_FOUND)
-	FILE(READ ${CMAKE_SOURCE_DIR}/library/${CMAKE_SYSTEM_NAME}/VERSION IUS_LIB_VERSION_STRING)
+	FILE(READ ${CMAKE_SOURCE_DIR}/library/${CMAKE_SYSTEM_NAME}/VERSION IUF_LIB_VERSION_STRING)
 ENDIF(GIT_FOUND)
 
-STRING( REGEX REPLACE "([0-9]+).[0-9]+.[0-9]+" "\\1" VERSION_MAJOR ${IUS_LIB_VERSION_STRING} )
-STRING( REGEX REPLACE "[0-9]+.([0-9]+).[0-9]+" "\\1" VERSION_MINOR ${IUS_LIB_VERSION_STRING} )
-STRING( REGEX REPLACE "[0-9]+.[0-9]+.([0-9]+)" "\\1" VERSION_PATCH ${IUS_LIB_VERSION_STRING} )
+STRING( REGEX REPLACE "([0-9]+).[0-9]+.[0-9]+" "\\1" VERSION_MAJOR ${IUF_LIB_VERSION_STRING} )
+STRING( REGEX REPLACE "[0-9]+.([0-9]+).[0-9]+" "\\1" VERSION_MINOR ${IUF_LIB_VERSION_STRING} )
+STRING( REGEX REPLACE "[0-9]+.[0-9]+.([0-9]+)" "\\1" VERSION_PATCH ${IUF_LIB_VERSION_STRING} )
 
 # configure a header file to pass some of the CMake settings
 # to the source code
@@ -49,194 +49,195 @@ include_directories("${PROJECT_BINARY_DIR}")
 include_directories(${HDF5_INCLUDE_DIR})
 include_directories(${HASHMAP_INCLUDE_DIR})
 set(CMAKE_DEBUG_POSTFIX d)
-add_library(ius STATIC
-		include/ius2DNonParametricSource.h
-		private/ius2DNonParametricSourcePrivate.h
-		include/ius2DParametricSource.h
-		include/ius2DSize.h
-		private/ius2DSizePrivate.h
-		include/ius2DTransducer.h
-		private/ius2DTransducerADT.h
-		private/ius2DTransducerPrivate.h
-		include/ius2DTransducerElement.h
-		private/ius2DTransducerElementPrivate.h
-		include/ius2DTransducerElementList.h
-		private/ius2DTransducerElementListPrivate.h
-		include/ius3DAngle.h
-		private/ius3DAnglePrivate.h
-		include/ius3DNonParametricSource.h
-		include/ius3DParametricSource.h
-		include/ius3DSize.h
-		private/ius3DSizePrivate.h
-		include/ius3DTransducer.h
-		private/ius3DTransducerADT.h
-		private/ius3DTransducerPrivate.h
-		include/ius3DTransducerElement.h
-		private/ius3DTransducerElementPrivate.h
-		include/ius3DTransducerElementList.h
-		private/ius3DTransducerElementListPrivate.h
-        include/iusData.h
-		include/iusDataStream.h
-		private/iusDataStreamDictPrivate.h
-		include/iusDemodulation.h
-		include/iusDemodulationDict.h
-		private/iusDemodulationDictPrivate.h
-        include/iusAcquisition.h
-		private/iusAcquisitionPrivate.h
-		include/iusFile.h
-		include/iusFilter.h
-		include/iusFrame.h
-		include/iusFrameList.h
-		private/iusFrameListPrivate.h
-		include/iusHistoryNode.h
-		private/iusHistoryNodePrivate.h
-		include/iusHistoryNodeList.h
-		private/iusHistoryNodeListPrivate.h
-		include/iusHDF5.h
-		include/iusInputFile.h
-		private/iusInputFilePrivate.h
-		include/iusInputFileStructure.h
-		include/iusIqFile.h
-		private/iusIqFilePrivate.h
-		include/iusIqFileStructure.h
-		include/iusIqPattern.h
-		private/iusIqPatternPrivate.h
-		include/iusIqPatternList.h
-		private/iusIqPatternListPrivate.h
-		include/iusIqPatternListDict.h
-		private/iusIqPatternListDictADT.h
-		private/iusIqPatternListDictPrivate.h
-		include/iusNonParametricPulse.h
-		private/iusNonParametricPulsePrivate.h
-		include/iusOffset.h
-		include/iusParameterDict.h
-		include/iusParametricPulse.h
-		private/iusParametricPulsePrivate.h
-		include/iusPattern.h
-		private/iusPatternPrivate.h
-		include/iusPatternList.h
-		private/iusPatternListPrivate.h
-		include/iusPatternListDict.h
-		private/iusPatternListDictADT.h
-		private/iusPatternListDictPrivate.h
-		include/iusPosition.h
-		include/iusPulse.h
-		include/iusPulseDict.h
-		private/iusPulseDictPrivate.h
-		private/iusPulsePrivate.h
-		include/iusReceiveChannelMap.h
-		include/iusReceiveChannelMapDict.h
-		private/iusReceiveChannelMapDictADT.h
-		private/iusReceiveChannelMapPrivate.h
-		include/iusReceiveSettings.h
-		include/iusReceiveSettingsDict.h
-		private/iusReceiveSettingsDictADT.h
-		private/iusReceiveSettingsDictPrivate.h
-		include/iusSource.h
-		include/iusSourceDict.h
-		private/iusSourcePrivate.h
-		include/iusTGC.h
-		private/iusTGCPrivate.h
-		include/iusTransducer.h
-		private/iusTransducerADT.h
-		private/iusTransducerPrivate.h
-		include/iusTransducerElement.h
-		private/iusTransducerElementPrivate.h
-		private/iusTransducerPrivate.h
-		private/ius2DTransducerPrivate.h
-		private/ius3DTransducerPrivate.h
-		include/iusTransmitApodization.h
-		include/iusTransmitApodizationDict.h
-		private/iusTransmitApodizationDictADT.h
-		private/iusTransmitApodizationPrivate.h
-		include/iusTypes.h
-		include/iusUtil.h
-		src/iusHDF5.c
-		src/ius2DNonParametricSource.c
-		src/ius2DParametricSource.c
-		src/ius2DSize.c
-		src/ius2DTransducer.c
-		src/ius2DTransducerElement.c
-		src/ius2DTransducerElementList.c
-		src/ius3DAngle.c
-		src/ius3DNonParametricSource.c
-		src/ius3DParametricSource.c
-		src/ius3DSize.c
-		src/ius3DTransducer.c
-		src/ius3DTransducerElement.c
-		src/ius3DTransducerElementList.c
-        src/iusData.c
-		src/iusDataStream.c
-		src/iusDataStreamDict.c
-		src/iusDemodulation.c
-		src/iusDemodulationDict.c
-        src/iusAcquisition.c
-		src/iusError.c
-		src/iusFile.c
-		src/iusFilter.c
-		src/iusFrame.c
-		src/iusFrameList.c
-		src/iusInputFile.c
-		src/iusIqFile.c
-		src/iusIqPattern.c
-		src/iusIqPatternList.c
-		src/iusIqPatternListDict.c
-		src/iusHistoryNode.c
-		src/iusHistoryNodeList.c
-		src/iusNonParametricPulse.c
-		src/iusOffset.c
-		src/iusParameterDict.c
-		src/iusParametricPulse.c
-		src/iusPattern.c
-		src/iusPatternList.c
-		src/iusPatternListDict.c
-		src/iusPosition.c
-		src/iusPulse.c
-		src/iusPulseDict.c
-		src/iusReceiveChannelMap.c
-		src/iusReceiveChannelMapDict.c
-		src/iusReceiveSettings.c
-		src/iusReceiveSettingsDict.c
-		src/iusSource.c
-		src/iusSourceDict.c
-		src/iusTGC.c
-		src/iusTransducer.c
-		src/iusTransducerElement.c
-		src/iusTransmitApodization.c
-		src/iusTransmitApodizationDict.c
-		src/iusUuid.c
-		src/iusUtil.c
+add_library(iuf STATIC
+		include/iuf2DNonParametricSource.h
+		private/iuf2DNonParametricSourcePrivate.h
+		include/iuf2DParametricSource.h
+		include/iuf2DSize.h
+		private/iuf2DSizePrivate.h
+		include/iuf2DTransducer.h
+		private/iuf2DTransducerADT.h
+		private/iuf2DTransducerPrivate.h
+		include/iuf2DTransducerElement.h
+		private/iuf2DTransducerElementPrivate.h
+		include/iuf2DTransducerElementList.h
+		private/iuf2DTransducerElementListPrivate.h
+		include/iuf3DAngle.h
+		private/iuf3DAnglePrivate.h
+		include/iuf3DNonParametricSource.h
+		include/iuf3DParametricSource.h
+		include/iuf3DSize.h
+		private/iuf3DSizePrivate.h
+		include/iuf3DTransducer.h
+		private/iuf3DTransducerADT.h
+		private/iuf3DTransducerPrivate.h
+		include/iuf3DTransducerElement.h
+		private/iuf3DTransducerElementPrivate.h
+		include/iuf3DTransducerElementList.h
+		private/iuf3DTransducerElementListPrivate.h
+        include/iufData.h
+		private/iufDataADT.h
+		include/iufDataStream.h
+		private/iufDataStreamDictPrivate.h
+		include/iufDemodulation.h
+		include/iufDemodulationDict.h
+		private/iufDemodulationDictPrivate.h
+        include/iufAcquisition.h
+		private/iufAcquisitionPrivate.h
+		include/iufFile.h
+		include/iufFilter.h
+		include/iufFrame.h
+		include/iufFrameList.h
+		private/iufFrameListPrivate.h
+		include/iufHistoryNode.h
+		private/iufHistoryNodePrivate.h
+		include/iufHistoryNodeList.h
+		private/iufHistoryNodeListPrivate.h
+		include/iufHDF5.h
+		include/iufInputFile.h
+		private/iufInputFilePrivate.h
+		include/iufInputFileStructure.h
+		include/iufIqFile.h
+		private/iufIqFilePrivate.h
+		include/iufIqFileStructure.h
+		include/iufIqPattern.h
+		private/iufIqPatternPrivate.h
+		include/iufIqPatternList.h
+		private/iufIqPatternListPrivate.h
+		include/iufIqPatternListDict.h
+		private/iufIqPatternListDictADT.h
+		private/iufIqPatternListDictPrivate.h
+		include/iufNonParametricPulse.h
+		private/iufNonParametricPulsePrivate.h
+		include/iufOffset.h
+		include/iufParameterDict.h
+		include/iufParametricPulse.h
+		private/iufParametricPulsePrivate.h
+		include/iufPattern.h
+		private/iufPatternPrivate.h
+		include/iufPatternList.h
+		private/iufPatternListPrivate.h
+		include/iufPatternListDict.h
+		private/iufPatternListDictADT.h
+		private/iufPatternListDictPrivate.h
+		include/iufPosition.h
+		include/iufPulse.h
+		include/iufPulseDict.h
+		private/iufPulseDictPrivate.h
+		private/iufPulsePrivate.h
+		include/iufReceiveChannelMap.h
+		include/iufReceiveChannelMapDict.h
+		private/iufReceiveChannelMapDictADT.h
+		private/iufReceiveChannelMapPrivate.h
+		include/iufReceiveSettings.h
+		include/iufReceiveSettingsDict.h
+		private/iufReceiveSettingsDictADT.h
+		private/iufReceiveSettingsDictPrivate.h
+		include/iufSource.h
+		include/iufSourceDict.h
+		private/iufSourcePrivate.h
+		include/iufTGC.h
+		private/iufTGCPrivate.h
+		include/iufTransducer.h
+		private/iufTransducerADT.h
+		private/iufTransducerPrivate.h
+		include/iufTransducerElement.h
+		private/iufTransducerElementPrivate.h
+		private/iufTransducerPrivate.h
+		private/iuf2DTransducerPrivate.h
+		private/iuf3DTransducerPrivate.h
+		include/iufTransmitApodization.h
+		include/iufTransmitApodizationDict.h
+		private/iufTransmitApodizationDictADT.h
+		private/iufTransmitApodizationPrivate.h
+		include/iufTypes.h
+		include/iufUtil.h
+		src/iufHDF5.c
+		src/iuf2DNonParametricSource.c
+		src/iuf2DParametricSource.c
+		src/iuf2DSize.c
+		src/iuf2DTransducer.c
+		src/iuf2DTransducerElement.c
+		src/iuf2DTransducerElementList.c
+		src/iuf3DAngle.c
+		src/iuf3DNonParametricSource.c
+		src/iuf3DParametricSource.c
+		src/iuf3DSize.c
+		src/iuf3DTransducer.c
+		src/iuf3DTransducerElement.c
+		src/iuf3DTransducerElementList.c
+        src/iufData.c
+		src/iufDataStream.c
+		src/iufDataStreamDict.c
+		src/iufDemodulation.c
+		src/iufDemodulationDict.c
+        src/iufAcquisition.c
+		src/iufError.c
+		src/iufFile.c
+		src/iufFilter.c
+		src/iufFrame.c
+		src/iufFrameList.c
+		src/iufInputFile.c
+		src/iufIqFile.c
+		src/iufIqPattern.c
+		src/iufIqPatternList.c
+		src/iufIqPatternListDict.c
+		src/iufHistoryNode.c
+		src/iufHistoryNodeList.c
+		src/iufNonParametricPulse.c
+		src/iufOffset.c
+		src/iufParameterDict.c
+		src/iufParametricPulse.c
+		src/iufPattern.c
+		src/iufPatternList.c
+		src/iufPatternListDict.c
+		src/iufPosition.c
+		src/iufPulse.c
+		src/iufPulseDict.c
+		src/iufReceiveChannelMap.c
+		src/iufReceiveChannelMapDict.c
+		src/iufReceiveSettings.c
+		src/iufReceiveSettingsDict.c
+		src/iufSource.c
+		src/iufSourceDict.c
+		src/iufTGC.c
+		src/iufTransducer.c
+		src/iufTransducerElement.c
+		src/iufTransmitApodization.c
+		src/iufTransmitApodizationDict.c
+		src/iufUuid.c
+		src/iufUtil.c
 		${HASHMAP_SOURCES}
 		)
 
-target_include_directories(ius PUBLIC
+target_include_directories(iuf PUBLIC
         ${CMAKE_CURRENT_LIST_DIR}/include
 		${CMAKE_CURRENT_LIST_DIR}/private
         )
 
 if(MSVC)
-	target_compile_options(ius PRIVATE /W4 /WX)
-    set_target_properties(ius PROPERTIES LINK_FLAGS "/ignore:4099 /ignore:4098")
+	target_compile_options(iuf PRIVATE /W4 /WX)
+    set_target_properties(iuf PROPERTIES LINK_FLAGS "/ignore:4099 /ignore:4098")
 else()
-	target_compile_options(ius PRIVATE -Wall -Wextra -pedantic -Werror)
+	target_compile_options(iuf PRIVATE -Wall -Wextra -pedantic -Werror)
 	if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
-		target_compile_options(ius PRIVATE -Wall -Wextra -pedantic -Werror -fPIC)
+		target_compile_options(iuf PRIVATE -Wall -Wextra -pedantic -Werror -fPIC)
 	endif()
 endif()
 
 target_link_libraries(
-		ius
+		iuf
 		${HDF5_LIBRARIES}
 		${HDF5_HL_LIBRARIES}
 		${UUID_LIBRARIES}
 )
 
-set_target_properties(ius PROPERTIES OUTPUT_NAME "ius-${IUS_LIB_VERSION_STRING}")
-set_property(TARGET ius PROPERTY C_STANDARD 99)
-set(IUS_INSTALL_PATH ${PROJECT_BINARY_DIR}/dist/library/${CMAKE_SYSTEM_NAME})
-install(TARGETS ius
-		LIBRARY DESTINATION ${IUS_INSTALL_PATH}
-		ARCHIVE DESTINATION ${IUS_INSTALL_PATH}
+set_target_properties(iuf PROPERTIES OUTPUT_NAME "iuf-${IUF_LIB_VERSION_STRING}")
+set_property(TARGET iuf PROPERTY C_STANDARD 99)
+set(IUF_INSTALL_PATH ${PROJECT_BINARY_DIR}/dist/library/${CMAKE_SYSTEM_NAME})
+install(TARGETS iuf
+		LIBRARY DESTINATION ${IUF_INSTALL_PATH}
+		ARCHIVE DESTINATION ${IUF_INSTALL_PATH}
 		)
 
-install(FILES ${PROJECT_BINARY_DIR}/library/VERSION  DESTINATION ${IUS_INSTALL_PATH})
+install(FILES ${PROJECT_BINARY_DIR}/library/VERSION  DESTINATION ${IUF_INSTALL_PATH})

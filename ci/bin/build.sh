@@ -13,7 +13,7 @@ else
     CTEST=ctest
 fi
 
-echo === Building ius in $BuildFolder
+echo === Building iuf in $BuildFolder
 mkdir -p $BuildFolder
 cd $BuildFolder
 $CMAKE -DCMAKE_BUILD_TYPE=Debug ../..

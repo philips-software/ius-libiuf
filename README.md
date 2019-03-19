@@ -1,4 +1,4 @@
-# Instructions for the building and use IUS-SDK Software
+# Instructions for the building and use IUF-SDK Software
 This repository contains the source code of the Interventional Ultrasound Library SDK. 
 This document contains instructions on
 * [How to install the sdk sources](#how-to-install-the-sdk)
@@ -30,8 +30,8 @@ This document contains instructions on
 
 ### Checkout code
 ```
-    $ git clone https://bitbucket.atlas.philips.com/scm/ius/libius.git
-    $ cd libius
+    $ git clone https://bitbucket.atlas.philips.com/scm/iuf/libiuf.git
+    $ cd libiuf
 ```
 
 ## Folder structure
@@ -43,7 +43,7 @@ This document contains instructions on
 ├── dox
 ├── examples
 │   ├── genV3file
-│   └── iusInputFileConvert
+│   └── iufInputFileConvert
 ├── external
 │   ├── Unity
 │   ├── cmake_modules
@@ -60,7 +60,7 @@ This document contains instructions on
 ```
 ### Docker
 This folder contains the Dockerfile that is is used to build/develop for the Linux platform.
-The resulting docker image is been deployed to [our local GitLab instance](#https://gitlab.ta.philips.com/IUS/ius/container_registry).
+The resulting docker image is been deployed to [our local GitLab instance](#https://gitlab.ta.philips.com/IUF/iuf/container_registry).
 
 ### ci
 The ci/bin folder contains convenience scripts that can be used to 
@@ -83,19 +83,19 @@ build, test and gnerate a distribution.
 The dox folder contains the Doxyfile that can be used to generate the API documentation.
 
 ### examples
-The examples folder contains examples that demonstrate the use of the IUS fileio 
+The examples folder contains examples that demonstrate the use of the IUF fileio
 library.
-* iusInputFileConvert - converts the V2 input file to V3 input file
-* genV3file - just a ius file generator, with some arbitrary data
+* iufInputFileConvert - converts the V2 input file to V3 input file
+* genV3file - just a iuf file generator, with some arbitrary data
 
 ### external
 This folder needs the external dependencies, needed to build the software.
 
 ### include
-This folder contains the IUS-SDK header files.
+This folder contains the IUF-SDK header files.
 
 ### library
-This folder contains the IUS-SDK platform specific static library files, both 
+This folder contains the IUF-SDK platform specific static library files, both
 compiled for debug and release mode.
 
 ### package
@@ -179,7 +179,7 @@ For example [hdf5-1.8.20-Std-win7_64-vs14.zip](https://support.hdfgroup.org/ftp/
 Start the Visual Studio x64 command prompt and run ci\bin\is_hdf5_x64.bat. This should show output similar
 to the text shown below: 
 ```
-c:\proj\libius> ci\bin\is_hdf5_x64.bat
+c:\proj\libiuf> ci\bin\is_hdf5_x64.bat
 HDF5 lib architecture [C:\Program Files\HDF_Group\HDF5\1.8.20]:
             8664 machine (x64)
 ```
@@ -190,12 +190,12 @@ If this is not the case, point the PATH environment to the x64 version of hdf5 b
 - Checkout and build code
 
     ```
-    c:\proj\libius> ci\bin\build.bat
+    c:\proj\libiuf> ci\bin\build.bat
     ```
 - Run unit tests
 
     ```
-    c:\proj\libius> ci\bin\unittests.bat
+    c:\proj\libiuf> ci\bin\unittests.bat
     Unity test run 1 of 1
     .......................
     
@@ -208,7 +208,7 @@ If this is not the case, point the PATH environment to the x64 version of hdf5 b
 - Build a dist folder containing the distributable SDK:
 
     ```
-    c:\proj\libius> ci\bin\mk_os_distribution.bat
+    c:\proj\libiuf> ci\bin\mk_os_distribution.bat
     ```
 
 ### How to generate documentation

@@ -1,24 +1,27 @@
 from unittest import TestCase
 
 import sys
+import numpy as np
 if sys.version_info < (3, 0):
-    from Python2Ius import *
+    from Python2Iuf import *
 else:
-    from Python3Ius import *
+    from Python3Iuf import *
 
 
 def saveFrames(inputFile, label, numFrames):
     status=0
-    frame = iusInputFileFrameCreate(inputFile, label);
-    offset = iusOffsetCreate();
+    frame = iufInputFileFrameCreate(inputFile, label);
+    offset = iufOffsetCreate();
+    array = np.ones(frame.size)
 
     for i in range(numFrames):
-        dgFillData(frame, 1 + i * 1.0)
+        array.fill(i*i)
+        iufDataFill(frame, array)
         offset.t = i;
-        status |= iusInputFileFrameSave(inputFile, label, frame, offset)
+        status |= iufInputFileFrameSave(inputFile, label, frame, offset)
 
-    iusOffsetDelete(offset)
-    iusDataDelete(frame)
+    iufOffsetDelete(offset)
+    iufDataDelete(frame)
     return status
 
 
@@ -29,13 +32,13 @@ class TestData(TestCase):
     #     numPulses = 4
     #     # Test double to float data interface
     #
-    #     # simulate ifh = iusInputFileFrameCreate()
+    #     # simulate ifh = iufInputFileFrameCreate()
     #     frameSize = numChannels*numSamplesPerLine*numPulses
-    #     data = iusDataCreate(frameSize)
+    #     data = iufDataCreate(frameSize)
     #     self.assertNotEqual(None, data)
     #     self.assertEqual(frameSize, len(data))
     #     # data kan now be filled in Python space
-    #     # iusInputFileSaveFrame(ifh, frame, offset)
+    #     # iufInputFileSaveFrame(ifh, frame, offset)
 
     def test_usage_scenario(self):
         # As a Python programmer
@@ -47,8 +50,8 @@ class TestData(TestCase):
         # *  Create Frame (using the meta data in the file like
         #    numSamplesPerline,numChannels and number of elements)
         # *  createFrame returns a numpyArray in Python Space.
-        # *  fill array and hand over to ius
-        #    using the iusInputFileSave routine
+        # *  fill array and hand over to iuf
+        #    using the iufInputFileSave routine
         #
         testFileName = "TestData.test_usage_scenario.hdf5"
         dopplerLabel = "doppler"
@@ -60,13 +63,10 @@ class TestData(TestCase):
 
         ifh = dgGenerateInputFile(testFileName, "S5-1", dopplerLabel, numFrames, numSamplesPerLine, numChannels)
         self.assertNotEqual(None, ifh)
-        frame = iusInputFileFrameCreate(ifh, dopplerLabel)
+        frame = iufInputFileFrameCreate(ifh, dopplerLabel)
         self.assertNotEqual(None,frame)
-        status = iusInputFileNodeSave(ifh)
+        status = iufInputFileNodeSave(ifh)
         self.assertEqual(0, status)
         status = saveFrames(ifh, dopplerLabel, numFrames)
         self.assertEqual(0, status)
-        iusInputFileClose(ifh)
-
-# status = dgInputFileAddGeneratedData(ifh, bmodeLabel, numSamplesPerLine, numChannels)
-        # self.assertEqual(0, status)
+        iufInputFileClose(ifh)

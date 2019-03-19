@@ -2,15 +2,15 @@ from unittest import TestCase
 
 import sys
 if sys.version_info < (3, 0):
-    from Python2Ius import IusParameterDict
+    from Python2Iuf import IufParameterDict
 else:
-    from Python3Ius import IusParameterDict
+    from Python3Iuf import IufParameterDict
 
 
 class TestParameterDict(TestCase):
     def test_construction(self):
         # create with known parameter values
-        a = IusParameterDict()
+        a = IufParameterDict()
         self.assertEqual(0, len(a))
         self.assertEqual([], a.keys())
 
@@ -20,7 +20,7 @@ class TestParameterDict(TestCase):
         key2 = '2ndKey'
         val1 = 'Mickey'
         val2 = 'Mouse'
-        a = IusParameterDict()
+        a = IufParameterDict()
         self.assertEqual(0, len(a))
         a[key1] = val1
         self.assertEqual(1, len(a))

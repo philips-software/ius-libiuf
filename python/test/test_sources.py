@@ -6,26 +6,26 @@ from unittest import TestCase
 import sys
 
 if sys.version_info < (3, 0):
-    from Python2Ius import *
+    from Python2Iuf import *
 else:
-    from Python3Ius import *
+    from Python3Iuf import *
 
 
 class TestSource(TestCase):
     def test_construction(self):
         # create with known parameter values
-        # IusAcquisition(float speedOfSound, int date, char *description) {
+        # IufAcquisition(float speedOfSound, int date, char *description) {
 
-        pos2D = ius2DPositionCreate(0.5, -1.0)
-        source = ius2DNonParametricSourceCreate(1)
-        ius2DNonParametricSourceSetPosition(source, pos2D, 0)
+        pos2D = iuf2DPositionCreate(0.5, -1.0)
+        source = iuf2DNonParametricSourceCreate(1)
+        iuf2DNonParametricSourceSetPosition(source, pos2D, 0)
 
-        sourceDict = iusSourceDictCreate();
-        iusSourceDictSet(sourceDict, 'my2DNPSource', source)
+        sourceDict = iufSourceDictCreate();
+        iufSourceDictSet(sourceDict, 'my2DNPSource', source)
 
         # now get the 2D position form this source in the dict
-        mySource = iusSourceDictGet(sourceDict, 'my2DNPSource')
-        my2DPos = ius2DNonParametricSourceGetPosition(mySource, 0)
+        mySource = iufSourceDictGet(sourceDict, 'my2DNPSource')
+        my2DPos = iuf2DNonParametricSourceGetPosition(mySource, 0)
 
-        self.assertEqual(ius2DPositionCompare(pos2D, my2DPos), IUS_TRUE)
+        self.assertEqual(iuf2DPositionCompare(pos2D, my2DPos), IUF_TRUE)
     # destroy

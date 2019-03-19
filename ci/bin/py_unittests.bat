@@ -1,7 +1,7 @@
 echo off
 set SdkRoot=%~dp0..\..\
-set Python3Module=Python3Ius.py
-set Python2Module=Python2Ius.py
+set Python3Module=Python3Iuf.py
+set Python2Module=Python2Iuf.py
 
 set ModuleFolder=%SdkRoot%\build\Windows\python\python2
 if exist "%ModuleFolder%\%Python2Module%" (

@@ -3,7 +3,7 @@
 //
 #include <unity.h>
 
-#include <ius.h>
+#include <iuf.h>
 #include <dg/dataGenerators.h>
 
 
@@ -22,7 +22,7 @@ void dgFillData
 )
 {
     int i;
-    int numSamples = iusDataGetSize(data);
+    int numSamples = iufDataGetSize(data);
     double *doubletjes = malloc(numSamples * sizeof(double));
 
     for (i=0; i<numSamples; i++)
@@ -30,7 +30,7 @@ void dgFillData
         doubletjes[i] = (float) value;
     }
 
-    iusDataFill(data, doubletjes, numSamples);
+    iufDataFill(data, doubletjes, numSamples);
     free(doubletjes);
 }
 
@@ -41,7 +41,7 @@ iurs_t dgGenerateReceiveSettings
 {
     float sampleFrequency=4000;
     int numTGCEntries = 1;
-    iurs_t obj = iusReceiveSettingsCreate(sampleFrequency, numSamplesPerLine, numTGCEntries);
+    iurs_t obj = iufReceiveSettingsCreate(sampleFrequency, numSamplesPerLine, numTGCEntries);
 
     return obj;
 }
@@ -54,22 +54,22 @@ iudm_t dgGenerateDemodulation
 	float sampleFrequency = 4000;
 	float centerFrequency = 4000;
 	int numTGCEntries = 1;
-	IusDemodulationMethod method = IUS_DEMODULATION_FOURX;
+	IufDemodulationMethod method = IUF_DEMODULATION_FOURX;
 	int kernelSize = 7;
     int i;
 
-	iudm_t obj = iusDemodulationCreate(method, sampleFrequency, centerFrequency, numSamplesPerLine, numTGCEntries, kernelSize);
+	iudm_t obj = iufDemodulationCreate(method, sampleFrequency, centerFrequency, numSamplesPerLine, numTGCEntries, kernelSize);
 
-    iutgc_t myTGC = iusTGCCreate(numTGCEntries);
-    iusTGCSet(myTGC, 0, 0.0, 1.0); //idx, time, gain
-    iusDemodulationSetTGC(obj, myTGC);
+    iutgc_t myTGC = iufTGCCreate(numTGCEntries);
+    iufTGCSet(myTGC, 0, 0.0, 1.0); //idx, time, gain
+    iufDemodulationSetTGC(obj, myTGC);
 
-    iuff_t preFilter = iusFirFilterCreate(kernelSize);
+    iuff_t preFilter = iufFirFilterCreate(kernelSize);
     for (i=0; i<kernelSize; i++)
     {
-      iusFirFilterSetCoefficient(preFilter, i, 1.0/(float)kernelSize); //an averaging filter
+      iufFirFilterSetCoefficient(preFilter, i, 1.0/(float)kernelSize); //an averaging filter
     }
-    iusDemodulationSetPreFilter(obj, preFilter);
+    iufDemodulationSetPreFilter(obj, preFilter);
 
 	return obj;
 }
@@ -83,12 +83,12 @@ iursd_t dgGenerateReceiveSettingsDict
     int status=0;
 
     // Create
-    iursd_t  dict = iusReceiveSettingsDictCreate();
+    iursd_t  dict = iufReceiveSettingsDictCreate();
 
     // Fill
     iurs_t obj = dgGenerateReceiveSettings(numSamplesPerLine);
-    status |= iusReceiveSettingsDictSet(dict,label,obj);
-    TEST_ASSERT_EQUAL(IUS_E_OK,status);
+    status |= iufReceiveSettingsDictSet(dict,label,obj);
+    TEST_ASSERT_EQUAL(IUF_E_OK,status);
     return dict;
 }
 
@@ -101,12 +101,12 @@ iudmd_t dgGenerateDemodulationDict
 	int status = 0;
 
 	// Create
-	iudmd_t  dict = iusDemodulationDictCreate();
+	iudmd_t  dict = iufDemodulationDictCreate();
 
 	// Fill
 	iudm_t obj = dgGenerateDemodulation(numSamplesPerLine);
-	status |= iusDemodulationDictSet(dict, label, obj);
-	TEST_ASSERT_EQUAL(IUS_E_OK, status);
+	status |= iufDemodulationDictSet(dict, label, obj);
+	TEST_ASSERT_EQUAL(IUF_E_OK, status);
 	return dict;
 }
 
@@ -118,11 +118,11 @@ iuhn_t dgGenerateHistoryNode
     char *type =  "TYPE3";
     iuhn_t node;
 
-    node = iusHistoryNodeCreate(type);
+    node = iufHistoryNodeCreate(type);
     TEST_ASSERT_NOT_EQUAL(IUHN_INVALID,node);
 
     iupad_t parameterDict = dgGenerateParameterDict(10);
-    iusHistoryNodeSetParameters(node, parameterDict);
+    iufHistoryNodeSetParameters(node, parameterDict);
     return node;
 }
 
@@ -132,7 +132,7 @@ iupad_t dgGenerateParameterDict
 )
 {
     int elementID,status;
-    iupad_t dict = iusParameterDictCreate();
+    iupad_t dict = iufParameterDictCreate();
     TEST_ASSERT(dict != IUPAD_INVALID);
 
     char generatedKey[1024];
@@ -141,8 +141,8 @@ iupad_t dgGenerateParameterDict
     {
         sprintf(generatedKey,"key_%d", elementID);
         sprintf(generatedValue,"value_%d", elementID);
-        status = iusParameterDictSet(dict, generatedKey, generatedValue);
-        TEST_ASSERT_EQUAL(IUS_E_OK,status);
+        status = iufParameterDictSet(dict, generatedKey, generatedValue);
+        TEST_ASSERT_EQUAL(IUF_E_OK,status);
     }
 
     return dict;
@@ -150,36 +150,36 @@ iupad_t dgGenerateParameterDict
 
 int dgDeleteIqFile
 (
-	iuiqf_t iusIqFile
+	iuiqf_t iufIqFile
 )
 {
-	int status = iusFrameListDeepDelete(iusIqFileGetFrameList(iusIqFile));
-	status |= iusReceiveChannelMapDictDeepDelete(iusIqFileGetReceiveChannelMapDict(iusIqFile));
-	status |= iusTransducerDeepDelete(iusIqFileGetTransducer(iusIqFile));
-	status |= iusTransmitApodizationDictDeepDelete(iusIqFileGetTransmitApodizationDict(iusIqFile));
-	status |= iusIqPatternListDictDeepDelete(iusIqFileGetIqPatternListDict(iusIqFile));
-	status |= iusPulseDictDeepDelete(iusIqFileGetPulseDict(iusIqFile));
-	status |= iusSourceDictDeepDelete(iusIqFileGetSourceDict(iusIqFile));
-	status |= iusAcquisitionDelete(iusIqFileGetAcquisition(iusIqFile));
-	status |= iusIqFileDelete(iusIqFile);
+	int status = iufFrameListDeepDelete(iufIqFileGetFrameList(iufIqFile));
+	status |= iufReceiveChannelMapDictDeepDelete(iufIqFileGetReceiveChannelMapDict(iufIqFile));
+	status |= iufTransducerDeepDelete(iufIqFileGetTransducer(iufIqFile));
+	status |= iufTransmitApodizationDictDeepDelete(iufIqFileGetTransmitApodizationDict(iufIqFile));
+	status |= iufIqPatternListDictDeepDelete(iufIqFileGetIqPatternListDict(iufIqFile));
+	status |= iufPulseDictDeepDelete(iufIqFileGetPulseDict(iufIqFile));
+	status |= iufSourceDictDeepDelete(iufIqFileGetSourceDict(iufIqFile));
+	status |= iufAcquisitionDelete(iufIqFileGetAcquisition(iufIqFile));
+	status |= iufIqFileDelete(iufIqFile);
 	return status;
 }
 
 int dgDeleteInputFile
 (
-    iuif_t iusInputFile
+    iuif_t iufInputFile
 )
 {
-    int status = iusFrameListDeepDelete(iusInputFileGetFrameList(iusInputFile));
-    status |= iusReceiveChannelMapDictDeepDelete(iusInputFileGetReceiveChannelMapDict(iusInputFile));
-    status |= iusTransducerDeepDelete(iusInputFileGetTransducer(iusInputFile));
-    status |= iusTransmitApodizationDictDeepDelete(iusInputFileGetTransmitApodizationDict(iusInputFile));
-    status |= iusReceiveSettingsDictDeepDelete(iusInputFileGetReceiveSettingsDict(iusInputFile));
-    status |= iusPatternListDictDeepDelete(iusInputFileGetPatternListDict(iusInputFile));
-    status |= iusPulseDictDeepDelete(iusInputFileGetPulseDict(iusInputFile));
-    status |= iusSourceDictDeepDelete(iusInputFileGetSourceDict(iusInputFile));
-    status |= iusAcquisitionDelete(iusInputFileGetAcquisition(iusInputFile));
-    status |= iusInputFileDelete(iusInputFile);
+    int status = iufFrameListDeepDelete(iufInputFileGetFrameList(iufInputFile));
+    status |= iufReceiveChannelMapDictDeepDelete(iufInputFileGetReceiveChannelMapDict(iufInputFile));
+    status |= iufTransducerDeepDelete(iufInputFileGetTransducer(iufInputFile));
+    status |= iufTransmitApodizationDictDeepDelete(iufInputFileGetTransmitApodizationDict(iufInputFile));
+    status |= iufReceiveSettingsDictDeepDelete(iufInputFileGetReceiveSettingsDict(iufInputFile));
+    status |= iufPatternListDictDeepDelete(iufInputFileGetPatternListDict(iufInputFile));
+    status |= iufPulseDictDeepDelete(iufInputFileGetPulseDict(iufInputFile));
+    status |= iufSourceDictDeepDelete(iufInputFileGetSourceDict(iufInputFile));
+    status |= iufAcquisitionDelete(iufInputFileGetAcquisition(iufInputFile));
+    status |= iufInputFileDelete(iufInputFile);
     return status;
 }
 
@@ -194,48 +194,47 @@ iuif_t dgGenerateInputFile
 )
 {
     // create
-    iuif_t inputFile = iusInputFileCreate(ptestFileName);
+    iuif_t inputFile = iufInputFileCreate(ptestFileName);
     TEST_ASSERT(inputFile != IUIF_INVALID);
 
     // fill
     iufl_t frameList = dgGenerateFrameList(numFrames);
-    int status = iusInputFileSetFrameList(inputFile,frameList);
-    TEST_ASSERT(status == IUS_E_OK);
+    int status = iufInputFileSetFrameList(inputFile,frameList);
+    TEST_ASSERT(status == IUF_E_OK);
 
     iupd_t pulseDict = dgGeneratePulseDict();
-    status = iusInputFileSetPulseDict(inputFile, pulseDict);
-    TEST_ASSERT(status == IUS_E_OK);
+    status = iufInputFileSetPulseDict(inputFile, pulseDict);
+    TEST_ASSERT(status == IUF_E_OK);
 
     iusd_t sourceDict = dgGenerateSourceDict();
-    status = iusInputFileSetSourceDict(inputFile, sourceDict);
-    TEST_ASSERT(status == IUS_E_OK);
+    status = iufInputFileSetSourceDict(inputFile, sourceDict);
+    TEST_ASSERT(status == IUF_E_OK);
 
     iurcmd_t receiveChannelMapDict = dgGenerateReceiveChannelMapDict(label, numChannels);
-    status = iusInputFileSetReceiveChannelMapDict(inputFile, receiveChannelMapDict);
-    TEST_ASSERT(status == IUS_E_OK);
+    status = iufInputFileSetReceiveChannelMapDict(inputFile, receiveChannelMapDict);
+    TEST_ASSERT(status == IUF_E_OK);
 
     iutad_t transmitApodizationDict = dgGenerateTransmitApodizationDict(label);
-    status = iusInputFileSetTransmitApodizationDict(inputFile, transmitApodizationDict);
-    TEST_ASSERT(status == IUS_E_OK);
+    status = iufInputFileSetTransmitApodizationDict(inputFile, transmitApodizationDict);
+    TEST_ASSERT(status == IUF_E_OK);
 
     iursd_t receiveSettingsDict = dgGenerateReceiveSettingsDict(label, numSamplesPerLine);
-    status = iusInputFileSetReceiveSettingsDict(inputFile, receiveSettingsDict);
-    TEST_ASSERT_EQUAL(IUS_E_OK, status);
+    status = iufInputFileSetReceiveSettingsDict(inputFile, receiveSettingsDict);
+    TEST_ASSERT_EQUAL(IUF_E_OK, status);
 
     iupald_t patternListDict = dgGeneratePatternListDict(label,receiveSettingsDict,receiveChannelMapDict);
-    status = iusInputFileSetPatternListDict(inputFile,patternListDict);
-    TEST_ASSERT(status == IUS_E_OK);
+    status = iufInputFileSetPatternListDict(inputFile,patternListDict);
+    TEST_ASSERT(status == IUF_E_OK);
 
     // save
     iua_t acquisition = dgGenerateAcquisition();
-    status = iusInputFileSetAcquisition(inputFile, acquisition);
-    TEST_ASSERT(status == IUS_E_OK);
+    status = iufInputFileSetAcquisition(inputFile, acquisition);
+    TEST_ASSERT(status == IUF_E_OK);
 
 
     iut_t transducer = dgGenerateTransducer(transducerName);
-    status = iusInputFileSetTransducer(inputFile, transducer);
-    TEST_ASSERT(status == IUS_E_OK);
-
+    status = iufInputFileSetTransducer(inputFile, transducer);
+    TEST_ASSERT(status == IUF_E_OK);
     return inputFile;
 }
 
@@ -250,48 +249,48 @@ iuiqf_t dgGenerateIqFile
 )
 {
 	// create
-	iuiqf_t iqFile = iusIqFileCreate(ptestFileName);
+	iuiqf_t iqFile = iufIqFileCreate(ptestFileName);
 	TEST_ASSERT(iqFile != IUIQF_INVALID);
 
 	// fill
 	iufl_t frameList = dgGenerateFrameList(numFrames);
-	int status = iusIqFileSetFrameList(iqFile, frameList);
-	TEST_ASSERT(status == IUS_E_OK);
+	int status = iufIqFileSetFrameList(iqFile, frameList);
+	TEST_ASSERT(status == IUF_E_OK);
 
 	iupd_t pulseDict = dgGeneratePulseDict();
-	status = iusIqFileSetPulseDict(iqFile, pulseDict);
-	TEST_ASSERT(status == IUS_E_OK);
+	status = iufIqFileSetPulseDict(iqFile, pulseDict);
+	TEST_ASSERT(status == IUF_E_OK);
 
 	iusd_t sourceDict = dgGenerateSourceDict();
-	status = iusIqFileSetSourceDict(iqFile, sourceDict);
-	TEST_ASSERT(status == IUS_E_OK);
+	status = iufIqFileSetSourceDict(iqFile, sourceDict);
+	TEST_ASSERT(status == IUF_E_OK);
 
 	iurcmd_t receiveChannelMapDict = dgGenerateReceiveChannelMapDict(label, numChannels);
-	status = iusIqFileSetReceiveChannelMapDict(iqFile, receiveChannelMapDict);
-	TEST_ASSERT(status == IUS_E_OK);
+	status = iufIqFileSetReceiveChannelMapDict(iqFile, receiveChannelMapDict);
+	TEST_ASSERT(status == IUF_E_OK);
 
 	iutad_t transmitApodizationDict = dgGenerateTransmitApodizationDict(label);
-	status = iusIqFileSetTransmitApodizationDict(iqFile, transmitApodizationDict);
-	TEST_ASSERT(status == IUS_E_OK);
+	status = iufIqFileSetTransmitApodizationDict(iqFile, transmitApodizationDict);
+	TEST_ASSERT(status == IUF_E_OK);
 
 	TEST_ASSERT(numSamplesPerLine >= 0);
 	iudmd_t demodulationDict = dgGenerateDemodulationDict(label, numSamplesPerLine);
-	status = iusIqFileSetDemodulationDict(iqFile, demodulationDict);
-	TEST_ASSERT(status == IUS_E_OK);
+	status = iufIqFileSetDemodulationDict(iqFile, demodulationDict);
+	TEST_ASSERT(status == IUF_E_OK);
 
 	iuiqpald_t iqPatternListDict = dgGenerateIqPatternListDict(label, demodulationDict, receiveChannelMapDict);
-	status = iusIqFileSetPatternListDict(iqFile, iqPatternListDict);
-	TEST_ASSERT(status == IUS_E_OK);
+	status = iufIqFileSetPatternListDict(iqFile, iqPatternListDict);
+	TEST_ASSERT(status == IUF_E_OK);
 
 	// save
 	iua_t acquisition = dgGenerateAcquisition();
-	status = iusIqFileSetAcquisition(iqFile, acquisition);
-	TEST_ASSERT(status == IUS_E_OK);
+	status = iufIqFileSetAcquisition(iqFile, acquisition);
+	TEST_ASSERT(status == IUF_E_OK);
 
 
 	iut_t transducer = dgGenerateTransducer(transducerName);
-	status = iusIqFileSetTransducer(iqFile, transducer);
-	TEST_ASSERT(status == IUS_E_OK);
+	status = iufIqFileSetTransducer(iqFile, transducer);
+	TEST_ASSERT(status == IUF_E_OK);
 
 	return iqFile;
 }
@@ -305,23 +304,23 @@ int dgInputFileAddGeneratedData
 )
 {
     // fill
-    iurcmd_t receiveChannelMapDict = iusInputFileGetReceiveChannelMapDict(inputFile);
+    iurcmd_t receiveChannelMapDict = iufInputFileGetReceiveChannelMapDict(inputFile);
     iurcm_t receiveChannelMap = dgGenerateReceiveChannelMap(numChannels);
-    iusReceiveChannelMapDictSet(receiveChannelMapDict,label,receiveChannelMap);
-    int status = iusInputFileSetReceiveChannelMapDict(inputFile, receiveChannelMapDict);
-    TEST_ASSERT(status == IUS_E_OK);
+    iufReceiveChannelMapDictSet(receiveChannelMapDict,label,receiveChannelMap);
+    int status = iufInputFileSetReceiveChannelMapDict(inputFile, receiveChannelMapDict);
+    TEST_ASSERT(status == IUF_E_OK);
 
-    iursd_t receiveSettingsDict = iusInputFileGetReceiveSettingsDict(inputFile);
+    iursd_t receiveSettingsDict = iufInputFileGetReceiveSettingsDict(inputFile);
     iurs_t receiveSettings = dgGenerateReceiveSettings(numSamplesPerLine);
-    iusReceiveSettingsDictSet(receiveSettingsDict,label,receiveSettings);
-    status = iusInputFileSetReceiveSettingsDict(inputFile, receiveSettingsDict);
-    TEST_ASSERT_EQUAL(IUS_E_OK, status);
+    iufReceiveSettingsDictSet(receiveSettingsDict,label,receiveSettings);
+    status = iufInputFileSetReceiveSettingsDict(inputFile, receiveSettingsDict);
+    TEST_ASSERT_EQUAL(IUF_E_OK, status);
 
-    iupald_t patternListDict = iusInputFileGetPatternListDict(inputFile);
+    iupald_t patternListDict = iufInputFileGetPatternListDict(inputFile);
     iupal_t patternList = dgGeneratePatternList(8,0.08f,receiveSettingsDict,receiveChannelMapDict);
-    iusPatternListDictSet(patternListDict,label,patternList);
-    status = iusInputFileSetPatternListDict(inputFile,patternListDict);
-    TEST_ASSERT(status == IUS_E_OK);
+    iufPatternListDictSet(patternListDict,label,patternList);
+    status = iufInputFileSetPatternListDict(inputFile,patternListDict);
+    TEST_ASSERT(status == IUF_E_OK);
     return status;
 }
 
@@ -337,23 +336,23 @@ int dgIqFileAddGeneratedData
 	TEST_ASSERT(numSamplesPerLine >= 0);
 	TEST_ASSERT(numChannels >= 0);
 
-	iurcmd_t receiveChannelMapDict = iusInputFileGetReceiveChannelMapDict(iqFile);
+	iurcmd_t receiveChannelMapDict = iufInputFileGetReceiveChannelMapDict(iqFile);
 	iurcm_t receiveChannelMap = dgGenerateReceiveChannelMap(numChannels);
-	iusReceiveChannelMapDictSet(receiveChannelMapDict, label, receiveChannelMap);
-	int status = iusIqFileSetReceiveChannelMapDict(iqFile, receiveChannelMapDict);
-	TEST_ASSERT(status == IUS_E_OK);
+	iufReceiveChannelMapDictSet(receiveChannelMapDict, label, receiveChannelMap);
+	int status = iufIqFileSetReceiveChannelMapDict(iqFile, receiveChannelMapDict);
+	TEST_ASSERT(status == IUF_E_OK);
 
-	iudmd_t demodulationDict = iusIqFileGetDemodulationDict(iqFile);
+	iudmd_t demodulationDict = iufIqFileGetDemodulationDict(iqFile);
 	iudm_t demodulation = dgGenerateDemodulation(numSamplesPerLine);
-	iusDemodulationDictSet(demodulationDict, label, demodulation);
-	status = iusIqFileSetDemodulationDict(iqFile, demodulationDict);
-	TEST_ASSERT(status == IUS_E_OK);
+	iufDemodulationDictSet(demodulationDict, label, demodulation);
+	status = iufIqFileSetDemodulationDict(iqFile, demodulationDict);
+	TEST_ASSERT(status == IUF_E_OK);
 
-	iuiqpald_t patternListDict = iusIqFileGetIqPatternListDict(iqFile);
+	iuiqpald_t patternListDict = iufIqFileGetIqPatternListDict(iqFile);
 	iuiqpal_t patternList = dgGenerateIqPatternList(8, 0.08f, demodulationDict, receiveChannelMapDict);
-	iusIqPatternListDictSet(patternListDict, label, patternList);
-	status = iusIqFileSetPatternListDict(iqFile, patternListDict);
-	TEST_ASSERT(status == IUS_E_OK);
+	iufIqPatternListDictSet(patternListDict, label, patternList);
+	status = iufIqFileSetPatternListDict(iqFile, patternListDict);
+	TEST_ASSERT(status == IUF_E_OK);
 
 	return status;
 }
@@ -365,14 +364,14 @@ iufl_t dgGenerateFrameList
 {
     iufr_t obj;
     int status,i;
-    iufl_t frameList = iusFrameListCreate(numFrames);
+    iufl_t frameList = iufFrameListCreate(numFrames);
     TEST_ASSERT_NOT_EQUAL(IUFL_INVALID, frameList);
 
     for (i=0;i<numFrames;i++)
     {
-        obj = iusFrameCreate("test",i+2,i*0.01f);
-        status = iusFrameListSet(frameList, obj, i);
-        TEST_ASSERT_EQUAL(IUS_E_OK, status);
+        obj = iufFrameCreate("test",i+2,i*0.01f);
+        status = iufFrameListSet(frameList, obj, i);
+        TEST_ASSERT_EQUAL(IUF_E_OK, status);
     }
     return frameList;
 }
@@ -386,19 +385,19 @@ iupal_t dgGeneratePatternList
 )
 {
     int i,status;
-    iupal_t patternList = iusPatternListCreate(numPatterns,receiveSettingsDict,receiveChannelMapDict);
+    iupal_t patternList = iufPatternListCreate(numPatterns,receiveSettingsDict,receiveChannelMapDict);
     TEST_ASSERT_NOT_EQUAL(IUPAL_INVALID, patternList);
 
     for (i=0;i<numPatterns;i++)
     {
-        iupa_t pattern = iusPatternCreate((i + 1) * timeInterval,
+        iupa_t pattern = iufPatternCreate((i + 1) * timeInterval,
                                           pPulseLabel,
                                           pSourceLabel,
                                           pChannelMapLabel,
                                           pApodizationLabel,
                                           pReceivesettingsLabel);
-        status = iusPatternListSet(patternList, pattern, i);
-        TEST_ASSERT_EQUAL(IUS_E_OK, status);
+        status = iufPatternListSet(patternList, pattern, i);
+        TEST_ASSERT_EQUAL(IUF_E_OK, status);
     }
     return patternList;
 }
@@ -413,10 +412,10 @@ iupald_t dgGeneratePatternListDict
   int status;
 
   // fill list
-  iupald_t patternListDict = iusPatternListDictCreate();
+  iupald_t patternListDict = iufPatternListDictCreate();
   iupal_t bmodePatternList = dgGeneratePatternList(1,0.01f,receiveSettingsDict,receiveChannelMapDict);
-  status = iusPatternListDictSet(patternListDict, label, bmodePatternList);
-  TEST_ASSERT_EQUAL(IUS_E_OK, status);
+  status = iufPatternListDictSet(patternListDict, label, bmodePatternList);
+  TEST_ASSERT_EQUAL(IUF_E_OK, status);
   return patternListDict;
 }
 
@@ -429,19 +428,19 @@ iuiqpal_t dgGenerateIqPatternList
 )
 {
 	int i, status;
-	iuiqpal_t iqPatternList = iusIqPatternListCreate(numPatterns, demodulationDict, receiveChannelMapDict);
+	iuiqpal_t iqPatternList = iufIqPatternListCreate(numPatterns, demodulationDict, receiveChannelMapDict);
 	TEST_ASSERT_NOT_EQUAL(IUIQPAL_INVALID, iqPatternList);
 
 	for (i = 0; i<numPatterns; i++)
 	{
-		iuiqpa_t pattern = iusIqPatternCreate((i + 1) * timeInterval,
+		iuiqpa_t pattern = iufIqPatternCreate((i + 1) * timeInterval,
 			pPulseLabel,
 			pSourceLabel,
 			pChannelMapLabel,
 			pApodizationLabel,
 			pDemodulationLabel);
-		status = iusIqPatternListSet(iqPatternList, pattern, i);
-		TEST_ASSERT_EQUAL(IUS_E_OK, status);
+		status = iufIqPatternListSet(iqPatternList, pattern, i);
+		TEST_ASSERT_EQUAL(IUF_E_OK, status);
 	}
 
 	return iqPatternList;
@@ -457,10 +456,10 @@ iuiqpald_t dgGenerateIqPatternListDict
 	int status;
 
 	// fill list
-	iuiqpald_t iqPatternListDict = iusIqPatternListDictCreate();
+	iuiqpald_t iqPatternListDict = iufIqPatternListDictCreate();
 	iuiqpal_t bmodeIqPatternList = dgGenerateIqPatternList(1, 0.01f, demodulationDict, receiveChannelMapDict);
-	status = iusIqPatternListDictSet(iqPatternListDict, label, bmodeIqPatternList);
-	TEST_ASSERT_EQUAL(IUS_E_OK, status);
+	status = iufIqPatternListDictSet(iqPatternListDict, label, bmodeIqPatternList);
+	TEST_ASSERT_EQUAL(IUF_E_OK, status);
 	return iqPatternListDict;
 }
 
@@ -478,20 +477,20 @@ iupd_t dgGeneratePulseDict
   int     status;
 
   // create
-  iupd_t dict = iusPulseDictCreate();
+  iupd_t dict = iufPulseDictCreate();
   TEST_ASSERT(dict != IUPD_INVALID);
 
   // fill
   char *parametricLabel = "parametricPulseLabel";
   char *nonParametricLabel = "nonParametricPulseLabel";
-  iupp_t parametricPulse = iusParametricPulseCreate(pulseFrequency, pulseAmplitude, numPulses);
-  iunpp_t nonParametricPulse = iusNonParametricPulseCreate(numPulseValues);
-  iusNonParametricPulseSetValue(nonParametricPulse,0,10.0f,10.0f);
-  iusNonParametricPulseSetValue(nonParametricPulse,1,20.0f,10.0f);
-  status = iusPulseDictSet(dict,nonParametricLabel, (iup_t) nonParametricPulse);
-  TEST_ASSERT(status == IUS_E_OK);
-  status = iusPulseDictSet(dict,parametricLabel, (iup_t) parametricPulse);
-  TEST_ASSERT(status == IUS_E_OK);
+  iupp_t parametricPulse = iufParametricPulseCreate(pulseFrequency, pulseAmplitude, numPulses);
+  iunpp_t nonParametricPulse = iufNonParametricPulseCreate(numPulseValues);
+  iufNonParametricPulseSetValue(nonParametricPulse,0,10.0f,10.0f);
+  iufNonParametricPulseSetValue(nonParametricPulse,1,20.0f,10.0f);
+  status = iufPulseDictSet(dict,nonParametricLabel, (iup_t) nonParametricPulse);
+  TEST_ASSERT(status == IUF_E_OK);
+  status = iufPulseDictSet(dict,parametricLabel, (iup_t) parametricPulse);
+  TEST_ASSERT(status == IUF_E_OK);
   return dict;
 }
 
@@ -512,21 +511,21 @@ iusd_t dgGenerateSourceDict
     char *_3d_non_parametric_label = "label for 3d non parametric source";
     char *_3d_parametric_label = "label for 3d parametric source";
 
-    iu3dps_t parametricSource = ius3DParametricSourceCreate(numLocationsTheta, numLocationsPhi, FNumber, deltaTheta, startTheta, deltaPhi, startPhi);
+    iu3dps_t parametricSource = iuf3DParametricSourceCreate(numLocationsTheta, numLocationsPhi, FNumber, deltaTheta, startTheta, deltaPhi, startPhi);
 
     TEST_ASSERT(parametricSource != IU3DPS_INVALID);
-    iu3dnps_t nonParametricSource = ius3DNonParametricSourceCreate(numLocationsTheta*numLocationsPhi);
+    iu3dnps_t nonParametricSource = iuf3DNonParametricSourceCreate(numLocationsTheta*numLocationsPhi);
     TEST_ASSERT(nonParametricSource != IU3DNPS_INVALID);
 
     // create
-    iusd_t dict = iusSourceDictCreate();
-    TEST_ASSERT(dict != IUSD_INVALID);
+    iusd_t dict = iufSourceDictCreate();
+    TEST_ASSERT(dict != IUFD_INVALID);
 
     // fill
-    int status = iusSourceDictSet(dict, _3d_parametric_label,(ius_t) parametricSource);
-    TEST_ASSERT_EQUAL(IUS_E_OK,status);
-    status = iusSourceDictSet(dict, _3d_non_parametric_label,(ius_t) nonParametricSource);
-    TEST_ASSERT_EQUAL(IUS_E_OK,status);
+    int status = iufSourceDictSet(dict, _3d_parametric_label,(ius_t) parametricSource);
+    TEST_ASSERT_EQUAL(IUF_E_OK,status);
+    status = iufSourceDictSet(dict, _3d_non_parametric_label,(ius_t) nonParametricSource);
+    TEST_ASSERT_EQUAL(IUF_E_OK,status);
     return dict;
 }
 
@@ -540,21 +539,21 @@ iurcm_t dgGenerateReceiveChannelMap
     int channelMap[8] = {0, 1, 2, 3, 4, 5, 6, 7};
 
     // fill
-    iurcm_t receiveChannelMap = iusReceiveChannelMapCreate(numChannels);
+    iurcm_t receiveChannelMap = iufReceiveChannelMapCreate(numChannels);
     TEST_ASSERT(receiveChannelMap != NULL);
 
-    status = iusReceiveChannelMapSetMap(receiveChannelMap, channelMap);
-    TEST_ASSERT(status == IUS_E_OK);
+    status = iufReceiveChannelMapSetMap(receiveChannelMap, channelMap);
+    TEST_ASSERT(status == IUF_E_OK);
 
-    status = iusReceiveChannelMapSetMap(receiveChannelMap, channelMap);
-    TEST_ASSERT(status == IUS_E_OK);
+    status = iufReceiveChannelMapSetMap(receiveChannelMap, channelMap);
+    TEST_ASSERT(status == IUF_E_OK);
 
     // Delays
     for(i=0;i<numChannels;i++)
     {
         float delay = i*2.0f;
-        status |= iusReceiveChannelMapSetStartDelay(receiveChannelMap, i, delay);
-        TEST_ASSERT(status == IUS_E_OK);
+        status |= iufReceiveChannelMapSetStartDelay(receiveChannelMap, i, delay);
+        TEST_ASSERT(status == IUF_E_OK);
     }
 
 
@@ -568,13 +567,13 @@ iurcmd_t dgGenerateReceiveChannelMapDict
 )
 {
     int status;
-    iurcmd_t dict = iusReceiveChannelMapDictCreate();
+    iurcmd_t dict = iufReceiveChannelMapDictCreate();
     TEST_ASSERT(dict != IURCMD_INVALID);
 
     // fill
     iurcm_t receiveChannelMap = dgGenerateReceiveChannelMap(numChannels);
-    status = iusReceiveChannelMapDictSet(dict, label, receiveChannelMap);
-    TEST_ASSERT(status == IUS_E_OK);
+    status = iufReceiveChannelMapDictSet(dict, label, receiveChannelMap);
+    TEST_ASSERT(status == IUF_E_OK);
     return dict;
 }
 
@@ -584,7 +583,7 @@ iua_t dgGenerateAcquisition()
 	char *pDescription = "a nice acquisition that almost won me the nobel prize";
 	float speedOfSound = 1540.0f;
 
-	iua_t acquisition = iusAcquisitionCreate(speedOfSound, date, pDescription);
+	iua_t acquisition = iufAcquisitionCreate(speedOfSound, date, pDescription);
 	TEST_ASSERT(acquisition != IUA_INVALID);
 
 	return acquisition;
@@ -602,15 +601,15 @@ iut_t dgGenerateTransducer
     // create and fill
     const float transducerPitch = 0.000005f;
 
-    iu3dt_t transducer = ius3DTransducerCreate(transducerName, IUS_PLANE, 2500000.0f, numTransducerElements);
+    iu3dt_t transducer = iuf3DTransducerCreate(transducerName, IUF_PLANE, 2500000.0f, numTransducerElements);
     TEST_ASSERT(transducer != IU3DT_INVALID);
     for (i = 0; i < numTransducerElements; i++)
     {
-        iu3dp_t elemPos = ius3DPositionCreate((float)(10.0-numTransducerElements/2.0)*transducerPitch, 0.0f, 0.0f);
-        iu3ds_t elemSize = ius3DSizeCreate(0.0001f,0.0001f,0.0001f);
-        iu3da_t elemAngle = ius3DAngleCreate(0.0f,0.3f);
-        iu3dte_t element = ius3DTransducerElementCreate(elemPos, elemAngle, elemSize);
-        ius3DTransducerSetElement(transducer, i, element);
+        iu3dp_t elemPos = iuf3DPositionCreate((float)(10.0-numTransducerElements/2.0)*transducerPitch, 0.0f, 0.0f);
+        iu3ds_t elemSize = iuf3DSizeCreate(0.0001f,0.0001f,0.0001f);
+        iu3da_t elemAngle = iuf3DAngleCreate(0.0f,0.3f);
+        iu3dte_t element = iuf3DTransducerElementCreate(elemPos, elemAngle, elemSize);
+        iuf3DTransducerSetElement(transducer, i, element);
     }
 
     return  (iut_t)transducer;
@@ -625,16 +624,16 @@ iutad_t dgGenerateTransmitApodizationDict
 	int numElements = 8;
 	float apodizaton[8] = { 0.5f, 1.0f, 1.0f, 1.0f, .0f, 1.0f, .0f, 0.5f };
 
-	iutad_t dict = iusTransmitApodizationDictCreate();
+	iutad_t dict = iufTransmitApodizationDictCreate();
 	TEST_ASSERT(dict != IUTAD_INVALID);
 
 	// fill
-	iuta_t transmitApodization = iusTransmitApodizationCreate(apodizaton, numElements);
+	iuta_t transmitApodization = iufTransmitApodizationCreate(apodizaton, numElements);
 	TEST_ASSERT(transmitApodization != NULL);
 
 
-	status = iusTransmitApodizationDictSet(dict, label, transmitApodization);
-	TEST_ASSERT(status == IUS_E_OK);
+	status = iufTransmitApodizationDictSet(dict, label, transmitApodization);
+	TEST_ASSERT(status == IUF_E_OK);
 
 	return dict;
 }

@@ -1,5 +1,5 @@
-# Instructions for building and using the mex wrapper for the IUS-SDK Software
-This wrapper provides a MatLab mex interface to the IUS-SDK Software functions.
+# Instructions for building and using the mex wrapper for the IUF-SDK Software
+This wrapper provides a MatLab mex interface to the IUF-SDK Software functions.
 
 This document contains instructions on
 * [How to install MatLab](#how-to-install-matlab)
@@ -31,7 +31,7 @@ This document contains instructions on
 
 ## How to build the wrapper using MatLab
 
-- Build the IUS-SDK library
+- Build the IUF-SDK library
 - Open MatLab and run the function mxCreate.m in the directory ./src/
 
 ## How to build the wrapper using command prompt:
