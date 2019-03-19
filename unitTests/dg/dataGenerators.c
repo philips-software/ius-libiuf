@@ -67,7 +67,7 @@ iudm_t dgGenerateDemodulation
     iuff_t preFilter = iufFirFilterCreate(kernelSize);
     for (i=0; i<kernelSize; i++)
     {
-      iufFirFilterSetCoefficient(preFilter, i, 1.0/(float)kernelSize); //an averaging filter
+      iufFirFilterSetCoefficient(preFilter, i, 1.0f/(float)kernelSize); //an averaging filter
     }
     iufDemodulationSetPreFilter(obj, preFilter);
 
