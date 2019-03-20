@@ -10,9 +10,6 @@ initIufLibrary()
 % Get iuf functions directly into local namespace
 import py.Python3Iuf.*
 
-iufErrorSetStreamToFile('errorlog.txt');
-%iufErrorAutoReport(1);
-
 % Create the iq file
 iqFileHandle = iufIqFileCreate(iqFilename);
 if iqFileHandle == py.None
@@ -20,7 +17,7 @@ if iqFileHandle == py.None
 end
 try
     %convert( iqFileHandle, iufIqStruct, iqData, 'doppler' );
-    fillInstanceData( iqFileHandle, iufIqStruct, 'doppler' );
+    fillInstanceData( iqFileHandle, iufIqStruct, 'doppler', Receive );
 catch ME
     iufIqFileClose(iqFileHandle);
     rethrow(ME);
@@ -34,7 +31,7 @@ iufErrorCloseFileStream();
 disp('done');
 end
 
-function fillInstanceData( h, iufIqStruct, mode )
+function fillInstanceData( h, iufIqStruct, mode, Receive )
 
 % Get iuf functions directly into local namespace
 import py.Python3Iuf.*
@@ -215,6 +212,8 @@ iufTransmitApodizationDelete( transmitApodization );
 iufTransmitApodizationDictDelete( transmitApodizationDict );
 
 % Demodulation
+iusTGCDelete( tgc );
+iusFirFilterDelete( preFilter );
 iufDemodulationDelete( demodulation );
 iufDemodulationDictDelete( demodulationDict );
 
