@@ -98,6 +98,10 @@ This folder contains the IUF-SDK header files.
 This folder contains the IUF-SDK platform specific static library files, both
 compiled for debug and release mode.
 
+### python
+This folder contains the code needed to build the Python 2 and 3 bindings for
+teh IUS-SDk.
+
 ### package
 This folder contains files that will be added to the SDK distribution (dist.sh/dist.bat).
 
@@ -110,18 +114,24 @@ In order to build and test the code, the required packages need to be installed:
 - compiler
   - tested with MSVC 19.0.24215.1 on Windows 7
   - tested with GNU c compiler 4.8.5 on Linux (centos:7.4.1708)
-  - tested with AppleClang 9.0.0.9000039 on MacOS (Sierra 10.12.6)
+  - tested with AppleClang 10.0.0.10001044 on MacOS (Mojave 10.14.3)
   
 - cmake
-  - tested with 3.10.3 on Windows (7/10 pro)
-  - tested with 3.12.1 on Linux (centos:7.4.1708)
-  - tested with 3.10.2 on MacOs (Sierra 10.12.6)
+  - tested with 3.14.0 on Windows (7/10 pro)
+  - tested with 3.14.0 on Linux (centos:7.4.1708)
+  - tested with 3.14.0 on MacOs (Sierra 10.12.6)
   
 - hdf5 library
   - tested with 1.8.20 on Windows (7/10 pro)
   - tested with 1.8.12 on Linux (centos:7.4.1708)
   - tested with 1.8.20 on MacOs (Sierra 10.12.6)
 
+- numpy
+  - tested with 1.16.2 for Python 2.7.5 on Linux (centos:7.4.1708)
+  - tested with 1.16.2 for Python 3.6.6 on Linux (centos:7.4.1708)
+  - tested with 1.8.0rc1 for Python 2.7.10 on MacOS (Mojave 10.14.3)
+  - tested with 1.16.2 for Python 3.7.2 on MacOS (Mojave 10.14.3)
+   
 - gcovr
   - tested with 4.1 on Linux (centos:7.4.1708)
   - tested with 4.1 on MacOs (Sierra 10.12.6)
