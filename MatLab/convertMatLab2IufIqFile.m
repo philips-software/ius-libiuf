@@ -19,6 +19,7 @@ try
     %convert( iqFileHandle, iufIqStruct, iqData, 'doppler' );
     fillInstanceData( iqFileHandle, iufIqStruct, 'doppler', Receive, iqData );
 catch ME
+    disp('Catch');
     iufIqFileClose(iqFileHandle);
     rethrow(ME);
 end
@@ -188,12 +189,12 @@ qData = iufIqFileFrameCreate( h, mode );
 
 numTransducers = iufTransducerGetNumElements( transducer );
 numSamplesPerLine = iufDemodulationGetNumSamplesPerLine( demodulation );
-numTransmitPulses = iufIqPatternListGetSize( iqPatternList );
+%numTransmitPulses = iufIqPatternListGetSize( iqPatternList );
 numSamplesPerFrame = numTransducers * numSamplesPerLine * numTransmitPulses;
 offset = iufOffsetCreate();
 for c1 = 1:numFrames
     iufDataFill( iData, reshape(iqData(:,1:2:end,:,c1), 1, numSamplesPerFrame ) );
-    iufDataFill( iData, reshape(iqData(:,2:2:end,:,c1), 1, numSamplesPerFrame ) );
+    iufDataFill( qData, reshape(iqData(:,2:2:end,:,c1), 1, numSamplesPerFrame ) );
     offset.t = c1-1;
     iufIqFileFrameSave( h, mode, IUF_IQ_COMPONENT_I, iData, offset );
     iufIqFileFrameSave( h, mode, IUF_IQ_COMPONENT_Q, qData, offset );
