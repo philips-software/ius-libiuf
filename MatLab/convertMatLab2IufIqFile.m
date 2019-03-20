@@ -17,7 +17,7 @@ if iqFileHandle == py.None
 end
 try
     %convert( iqFileHandle, iufIqStruct, iqData, 'doppler' );
-    fillInstanceData( iqFileHandle, iufIqStruct, 'doppler', Receive );
+    fillInstanceData( iqFileHandle, iufIqStruct, 'doppler', Receive, iqData );
 catch ME
     iufIqFileClose(iqFileHandle);
     rethrow(ME);
@@ -31,7 +31,7 @@ iufErrorCloseFileStream();
 disp('done');
 end
 
-function fillInstanceData( h, iufIqStruct, mode, Receive )
+function fillInstanceData( h, iufIqStruct, mode, Receive, iqData )
 
 % Get iuf functions directly into local namespace
 import py.Python3Iuf.*
@@ -144,10 +144,10 @@ if Receive.quadDecim == 1
 end
 demodulationDict = iufDemodulationDictCreate();
 demodulation = iufDemodulationCreate( ...
-    IUF_DEMODULATION_QUADRATURE, ...
+    IUF_DEMODULATION_FOURX, ...
     iufIqStruct.ReceiveSettings.sampleFrequency, ...
     centerFrequency, ...
-    Receive.demodFrequency, ...
+    iufIqStruct.DrivingScheme.numSamplesPerLine / 2, ...
     numTGCValues, ...
     kernelSize);
 iufDemodulationSetTGC( demodulation, tgc );
@@ -182,6 +182,27 @@ iufIqFileSetFrameList( h, frameList );
 % Store instance data to disk
 iufIqFileNodeSave( h );
 
+%% Store iqData to disk
+iData = iufIqFileFrameCreate( h, mode );
+qData = iufIqFileFrameCreate( h, mode );
+
+numTransducers = iufTransducerGetNumElements( transducer );
+numSamplesPerLine = iufDemodulationGetNumSamplesPerLine( demodulation );
+numTransmitPulses = iufIqPatternListGetSize( iqPatternList );
+numSamplesPerFrame = numTransducers * numSamplesPerLine * numTransmitPulses;
+offset = iufOffsetCreate();
+for c1 = 1:numFrames
+    iufDataFill( iData, reshape(iqData(:,1:2:end,:,c1), 1, numSamplesPerFrame ) );
+    iufDataFill( iData, reshape(iqData(:,2:2:end,:,c1), 1, numSamplesPerFrame ) );
+    offset.t = c1-1;
+    iufIqFileFrameSave( h, mode, IUF_IQ_COMPONENT_I, iData, offset );
+    iufIqFileFrameSave( h, mode, IUF_IQ_COMPONENT_Q, qData, offset );
+end
+iufOffsetDelete(offset)
+iufDataDelete( qData );
+iufDataDelete( iData );
+
+
 %% Cleanup memory
 
 % Transducer
@@ -212,8 +233,8 @@ iufTransmitApodizationDelete( transmitApodization );
 iufTransmitApodizationDictDelete( transmitApodizationDict );
 
 % Demodulation
-iusTGCDelete( tgc );
-iusFirFilterDelete( preFilter );
+iufTGCDelete( tgc );
+iufFirFilterDelete( preFilter );
 iufDemodulationDelete( demodulation );
 iufDemodulationDictDelete( demodulationDict );
 
