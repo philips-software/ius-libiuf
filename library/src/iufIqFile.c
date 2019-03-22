@@ -745,6 +745,7 @@ static hid_t iufIqFileGetWriteSpace
 
     if ( dataStream == IUDS_INVALID) //the datastream doesn't exist yet, but maybe the group already does...
     {
+        iufErrorLogClear();
         // Entry does not exist, create
         rfDataDims[0] = (hsize_t) iufIqFileGetNumChannels(iqFile,label);    // colums in memory
         rfDataDims[1] = (hsize_t) iufIqFileGetSamplesPerLine(iqFile,label); // rows in memory
