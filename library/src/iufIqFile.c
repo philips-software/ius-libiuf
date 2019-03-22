@@ -23,14 +23,14 @@
 struct IufIqFileInstance
 {
     iufl_t frameList;
-	iuiqpald_t iqPatternListDict;            /**< a dictionary of pattern lists              */
+    iuiqpald_t iqPatternListDict;            /**< a dictionary of pattern lists              */
     iupd_t pulseDict;                    /**< a dictionary of pulses                      */
     iusd_t pulseSourceDict;              /**< a dictionary of sources                     */
-	iurcmd_t receiveChannelMapDict;      /**< a dictionary of receiveChannelMaps          */
-	iutad_t transmitApodizationDict;     /**< a dictionary of transmitApodizations        */
-	iudmd_t demodulationDict;            /**< a dictionary of receiveSettings             */
-	iut_t transducer;                    /**< The transducer description                  */
-	iua_t acquisition;                    /**< The description of the performed acquisition */
+    iurcmd_t receiveChannelMapDict;      /**< a dictionary of receiveChannelMaps          */
+    iutad_t transmitApodizationDict;     /**< a dictionary of transmitApodizations        */
+    iudmd_t demodulationDict;            /**< a dictionary of receiveSettings             */
+    iut_t transducer;                    /**< The transducer description                  */
+    iua_t acquisition;                    /**< The description of the performed acquisition */
     int IufVersion;                      /**< The version of iq file format */
 
     //  state variables
@@ -54,18 +54,18 @@ iuiqfi_t iufIqFileInstanceCreate
     iuiqfi_t instanceData = (iuiqfi_t) calloc(1, sizeof(IufIqFileInstance));
     IUF_ERR_ALLOC_NULL_N_RETURN(instanceData, IufIqFileInstance, IUIQFI_INVALID);
 
-	instanceData->IufVersion = iufGetVersionMajor();
-	instanceData->pFilename = "";
-	instanceData->frameList = IUFL_INVALID;
-	instanceData->iqPatternListDict = IUIQPALD_INVALID;
-	instanceData->pulseDict = IUPD_INVALID;
+    instanceData->IufVersion = iufGetVersionMajor();
+    instanceData->pFilename = "";
+    instanceData->frameList = IUFL_INVALID;
+    instanceData->iqPatternListDict = IUIQPALD_INVALID;
+    instanceData->pulseDict = IUPD_INVALID;
     instanceData->pulseSourceDict = IUFD_INVALID;
-	instanceData->receiveChannelMapDict = IURCMD_INVALID;
+    instanceData->receiveChannelMapDict = IURCMD_INVALID;
     instanceData->transmitApodizationDict = IUTAD_INVALID;
     instanceData->demodulationDict = IUDMD_INVALID;
     instanceData->transducer = IUT_INVALID;
-	instanceData->acquisition = IUA_INVALID;
-	instanceData->iDataStreamDict = iufDataStreamDictCreate();
+    instanceData->acquisition = IUA_INVALID;
+    instanceData->iDataStreamDict = iufDataStreamDictCreate();
     instanceData->qDataStreamDict = iufDataStreamDictCreate();
     return instanceData;
 }
@@ -114,24 +114,24 @@ iuiqf_t iufIqFileCreate
 )
 {
     IUF_ERR_CHECK_NULL_N_RETURN(filename, IUIQF_INVALID);
-	iuiqfi_t instanceData = iufIqFileInstanceCreate();
-	if (instanceData == IUIQFI_INVALID)
-	{
+    iuiqfi_t instanceData = iufIqFileInstanceCreate();
+    if (instanceData == IUIQFI_INVALID)
+    {
         IUF_ERROR_PUSH(IUF_ERR_MAJ_MEMORY, IUF_ERR_MIN_ALLOC,  "calloc of IufIqFileInstance failed");
-		return IUIQF_INVALID;
-	}
+        return IUIQF_INVALID;
+    }
 
     instanceData->pFilename = strdup(filename);
     instanceData->handle = H5Fcreate(filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
-	if (instanceData->handle == H5I_INVALID_HID)
-	{
-		IUF_ERROR_FMT_PUSH(IUF_ERR_MAJ_ERROR, IUF_ERR_MIN_HDF5, "unable to create file %s", filename);
+    if (instanceData->handle == H5I_INVALID_HID)
+    {
+        IUF_ERROR_FMT_PUSH(IUF_ERR_MAJ_ERROR, IUF_ERR_MIN_HDF5, "unable to create file %s", filename);
         iufIqFileInstanceDelete(instanceData);
-		return IUIQF_INVALID;
-	}
-	iuhn_t node = iufHistoryNodeCreate(IUF_IQ_TYPE);
-	iufHistoryNodeSetInstanceData(node,(void *)instanceData);
-	return (iuiqf_t)node;
+        return IUIQF_INVALID;
+    }
+    iuhn_t node = iufHistoryNodeCreate(IUF_IQ_TYPE);
+    iufHistoryNodeSetInstanceData(node,(void *)instanceData);
+    return (iuiqf_t)node;
 }
 
 
@@ -179,8 +179,8 @@ int iufIqFileGetSamplesPerLine
 
 int iufIqFileGetNumResponses
 (
-	iuiqf_t iqFile,          
-	char *label              
+    iuiqf_t iqFile,          
+    char *label              
 )
 {
     IUF_ERR_CHECK_NULL_N_RETURN(iqFile, -1);
@@ -355,7 +355,7 @@ iuiqf_t iufIqFileNodeLoad
     const char *pFilename
 )
 {
-	IUF_ERR_CHECK_NULL_N_RETURN(pFilename, IUIQF_INVALID);
+    IUF_ERR_CHECK_NULL_N_RETURN(pFilename, IUIQF_INVALID);
 
     // open  Hdf5 file using default properties.
     hid_t handle = H5Fopen( pFilename, H5F_ACC_RDONLY, H5P_DEFAULT );
@@ -403,7 +403,7 @@ int iufIqFileNodeSave
 
     iuiqfi_t instance = iufHistoryNodeGetInstanceData((iuhn_t)iqFile);
     status |= iufHistoryNodeSave(iqFile, instance->handle);
-	return status;
+    return status;
 }
 
 
@@ -416,9 +416,9 @@ int iufIqFileClose
     iuiqfi_t instance = iufHistoryNodeGetInstanceData((iuhn_t)iqFile);
     IUF_ERR_EVAL_N_RETURN(instance->handle  == H5I_INVALID_HID, IUF_ERR_VALUE);
 
-	int status = H5Fclose(instance->handle);
-	instance->handle = H5I_INVALID_HID;
-	return status;
+    int status = H5Fclose(instance->handle);
+    instance->handle = H5I_INVALID_HID;
+    return status;
 }
 
 static int iufIqFileCompareInstance
@@ -532,7 +532,7 @@ iudmd_t iufIqFileGetDemodulationDict
 {
     IUF_ERR_CHECK_NULL_N_RETURN(iqFile, IUDMD_INVALID);
     iuiqfi_t instance = iufHistoryNodeGetInstanceData((iuhn_t)iqFile);
-	return instance->demodulationDict;
+    return instance->demodulationDict;
 }
 
 iua_t iufIqFileGetAcquisition
@@ -593,7 +593,7 @@ int iufIqFileSetPulseDict
     IUF_ERR_CHECK_NULL_N_RETURN(iqFile, IUF_ERR_VALUE);
     IUF_ERR_CHECK_NULL_N_RETURN(pulseDict, IUF_ERR_VALUE);
     iuiqfi_t instance = iufHistoryNodeGetInstanceData((iuhn_t)iqFile);
-	instance->pulseDict = pulseDict;
+    instance->pulseDict = pulseDict;
     return IUF_E_OK;
 }
 
@@ -612,21 +612,21 @@ int iufIqFileSetSourceDict
 
 int iufIqFileSetReceiveChannelMapDict
 (
-	iuiqf_t iqFile,
-	iurcmd_t receiveChannelMapDict
+    iuiqf_t iqFile,
+    iurcmd_t receiveChannelMapDict
 )
 {
    IUF_ERR_CHECK_NULL_N_RETURN(iqFile, IUF_ERR_VALUE);
    IUF_ERR_CHECK_NULL_N_RETURN(receiveChannelMapDict, IUF_ERR_VALUE);
    iuiqfi_t instance = iufHistoryNodeGetInstanceData((iuhn_t)iqFile);
    instance->receiveChannelMapDict = receiveChannelMapDict;
-	return IUF_E_OK;
+    return IUF_E_OK;
 }
 
 int iufIqFileSetTransmitApodizationDict
 (
-	iuif_t iqFile,
-	iutad_t transmitApodizationDict
+    iuif_t iqFile,
+    iutad_t transmitApodizationDict
 )
 {
    IUF_ERR_CHECK_NULL_N_RETURN(iqFile, IUF_ERR_VALUE);
@@ -660,7 +660,7 @@ int iufIqFileSetAcquisition
     IUF_ERR_CHECK_NULL_N_RETURN(acquisition, IUF_ERR_VALUE);
     iuiqfi_t instance = iufHistoryNodeGetInstanceData((iuhn_t)iqFile);
     instance->acquisition = acquisition;
-	return IUF_E_OK;
+    return IUF_E_OK;
 }
 
 
@@ -673,7 +673,7 @@ int iufIqFileSetTransducer
     IUF_ERR_CHECK_NULL_N_RETURN(iqFile, IUF_ERR_VALUE);
     IUF_ERR_CHECK_NULL_N_RETURN(transducer, IUF_ERR_VALUE);
     iuiqfi_t instance = iufHistoryNodeGetInstanceData((iuhn_t)iqFile);
-	instance->transducer = transducer;
+    instance->transducer = transducer;
     return IUF_E_OK;
 }
 
@@ -723,7 +723,7 @@ static hid_t iufIqFileGetWriteSpace
     hsize_t chunkDims[4];
     hid_t space, dataChunkConfig;
     iuds_t dataStream = IUDS_INVALID;
-	int status = 0;
+    int status = 0;
 
     IUF_ERR_CHECK_NULL_N_RETURN(iqFile, H5I_INVALID_HID);
     IUF_ERR_CHECK_NULL_N_RETURN(label, H5I_INVALID_HID);
@@ -760,32 +760,32 @@ static hid_t iufIqFileGetWriteSpace
         H5Pset_chunk(dataChunkConfig, 4, chunkDims);
         dataStream->fileChunkConfig = dataChunkConfig;
 
-		space = H5Screate_simple(4, rfDataDims, NULL);
-		
-		hid_t dataGroup;
-		status = H5Gget_objinfo(instance->handle, label, 0, NULL);
-		if (status == 0) // a group named label exists. 
-		{
-			dataGroup = H5Gopen(instance->handle, label, H5P_DEFAULT);
-		}
-		else // The group either does NOT exist\n or some other error occurred.
-		{
-			dataGroup = H5Gcreate(instance->handle, label, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-		}
-		IUF_ERR_EVAL_N_RETURN(dataGroup == H5I_INVALID_HID, H5I_INVALID_HID);
+        space = H5Screate_simple(4, rfDataDims, NULL);
+        
+        hid_t dataGroup;
+        status = H5Gget_objinfo(instance->handle, label, 0, NULL);
+        if (status == 0) // a group named label exists. 
+        {
+            dataGroup = H5Gopen(instance->handle, label, H5P_DEFAULT);
+        }
+        else // The group either does NOT exist\n or some other error occurred.
+        {
+            dataGroup = H5Gcreate(instance->handle, label, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+        }
+        IUF_ERR_EVAL_N_RETURN(dataGroup == H5I_INVALID_HID, H5I_INVALID_HID);
 
         if (component == IUF_IQ_COMPONENT_I)
         {
-			dataStream->rfDataset = H5Dcreate(dataGroup, "I", H5T_NATIVE_FLOAT, space, H5P_DEFAULT, dataChunkConfig, H5P_DEFAULT);
+            dataStream->rfDataset = H5Dcreate(dataGroup, "I", H5T_NATIVE_FLOAT, space, H5P_DEFAULT, dataChunkConfig, H5P_DEFAULT);
             iufDataStreamDictSet(instance->iDataStreamDict,label,dataStream);
         }
         else // (component == IUF_IQ_COMPONENT_Q) //no datachunk set
         {
-			dataStream->rfDataset = H5Dcreate(dataGroup, "Q", H5T_NATIVE_FLOAT, space, H5P_DEFAULT, dataChunkConfig, H5P_DEFAULT);
+            dataStream->rfDataset = H5Dcreate(dataGroup, "Q", H5T_NATIVE_FLOAT, space, H5P_DEFAULT, dataChunkConfig, H5P_DEFAULT);
             iufDataStreamDictSet(instance->qDataStreamDict,label,dataStream);
         }
-		H5Sclose(space);
-		H5Gclose(dataGroup);
+        H5Sclose(space);
+        H5Gclose(dataGroup);
     }
     return H5Dget_space(dataStream->rfDataset);
 }
@@ -802,8 +802,8 @@ static hid_t iufIqFileGetReadSpace
     IUF_ERR_CHECK_NULL_N_RETURN(label, H5I_INVALID_HID);
     iuiqfi_t instance = iufHistoryNodeGetInstanceData((iuhn_t)iqFile);
     iuds_t dataStream = IUDS_INVALID;
-	char *path;
-	char comp = (component == IUF_IQ_COMPONENT_I) ? 'I' : 'Q';
+    char *path;
+    char comp = (component == IUF_IQ_COMPONENT_I) ? 'I' : 'Q';
 
     if (component == IUF_IQ_COMPONENT_I)
     {
@@ -822,8 +822,8 @@ static hid_t iufIqFileGetReadSpace
     if ( dataStream == IUDS_INVALID)
     {
         dataStream = iufDataStreamCreate();
-		path = (char *)calloc(strlen(label) + 3, sizeof(char));
-		sprintf(path, "%s/%c", label, comp);
+        path = (char *)calloc(strlen(label) + 3, sizeof(char));
+        sprintf(path, "%s/%c", label, comp);
 
         dataStream->rfDataset = H5Dopen(instance->handle, path, H5P_DEFAULT);
         if (component == IUF_IQ_COMPONENT_I)
