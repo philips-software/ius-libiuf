@@ -192,9 +192,14 @@ numSamplesPerLine = iufDemodulationGetNumSamplesPerLine( demodulation );
 %numTransmitPulses = iufIqPatternListGetSize( iqPatternList );
 numSamplesPerFrame = numTransducers * numSamplesPerLine * numTransmitPulses;
 offset = iufOffsetCreate();
-for c1 = 1:numFrames
-    iufDataFill( iData, reshape(iqData(:,1:2:end,:,c1), 1, numSamplesPerFrame ) );
-    iufDataFill( qData, reshape(iqData(:,2:2:end,:,c1), 1, numSamplesPerFrame ) );
+%iqData(1,:, 1,1) = 1:size(iqData,2);
+iqData = permute(iqData, [4,3,2,1]);
+for c1 = 1:numFrames    
+    fprintf( 'Writing frame %d/%d\n', c1, numFrames );
+    %iufDataFill( iData, reshape(iqData(:,1:2:end,:,c1), 1, numSamplesPerFrame ) );
+    %iufDataFill( qData, reshape(iqData(:,2:2:end,:,c1), 1, numSamplesPerFrame ) );
+    iufDataFill( iData, reshape(iqData(c1,:,1:2:end,:), 1, numSamplesPerFrame ) );
+    iufDataFill( qData, reshape(iqData(c1,:,2:2:end,:), 1, numSamplesPerFrame ) );
     offset.t = c1-1;
     iufIqFileFrameSave( h, mode, IUF_IQ_COMPONENT_I, iData, offset );
     iufIqFileFrameSave( h, mode, IUF_IQ_COMPONENT_Q, qData, offset );
