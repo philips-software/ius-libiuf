@@ -197,6 +197,22 @@ int iufReceiveSettingsDictSet
     return iufReceiveSettingsUpdateKeys(dict);
 }
 
+int iufReceiveSettingsDictRemove
+(
+    iursd_t dict,
+    char * key
+)
+{
+    IUF_ERR_CHECK_NULL_N_RETURN(dict, IUF_ERR_VALUE);
+    IUF_ERR_CHECK_NULL_N_RETURN(key, IUF_ERR_VALUE);
+    if (HashableReceiveSettings_hashmap_remove(&dict->map, key)==NULL)
+    {
+        IUF_ERROR_FMT_PUSH(IUF_ERR_MAJ_VALUE, IUF_ERR_MIN_ARG_DUPLICATE_KEY, "key: %s does not exist in dictionary", key);
+        return IUF_ERR_VALUE;
+    }
+    return iufReceiveSettingsUpdateKeys(dict);
+}
+
 
 // serialization
 int iufReceiveSettingsDictSave

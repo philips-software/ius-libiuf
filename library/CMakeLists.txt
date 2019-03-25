@@ -123,6 +123,7 @@ add_library(iuf STATIC
 		include/iufPosition.h
 		include/iufPulse.h
 		include/iufPulseDict.h
+		private/iufPulseDictADT.h
 		private/iufPulseDictPrivate.h
 		private/iufPulsePrivate.h
 		include/iufReceiveChannelMap.h
@@ -135,6 +136,7 @@ add_library(iuf STATIC
 		private/iufReceiveSettingsDictPrivate.h
 		include/iufSource.h
 		include/iufSourceDict.h
+		private/iufSourceDictADT.h
 		private/iufSourcePrivate.h
 		include/iufTGC.h
 		private/iufTGCPrivate.h

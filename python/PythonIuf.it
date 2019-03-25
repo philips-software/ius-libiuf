@@ -12,6 +12,8 @@
 #include "iufIqPatternListADT.h"
 #include "iufIqPatternListDictADT.h"
 #include "iufParameterDictADT.h"
+#include "iufPulseDictADT.h"
+#include "iufSourceDictADT.h"
 #include "iufDemodulationDictADT.h"
 #include "iufReceiveSettingsDictADT.h"
 #include <iufReceiveChannelMapADT.h>
@@ -123,6 +125,19 @@ typedef iuhn_t iuif_t;
         free($1);
 }
 
+%typemap(out) char ** {
+  int len;
+  int i;
+  len = 0;
+  while ($1[len]) len++;
+  
+  $result = PyList_New(len);
+  for (i = 0; i < len; i++) 
+  {
+    PyList_SetItem($result, i, PyString_FromString($1[i]));
+  }
+}
+
 // IMPORTANT NOTE:
 //
 //      Keep %include <iufError.h> before %exception
@@ -209,6 +224,7 @@ int iufDataFill
 %include <iufPosition.h>
 %include <iufPulse.h>
 %include <iufPulseDict.h>
+%include <iufPulseDictADT.h>
 %include <iufReceiveChannelMap.h>
 %include <iufReceiveChannelMapDict.h>
 %include <iufReceiveChannelMapADT.h>
@@ -218,6 +234,7 @@ int iufDataFill
 %include <iufReceiveSettingsDict.h>
 %include <iufSource.h>
 %include <iufSourceDict.h>
+%include <iufSourceDictADT.h>
 %include <iufTGC.h>
 %include <iufTransducer.h>
 %include <iufTransducerElement.h>
@@ -242,6 +259,8 @@ int iufDataFill
 EXTEND_DICT_ADT(ParameterDict, char);
 EXTEND_DICT_ADT(DemodulationDict, IufDemodulation);
 EXTEND_DICT_ADT(ReceiveSettingsDict, IufReceiveSettings);
+EXTEND_DICT_ADT(PulseDict, IufPulse);
+EXTEND_DICT_ADT(SourceDict, IufSource);
 EXTEND_DICT_ADT(IqPatternListDict, IufIqPatternList)
 EXTEND_DICT_ADT(PatternListDict, IufPatternList)
 EXTEND_DICT_ADT(ReceiveChannelMapDict, IufReceiveChannelMap)

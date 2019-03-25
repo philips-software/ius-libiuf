@@ -77,8 +77,17 @@ char **iufReceiveSettingsDictGetKeys
 int iufReceiveSettingsDictSet
 (
     iursd_t dict,   ///< The dictionary of interest
-    char * key,     ///< The label of the #IufReceiveSettings that to be added
+    char * key,     ///< The label of the #IufReceiveSettings that is to be added
     iurs_t member   ///< The #IufReceiveSettings object
+);
+
+/** \brief Remove a #IufReceiveSettings from the dictionary that has the label \p key
+ * \return Returns IUF_ERR_VALUE in case the key was noet found or IUF_E_OK when successful
+*/
+int iufReceiveSettingsDictRemove
+(
+    iursd_t dict,   ///< The dictionary of interest
+    char * key     ///< The label of the #IufReceiveSettings that is to be removed
 );
 
 #endif //IUFLIBRARY_IUFHLRECEIVESETTINGSDICT_H
