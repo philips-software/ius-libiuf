@@ -10,6 +10,7 @@ set PlatformFolder=%BuildFolder%\Windows
 mkdir %PlatformFolder% & pushd %PlatformFolder%
 set Config=Debug
 cmake -DCMAKE_CONFIG=%Config% ..\..
+if errorlevel 1 exit /B 1
 cmake --build . --config %Config%
 if errorlevel 1 exit /B 1
 ctest --verbose
@@ -17,6 +18,7 @@ if errorlevel 1 exit /B 1
 
 set Config=Release
 cmake -DCMAKE_CONFIG=%Config% ..\..
+if errorlevel 1 exit /B 1
 cmake --build . --config %Config%
 if errorlevel 1 exit /B 1
 ctest --verbose
