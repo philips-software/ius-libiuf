@@ -127,6 +127,7 @@ add_library(iuf STATIC
 		private/iufPulseDictPrivate.h
 		private/iufPulsePrivate.h
 		include/iufReceiveChannelMap.h
+		private/iufReceiveChannelMapADT.h
 		include/iufReceiveChannelMapDict.h
 		private/iufReceiveChannelMapDictADT.h
 		private/iufReceiveChannelMapPrivate.h
