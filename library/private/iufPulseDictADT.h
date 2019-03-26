@@ -20,3 +20,4 @@ struct IufPulseDict
     char **kys;
 };
 #endif //IUFLIBRARY_IUFPULSEDICTADT_H
+
