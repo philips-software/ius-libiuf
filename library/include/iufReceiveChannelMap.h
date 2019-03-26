@@ -5,7 +5,6 @@
 #define IUFLIBRARY_IUFHLRECEIVECHANNELMAP_H
 
 #include <iufTypes.h>
-#include <iufReceiveChannelMapADT.h>
 
 // ADT
 typedef  struct IufReceiveChannelMap IufReceiveChannelMap;
