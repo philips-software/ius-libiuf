@@ -3,8 +3,8 @@
 // Created by nlv09165 on 10/10/2018.
 //
 #include <stdlib.h>
-
 #include <iuf.h>
+#include <iufDataStream.h>
 
 // ADT
 iuds_t iufDataStreamCreate

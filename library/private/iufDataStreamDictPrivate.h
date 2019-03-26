@@ -1,47 +1,20 @@
-// Created by nlv09165 on 03/05/2018.
-#ifndef IUFLIBRARY_IUFDATASTREAMDICT_H
-#define IUFLIBRARY_IUFDATASTREAMDICT_H
+// Created by nlv12901 on 26/03/2018.
+#ifndef IUFLIBRARY_IUFDATASTREAMDICTIMP_H
+#define IUFLIBRARY_IUFDATASTREAMDICTIMP_H
 
 #include <iufHDF5.h>
-#include <iufDataStream.h>
+#include <iufDataStreamDict.h>
 
-// ADT
-typedef struct IufDataStreamDict IufDataStreamDict;
-typedef IufDataStreamDict *iudsd_t;
-#define  IUDSD_INVALID (iudsd_t) NULL
-
-iudsd_t iufDataStreamDictCreate
-(
-	void
-);
-
-int iufDataStreamDictDelete
-(
-	iudsd_t dict
-);
-
-int iufDataStreamDictCompare
-(
-	iudsd_t reference,
-	iudsd_t actual
-);
-
-int iufDataStreamDictGetSize
-(
-	iudsd_t dict
-);
-
-iuds_t iufDataStreamDictGet
+int iufDataStreamDictSave
 (
 	iudsd_t dict,
-	char * key
+	hid_t handle
 );
 
-int iufDataStreamDictSet
+iudmd_t iufDataStreamDictLoad
 (
-	iudsd_t dict,
-	char * key,
-	iuds_t member
+	hid_t handle
 );
 
-#endif //IUFLIBRARY_IUFHLPULSEDICT_H
+#endif //IUFLIBRARY_IUFDATASTREAMDICTIMP_H
+

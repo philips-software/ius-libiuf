@@ -83,6 +83,9 @@ TEST(IufReceiveSettingsDict, testIufSetGetDict)
     TEST_ASSERT_EQUAL(6,iufErrorGetCount());
     TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
 
+    TEST_ASSERT_EQUAL(IUF_E_OK, iufReceiveSettingsDictRemove(dict, pObjLabel)); //delete the obj
+    TEST_ASSERT_EQUAL(IUF_ERR_VALUE, iufReceiveSettingsDictRemove(dict, pObjLabel)); //can be only done once
+
     iufReceiveSettingsDelete(obj);
     iufReceiveSettingsDictDelete(dict);
 }

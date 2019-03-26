@@ -9,14 +9,14 @@ typedef struct _IufDataStream
 {
     hid_t fileChunkConfig;                /**< file chunck handle   */
     hid_t rfDataset;                      /**< dataset handle       */
-} IufDataStream ;
+} IufDataStream;
 
 typedef IufDataStream *iuds_t;
 #define  IUDS_INVALID (iuds_t) NULL
 
 iuds_t iufDataStreamCreate
 (
-
+    void
 );
 
 int iufDataStreamDelete

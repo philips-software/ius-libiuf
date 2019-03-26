@@ -78,9 +78,12 @@ add_library(iuf STATIC
         include/iufData.h
 		private/iufDataADT.h
 		include/iufDataStream.h
+		include/iufDataStreamDict.h
+		private/iufDataStreamDictADT.h
 		private/iufDataStreamDictPrivate.h
 		include/iufDemodulation.h
 		include/iufDemodulationDict.h
+		private/iufDemodulationDictADT.h
 		private/iufDemodulationDictPrivate.h
         include/iufAcquisition.h
 		private/iufAcquisitionPrivate.h

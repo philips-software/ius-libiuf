@@ -77,6 +77,9 @@ TEST(IufPulseDict, testIufPulseDictSetGet)
     TEST_ASSERT_EQUAL(6,iufErrorGetCount());
     TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
 
+    TEST_ASSERT_EQUAL(IUF_E_OK, iufPulseDictRemove(dict, pObjLabel)); //delete the obj
+    TEST_ASSERT_EQUAL(IUF_ERR_VALUE, iufPulseDictRemove(dict, pObjLabel)); //can be only done once
+
     iufParametricPulseDelete(obj);
     iufPulseDictDelete(dict);
 }

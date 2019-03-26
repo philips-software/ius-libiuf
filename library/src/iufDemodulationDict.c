@@ -11,8 +11,6 @@
 #include <iufDemodulationPrivate.h>
 #include <iufDemodulationDictADT.h>
 
-
-
 /* Declare type-specific blob_hashmap_* functions with this handy macro */
 HASHMAP_FUNCS_CREATE(HashableDemodulation, const char, struct HashableDemodulation)
 
@@ -203,6 +201,21 @@ int iufDemodulationDictSet
 	return iufDemodulationDictUpdateKeys(dict);
 }
 
+int iufDemodulationDictRemove
+(
+    iudmd_t dict,
+    char * key
+)
+{
+    IUF_ERR_CHECK_NULL_N_RETURN(dict, IUF_ERR_VALUE);
+    IUF_ERR_CHECK_NULL_N_RETURN(key, IUF_ERR_VALUE);
+    if (HashableDemodulation_hashmap_remove(&dict->map, key)==NULL)
+    {
+        IUF_ERROR_FMT_PUSH(IUF_ERR_MAJ_VALUE, IUF_ERR_MIN_ARG_DUPLICATE_KEY, "key: %s does not exist in dictionary", key);
+        return IUF_ERR_VALUE;
+    }
+    return iufDemodulationDictUpdateKeys(dict);
+}
 
 // serialization
 int iufDemodulationDictSave

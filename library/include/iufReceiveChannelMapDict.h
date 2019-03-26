@@ -82,5 +82,14 @@ int iufReceiveChannelMapDictSet
 	iurcm_t member  ///< The #IufReceiveChannelMap
 );
 
+/** \brief Remove a #IufReceiveChannelMap with label \p key from the dictionary.
+ * \return Returns #IUF_E_OK in case of success or #IUF_ERR_VALUE in case of an invalid argument.
+ */ 
+int iufReceiveChannelMapDictRemove
+(
+    iurcmd_t dict,  ///< The dictionary of interest
+    char * key      ///< The label of the #IufReceiveChannelMap that is added
+);
+
 #endif //IUFLIBRARY_IUFHLRECEIVECHANNELMAPDICT_H
 

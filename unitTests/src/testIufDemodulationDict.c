@@ -86,6 +86,10 @@ TEST(IufDemodulationDict, testIufSetGetDict)
 
     TEST_ASSERT_EQUAL(6,iufErrorGetCount());
     TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
+
+    TEST_ASSERT_EQUAL(IUF_E_OK, iufDemodulationDictRemove(dict, pObjLabel)); //delete the obj
+    TEST_ASSERT_EQUAL(IUF_ERR_VALUE, iufDemodulationDictRemove(dict, pObjLabel)); //can be only done once
+
     iufDemodulationDelete(obj);
 	iufDemodulationDictDelete(dict);
 }

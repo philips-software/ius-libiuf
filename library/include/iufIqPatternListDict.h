@@ -77,8 +77,18 @@ iuiqpal_t iufIqPatternListDictGet
 int iufIqPatternListDictSet
 (
 	iuiqpald_t dict,  ///< The dictionary of interest
-	char * key,     ///< The label of the #IufPatternList
+	char * key,       ///< The label of the #IufPatternList
 	iuiqpal_t member  ///< The #IufPatternList
+);
+
+/** \brief Remove the #IufIqPatternList object with label \p key from the dictionary.
+ * \return Returns #IUF_E_OK when successful  or #IUF_ERR_VALUE in case of an error.
+ */
+
+int iufIqPatternListDictRemove
+(
+    iuiqpald_t dict,  ///< The dictionary of interest
+    char * key      ///< The label of the #IufPatternList
 );
 
 #endif //IUFLIBRARY_IUFHLIQPATTERNLISTDICT_H

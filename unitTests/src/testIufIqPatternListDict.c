@@ -88,6 +88,10 @@ TEST(IufIqPatternListDict, testIufPatternListDictSetGet)
 	TEST_ASSERT_EQUAL(6,iufErrorGetCount());
 	TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
 
+    TEST_ASSERT_EQUAL(IUF_E_OK, iufIqPatternListDictRemove(dict, labelDual)); //delete the obj
+    TEST_ASSERT_EQUAL(IUF_ERR_VALUE, iufIqPatternListDictRemove(dict, labelDual)); //can be only done once
+
+
     iufIqPatternDelete(pattern1);
     iufIqPatternDelete(pattern2);
     iufIqPatternListDelete(obj);

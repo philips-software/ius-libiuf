@@ -70,4 +70,13 @@ int iufParameterDictSet
     char * key,    ///< The parameter name
     char * value   ///< The parameter value
 );
+
+/** \brief Remove a #IufParameter from the dictionary that has the label \p key
+ * \return Returns IUF_ERR_VALUE in case the key was noet found or IUF_E_OK when successful
+*/
+int iufParameterDictRemove
+(
+    iupad_t dict,   ///< The dictionary of interest
+    char * key       ///< The label of the #IufParameter that is to be removed
+);
 #endif //IUFLIBRARY_IUFPARAMETERDICT_H

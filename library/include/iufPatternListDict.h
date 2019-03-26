@@ -81,4 +81,12 @@ int iufPatternListDictSet
 	iupal_t member  ///< The #IufPatternList
 );
 
+/** \brief Remove a #IufPatternList from the dictionary that has the label \p key
+ * \return Returns IUF_ERR_VALUE in case the key was noet found or IUF_E_OK when successful
+*/
+int iufPatternListDictRemove
+(
+    iupald_t dict,   ///< The dictionary of interest
+    char * key       ///< The label of the #IufPatternList that is to be removed
+);
 #endif //IUFLIBRARY_IUFHLPULSEDICT_H

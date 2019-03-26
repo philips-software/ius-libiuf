@@ -7,21 +7,9 @@
 #include <hashmap.h>
 
 #include <iuf.h>
-#include <iufDataStreamDictPrivate.h>
-
-// ADT
-struct HashableDataStream
-{
-	iuds_t dataStream;
-	char key[256];
-};
-
-typedef struct HashableDataStream HashableDataStream;
-
-struct IufDataStreamDict
-{
-	struct hashmap map;
-};
+#include <iufDataStream.h>
+#include <iufDataStreamDict.h>
+#include <iufDataStreamDictADT.h>
 
 /* Declare type-specific blob_hashmap_* functions with this handy macro */
 HASHMAP_FUNCS_CREATE(HashableDataStream, const char, struct HashableDataStream)
@@ -29,12 +17,22 @@ HASHMAP_FUNCS_CREATE(HashableDataStream, const char, struct HashableDataStream)
 // ADT
 iudsd_t iufDataStreamDictCreate
 (
+	void
 )
 {
 	iudsd_t dict = calloc(1, sizeof(IufDataStreamDict));
 	IUF_ERR_ALLOC_NULL_N_RETURN(dict, IufDataStreamDict, IUDSD_INVALID);
 	hashmap_init(&dict->map, hashmap_hash_string, hashmap_compare_string, 0);
 	return dict;
+}
+
+static void iufDataStreamDictDeleteKeys
+(
+    iudsd_t dict
+)
+{
+    if (dict->kys != NULL)
+        free(dict->kys);
 }
 
 int iufDataStreamDictDelete
@@ -44,8 +42,8 @@ int iufDataStreamDictDelete
 {
     HashableDataStream *iterElement;
     struct hashmap_iter *iter;
+
 	IUF_ERR_CHECK_NULL_N_RETURN(dict, IUF_ERR_VALUE);
-	/* Free all allocated resources associated with map and reset its state */
     for (iter = hashmap_iter(&dict->map); iter; iter = hashmap_iter_next(&dict->map, iter))
     {
         iterElement = HashableDataStream_hashmap_iter_get_data(iter);
@@ -53,10 +51,10 @@ int iufDataStreamDictDelete
         free(iterElement);
     }
     hashmap_destroy(&dict->map);
+    iufDataStreamDictDeleteKeys(dict);
 	free(dict);
 	return IUF_E_OK;
 }
-
 
 static int iufDataStreamDictSourceInTarget
 (
@@ -109,7 +107,7 @@ int iufDataStreamDictCompare
 }
 
 
-int iufDataStreamDictGetSize
+size_t iufDataStreamDictGetSize
 (
 	iudsd_t dict
 )
@@ -136,6 +134,31 @@ iuds_t iufDataStreamDictGet
 	return search->dataStream;
 }
 
+static int iufDataStreamDictUpdateKeys
+(
+    iudsd_t dict
+)
+{
+    iufDataStreamDictDeleteKeys(dict);
+    // allocate memory for the keys
+    int keyIndex;
+    size_t size = iufDataStreamDictGetSize(dict);
+    dict->kys = calloc(size+1, sizeof(char*));
+    IUF_ERR_ALLOC_NULL_N_RETURN(dict, char *, IUF_ERR_VALUE);
+
+    struct hashmap_iter *iter;
+    HashableDataStream *iterElement;
+    IUF_ERR_CHECK_NULL_N_RETURN(dict, IUF_ERR_VALUE);
+    /* Free all allocated resources associated with map and reset its state */
+    for (iter = hashmap_iter(&dict->map), keyIndex=0; iter; iter = hashmap_iter_next(&dict->map, iter), keyIndex++)
+    {
+        iterElement = HashableDataStream_hashmap_iter_get_data(iter);
+        dict->kys[keyIndex] = iterElement->key;
+    }
+    dict->kys[keyIndex] = NULL;
+    return IUF_E_OK;
+}
+
 int iufDataStreamDictSet
 (
 	iudsd_t dict,
@@ -143,18 +166,33 @@ int iufDataStreamDictSet
 	iuds_t member
 )
 {
-	IUF_ERR_CHECK_NULL_N_RETURN(dict, IUF_ERR_VALUE);
-	IUF_ERR_CHECK_NULL_N_RETURN(key, IUF_ERR_VALUE);
-	IUF_ERR_CHECK_NULL_N_RETURN(member, IUF_ERR_VALUE);
-	HashableDataStream *newMember = calloc(1, sizeof(HashableDataStream));
+    IUF_ERR_CHECK_NULL_N_RETURN(dict, IUF_ERR_VALUE);
+    IUF_ERR_CHECK_NULL_N_RETURN(key, IUF_ERR_VALUE);
+    HashableDataStream *newMember = calloc(1, sizeof(HashableDataStream));
 	newMember->dataStream = member;
 	strcpy(newMember->key, key);
 	if (HashableDataStream_hashmap_put(&dict->map, newMember->key, newMember) != newMember)
 	{
-		IUF_ERROR_FMT_PUSH(IUF_ERR_MAJ_VALUE, IUF_ERR_MIN_ARG_DUPLICATE_KEY, "discarding blob with duplicate key: %s", newMember->key);
+        IUF_ERROR_FMT_PUSH(IUF_ERR_MAJ_VALUE, IUF_ERR_MIN_ARG_DUPLICATE_KEY, "discarding blob with duplicate key: %s", key);
 		free(newMember);
 		return IUF_ERR_VALUE;
 	}
-	return IUF_E_OK;
+	return iufDataStreamDictUpdateKeys(dict);
+}
+
+int iufDataStreamDictRemove
+(
+    iudsd_t dict,
+    char * key
+)
+{
+    IUF_ERR_CHECK_NULL_N_RETURN(dict, IUF_ERR_VALUE);
+    IUF_ERR_CHECK_NULL_N_RETURN(key, IUF_ERR_VALUE);
+    if (HashableDataStream_hashmap_remove(&dict->map, key)==NULL)
+    {
+        IUF_ERROR_FMT_PUSH(IUF_ERR_MAJ_VALUE, IUF_ERR_MIN_ARG_DUPLICATE_KEY, "key: %s does not exist in dictionary", key);
+        return IUF_ERR_VALUE;
+    }
+    return iufDataStreamDictUpdateKeys(dict);
 }
 

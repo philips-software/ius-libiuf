@@ -66,10 +66,11 @@ TEST(IufDataStreamDict, testIufDataStreamDictSetGet)
     TEST_ASSERT_EQUAL(NULL, iufDataStreamDictGet(dict, "unknownKey"));
     TEST_ASSERT_EQUAL(NULL, iufDataStreamDictGet(NULL, ""));
 
-
     TEST_ASSERT_EQUAL(6,iufErrorGetCount());
     TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
 
+    TEST_ASSERT_EQUAL(IUF_E_OK, iufDataStreamDictRemove(dict, key)); //delete the obj
+    TEST_ASSERT_EQUAL(IUF_ERR_VALUE, iufDataStreamDictRemove(dict, key)); //can be only done once
 
     iufDataStreamDictDelete(dict);
 }

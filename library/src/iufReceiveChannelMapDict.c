@@ -149,7 +149,7 @@ char **iufReceiveChannelMapDictGetKeys
     return dict->kys;
 }
 
-static int iufReceiveSettingsUpdateKeys
+static int iufReceiveChannelMapUpdateKeys
 (
     iurcmd_t dict
 )
@@ -192,8 +192,26 @@ int iufReceiveChannelMapDictSet
 		free(newMember);
 		return IUF_ERR_VALUE;
 	}
-	return iufReceiveSettingsUpdateKeys(dict);
+	return iufReceiveChannelMapUpdateKeys(dict);
 }
+
+
+int iufReceiveChannelMapDictRemove
+(
+    iurcmd_t dict,
+    char * key
+)
+{
+    IUF_ERR_CHECK_NULL_N_RETURN(dict, IUF_ERR_VALUE);
+    IUF_ERR_CHECK_NULL_N_RETURN(key, IUF_ERR_VALUE);
+    if (HashableReceiveChannelMap_hashmap_remove(&dict->map, key)==NULL)
+    {
+        IUF_ERROR_FMT_PUSH(IUF_ERR_MAJ_VALUE, IUF_ERR_MIN_ARG_DUPLICATE_KEY, "key: %s does not exist in dictionary", key);
+        return IUF_ERR_VALUE;
+    }
+    return iufReceiveChannelMapUpdateKeys(dict);
+}
+
 
 herr_t iufReceiveChannelMapDictSave
 (

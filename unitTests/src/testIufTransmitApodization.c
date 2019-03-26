@@ -134,7 +134,7 @@ TEST(IufTransmitApodization, testIufTransmitApodizationSetGet)
 
     TEST_ASSERT_EQUAL(6,iufErrorGetCount());
     TEST_ASSERT_NOT_EQUAL(filePos,ftell(fpErrorLogging));
-
+            
     iufTransmitApodizationDelete(obj);
 }
 

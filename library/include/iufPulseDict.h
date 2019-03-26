@@ -81,4 +81,12 @@ int iufPulseDictSet
     iup_t member   ///< The #IufPulse
 );
 
+/** \brief Remove the #IufPulse from the dictionary with label \p key.
+ * \return Returns #IUF_E_OK in case of success and #IUF_ERR_VALUE in case of an error.
+ */
+int iufPulseDictRemove
+(
+    iupd_t dict,   ///< The pulse dictionary of interest
+    char * key     ///< The label of the #IufPulse
+);
 #endif //IUFLIBRARY_IUFHLPULSEDICT_H

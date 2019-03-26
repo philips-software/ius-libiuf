@@ -83,6 +83,14 @@ int iufTransmitApodizationDictSet
 	iuta_t member ///< the \p IufTransmitApodization that is added
 );
 
+/** \brief Remove a #IufTransmitApodization with label \p key from the dictionary.
+ * \return Returns #IUF_E_OK in case of success or #IUF_ERR_VALUE in case of an invalid argument.
+ */ 
+int iufTransmitApodizationDictRemove
+(
+    iutad_t dict,  ///< The dictionary of interest
+    char * key     ///< The label of the #IufTransmitApodization that is added
+);
 
 #endif //IUFLIBRARY_IUFHLTRANSMITAPODIZATIONDICT_H
 
