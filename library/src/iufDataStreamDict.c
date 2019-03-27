@@ -112,7 +112,7 @@ size_t iufDataStreamDictGetSize
 	iudsd_t dict
 )
 {
-	IUF_ERR_CHECK_NULL_N_RETURN(dict, -1);
+	IUF_ERR_CHECK_NULL_N_RETURN(dict, (size_t)-1);
 	return (int)hashmap_size(&dict->map);
 }
 
