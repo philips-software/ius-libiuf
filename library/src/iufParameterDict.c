@@ -197,7 +197,7 @@ int iufParameterDictSet
     return iufParameterDictUpdateKeys(dict);
 }
 
-int iufParameterRemove
+int iufParameterDictRemove
 (
     iupad_t dict,
     char * key
