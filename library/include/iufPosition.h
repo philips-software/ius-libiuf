@@ -67,4 +67,29 @@ IUF_BOOL iuf3DPositionCompare
     iu3dp_t actual     ///< The position two compare with
 );
 
+float iuf2DPositionGetX
+(
+    iu2dp_t pos
+);
+
+float iuf2DPositionGetZ
+(
+    iu2dp_t pos
+);
+
+float iuf3DPositionGetX
+(
+    iu3dp_t pos
+);
+
+float iuf3DPositionGetY
+(
+    iu3dp_t pos
+);
+
+float iuf3DPositionGetZ
+(
+    iu3dp_t pos
+);
+
 #endif //IUFLIBRARY_IUFHLPOSITION_H

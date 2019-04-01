@@ -2,7 +2,7 @@
 // Created by Ruijzendaal on 28/03/2018.
 //
 #include <stdlib.h>
-
+#include <math.h>
 #include <iuf.h>
 #include <iufPositionPrivate.h>
 
@@ -79,6 +79,51 @@ void iuf2DPositionDelete
 {
     IUF_ERR_CHECK_NULL_N_RETURN(pos, /**/);
     free(pos);
+}
+
+float iuf2DPositionGetX
+(
+    iu2dp_t pos
+)
+{
+     IUF_ERR_CHECK_NULL_N_RETURN(pos, NAN);
+     return pos->x;
+}
+
+float iuf2DPositionGetZ
+(
+    iu2dp_t pos
+)
+{
+    IUF_ERR_CHECK_NULL_N_RETURN(pos, NAN);
+    return pos->z;
+}
+
+float iuf3DPositionGetX
+(
+    iu3dp_t pos
+)
+{
+    IUF_ERR_CHECK_NULL_N_RETURN(pos, NAN);
+    return pos->x;
+}
+
+float iuf3DPositionGetY
+(
+    iu3dp_t pos
+)
+{
+    IUF_ERR_CHECK_NULL_N_RETURN(pos, NAN);
+    return pos->y;
+}
+
+float iuf3DPositionGetZ
+(
+    iu3dp_t pos
+)
+{
+    IUF_ERR_CHECK_NULL_N_RETURN(pos, NAN);
+    return pos->z;
 }
 
 iu3dp_t iuf3DPositionLoad

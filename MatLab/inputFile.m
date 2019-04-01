@@ -22,7 +22,7 @@ function varargout = inputFile(varargin)
 
 % Edit the above text to modify the response to help inputFile
 
-% Last Modified by GUIDE v2.5 25-Mar-2019 15:38:10
+% Last Modified by GUIDE v2.5 28-Mar-2019 16:48:52
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -491,8 +491,24 @@ function parametric_Callback(hObject, ~, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of parametric
+isParametric = get(hObject,'Value');
 
-
+if ~isParametric
+    handles.pulseFrequency.Visible = 'off';
+    handles.pulseAmplitude.Visible = 'off';
+    handles.pulseCount.Visible = 'off';
+    handles.numPulseValues.Visible = 'on';
+    handles.pRawPulseTimes.Visible = 'on';
+    handles.pRawPulseAmplitudes.Visible = 'on';
+else
+    handles.pulseFrequency.Visible = 'on';
+    handles.pulseAmplitude.Visible = 'on';
+    handles.pulseCount.Visible = 'on';
+    handles.numPulseValues.Visible = 'off';
+    handles.pRawPulseTimes.Visible = 'off';
+    handles.pRawPulseAmplitudes.Visible = 'off';
+end
+guidata(hObject, handles);
 
 function numPulseValues_Callback(hObject, ~, handles)
 % hObject    handle to numPulseValues (see GCBO)
@@ -538,20 +554,31 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 
+% --- Executes during object creation, after setting all properties.
+function pRawPulseTimes_CreateFcn(hObject, ~, handles)
+% hObject    handle to pRawPulseAmplitudes (see GCBO)
+% ~  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
 
 
-function pRawPulseRimes_Callback(hObject, ~, handles)
-% hObject    handle to pRawPulseRimes (see GCBO)
+function pRawPulseTimes_Callback(hObject, ~, handles)
+% hObject    handle to rawPulseTimesText (see GCBO)
 % ~  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of pRawPulseRimes as text
-%        str2double(get(hObject,'String')) returns contents of pRawPulseRimes as a double
+% Hints: get(hObject,'String') returns contents of rawPulseTimesText as text
+%        str2double(get(hObject,'String')) returns contents of rawPulseTimesText as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function pRawPulseRimes_CreateFcn(hObject, ~, handles)
-% hObject    handle to pRawPulseRimes (see GCBO)
+function rawPulseTimesText_CreateFcn(hObject, ~, handles)
+% hObject    handle to rawPulseTimesText (see GCBO)
 % ~  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -567,6 +594,53 @@ function PulseGet_Callback(hObject, ~, handles)
 % hObject    handle to PulseGet (see GCBO)
 % ~  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+import py.Python3Iuf.*
+index = handles.PulseDict.Value;
+label = handles.PulseDict.String{index};
+handles.PulseLabel.String{1} = label;
+
+pulse = iufPulseDictGet(handles.instance.pulseDict, label);
+pulseType = iufPulseGetType(pulse);
+
+if pulseType == 1 % parametric
+    pulseFrequency = iufParametricPulseGetFrequency(pulse);
+    pulseAmplitude = iufParametricPulseGetPulseAmplitude(pulse);
+    numPulses = iufParametricPulseGetNumPulses(pulse);
+    
+    handles.pulseFrequency.String = num2str(pulseFrequency);
+    handles.pulseAmplitude.String = num2str(pulseAmplitude);
+    handles.pulseCount.String = num2str(int64(numPulses));
+
+    handles.pulseFrequency.Visible = 'on';
+    handles.pulseAmplitude.Visible = 'on';
+    handles.pulseCount.Visible = 'on';
+    handles.numPulseValues.Visible = 'off';
+    handles.pRawPulseTimes.Visible = 'off';
+    handles.pRawPulseAmplitudes.Visible = 'off';
+    handles.parametric.Value = 1;
+    
+elseif pulseType == 2 % non-parametric
+    numPulseValues = iufNonParametricPulseGetNumValues(pulse);
+    timeString="";
+    amplitudeString="";
+    for i=0:numPulseValues-1
+        timeString      = timeString + num2str(iufNonParametricPulseGetValueTime(pulse,i)) +" ";
+        amplitudeString = amplitudeString + num2str(iufNonParametricPulseGetValueAmplitude(pulse,i)) +" ";
+    end
+    
+    handles.pulseFrequency.Visible = 'off';
+    handles.pulseAmplitude.Visible = 'off';
+    handles.pulseCount.Visible = 'off';
+    handles.numPulseValues.Visible = 'on';
+    handles.pRawPulseTimes.Visible = 'on';
+    handles.pRawPulseAmplitudes.Visible = 'on';
+    handles.parametric.Value = 0;
+
+    handles.numPulseValues.String = num2str(int64(numPulseValues));
+    handles.pRawPulseTimes.String = timeString;
+    handles.pRawPulseAmplitudes.String = amplitudeString;
+end    
+guidata(hObject, handles);
 
 
 % --- Executes on button press in PulseSet.
@@ -574,6 +648,43 @@ function PulseSet_Callback(hObject, ~, handles)
 % hObject    handle to PulseSet (see GCBO)
 % ~  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+import py.Python3Iuf.*
+index = handles.PulseDict.Value;
+label = handles.PulseDict.String{index};
+
+if handles.parametric.Value == 1
+    pulseFrequency = str2double(handles.pulseFrequency.String);
+    pulseAmplitude = str2double(handles.pulseAmplitude.String);
+    pulseCount = str2double(handles.pulseCount.String);      
+    pulse = iufParametricPulseCreate(pulseFrequency, pulseAmplitude, pulseCount);
+else % non-parametric
+    numPulseValues =  str2double(handles.numPulseValues.String);
+    pRawPusleAmplitudes = strread(handles.pRawPulseAmplitudes.String); %#ok<*DSTRRD>
+    pRawPulseTimes = strread(handles.pRawPulseTimes.String);
+
+    if length(pRawPusleAmplitudes) ~= length(pRawPulseTimes)
+        handles.ErrorLog.String{1} = 'PulseSet amplitudes and times have different number of elements! not setting element';
+        return;
+    end
+    pulse = iufNonParametricPulseCreate(numPulseValues);
+    for index=0:numPulseValues-1    
+        iufNonParametricPulseSetValue(pulse, index, pRawPulseTimes(index+1),pRawPusleAmplitudes(index+1));
+    end
+end
+    
+labelExists = ismember(handles.PulseLabel.String{1}, handles.PulseDict.String);
+if sum(labelExists)~=0 %remove the old receiveSettings
+    iufPulseDictRemove(handles.instance.pulseDict, label);
+end
+iufPulseDictSet(handles.instance.pulseDict, ...
+                                   handles.PulseLabel.String{1}, ...
+                                   pulse);
+labels = iufPulseDictGetKeys(handles.instance.pulseDict);
+for i=1:length(labels)
+  handles.PulseDict.String{i} = string(labels{i});
+end
+guidata(hObject, handles);
+
 
 
 % --- Executes on button press in SourceGet.
@@ -581,6 +692,91 @@ function SourceGet_Callback(hObject, ~, handles)
 % hObject    handle to SourceGet (see GCBO)
 % ~  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+import py.Python3Iuf.*
+index = handles.SourceDict.Value;
+label = handles.SourceDict.String{index};
+handles.SourceLabel.String{1} = label;
+
+source = iufSourceDictGet(handles.instance.sourceDict, label);
+sourceType = iufSourceGetType(source);
+
+%  IUF_2D_NON_PARAMETRIC_SOURCE,
+%  IUF_3D_NON_PARAMETRIC_SOURCE,
+%  IUF_2D_PARAMETRIC_SOURCE,
+%  IUF_3D_PARAMETRIC_SOURCE
+handles.SourceType.Value = double(sourceType);
+handles.group_2DNonParametric.Visible = 'off';
+handles.group_3DNonParametric.Visible = 'off';
+handles.group_2DParametric.Visible = 'off';
+handles.group_3DParametric.Visible = 'off';
+
+if sourceType == 1 % 2D non parametric source
+    numLocations = iuf2DNonParametricSourceGetNumLocations(source);
+        
+    posXString="";
+    posZString="";
+    for i=0:numLocations-1
+        pos2D = iuf2DNonParametricSourceGetPosition(source, i);
+        posXString = posXString + num2str(iuf2DPositionGetX(pos2D)) +" ";
+        posZString = posZString + num2str(iuf2DPositionGetZ(pos2D)) +" ";       
+    end
+    
+    handles.NumLocations_2DNP.String = num2str(int64(numLocations));
+    handles.Posx_2DNP.String = posXString;
+    handles.PosZ_2DNP.String = posZString;
+    
+    handles.group_2DNonParametric.Visible = 'on';
+elseif sourceType == 2 % 3D non-parametric source
+    numLocations = iuf3DNonParametricSourceGetNumLocations(source);
+        
+    posXString="";
+    posYString="";
+    posZString="";
+    for i=0:numLocations-1
+        pos3D = iuf3DNonParametricSourceGetPosition(source, i);
+        posXString = posXString + num2str(iuf3DPositionGetX(pos3D)) +" ";
+        posYString = posYString + num2str(iuf3DPositionGetX(pos3D)) +" ";
+        posZString = posZString + num2str(iuf3DPositionGetZ(pos3D)) +" ";       
+    end
+    
+    handles.NumLocations_3DNP.String = num2str(int64(numLocations));
+    handles.PosX_3DNP.String = posXString;
+    handles.PosY_3DNP.String = posYString;
+    handles.PosZ_3DNP.String = posZString;
+    
+    handles.group_3DNonParametric.Visible = 'on';
+elseif sourceType == 3
+    fNumber = iuf2DParametricSourceGetFNumber(source);
+    deltaTheta = iuf2DParametricSourceGetDeltaTheta(source);
+    startTheta = iuf2DParametricSourceGetStartTheta(source);
+    numThetaLocations = iuf2DParametricSourceGetNumLocations(source);
+
+    handles.FNumber_2DP.String = num2str(fNumber);
+    handles.DeltaTheta_2DP.String = num2str(deltaTheta);
+    handles.StartTheta_2DP.String = num2str(startTheta);
+    handles.numThetaLocations_2DP.String = num2str(int64(numThetaLocations));
+
+    handles.group_2DParametric.Visible = 'on';
+elseif sourceType == 4 % 3D parametric source
+    fNumber = iuf3DParametricSourceGetFNumber(source);
+    deltaTheta = iuf3DParametricSourceGetDeltaTheta(source);
+    startTheta = iuf3DParametricSourceGetStartTheta(source);
+    deltaPhi = iuf3DParametricSourceGetDeltaPhi(source);
+    numThetaLocations = iuf3DParametricSourceGetNumThetaLocations(source);
+    numPhiLocations = iuf3DParametricSourceGetNumPhiLocations(source);
+    startPhi = iuf3DParametricSourceGetStartPhi(source);
+
+    handles.FNumber_3DP.String = num2str(fNumber);
+    handles.DeltaTheta_3DP.String = num2str(deltaTheta);
+    handles.DeltaPhi_3DP.String = num2str(deltaPhi);
+    handles.StartTheta_3DP.String = num2str(startTheta);
+    handles.StartPhi_3DP.String = num2str(startPhi);
+    handles.numPhiLocations_3DP.String = num2str(int64(numPhiLocations));
+    handles.NumThetaLocations_3DP.String = num2str(int64(numThetaLocations));
+
+    handles.group_3DParametric.Visible = 'on';
+end    
+guidata(hObject, handles);
 
 
 % --- Executes on button press in sourceSet.
@@ -588,7 +784,65 @@ function sourceSet_Callback(hObject, ~, handles)
 % hObject    handle to sourceSet (see GCBO)
 % ~  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+import py.Python3Iuf.*
+index = handles.SourceDict.Value;
+label = handles.SourceDict.String{index};
 
+sourceType = handles.SourceType.Value;
+if sourceType == 1 %2D non parametric source
+    numLocations = str2double(handles.NumLocations_2DNP.String);
+    newSource = iuf2DNonParametricSourceCreate(numLocations);
+    
+    posXRaw = strread(handles.PosX_2DNP.String{1});
+    posZRaw = strread(handles.PosZ_2DNP.String{1});
+    for i=0:numLocations-1
+        pos2D = iuf2DPositionCreate(posXRaw(i+1),posZRaw(i+1));
+        iuf2DNonParametricSourceSetPosition(newSource, pos2D, i);
+        iuf2DPositionDelete(pos2D);
+    end
+elseif sourceType == 2 % 3D non-parametric source
+    numLocations = str2double(handles.NumLocations_3DNP.String);
+    newSource = iuf3DNonParametricSourceCreate(numLocations);
+    
+    posXRaw = strread(handles.PosX_2DNP.String{1});
+    posYRaw = strread(handles.PosY_2DNP.String{1});
+    posZRaw = strread(handles.PosZ_2DNP.String{1});
+    for i=0:numLocations-1
+        pos3D = iuf3DPositionCreate(posXRaw(i+1),posYRaw(i+1), posZRaw(i+1));
+        iuf2DNonParametricSourceSetPosition(newSource, pos3D, i);
+        iuf2DPositionDelete(pos3D);
+    end
+elseif sourceType == 3 % 2D paramteric source
+    numLocations = str2double(handles.NumLocations_2DP.String);
+    fNumber = str2double(handles.FNumber_2DP.String);
+    deltaTheta = str2double(handles.DeltaTheta_2DP.String);
+    startTheta = str2double(handles.StartTheta_2DP.String);    
+    newSource = iuf2DParametricSourceCreate(numLocations, fNumber, deltaTheta, startTheta);
+elseif sourceType == 4 % 3D parametric source
+    numThetaLocations = str2double(handles.NumThetaLocations_3DP.String);
+    numPhiLocations = str2double(handles.numPhiLocations_3DP.String);
+    fNumber = str2double(handles.FNumber_3DP.String);
+    deltaTheta = str2double(handles.DeltaTheta_3DP.String);
+    startTheta = str2double(handles.StartTheta_3DP.String);
+    deltaPhi = str2double(handles.DeltaPhi_3DP.String);
+    startPhi = str2double(handles.StartPhi_3DP.String);
+    newSource = iuf3DParametricSourceCreate(numThetaLocations, ...
+                numPhiLocations, fNumber, deltaTheta, ...
+                startTheta, deltaPhi, startPhi);    
+end
+    
+labelExists = ismember(handles.SourceLabel.String{1}, handles.SourceDict.String);
+if sum(labelExists)~=0 %remove the old receiveSettings
+    iufSourceDictRemove(handles.instance.sourceDict, label);
+end
+iufSourceDictSet(handles.instance.sourceDict, ...
+                                   handles.SourceLabel.String{1}, ...
+                                   newSource);
+labels = iufSourceDictGetKeys(handles.instance.sourceDict);
+for i=1:length(labels)
+  handles.SourceDict.String{i} = string(labels{i});
+end
+guidata(hObject, handles);
 
 % --- Executes on selection change in SourceType.
 function SourceType_Callback(hObject, ~, handles)
@@ -603,15 +857,15 @@ handles.group_3DParametric.Visible = 'off';
 handles.group_2DNonParametric.Visible = 'off';
 handles.group_3DNonParametric.Visible = 'off';
 selected = contents{get(hObject,'Value')};
-if strcmp(selected, '2D parametric')
+if strcmp(selected, 'IUF_2D_PARAMETRIC_SOURCE')
     handles.group_2DParametric.Visible='on';
-elseif strcmp(selected, '3D parametric')
+elseif strcmp(selected, 'IUF_3D_PARAMETRIC_SOURCE')
     handles.group_3DParametric.Visible='on';
-elseif strcmp(selected, '2D non-parametric')
+elseif strcmp(selected, 'IUF_2D_NON_PARAMETRIC_SOURCE')
     handles.group_2DNonParametric.Visible='on';
-elseif strcmp(selected, '3D non-parametric')
+elseif strcmp(selected, 'IUF_3D_NON_PARAMETRIC_SOURCE')
     handles.group_3DNonParametric.Visible='on';
-end
+        end
 
 % --- Executes during object creation, after setting all properties.
 function SourceType_CreateFcn(hObject, ~, handles)
@@ -2085,6 +2339,8 @@ handles.PatternListDict.String = cellP;
 
 guidata(hObject, handles);
 ReceiveSettingsGet_Callback(hObject, 0, handles);
+PulseGet_Callback(hObject, 0, handles);
+SourceGet_Callback(hObject, 0, handles);
 
 % --- Executes on button press in Save.
 function Save_Callback(hObject, ~, handles)
@@ -2154,3 +2410,74 @@ for i=1:length(labels)
 end
 handles.ReceiveSettingsDict.Value = 1;
 guidata(hObject, handles);
+
+
+% --- Executes on button press in PulseDictRemove.
+function PulseDictRemove_Callback(hObject, eventdata, handles)
+% hObject    handle to PulseDictRemove (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+import py.Python3Iuf.*
+index = handles.PulseDict.Value;
+label = handles.PulseDict.String{index};
+
+iufPulseDictRemove(handles.instance.pulseDict, label);
+labels = iufPulseDictGetKeys(handles.instance.pulseDict);
+handles.PulseDict.String = {};
+for i=1:length(labels)
+  handles.PulseDict.String{i} = string(labels{i});
+end
+handles.PulseDict.Value = 1;
+guidata(hObject, handles);
+
+
+function PulseLabel_Callback(hObject, eventdata, handles)
+% hObject    handle to PulseLabel (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of PulseLabel as text
+%        str2double(get(hObject,'String')) returns contents of PulseLabel as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function PulseLabel_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to PulseLabel (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in SourceDictRemove.
+function SourceDictRemove_Callback(hObject, eventdata, handles)
+% hObject    handle to SourceDictRemove (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+
+function SourceLabel_Callback(hObject, eventdata, handles)
+% hObject    handle to SourceLabel (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of SourceLabel as text
+%        str2double(get(hObject,'String')) returns contents of SourceLabel as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function SourceLabel_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to SourceLabel (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end

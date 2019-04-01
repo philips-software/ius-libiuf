@@ -82,4 +82,12 @@ int iufSourceDictSet
     ius_t member        ///< The source that is added
 );
 
+/** \brief Remove a sources from the dictionary
+ *  \return Returns #IUF_E_OK in case of success and #IUF_ERR_VALUE in case of invalid arguments
+ */ 
+int iufSourceDictRemove
+(
+    iusd_t dict,        ///< THe dictionary of interest
+    char * key         ///< The label of the source that is added
+);
 #endif //IUFLIBRARY_IUFHLSOURCEDICT_H
