@@ -22,7 +22,7 @@ function varargout = inputFile(varargin)
 
 % Edit the above text to modify the response to help inputFile
 
-% Last Modified by GUIDE v2.5 28-Mar-2019 16:48:52
+% Last Modified by GUIDE v2.5 02-Apr-2019 14:42:54
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -144,19 +144,19 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-% --- Executes on selection change in listbox6.
-function listbox6_Callback(hObject, ~, handles)
-% hObject    handle to listbox6 (see GCBO)
+% --- Executes on selection change in TransmitApodizationDict.
+function TransmitApodizationDict_Callback(hObject, ~, handles)
+% hObject    handle to TransmitApodizationDict (see GCBO)
 % ~  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: contents = cellstr(get(hObject,'String')) returns listbox6 contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from listbox6
+% Hints: contents = cellstr(get(hObject,'String')) returns TransmitApodizationDict contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from TransmitApodizationDict
 
 
 % --- Executes during object creation, after setting all properties.
-function listbox6_CreateFcn(hObject, ~, handles)
-% hObject    handle to listbox6 (see GCBO)
+function TransmitApodizationDict_CreateFcn(hObject, ~, handles)
+% hObject    handle to TransmitApodizationDict (see GCBO)
 % ~  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -167,19 +167,19 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-% --- Executes on selection change in listbox7.
-function listbox7_Callback(hObject, ~, handles)
-% hObject    handle to listbox7 (see GCBO)
+% --- Executes on selection change in ReceiveChannelMapDict.
+function ReceiveChannelMapDict_Callback(hObject, ~, handles)
+% hObject    handle to ReceiveChannelMapDict (see GCBO)
 % ~  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: contents = cellstr(get(hObject,'String')) returns listbox7 contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from listbox7
+% Hints: contents = cellstr(get(hObject,'String')) returns ReceiveChannelMapDict contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from ReceiveChannelMapDict
 
 
 % --- Executes during object creation, after setting all properties.
-function listbox7_CreateFcn(hObject, ~, handles)
-% hObject    handle to listbox7 (see GCBO)
+function ReceiveChannelMapDict_CreateFcn(hObject, ~, handles)
+% hObject    handle to ReceiveChannelMapDict (see GCBO)
 % ~  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -1294,33 +1294,66 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-% --- Executes on button press in pushbutton10.
-function pushbutton10_Callback(hObject, ~, handles)
-% hObject    handle to pushbutton10 (see GCBO)
+% --- Executes on button press in TransmitApodizationGet.
+function TransmitApodizationGet_Callback(hObject, ~, handles)
+% hObject    handle to TransmitApodizationGet (see GCBO)
+% ~  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+import py.Python3Iuf.*
+index = handles.TransmitApodizationDict.Value;
+label = handles.TransmitApodizationDict.String{index};
+handles.TransmitApodizationLabel.String{1} = label;
+
+ta = iufTransmitApodizationDictGet(handles.instance.transmitApodizationDict, label);
+numElements = int64(iufTransmitApodizationGetNumElements(ta));
+
+apodizationString = "";
+for i=0:numElements-1
+        apodizationString      = apodizationString + num2str(iufTransmitApodizationGetElement(ta,i)) +" ";
+end
+handles.NumElements.String = num2str(numElements);
+handles.Apodization.String = apodizationString;    
+guidata(hObject, handles);
+
+% --- Executes on button press in transmitApodizationSet.
+function transmitApodizationSet_Callback(hObject, ~, handles)
+% hObject    handle to transmitApodizationSet (see GCBO)
+% ~  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+import py.Python3Iuf.*
+index = handles.TransmitApodizationDict.Value;
+label = handles.TransmitApodizationDict.String{index};
+
+%numElements = str2double(handles.NumElements.String);
+pRawApodization = strread(deblank(handles.Apodization.String)); %#ok<*DSTRRD>
+handles.NumElements.String = num2str(length(pRawApodization));
+ta = iufTransmitApodizationCreate(pRawApodization);
+
+labelExists = ismember(handles.TransmitApodizationLabel.String{1}, handles.TransmitApodizationDict.String);
+if sum(labelExists)~=0 %remove the old receiveSettings
+    iufTransmitApodizationDictRemove(handles.instance.transmitApodizationDict, label);
+end
+iufTransmitApodizationDictSet(handles.instance.transmitApodizationDict, ...
+                              handles.TransmitApodizationLabel.String{1}, ...
+                              ta);
+labels = iufTransmitApodizationDictGetKeys(handles.instance.transmitApodizationDict);
+for i=1:length(labels)
+  handles.TransmitApodizationDict.String{i} = string(labels{i});
+end
+guidata(hObject, handles);
+
+function NumElements_Callback(hObject, ~, handles)
+% hObject    handle to NumElements (see GCBO)
 % ~  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-
-% --- Executes on button press in pushbutton11.
-function pushbutton11_Callback(hObject, ~, handles)
-% hObject    handle to pushbutton11 (see GCBO)
-% ~  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-
-
-function numElements_Callback(hObject, ~, handles)
-% hObject    handle to numElements (see GCBO)
-% ~  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of numElements as text
-%        str2double(get(hObject,'String')) returns contents of numElements as a double
+% Hints: get(hObject,'String') returns contents of NumElements as text
+%        str2double(get(hObject,'String')) returns contents of NumElements as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function numElements_CreateFcn(hObject, ~, handles)
-% hObject    handle to numElements (see GCBO)
+function NumElements_CreateFcn(hObject, ~, handles)
+% hObject    handle to NumElements (see GCBO)
 % ~  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -1405,14 +1438,56 @@ function ReceiveChannelMapGet_Callback(hObject, ~, handles)
 % hObject    handle to ReceiveChannelMapGet (see GCBO)
 % ~  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+import py.Python3Iuf.*
+index = handles.ReceiveChannelMapDict.Value;
+label = handles.ReceiveChannelMapDict.String{index};
+handles.ReceiveChannelMapLabel.String{1} = label;
 
+rcm = iufReceiveChannelMapDictGet(handles.instance.receiveChannelMapDict, label);
+numChannels = int64(iufReceiveChannelMapGetNumChannels(rcm));
+
+mapString = "";
+startDelayString = "";
+for i=0:numChannels-1
+        mapString        = mapString + num2str(int64(iufReceiveChannelMapGetChannel(rcm,i))) +" ";
+        startDelayString = startDelayString + num2str(iufReceiveChannelMapGetStartDelay(rcm,i)) +" ";
+end
+handles.NumChannels.String = num2str(numChannels);
+handles.Map.String = mapString;    
+handles.StartDelay.String = startDelayString;    
+guidata(hObject, handles);
 
 % --- Executes on button press in ReceiveChannelMapSet.
 function ReceiveChannelMapSet_Callback(hObject, ~, handles)
 % hObject    handle to ReceiveChannelMapSet (see GCBO)
 % ~  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+import py.Python3Iuf.*
+index = handles.ReceiveChannelMapDict.Value;
+label = handles.ReceiveChannelMapDict.String{index};
 
+%numElements = str2double(handles.NumElements.String);
+pRawMap = strread(deblank(handles.Map.String)); %#ok<*DSTRRD>
+pRawStartDelay = strread(deblank(handles.StartDelay.String)); %#ok<*DSTRRD>
+numChannels = length(pRawMap);
+rcm = iufReceiveChannelMapCreate(numChannels);
+for index=0:numChannels-1
+    iufReceiveChannelMapSetChannel(rcm, index, pRawMap(index+1));
+    iufReceiveChannelMapSetStartDelay(rcm, index, pRawStartDelay(index+1));
+end
+
+labelExists = ismember(handles.ReceiveChannelMapLabel.String{1}, handles.ReceiveChannelMapDict.String);
+if sum(labelExists)~=0 %remove the old receiveSettings
+    iufReceiveChannelmapDictRemove(handles.instance.receiveChannelMapDict, label);
+end
+iufReceiveChannelMapDictSet(handles.instance.receiveChannelMapDict, ...
+                              handles.ReceiveChannelMapLabel.String{1}, ...
+                              rcm);
+labels = iufReceiveChannelMapDictGetKeys(handles.instance.receiveChannelMapDict);
+for i=1:length(labels)
+  handles.ReceiveChannelMapDict.String{i} = string(labels{i});
+end
+guidata(hObject, handles);
 
 
 function StartDelay_Callback(hObject, ~, handles)
@@ -2341,6 +2416,8 @@ guidata(hObject, handles);
 ReceiveSettingsGet_Callback(hObject, 0, handles);
 PulseGet_Callback(hObject, 0, handles);
 SourceGet_Callback(hObject, 0, handles);
+TransmitApodizationGet_Callback(hObject, 0, handles);
+ReceiveChannelMapGet_Callback(hObject, 0, handles);
 
 % --- Executes on button press in Save.
 function Save_Callback(hObject, ~, handles)
@@ -2481,3 +2558,86 @@ function SourceLabel_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
+
+
+% --- Executes on button press in TransmitApodizationRemove.
+function TransmitApodizationRemove_Callback(hObject, eventdata, handles)
+% hObject    handle to TransmitApodizationRemove (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+import py.Python3Iuf.*
+index = handles.TransmitApodizationDict.Value;
+label = handles.TransmitApodizationDict.String{index};
+
+iufTransmitApodizationDictRemove(handles.instance.transmitApodizationDict, label);
+labels = iufTransmitApodizationDictGetKeys(handles.instance.transmitApodizationDict);
+handles.TransmitApodizationDict.String = {};
+for i=1:length(labels)
+  handles.TransmitApodizationDict.String{i} = string(labels{i});
+end
+handles.TransmitApodizationDict.Value = 1;
+guidata(hObject, handles);
+
+
+function TransmitApodizationLabel_Callback(hObject, eventdata, handles)
+% hObject    handle to TransmitApodizationLabel (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of TransmitApodizationLabel as text
+%        str2double(get(hObject,'String')) returns contents of TransmitApodizationLabel as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function TransmitApodizationLabel_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to TransmitApodizationLabel (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function ReceiveChannelMapLabel_Callback(hObject, eventdata, handles)
+% hObject    handle to ReceiveChannelMapLabel (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of ReceiveChannelMapLabel as text
+%        str2double(get(hObject,'String')) returns contents of ReceiveChannelMapLabel as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function ReceiveChannelMapLabel_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to ReceiveChannelMapLabel (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in ReceiveChannelMapRemove.
+function ReceiveChannelMapRemove_Callback(hObject, eventdata, handles)
+% hObject    handle to ReceiveChannelMapRemove (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+import py.Python3Iuf.*
+index = handles.ReceiveChannelMapDict.Value;
+label = handles.ReceiveChannelMapDict.String{index};
+
+iufReceiveChannelMapDictRemove(handles.instance.receiveChannelMapDict, label);
+labels = iufReceiveChannelMapDictGetKeys(handles.instance.receiveChannelMapDict);
+handles.ReceiveChannelMapDict.String = {};
+for i=1:length(labels)
+  handles.ReceiveChannelMapDict.String{i} = string(labels{i});
+end
+handles.ReceiveChannelMapDict.Value = 1;
+guidata(hObject, handles);
