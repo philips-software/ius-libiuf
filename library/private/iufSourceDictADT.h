@@ -20,3 +20,4 @@ struct IufSourceDict
     char **kys;
 };
 #endif //IUFLIBRARY_IUFSOURCEDICTADT_H
+

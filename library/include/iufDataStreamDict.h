@@ -90,3 +90,4 @@ int iufDataStreamDictRemove
   char * key       ///< The label of the #IufDataStream that is to be removed
 );
 #endif //IUFLIBRARY_IUFDATASTREAMDICT_H
+
