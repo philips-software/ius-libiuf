@@ -28,7 +28,8 @@ The added value of this library is that the data and meta-data is stored in a st
     - [4.2. <a name='BuildandtestinstructionsforWindows'></a>Build and test instructions for Windows](#42-a-nameBuildandtestinstructionsforWindowsaBuild-and-test-instructions-for-Windows)
   - [5. <a name='ContactGettinghelp'></a>Contact / Getting help](#5-a-nameContactGettinghelpaContact--Getting-help)
   - [6. <a name='License'></a>License](#6-a-nameLicenseaLicense)
-  - [7. <a name='Creditsandreferences'></a>Credits and references](#7-a-nameCreditsandreferencesaCredits-and-references)
+  - [7. <a name='Contributing'></a> Contributing](#7-a-nameContributinga-Contributing)
+  - [8. <a name='Creditsandreferences'></a>Credits and references](#8-a-nameCreditsandreferencesaCredits-and-references)
 
 <!-- vscode-markdown-toc-config
 	numbering=true
@@ -65,7 +66,7 @@ Detailed instructions on how to install, configure, and get the project running 
 
 ##  3. <a name='Usage'></a>Usage
 
-Examples of how the SDK can be used ara available in the [examples](examples) folder. Furthermore, developer documentation can be generated as follows:
+Examples of how the SDK can be used ara available in the [examples](examples) folder. Furthermore, developer documentation can be generated (stored in dox/html/index.html) as follows:
 ```
 cd dox
 doxygen
@@ -161,13 +162,20 @@ If this is not the case, point the PATH environment to the x64 version of hdf5 b
 ##  5. <a name='ContactGettinghelp'></a>Contact / Getting help
 
 Need help or want to get in touch with us? 
-Sent an e-mail to al_libiuf@natlab.research.philips.com.
+* Sent an e-mail to al_libiuf@natlab.research.philips.com.
+* Talk to the libiuf maintainers in the ius-libiuf-channel on Slack:
+ 
+[![Slack](https://philips-software-slackin.now.sh/badge.svg)](https://philips-software-slackin.now.sh)
 
 ##  6. <a name='License'></a>License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE.md) file for details.
+This project is licensed under the [MIT](https://opensource.org/licenses/MIT) License - see the [LICENSE](LICENSE.md) file for details.
 
-##  7. <a name='Creditsandreferences'></a>Credits and references
+##  7. <a name='Contributing'></a> Contributing
+
+Please refer to our [Contributing](CONTRIBUTING.md) guide when you want to contribute to this project.
+
+##  8. <a name='Creditsandreferences'></a>Credits and references
 
 1. THE [HDF5® LIBRARY & FILE FORMAT](https://www.hdfgroup.org/solutions/hdf5/)
 2. [CMake](https://cmake.org/)
