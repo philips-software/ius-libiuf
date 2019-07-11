@@ -15,8 +15,12 @@ before_install:
     mkdir $HOME/docker-images
     docker save ruijzndl/centos-ci:0.5.2 | gzip -c > $HOME/docker-images/centos-ci:0.5.2.tgz
   fi
-# - [ -f $HOME/docker-images/centos-ci:0.5.2.tgz ] && docker load -i $HOME/docker-images/centos-ci:0.5.2.tgz
-# - docker run --name centos -d -v $(pwd):$(pwd) -v /var/run/docker.sock:/var/run/docker.sock -w $(pwd) ruijzndl/centos-ci:0.5.2 /bin/sh -c "while true; do sleep 1; done"
+- |
+  if [[ -f $HOME/docker-images/centos-ci:0.5.2.tgz ] 
+  then
+    docker load -i $HOME/docker-images/centos-ci:0.5.2.tgz
+  fi
+- docker run --name centos -d -v $(pwd):$(pwd) -v /var/run/docker.sock:/var/run/docker.sock -w $(pwd) ruijzndl/centos-ci:0.5.2 /bin/sh -c "while true; do sleep 1; done"
 - docker ps -a
 
 script:
