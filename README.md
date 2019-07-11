@@ -1,8 +1,9 @@
 # IUF file IO library SDK
+[![Build Status](https://travis-ci.com/philips-software/ius-libiuf.svg?branch=develop)](https://travis-ci.com/philips-software/ius-libiuf) [![License: MIT](https://img.shields.io/badge/License-MIT-brightgreen.svg)](https://opensource.org/licenses/MIT)
 
-The IUF library provides an API for reading and writing Ultrasound data and meta data to HDF5 files.
+**Description**:
 
-Conceptually, Ultrasound data is processed in an algorithm chain starting with beamforming, followed by property extraction such as signal intensity or velocity maps and imaging steps such as compression, clutter reduction, etc. Also analysis steps such as tissue characterization can be part of the algorithm chain. Besides Ultrasound data, additional data streams, such as ECG, are relevant enhancement data.
+The IUF library provides an API for reading and writing Ultrasound data and meta data to HDF5 files. Conceptually, Ultrasound data is processed in an algorithm chain starting with beamforming, followed by property extraction such as signal intensity or velocity maps and imaging steps such as compression, clutter reduction, etc. Also analysis steps such as tissue characterization can be part of the algorithm chain. Besides Ultrasound data, additional data streams, such as ECG, are relevant enhancement data.
 
 This library facilitates such processing chains by providing abstract datatypes and functions for file IO. The HDF5 file format is used to store the following meta-data:
 
