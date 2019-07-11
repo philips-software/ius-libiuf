@@ -3,7 +3,7 @@
 This file is the official list of maintainers for the IUF file IO library SDK.
 The maintainers are listed in alphabetical order.
 
-- Brian Bloemendaal ([brian-bloemendaal](https://github.com/brian-bloemendaal))
+- Brian Bloemendaal ([brian-bloemendal](https://github.com/brian-bloemendal))
 - Frank van Heesch ([frank-van-heesch](https://github.com/frank-van-heesch))
 - Danny Ruijzendaal ([ruijzndl](https://github.com/ruijzndl))
 
