@@ -9,6 +9,7 @@ services:
 
 before_install:
 - echo "Setting up build container"
+- ls -l /var/lib/docker/tmp/
 - |
   if [[ ! -f $HOME/docker-images/centos-ci:0.5.2.tgz ]]
   then
