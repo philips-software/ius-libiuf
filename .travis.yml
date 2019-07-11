@@ -10,10 +10,10 @@ services:
 before_install:
 - echo "Setting up build container"
 - |
-  if [[ ! -d $HOME/docker-images ]]
+  if [[ ! -f $HOME/docker-images/centos-ci:0.5.2.tgz ]]
   then
     echo "Saving build container..."
-    mkdir $HOME/docker-images
+    [[ ! -d $HOME/docker-images ]] && mkdir $HOME/docker-images
     docker save ruijzndl/centos-ci:0.5.2 | gzip -c > $HOME/docker-images/centos-ci:0.5.2.tgz
   fi
 - |
