@@ -160,11 +160,11 @@ If this is not the case, point the PATH environment to the x64 version of hdf5 b
 ##  5. <a name='ContactGettinghelp'></a>Contact / Getting help
 
 Need help or want to get in touch with us? 
-Sent an e-mail to al_libiuf@natlab.research.philips.com
+Sent an e-mail to al_libiuf@natlab.research.philips.com.
 
 ##  6. <a name='License'></a>License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE.md)file for details
+This project is licensed under the MIT License - see the [LICENSE](LICENSE.md) file for details.
 
 ##  7. <a name='Creditsandreferences'></a>Credits and references
 
