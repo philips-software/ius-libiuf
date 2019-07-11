@@ -12,12 +12,14 @@ before_install:
 - |
   if [[ ! -d $HOME/docker-images ]]
   then
+    echo "Saving build container..."
     mkdir $HOME/docker-images
     docker save ruijzndl/centos-ci:0.5.2 | gzip -c > $HOME/docker-images/centos-ci:0.5.2.tgz
   fi
 - |
   if [[ -f $HOME/docker-images/centos-ci:0.5.2.tgz ] 
   then
+    echo "Saving loading build container..."
     docker load -i $HOME/docker-images/centos-ci:0.5.2.tgz
   fi
 - docker run --name centos -d -v $(pwd):$(pwd) -v /var/run/docker.sock:/var/run/docker.sock -w $(pwd) ruijzndl/centos-ci:0.5.2 /bin/sh -c "while true; do sleep 1; done"
