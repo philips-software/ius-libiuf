@@ -19,7 +19,8 @@ before_install:
 - |
   if [[ -f $HOME/docker-images/centos-ci:0.5.2.tgz ]]
   then
-    echo "Saving loading build container..."
+    ls -l $HOME/docker-images/
+    echo "Loading build container..."
     docker load -i $HOME/docker-images/centos-ci:0.5.2.tgz
   fi
 - docker run --name centos -d -v $(pwd):$(pwd) -v /var/run/docker.sock:/var/run/docker.sock -w $(pwd) ruijzndl/centos-ci:0.5.2 /bin/sh -c "while true; do sleep 1; done"
