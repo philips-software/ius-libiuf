@@ -1,10 +1,15 @@
 language: C
 
+cache:
+  directories:
+  - $HOME/docker-images
+
 services:
   - docker
 
 before_install:
-- docker pull ruijzndl/centos-ci:0.5.2
+- [[ ! -d $HOME/docker-images ]] && mkdir $HOME/docker-images && docker save ruijzndl/centos-ci:0.5.2 | gzip -c > $HOME/docker-images/centos-ci:0.5.2.tgz
+- [[ -f $HOME/docker-images/centos-ci:0.5.2.tgz ]] && docker load -i $HOME/docker-images/centos-ci:0.5.2.tgz
 - docker run --name centos -d -v $(pwd):$(pwd) -v /var/run/docker.sock:/var/run/docker.sock -w $(pwd) ruijzndl/centos-ci:0.5.2 /bin/sh -c "while true; do sleep 1; done"
 - docker ps -a
 
