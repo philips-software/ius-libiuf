@@ -1,7 +1,3 @@
-//
-// Created by Ruijzendaal on 07/03/2018.
-//
-
 #include <stdio.h>
 #include <unity_fixture.h>
 #include <iuf.h>

@@ -1,6 +1,3 @@
-//
-// Created by Ruijzendaal on 16/04/2018.
-//
 #ifndef IUFLIBRARY_TESTDATAGENERATORS_H
 #define IUFLIBRARY_TESTDATAGENERATORS_H
 

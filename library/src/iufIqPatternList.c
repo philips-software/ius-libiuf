@@ -1,7 +1,3 @@
-
-//
-// Created by nlv09165 on 18/07/2018.
-//
 #include <stdlib.h>
 
 #include <iuf.h>

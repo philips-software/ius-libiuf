@@ -1,6 +1,3 @@
-//
-// Created by Ruijzendaal on 14/03/2018.
-//
 #ifndef IUFLIBRARY_IUFHLACQUISITION_H
 #define IUFLIBRARY_IUFHLACQUISITION_H
 

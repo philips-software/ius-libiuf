@@ -1,6 +1,3 @@
-//
-// Created by Ruijzendaal on 07/03/2018.
-//
 #include "iuf.h"
 #include "hdf5.h"
 #include "iufInputFileReadV2.h"

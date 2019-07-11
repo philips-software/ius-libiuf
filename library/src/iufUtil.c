@@ -1,6 +1,3 @@
-//
-// Created by Ruijzendaal on 14/03/2018.
-//
 #include <math.h>
 #include <stdlib.h>
 

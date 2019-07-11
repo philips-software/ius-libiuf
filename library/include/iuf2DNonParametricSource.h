@@ -1,11 +1,6 @@
-/** ==============================================================================
- *    COPYRIGHT 2018 PHILIPS RESEARCH
- *  ==============================================================================
- *
+/**  
  * \file iuf2DNonParametricSource.h
  * \brief File containing iuf2DNonParametricSource related declarations.
- *
- *  ==============================================================================
  */
 #ifndef IUFLIBRARY_IUFHL2DNONPARAMETRICSOURCE_H
 #define IUFLIBRARY_IUFHL2DNONPARAMETRICSOURCE_H

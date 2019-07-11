@@ -21,4 +21,4 @@ $CMAKE --build .
 $CTEST --verbose
 cd -
 
-$ScriptPath/py_unittests.sh
+# $ScriptPath/py_unittests.sh

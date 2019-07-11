@@ -1,7 +1,3 @@
-//
-// Created by Ruijzendaal on 27/03/2018.
-//
-
 #ifndef IUFLIBRARY_TESTDRIVINGSCHEME_H
 #define IUFLIBRARY_TESTDRIVINGSCHEME_H
 

@@ -1,6 +1,4 @@
 //=============================================================================
-//    COPYRIGHT 2016 PHILIPS RESEARCH
-//=============================================================================
 //
 //  Source Name   : mxSpectralDoppler.c
 //                  MatLab mex calling iufSpectralDoppler.c

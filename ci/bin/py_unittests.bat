@@ -23,7 +23,7 @@ if exist "%ModuleFolder%\%Python3Module%" (
 	set PYTHONPATH=%ModuleFolder%\Release;%ModuleFolder%;%PYTHONPATH%
 )
 
-echo === Python UnitTests
-python -m unittest discover python\test
-if errorlevel 1 exit /B 1
+REM echo === Python UnitTests
+REM python -m unittest discover python\test
+REM if errorlevel 1 exit /B 1
 

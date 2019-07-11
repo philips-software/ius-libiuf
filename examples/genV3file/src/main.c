@@ -1,17 +1,10 @@
-/** ==============================================================================
- *    COPYRIGHT 2018 PHILIPS RESEARCH
- *  ==============================================================================
- *
+/** 
  * \file main.c
  * \brief Main source file containing example code of how to construct a version 3
  * input file type.
- *
- *  ==============================================================================
  */
 #include "iuf.h"
 #include "nodeConfig.h"
-
-
 
 void dgFillData
 (

@@ -1,6 +1,4 @@
 %=============================================================================
-%    COPYRIGHT 2016 PHILIPS RESEARCH
-%=============================================================================
 %
 %  Source Name   : mxCreate.m
 %                  Creates a mexdll for a processing C algorithm

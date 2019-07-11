@@ -1,7 +1,3 @@
-//
-// Created by Ruijzendaal on 20/03/2018.
-//
-
 #ifndef IUFUNITTESTS_UTIL_H
 #define IUFUNITTESTS_UTIL_H
 #include <iuf2DTransducerElement.h>

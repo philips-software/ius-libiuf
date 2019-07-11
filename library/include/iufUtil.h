@@ -1,6 +1,3 @@
-//
-// Created by Ruijzendaal on 14/03/2018.
-//
 #ifndef IUFLIBRARY_IUFUTIL_H
 #define IUFLIBRARY_IUFUTIL_H
 

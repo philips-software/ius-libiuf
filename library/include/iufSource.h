@@ -1,4 +1,3 @@
-// Created by nlv09165 on 24/07/2018.
 #ifndef IUFLIBRARY_IUFHLSOURCE_H
 #define IUFLIBRARY_IUFHLSOURCE_H
 

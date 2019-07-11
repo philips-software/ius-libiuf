@@ -1,7 +1,3 @@
-//
-// Created by Ruijzendaal on 10/04/2018.
-//
-
 #ifndef IUFLIBRARY_IUFHLPARAMETRICPULSE_H
 #define IUFLIBRARY_IUFHLPARAMETRICPULSE_H
 #include <iufTypes.h>

@@ -1,4 +1,3 @@
-// Created by nlv09165 on 31/08/2018.
 #include "iufHistoryNode.h"
 
 #ifndef IUFLIBRARY_IUFFILE_H

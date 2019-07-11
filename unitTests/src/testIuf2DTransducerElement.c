@@ -1,8 +1,3 @@
-
-
-//
-// Created by nlv09165 on 20/08/2018.
-//
 #include <math.h>
 #include <unity.h>
 #include <unity_internals.h>

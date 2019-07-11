@@ -1,7 +1,3 @@
-//
-// Created by Ruijzendaal on 23/03/2018.
-//
-
 #ifndef IUFLIBRARY_TESTRECEIVESETTINGS_H
 #define IUFLIBRARY_TESTRECEIVESETTINGS_H
 

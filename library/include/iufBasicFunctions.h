@@ -1,13 +1,3 @@
-//=============================================================================
-//    COPYRIGHT 2015 PHILIPS RESEARCH
-//=============================================================================
-//
-//  Source Name   : iufBasicFunctions.h
-//                  Basic functions and macros.
-//  iufVersion    : 255.255.255.255
-//
-//=============================================================================
-
 #ifndef _IUFBASICFUNCTIONS_H
 #define _IUFBASICFUNCTIONS_H
 

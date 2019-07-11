@@ -1,12 +1,7 @@
-/** ===========================================================================
- *    COPYRIGHT 2018 PHILIPS RESEARCH
- *  ===========================================================================
- *
+/**
  * \file mxInputFile.c
  * \brief Mex file for reading and writing a version 3 input file type.
- *
- *  ===========================================================================
-*/
+ */
 #include "iuf.h"
 #include <iufInputFilePrivate.h>
 #include "mxHandleList.h"

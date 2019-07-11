@@ -1,7 +1,3 @@
-//
-// Created by Ruijzendaal on 30/05/2018.
-//
-
 #ifndef IUFLIBRARY_IUFHLPULSEDICTIMP_H
 #define IUFLIBRARY_IUFHLPULSEDICTIMP_H
 
