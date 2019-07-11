@@ -1,111 +1,42 @@
-# Instructions for the building and use IUF-SDK Software
-This repository contains the source code of the Interventional Ultrasound Library SDK. 
-This document contains instructions on
-* [How to install the sdk sources](#how-to-install-the-sdk)
-* [Folder structure](#folder-structure)
-* [Build dependencies](#build-dependencies)
-* [How to build and run the examples and unit tests](#how-to-build-and-run-the-examples-and-unit-tests)
-* [How to generate documentation](#how-to-generate-documentation)
+# IUF file IO library SDK
+
+The IUF library provides an API for reading and writing Ultrasound data and meta data to HDF5 files.
+
+Conceptually, Ultrasound data is processed in an algorithm chain starting with beamforming, followed by property extraction such as signal intensity or velocity maps and imaging steps such as compression, clutter reduction, etc. Also analysis steps such as tissue characterization can be part of the algorithm chain. Besides Ultrasound data, additional data streams, such as ECG, are relevant enhancement data.
+
+This library facilitates such processing chains by providing abstract datatypes and functions for file IO. The HDF5 file format is used to store the following meta-data:
+
+- acquisition properties and settings 
+- processing parameters and settings 
+- the history of all previous processing parameters and settings.
+
+The added value of this library is that the data and meta-data is stored in a standardized format. This makes it easy to exchange files created with this fileio library.
+
+**Technology stack**: The software consists of a C-library that can be used to develop an application in need of standardized Ultrasound based file io. CMake is used to build the library for the platforms supported.
+
+**Status**:  Latest version is 2.0. Currently in devlopment is support for Python and MatLab bindings. For changes see the [CHANGELOG](CHANGELOG.md).
 
 
-## How to install the sdk sources
-### Philips Research specific installation instructions for Linux (cluster running centos 7.4)
-```
-    # login on compute server
-    $ ssh llogin
-      Welcome to aharna running Linux 3.10.0-693.11.6.el7.x86_64 
+<!-- vscode-markdown-toc -->
+- [IUF file IO library SDK](#IUF-file-IO-library-SDK)
+  - [1. <a name='Dependencies'></a>Dependencies](#1-a-nameDependenciesaDependencies)
+  - [2. <a name='Installation'></a>Installation](#2-a-nameInstallationaInstallation)
+  - [3. <a name='Usage'></a>Usage](#3-a-nameUsageaUsage)
+  - [4. <a name='Howtotestthesoftware'></a>How to test the software](#4-a-nameHowtotestthesoftwareaHow-to-test-the-software)
+    - [4.1. <a name='BuildandtestinstructionsforMacLinux'></a>Build and test instructions for Mac/Linux](#41-a-nameBuildandtestinstructionsforMacLinuxaBuild-and-test-instructions-for-MacLinux)
+    - [4.2. <a name='BuildandtestinstructionsforWindows'></a>Build and test instructions for Windows](#42-a-nameBuildandtestinstructionsforWindowsaBuild-and-test-instructions-for-Windows)
+  - [5. <a name='ContactGettinghelp'></a>Contact / Getting help](#5-a-nameContactGettinghelpaContact--Getting-help)
+  - [6. <a name='License'></a>License](#6-a-nameLicenseaLicense)
+  - [7. <a name='Creditsandreferences'></a>Credits and references](#7-a-nameCreditsandreferencesaCredits-and-references)
 
-    $ hosts $(hostname)
-    login
+<!-- vscode-markdown-toc-config
+	numbering=true
+	autoSave=true
+	/vscode-markdown-toc-config -->
+<!-- /vscode-markdown-toc -->
 
-    $ qsh
-    Started on lato in isar
+##  1. <a name='Dependencies'></a>Dependencies
 
-    $ hosts $(hostname)
-    compute
-    
-    # install gcovr build dependencies using cadenv
-    $ cadenv -r 2.7-64 python
-```
-
-### Checkout code
-```
-    $ git clone https://bitbucket.atlas.philips.com/scm/iuf/libiuf.git
-    $ cd libiuf
-```
-
-## Folder structure
-```
-.
-├── Docker
-├── ci
-│   └── bin
-├── dox
-├── examples
-│   ├── genV3file
-│   └── iufInputFileConvert
-├── external
-│   ├── Unity
-│   ├── cmake_modules
-│   ├── hashmap
-│   └── hdf5_local
-├── library
-│   ├── include
-│   └── src
-├── package
-└── unitTests
-    ├── include
-    └── src
-
-```
-### Docker
-This folder contains the Dockerfile that is is used to build/develop for the Linux platform.
-The resulting docker image is been deployed to [our local GitLab instance](#https://gitlab.ta.philips.com/IUF/iuf/container_registry).
-
-### ci
-The ci/bin folder contains convenience scripts that can be used to 
-build, test and gnerate a distribution.
-
-* build.bat - Windows build script
-* build.sh - Linux/MacOs build script
-* code_coverage.sh - Linux/MacOs script, generating code coverage info base on unit tests
-* is_hdf5_x64 - Windows script to verify whether the correct hdf5 is installed
-* make_pages.sh - Generates GitLab pages documentation 
-* mk_os_distribution.bat - Windows script generating build distribution 
-* mk_os_distribution.sh - Linux/MacOs script, generating build distribution
-* memory_leak_detection.sh - Linux/MacOs script performing runtime memory leak detection
-* mksdk.sh - Linux/MacOs script, used to collect the artefacts from the mk_os_distribution scripts and generate an SDK folder
-* static_code_analysis.sh - Linux/MacOs script running static code analysis
-* unittests.bat - Windows script that runs all available unit tests
-* unittests.sh - Linux/MacOs script that runs all available unit tests
-
-### dox
-The dox folder contains the Doxyfile that can be used to generate the API documentation.
-
-### examples
-The examples folder contains examples that demonstrate the use of the IUF fileio
-library.
-* iufInputFileConvert - converts the V2 input file to V3 input file
-* genV3file - just a iuf file generator, with some arbitrary data
-
-### external
-This folder needs the external dependencies, needed to build the software.
-
-### include
-This folder contains the IUF-SDK header files.
-
-### library
-This folder contains the IUF-SDK platform specific static library files, both
-compiled for debug and release mode.
-
-### package
-This folder contains files that will be added to the SDK distribution (dist.sh/dist.bat).
-
-### unitTests
-This folder contains the unitTest the library has been tested with. This folder also 
-serves as an inspiration source of the API usage.
-
-## Build requirements
 In order to build and test the code, the required packages need to be installed:
 - compiler
   - tested with MSVC 19.0.24215.1 on Windows 7
@@ -126,7 +57,22 @@ In order to build and test the code, the required packages need to be installed:
   - tested with 4.1 on Linux (centos:7.4.1708)
   - tested with 4.1 on MacOs (Sierra 10.12.6)
 
-#### Build instructions for Mac/Linux
+
+##  2. <a name='Installation'></a>Installation
+
+Detailed instructions on how to install, configure, and get the project running can be found in [INSTALL](INSTALL.md).
+
+##  3. <a name='Usage'></a>Usage
+
+Examples of how the SDK can be used ara available in the [examples](examples) folder. Furthermore, developer documentation can be generated as follows:
+```
+cd dox
+doxygen
+```
+
+##  4. <a name='Howtotestthesoftware'></a>How to test the software
+
+###  4.1. <a name='BuildandtestinstructionsforMacLinux'></a>Build and test instructions for Mac/Linux
 
 - Build code
 
@@ -167,7 +113,7 @@ In order to build and test the code, the required packages need to be installed:
     ```
 
 
-#### Build instructions for Windows
+###  4.2. <a name='BuildandtestinstructionsforWindows'></a>Build and test instructions for Windows
 
 - When building for Windows, make sure the Visual Studio runtime version of the hdf5 library matches
 with the installed version of Visual Studio. Visual Studio 2017 for example, 
@@ -211,8 +157,17 @@ If this is not the case, point the PATH environment to the x64 version of hdf5 b
     c:\proj\libiuf> ci\bin\mk_os_distribution.bat
     ```
 
-### How to generate documentation
-```
-cd dox
-doxygen
-```
+##  5. <a name='ContactGettinghelp'></a>Contact / Getting help
+
+Need help or want to get in touch with us? 
+Sent an e-mail to al_libiuf@natlab.research.philips.com
+
+##  6. <a name='License'></a>License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE.md)file for details
+
+##  7. <a name='Creditsandreferences'></a>Credits and references
+
+1. THE [HDF5® LIBRARY & FILE FORMAT](https://www.hdfgroup.org/solutions/hdf5/)
+2. [CMake](https://cmake.org/)
+   
