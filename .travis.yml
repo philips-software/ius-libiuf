@@ -9,7 +9,7 @@ services:
 
 before_install:
 - echo "Setting up build container"
-- ls -l /var/lib/docker/tmp/
+- sudo ls -l /var/lib/docker/tmp/
 - |
   if [[ ! -f $HOME/docker-images/centos-ci:0.5.2.tgz ]]
   then
@@ -22,7 +22,7 @@ before_install:
   then
     ls -l $HOME/docker-images/
     echo "Loading build container..."
-    docker load -i $HOME/docker-images/centos-ci:0.5.2.tgz
+    sudo docker load -i $HOME/docker-images/centos-ci:0.5.2.tgz
   fi
 - docker run --name centos -d -v $(pwd):$(pwd) -v /var/run/docker.sock:/var/run/docker.sock -w $(pwd) ruijzndl/centos-ci:0.5.2 /bin/sh -c "while true; do sleep 1; done"
 - docker ps -a
