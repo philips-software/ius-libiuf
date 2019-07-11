@@ -16,7 +16,7 @@ The added value of this library is that the data and meta-data is stored in a st
 
 **Status**:  Latest version is 2.0. Currently in devlopment is support for Python and MatLab bindings. For changes see the [CHANGELOG](CHANGELOG.md).
 
-
+**Contents**
 <!-- vscode-markdown-toc -->
 - [IUF file IO library SDK](#IUF-file-IO-library-SDK)
   - [1. <a name='Dependencies'></a>Dependencies](#1-a-nameDependenciesaDependencies)
