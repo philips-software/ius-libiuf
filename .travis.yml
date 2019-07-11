@@ -1,11 +1,11 @@
-language: ruby
+language: C
 
 services:
   - docker
 
 before_install:
 - docker pull ruijzndl/centos-ci:0.5.2
-- docker run  --rm -it -v $(pwd):$(pwd) -v /var/run/docker.sock:/var/run/docker.sock -w $(pwd) ruijzndl/centos-ci:0.5.2 $(pwd)/ci/bin/build.sh"
+- docker run  --rm -it -v $(pwd):$(pwd) -v /var/run/docker.sock:/var/run/docker.sock -w $(pwd) ruijzndl/centos-ci:0.5.2 /bin/bash -c "$(pwd)/ci/bin/build.sh"
 - docker ps -a
 
 script:
