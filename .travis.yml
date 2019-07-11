@@ -5,8 +5,8 @@ services:
 
 before_install:
 - docker pull ruijzndl/centos-ci:0.5.2
-- docker run  --rm -it -v $(pwd):$(pwd) -v /var/run/docker.sock:/var/run/docker.sock -w $(pwd) ruijzndl/centos-ci:0.5.2 /bin/bash -c "$(pwd)/ci/bin/build.sh"
+- docker run --name centos -d -v $(pwd):$(pwd) -v /var/run/docker.sock:/var/run/docker.sock -w $(pwd) ruijzndl/centos-ci:0.5.2 /bin/sh -c "while true; do sleep 1; done"
 - docker ps -a
 
 script:
-- echo Hello World
+- docker exec -it centos ci/bin/build.sh
