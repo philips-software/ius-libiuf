@@ -22,7 +22,7 @@ The added value of this library is that the data and meta-data is stored in a st
   - [1. <a name='Dependencies'></a>Dependencies](#1-a-nameDependenciesaDependencies)
   - [2. <a name='Installation'></a>Installation](#2-a-nameInstallationaInstallation)
   - [3. <a name='Usage'></a>Usage](#3-a-nameUsageaUsage)
-  - [4. <a name='Howtotestthesoftware'></a>How to test the software](#4-a-nameHowtotestthesoftwareaHow-to-test-the-software)
+  - [4. <a name='Buildandtestthesoftware'></a>Build and test the software](#4-a-nameBuildandtestthesoftwareaBuild-and-test-the-software)
     - [4.1. <a name='BuildandtestinstructionsforMacLinux'></a>Build and test instructions for Mac/Linux](#41-a-nameBuildandtestinstructionsforMacLinuxaBuild-and-test-instructions-for-MacLinux)
     - [4.2. <a name='BuildandtestinstructionsforWindows'></a>Build and test instructions for Windows](#42-a-nameBuildandtestinstructionsforWindowsaBuild-and-test-instructions-for-Windows)
   - [5. <a name='ContactGettinghelp'></a>Contact / Getting help](#5-a-nameContactGettinghelpaContact--Getting-help)
@@ -70,7 +70,7 @@ cd dox
 doxygen
 ```
 
-##  4. <a name='Howtotestthesoftware'></a>How to test the software
+##  4. <a name='Buildandtestthesoftware'></a>Build and test the software
 
 ###  4.1. <a name='BuildandtestinstructionsforMacLinux'></a>Build and test instructions for Mac/Linux
 
