@@ -1,3 +1,5 @@
+# The IUF file IO library SDK license
+
 This IUF file IO library SDK is licensed under the MIT license except the files named underneath (see corresponding notice files below)
 
     The MIT License (MIT) Copyright © [2019] Koninklijke Philips N.V, https://www.philips.com
