@@ -2,8 +2,5 @@ language: C
 
 os: windows
 
-before_install:
-  - eval "${MATRIX_EVAL}"
-
 script:
   - ci/bin/build.bat
