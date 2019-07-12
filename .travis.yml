@@ -1,9 +1,6 @@
 language: C
 
-
-matrix:
-  include:
-    = os: windows
+os: windows
 
 before_install:
   - eval "${MATRIX_EVAL}"
