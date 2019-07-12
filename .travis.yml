@@ -1,25 +1,30 @@
 language: C
 
-cache:
-  directories:
-  - $HOME/docker-images
 
-os:
-  - windows
+matrix:
+  include:
+    = os: windows
 
-services:
-  - docker
-
-# before_install:
-# - docker run --name centos -d -v $(pwd):$(pwd) -v /var/run/docker.sock:/var/run/docker.sock -w $(pwd) ruijzndl/centos-ci:0.5.2 /bin/sh -c "while true; do sleep 1; done"
-# - docker ps -a
 before_install:
-- choco install -y cmake --installargs 'ADD_CMAKE_TO_PATH=System'
-- docker ps -a
-- cmake --version
-- C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe
-- vswhere
-
+  - eval "${MATRIX_EVAL}"
 
 script:
-- docker exec -it windows "echo Hello World"
+  - |
+    set BinFolder=%~dp0..\..\
+    pushd .
+    cd %BinFolder%
+    set BuildFolder=%CD%\build
+    mkdir %BuildFolder% & pushd %BuildFolder%
+    popd
+    echo === Building iuf in %BuildFolder%
+    set PlatformFolder=%BuildFolder%\Windows
+    mkdir %PlatformFolder% & pushd %PlatformFolder%
+    set Config=Debug
+    cmake -DCMAKE_CONFIG=%Config% ..\..
+    cmake --build . --config %Config%
+    if errorlevel 1 exit /B 1
+    set Config=Release
+    cmake -DCMAKE_CONFIG=%Config% ..\..
+    cmake --build . --config %Config%
+    if errorlevel 1 exit /B 1
+    popd
