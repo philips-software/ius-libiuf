@@ -17,7 +17,9 @@ before_install:
 - choco install -y cmake --installargs 'ADD_CMAKE_TO_PATH=System'
 - docker ps -a
 - cmake --version
+- C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe
 - vswhere
+
 
 script:
 - docker exec -it windows "echo Hello World"
