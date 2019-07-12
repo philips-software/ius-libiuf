@@ -7,9 +7,15 @@ cache:
 os:
   - windows
 
+services:
+  - docker
+
 # before_install:
 # - docker run --name centos -d -v $(pwd):$(pwd) -v /var/run/docker.sock:/var/run/docker.sock -w $(pwd) ruijzndl/centos-ci:0.5.2 /bin/sh -c "while true; do sleep 1; done"
 # - docker ps -a
+before_install:
+- docker run --name windows -d -v %cd%:%cd% -w %cd% mcr.microsoft.com/windows "ping 1.0.0.0 -n 1 -w 10000 >nul"
+- docker ps -a
 
 script:
-- echo Hello World
+- docker exec -it windows "echo Hello World"
