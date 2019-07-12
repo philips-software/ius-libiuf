@@ -1,6 +1,5 @@
 language: C
 
 os: windows
-
 script:
-  - ci\bin\build.bat
+  - ./ci/bin/build.bat
