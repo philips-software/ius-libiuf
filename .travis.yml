@@ -4,15 +4,20 @@ cache:
   directories:
   - $HOME/docker-images
 
-language: bash
+os:
+  - windows
 
-services: docker
+services:
+  - docker
 
-os: windows
-
-before_script:
-  - docker version
-  - env | sort
+# before_install:
+# - docker run --name centos -d -v $(pwd):$(pwd) -v /var/run/docker.sock:/var/run/docker.sock -w $(pwd) ruijzndl/centos-ci:0.5.2 /bin/sh -c "while true; do sleep 1; done"
+# - docker ps -a
+before_install:
+- choco install -y cmake --installargs 'ADD_CMAKE_TO_PATH=System'
+- docker ps -a
+- cmake --version
+- vswhere
 
 script:
-  - docker ps
+- docker exec -it windows "echo Hello World"
