@@ -1,6 +1,3 @@
-//
-// Created by Ruijzendaal on 24/05/2018.
-//
 #ifndef IUFLIBRARY_IUFHLTRANSDUCERIMP_H
 #define IUFLIBRARY_IUFHLTRANSDUCERIMP_H
 

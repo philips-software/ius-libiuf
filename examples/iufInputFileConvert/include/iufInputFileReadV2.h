@@ -1,6 +1,3 @@
-//
-// Created by Ruijzendaal on 12/10/2018.
-//
 #ifndef IUF_INPUTFILE_READ_V2_H
 #define IUF_INPUTFILE_READ_V2_H
 

@@ -1,7 +1,3 @@
-//
-// Created by Ruijzendaal on 27/07/2018.
-//
-
 #ifndef IUFLIBRARY_IUFHLPOSITIONIMP_H
 #define IUFLIBRARY_IUFHLPOSITIONIMP_H
 

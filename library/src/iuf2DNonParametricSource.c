@@ -1,6 +1,3 @@
-//
-// Created by nlv09165 on 25/07/2018.
-//
 #include <stdlib.h>
 
 #include <iuf.h>

@@ -1,11 +1,6 @@
-/** ==============================================================================
- *    COPYRIGHT 2018 PHILIPS RESEARCH
- *  ==============================================================================
- *
+/** 
  * \file nodeConfig.h
  * \brief File containing nodeConfig declarations.
- *
- *  ==============================================================================
  */
 #ifndef IUF_EXAMPLE_NODE_CONFIG_H
 #define IUF_EXAMPLE_NODE_CONFIG_H

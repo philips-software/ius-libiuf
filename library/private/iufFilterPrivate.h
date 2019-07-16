@@ -1,7 +1,3 @@
-//
-// Created by nlv12901 on 16/01/2019.
-//
-
 #ifndef IUFLIBRARY_IUFFIRFILTERIMP_H
 #define IUFLIBRARY_IUFFIRFILTERIMP_H
 

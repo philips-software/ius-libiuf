@@ -1,7 +1,3 @@
-
-//
-// Created by nlv09165 on 31/08/2018.
-//
 #include <iuf.h>
 #include <iufHistoryNodePrivate.h>
 #include <iufInputFilePrivate.h>

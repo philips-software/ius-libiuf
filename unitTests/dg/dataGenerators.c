@@ -1,6 +1,3 @@
-//
-// Created by Ruijzendaal on 16/04/2018.
-//
 #include <unity.h>
 
 #include <iuf.h>

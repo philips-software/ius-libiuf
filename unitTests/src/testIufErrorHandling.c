@@ -1,7 +1,3 @@
-//
-// Created by Ruijzendaal on 26/11/2018.
-//
-
 #include <util.h>
 #include <unity.h>
 #include <unity_internals.h>

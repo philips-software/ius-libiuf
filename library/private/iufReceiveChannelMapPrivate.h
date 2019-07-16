@@ -1,7 +1,3 @@
-//
-// Created by Frank van Heesch on 18/07/2018.
-//
-
 #ifndef IUFLIBRARY_IUFHLRECEIVECHANNELMAPIMP_H
 #define IUFLIBRARY_IUFHLRECEIVECHANNELMAPIMP_H
 #include <hdf5.h>

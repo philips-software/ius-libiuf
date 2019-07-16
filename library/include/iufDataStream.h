@@ -1,5 +1,4 @@
 
-// Created by nlv09165 on 10/10/2018.
 #ifndef IUFLIBRARY_IUFDATASTREAM_H
 #define IUFLIBRARY_IUFDATASTREAM_H
 #include <hdf5.h>

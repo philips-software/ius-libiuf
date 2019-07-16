@@ -1,7 +1,3 @@
-//
-// Created by Ruijzendaal on 28/05/2018.
-//
-
 #ifndef IUFLIBRARY_IUFHLNONPARAMETRICPULSEIMP_H
 #define IUFLIBRARY_IUFHLNONPARAMETRICPULSEIMP_H
 #include <hdf5.h>

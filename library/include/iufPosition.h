@@ -1,6 +1,3 @@
-//
-// Created by Ruijzendaal on 28/03/2018.
-//
 #ifndef IUFLIBRARY_IUFHLPOSITION_H
 #define IUFLIBRARY_IUFHLPOSITION_H
 

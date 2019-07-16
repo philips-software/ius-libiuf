@@ -1,6 +1,3 @@
-//
-// Created by Ruijzendaal on 30/03/2018.
-//
 #ifndef IUFLIBRARY_IUFHLPULSE_H
 #define IUFLIBRARY_IUFHLPULSE_H
 

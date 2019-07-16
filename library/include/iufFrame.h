@@ -1,4 +1,3 @@
-// Created by nlv09165 on 15/08/2018.
 #ifndef IUFLIBRARY_IUFHLFRAME_H
 #define IUFLIBRARY_IUFHLFRAME_H
 

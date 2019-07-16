@@ -1,6 +1,3 @@
-//
-// Created by nlv12901 on 15/01/2019.
-//
 #include <unity.h>
 #include <unity_internals.h>
 #include <unity_fixture.h>

@@ -1,7 +1,3 @@
-//
-// Created by Ruijzendaal on 19/07/2018.
-//
-
 #ifndef IUFLIBRARY_IUFHLPATTERNLISTIMP_H
 #define IUFLIBRARY_IUFHLPATTERNLISTIMP_H
 

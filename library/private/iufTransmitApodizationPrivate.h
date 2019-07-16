@@ -1,6 +1,3 @@
-//
-// Created by Frank van Heesch on 20/07/2018.
-//
 #ifndef IUFLIBRARY_IUFHLTRANSMITAPODIZATIONIMP_H
 #define IUFLIBRARY_IUFHLTRANSMITAPODIZATIONIMP_H
 #include <hdf5.h>

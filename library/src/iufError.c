@@ -1,6 +1,3 @@
-//
-// Created by Ruijzendaal on 30/11/2018.
-//
 #include <stdarg.h>
 #include <memory.h>
 #include <string.h>

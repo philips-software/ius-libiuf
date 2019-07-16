@@ -1,7 +1,3 @@
-//
-// Created by Ruijzendaal on 08/08/2018.
-//
-
 #ifndef IUFLIBRARY_IUFHLTGCIMP_H
 #define IUFLIBRARY_IUFHLTGCIMP_H
 

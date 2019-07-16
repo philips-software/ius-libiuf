@@ -1,7 +1,4 @@
 
-//
-// Created by nlv09165 on 23/05/2018.
-//
 #include <stdlib.h>
 #include <string.h>
 

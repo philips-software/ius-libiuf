@@ -1,6 +1,3 @@
-//
-// Created by nlv09165 on 26/04/2018.
-//
 #include <util.h>
 #include <unity.h>
 #include <unity_internals.h>

@@ -1,5 +1,3 @@
-
-// Created by nlv09165 on 13/07/2018.
 #ifndef IUFLIBRARY_IUFHLPATTERN_H
 #define IUFLIBRARY_IUFHLPATTERN_H
 

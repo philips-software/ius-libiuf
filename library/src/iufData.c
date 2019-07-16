@@ -1,7 +1,4 @@
 
-//
-// Created by nlv09165 on 05/10/2018.
-//
 #include <stdlib.h>
 #include <memory.h>
 

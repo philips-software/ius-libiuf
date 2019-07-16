@@ -1,5 +1,4 @@
 
-// Created by nlv09165 on 05/10/2018.
 #ifndef IUFLIBRARY_IUFOFFSET_H
 #define IUFLIBRARY_IUFOFFSET_H
 

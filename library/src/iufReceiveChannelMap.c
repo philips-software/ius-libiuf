@@ -1,5 +1,3 @@
-// Created by Frank van Heesch on 18/07/2018.
-//
 #include <stdlib.h>
 #include <string.h>
 

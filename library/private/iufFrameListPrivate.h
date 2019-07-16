@@ -1,7 +1,3 @@
-//
-// Created by Ruijzendaal on 19/07/2018.
-//
-
 #ifndef IUFLIBRARY_IUFHLFRAMELISTIMP_H
 #define IUFLIBRARY_IUFHLFRAMELISTIMP_H
 

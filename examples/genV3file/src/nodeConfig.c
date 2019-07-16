@@ -1,19 +1,10 @@
-/** ==============================================================================
- *    COPYRIGHT 2018 PHILIPS RESEARCH
- *  ==============================================================================
- *
+/**  
  * \file nodeConfig.c
  * \brief File containing nodeConfig convenience routine definitions.
- *
- *  ==============================================================================
  */
 #include <iuf.h>
 
-
-
 static const char *pChannelMapLabel = "channelMapLabel";
-
-
 
 void ncFillData
 (
