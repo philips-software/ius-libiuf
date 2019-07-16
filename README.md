@@ -59,6 +59,8 @@ In order to build and test the code, the required packages need to be installed:
   - tested with 4.1 on Linux (centos:7.4.1708)
   - tested with 4.1 on MacOs (Sierra 10.12.6)
 
+- uuid library 
+  - tested with ossp-uuid 1.6.2_2 on MacOs (Mojave 10.14.5)
 
 ##  2. <a name='Installation'></a>Installation
 
