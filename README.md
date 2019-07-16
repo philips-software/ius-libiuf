@@ -21,15 +21,14 @@ The added value of this library is that the data and meta-data is stored in a st
 <!-- vscode-markdown-toc -->
 - [IUF file IO library SDK](#IUF-file-IO-library-SDK)
   - [1. <a name='Dependencies'></a>Dependencies](#1-a-nameDependenciesaDependencies)
-  - [2. <a name='Installation'></a>Installation](#2-a-nameInstallationaInstallation)
-  - [3. <a name='Usage'></a>Usage](#3-a-nameUsageaUsage)
-  - [4. <a name='Buildandtestthesoftware'></a>Build and test the software](#4-a-nameBuildandtestthesoftwareaBuild-and-test-the-software)
-    - [4.1. <a name='BuildandtestinstructionsforMacLinux'></a>Build and test instructions for Mac/Linux](#41-a-nameBuildandtestinstructionsforMacLinuxaBuild-and-test-instructions-for-MacLinux)
-    - [4.2. <a name='BuildandtestinstructionsforWindows'></a>Build and test instructions for Windows](#42-a-nameBuildandtestinstructionsforWindowsaBuild-and-test-instructions-for-Windows)
-  - [5. <a name='ContactGettinghelp'></a>Contact / Getting help](#5-a-nameContactGettinghelpaContact--Getting-help)
-  - [6. <a name='License'></a>License](#6-a-nameLicenseaLicense)
-  - [7. <a name='Contributing'></a> Contributing](#7-a-nameContributinga-Contributing)
-  - [8. <a name='Creditsandreferences'></a>Credits and references](#8-a-nameCreditsandreferencesaCredits-and-references)
+  - [2. <a name='Usage'></a>Usage](#2-a-nameUsageaUsage)
+  - [3. <a name='Buildandtestthesoftware'></a>Build and test the software](#3-a-nameBuildandtestthesoftwareaBuild-and-test-the-software)
+    - [3.1. <a name='BuildandtestinstructionsforMacLinux'></a>Build and test instructions for Mac/Linux](#31-a-nameBuildandtestinstructionsforMacLinuxaBuild-and-test-instructions-for-MacLinux)
+    - [3.2. <a name='BuildandtestinstructionsforWindows'></a>Build and test instructions for Windows](#32-a-nameBuildandtestinstructionsforWindowsaBuild-and-test-instructions-for-Windows)
+  - [4. <a name='ContactGettinghelp'></a>Contact / Getting help](#4-a-nameContactGettinghelpaContact--Getting-help)
+  - [5. <a name='License'></a>License](#5-a-nameLicenseaLicense)
+  - [6. <a name='Contributing'></a> Contributing](#6-a-nameContributinga-Contributing)
+  - [7. <a name='Creditsandreferences'></a>Credits and references](#7-a-nameCreditsandreferencesaCredits-and-references)
 
 <!-- vscode-markdown-toc-config
 	numbering=true
@@ -62,11 +61,8 @@ In order to build and test the code, the required packages need to be installed:
 - uuid library 
   - tested with ossp-uuid 1.6.2_2 on MacOs (Mojave 10.14.5)
 
-##  2. <a name='Installation'></a>Installation
 
-Detailed instructions on how to install, configure, and get the project running can be found in [INSTALL](INSTALL.md).
-
-##  3. <a name='Usage'></a>Usage
+##  2. <a name='Usage'></a>Usage
 
 Examples of how the SDK can be used ara available in the [examples](examples) folder. Furthermore, developer documentation can be generated (stored in dox/html/index.html) as follows:
 ```
@@ -74,9 +70,9 @@ cd dox
 doxygen
 ```
 
-##  4. <a name='Buildandtestthesoftware'></a>Build and test the software
+##  3. <a name='Buildandtestthesoftware'></a>Build and test the software
 
-###  4.1. <a name='BuildandtestinstructionsforMacLinux'></a>Build and test instructions for Mac/Linux
+###  3.1. <a name='BuildandtestinstructionsforMacLinux'></a>Build and test instructions for Mac/Linux
 
 - Build code
 
@@ -117,7 +113,7 @@ doxygen
     ```
 
 
-###  4.2. <a name='BuildandtestinstructionsforWindows'></a>Build and test instructions for Windows
+###  3.2. <a name='BuildandtestinstructionsforWindows'></a>Build and test instructions for Windows
 
 - When building for Windows, make sure the Visual Studio runtime version of the hdf5 library matches
 with the installed version of Visual Studio. Visual Studio 2017 for example, 
@@ -161,7 +157,7 @@ If this is not the case, point the PATH environment to the x64 version of hdf5 b
     c:\proj\libiuf> ci\bin\mk_os_distribution.bat
     ```
 
-##  5. <a name='ContactGettinghelp'></a>Contact / Getting help
+##  4. <a name='ContactGettinghelp'></a>Contact / Getting help
 
 Need help or want to get in touch with us? 
 * Sent an e-mail to al_libiuf@natlab.research.philips.com.
@@ -169,15 +165,15 @@ Need help or want to get in touch with us?
  
 [![Slack](https://philips-software-slackin.now.sh/badge.svg)](https://philips-software-slackin.now.sh)
 
-##  6. <a name='License'></a>License
+##  5. <a name='License'></a>License
 
 This project is licensed under the [MIT](https://opensource.org/licenses/MIT) License - see the [LICENSE](LICENSE.md) file for details.
 
-##  7. <a name='Contributing'></a> Contributing
+##  6. <a name='Contributing'></a> Contributing
 
 Please refer to our [Contributing](CONTRIBUTING.md) guide when you want to contribute to this project.
 
-##  8. <a name='Creditsandreferences'></a>Credits and references
+##  7. <a name='Creditsandreferences'></a>Credits and references
 
 1. THE [HDF5® LIBRARY & FILE FORMAT](https://www.hdfgroup.org/solutions/hdf5/)
 2. [CMake](https://cmake.org/)

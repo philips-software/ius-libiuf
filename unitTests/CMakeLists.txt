@@ -5,7 +5,10 @@ include_directories(${CMAKE_SOURCE_DIR}/library/include)
 include_directories(${CMAKE_SOURCE_DIR}/library/private)
 include_directories(${CMAKE_CURRENT_LIST_DIR})
 include_directories(${CMAKE_CURRENT_LIST_DIR}/include)
-link_directories(${CMAKE_SOURCE_DIR}/library/${CMAKE_SYSTEM_NAME})
+
+if(IS_DIRECTORY "${CMAKE_SOURCE_DIR}/library/${CMAKE_SYSTEM_NAME}")
+    link_directories(${CMAKE_SOURCE_DIR}/library/${CMAKE_SYSTEM_NAME})
+endif()
 
 #add_library(dg STATIC
 #        include/dataGenerators.h
