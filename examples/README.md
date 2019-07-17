@@ -4,24 +4,23 @@ This folder contains two examples that demonstrate the use
 of the IUF SDK.
 
 <!-- vscode-markdown-toc -->
-- [IUF file IO library SDK - examples](#IUF-file-IO-library-SDK---examples)
-  - [1. <a name='genV3file-example'></a>genV3file - example](#1-a-namegenV3file-exampleagenV3file---example)
-  - [2. <a name='iufInputFileConvert-example'></a>iufInputFileConvert - example](#2-a-nameiufInputFileConvert-exampleaiufInputFileConvert---example)
+* [genV3file](#genV3file)
+* [iufInputFileConvert](#iufInputFileConvert)
 
 <!-- vscode-markdown-toc-config
-	numbering=true
+	numbering=false
 	autoSave=true
 	/vscode-markdown-toc-config -->
 <!-- /vscode-markdown-toc -->
 
-##  1. <a name='genV3file-example'></a>genV3file - example
+## <a name='genV3file'></a>genV3file
 
 This folder contains example code of how to construct a version 3 input file type. If you have followed the [install and build instructions](../README.md#3-a-nameBuildandtestthesoftwareaBuild-and-test-the-software) 
 , an executable for your platform has been build under:
 
 *REPO_ROOT*/build/*PLATFORM*/examples/genV3file/genV3file
 
-Running it will result in a [HDF5](https://www.hdfgroup.org/solutions/hdf5/) containing generated meta-data and data frames.
+Running it will result in a [HDF5](https://www.hdfgroup.org/solutions/hdf5/) file containing generated meta-data and data frames.
 
 ```
 # Example for MacOS platform
@@ -55,14 +54,14 @@ GROUP "/" {
 :
 ```
 
-##  2. <a name='iufInputFileConvert-example'></a>iufInputFileConvert - example
+## <a name='iufInputFileConvert'></a>iufInputFileConvert
 
 This folder contains example code of a file format converter that converts a version 2 input file type to version 3. If you have followed the [install and build instructions](../README.md#3-a-nameBuildandtestthesoftwareaBuild-and-test-the-software) 
 , an executable for your platform has been build under:
 
 *REPO_ROOT*/build/*PLATFORM*/examples/iufInputFileConvert/iufv2tov3
 
-Running it will result in a [HDF5](https://www.hdfgroup.org/solutions/hdf5/) containing the converted V2 file.
+Running it will result in a [HDF5](https://www.hdfgroup.org/solutions/hdf5/) file containing the converted V2 file.
 
 ```
 # Example for MacOS platform
