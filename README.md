@@ -177,4 +177,5 @@ Please refer to our [Contributing](CONTRIBUTING.md) guide when you want to contr
 
 1. THE [HDF5® LIBRARY & FILE FORMAT](https://www.hdfgroup.org/solutions/hdf5/)
 2. [CMake](https://cmake.org/)
+3. [Doxygen](http://www.doxygen.nl/)
    
