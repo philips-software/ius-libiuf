@@ -2,6 +2,7 @@ language: C
 
 os: windows
 before_install:
-  - curl 
+  - mkdir %HOME%/Downloads
+  - curl -L -0 -J https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.8/hdf5-1.8.20/bin/windows/hdf5-1.8.20-Std-win7_64-vs14.zip -o %HOME%/Downloads/hdf5-1.8.20-Std-win7_64-vs14.zip
 script:
   - dir
