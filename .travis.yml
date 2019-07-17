@@ -1,5 +1,7 @@
 language: C
 
 os: windows
+before_install:
+  - curl 
 script:
-  - ./ci/bin/build.bat
+  - dir
