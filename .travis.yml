@@ -1,6 +1,10 @@
 language: C
 
 os: windows
+cache:
+  directories:
+    - Downloads
+
 before_install:
   - pwd
   - mkdir ./Downloads
