@@ -1,14 +1,42 @@
-@echo on
-set DownloadFolder=%~dp0..\..\Download
+@echo off
+set DownloadFolder=%cd%\Download
+set DownloadLocation="https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.8/hdf5-1.8.20/bin/windows"
+set ZipFile="hdf5-1.8.20-Std-win7_64-vs14.zip"
+set DownloadURL="%DownloadLocation%/%ZipFile%"
+set Hdf5File=HDF5-1.8.20-win64.msi
+set Hdf5Base=%Hdf5file:~0,-4%
+set Hdf5InstallFolder="%DownloadFolder%\%Hdf5Base%"
+echo %Hdf5InstallFolder%
+pause
 pushd .
 
-echo === Downloading HDF5
-mkdir %DownloadFolder%
+:: Check if Download folder exists
+pushd %DownloadFolder% && popd || mkdir %DownloadFolder%
 cd %DownloadFolder%
-curl -L -0 -J https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.8/hdf5-1.8.20/bin/windows/hdf5-1.8.20-Std-win7_64-vs14.zip -o ./hdf5-1.8.20-Std-win7_64-vs14.zip
-mkdir HDF5
-7z x ./hdf5-1.8.20-Std-win7_64-vs14.zip -o./HDF5
-dir HDF5
+
+if not exist %ZipFile% (
+    echo === Downloading HDF5..
+    curl -L -0 -J %DownloadURL% -o %ZipFile%
+    echo Done
+) else (
+    echo  %ZipFile% has already been downloaded.
+)
+
+if not exist %Hdf5File% (
+    echo === Extracting HDF5..
+    7z e %ZipFile% *.msi -r
+    echo Done
+) else (
+    echo  %Hdf5File% has already been extracted.
+)
+
+if not exist %Hdf5InstallFolder% (
+    echo === Installing HDF5..
+    msiexec /i %Hdf5File% INSTALL_ROOT=%Hdf5InstallFolder% /qn /L*v msiexec_install.log.txt
+    echo Done
+) else (
+    echo  HDF5 librarry has already been installed.
+)
 
 
 if errorlevel 1 exit /B 1

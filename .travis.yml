@@ -3,7 +3,7 @@ language: C
 os: windows
 cache:
   directories:
-    - Downloads
+    - Download
 
 before_install:
   - ci/bin/install.bat
