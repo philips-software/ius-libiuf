@@ -38,6 +38,5 @@ if not exist %Hdf5InstallFolder% (
     echo  HDF5 librarry has already been installed.
 )
 
-
 if errorlevel 1 exit /B 1
 popd

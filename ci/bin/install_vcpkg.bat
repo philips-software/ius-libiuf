@@ -20,8 +20,6 @@ if not exist %VcpkgFolder% (
 )
 
 .\vcpkg install hdf5:x64-windows-static
-pause
-
 
 if errorlevel 1 exit /B 1
 popd
