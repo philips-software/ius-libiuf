@@ -9,4 +9,4 @@ before_install:
   - ci/bin/install.bat
 
 script:
-  - dir Downloads
+  - ci/bin/build.bat
