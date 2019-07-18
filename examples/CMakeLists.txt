@@ -1,2 +1,3 @@
 add_subdirectory(genV3file)
 add_subdirectory(iufInputFileConvert)
+add_subdirectory(matlabConfigurator)
