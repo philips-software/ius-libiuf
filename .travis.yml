@@ -6,7 +6,7 @@ cache:
     - Download
 
 before_install:
-  - ci/bin/install.bat
+  - ci/bin/install_vcpkg.bat
 
 script:
   - ci/bin/build.bat
