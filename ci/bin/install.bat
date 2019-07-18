@@ -7,7 +7,7 @@ set Hdf5File=HDF5-1.8.20-win64.msi
 set Hdf5Base=%Hdf5file:~0,-4%
 set Hdf5InstallFolder="%DownloadFolder%\%Hdf5Base%"
 echo %Hdf5InstallFolder%
-pause
+
 pushd .
 
 :: Check if Download folder exists
