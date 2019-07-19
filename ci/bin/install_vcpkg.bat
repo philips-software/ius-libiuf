@@ -21,10 +21,12 @@ if not exist %VcpkgFolder% (
 
 
 echo === Installing library hdf5:x64-windows-static..
-.\vcpkg list
-.\vcpkg remove hdf5:x64-windows-static
+:: .\vcpkg list
+:: .\vcpkg remove hdf5:x64-windows-static
+where h5dump
 .\vcpkg install hdf5:x64-windows-static
-.\vcpkg list
+where h5dump
+:: .\vcpkg list
 echo Done
 if errorlevel 1 exit /B 1
 popd
