@@ -1,7 +1,7 @@
 language: C
 
 env:
-  - HDF5_ROOT=.\Download\hdf5
+  - HDF5_ROOT=./Download/hdf5
 
 os: windows
 cache:
