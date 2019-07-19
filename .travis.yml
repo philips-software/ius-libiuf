@@ -6,6 +6,8 @@ cache:
     - Download
 
 before_install:
+  - cmake --version
+  - choco upgrade cmake
   - ci/bin/install_vcpkg.bat
 
 script:

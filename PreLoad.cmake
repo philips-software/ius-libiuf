@@ -7,4 +7,3 @@ set(CMAKE_GENERATOR "Visual Studio 15 2017 Win64" CACHE INTERNAL "Name of genera
 #endif()
 
 
-
