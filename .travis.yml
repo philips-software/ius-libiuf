@@ -1,5 +1,8 @@
 language: C
 
+env:
+  - HDF5_ROOT=.\Download\hdf5
+
 os: windows
 cache:
   directories:
@@ -7,10 +10,7 @@ cache:
 
 before_install:
   - cmake --version
-  - where h5dump
-  - ci/bin/install_vcpkg.bat
-  - where h5dump
-  - dir C:\Program Files\
+  - ci/bin/install.bat %HDF5_ROOT%
 
 script:
   - ci/bin/build.bat
