@@ -7,8 +7,10 @@ cache:
 
 before_install:
   - cmake --version
-  - choco upgrade cmake
+  - where h5dump
   - ci/bin/install_vcpkg.bat
+  - where h5dump
+  - dir C:\Program Files\
 
 script:
   - ci/bin/build.bat
