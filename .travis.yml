@@ -12,5 +12,14 @@ before_install:
   - cmake --version
   - ci/bin/install.bat %HDF5_ROOT%
 
-script:
-  - ci/bin/build.bat
+jobs:
+  include:
+    - stage: build
+      script:
+        - ci/bin/build.bat
+    - stage: test
+      script:
+        - ci/bin/unittest.bat
+    - stage: distribution
+      script:
+        - ci/bin/mk_os_distribution.bat
