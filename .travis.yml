@@ -19,7 +19,7 @@ jobs:
         - ci/bin/build.bat
     - stage: test
       script:
-        - ci/bin/unittest.bat
+        - ci/bin/unittests.bat
     - stage: distribution
       script:
         - ci/bin/mk_os_distribution.bat
