@@ -20,12 +20,9 @@ function before_install_linux
  }
 
 
-function build_linux
+function tmate_remote_debug
 {
-    figho "Building....Linux.."
-    ci/bin/build.sh
-
-    figho "Entering....Debug session.."  
+    figho "Tmate session.."  
     tmate -S /tmp/tmate.sock new-session -d               # Launch tmate in a detached state
     tmate -S /tmp/tmate.sock wait tmate-ready             # Blocks until the SSH connection is established
     tmate -S /tmp/tmate.sock display -p '#{tmate_ssh}'    # Prints the SSH connection string
@@ -39,7 +36,14 @@ function build_linux
         fi
         sleep 10
     done
-    figho "Debug session closed.."  
+    figho "Tmate closed.."  
+}
+
+function build_linux
+{
+    figho "Building....Linux.."
+    ci/bin/build.sh
+    tmate_remote_debug
 }
 
 # Install some custom requirements on macOS
