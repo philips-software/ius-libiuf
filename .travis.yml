@@ -2,10 +2,12 @@ language: C
 
 dist: bionic
 
-os: 
+os:
+  - linux
   - windows
   env:
     - HDF5_ROOT=./Download/hdf5
+
 #  - linux
  # - osx
 
