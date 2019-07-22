@@ -104,10 +104,10 @@ function dist_windows
 # e.g. brew install pyenv-virtualenv
 case "${TRAVIS_OS_NAME}" in
     osx|linux)
+        export HDF5_ROOT=
         eval $1_${TRAVIS_OS_NAME}
         ;;
     windows)
-        env
         eval $1_${TRAVIS_OS_NAME}
         ;;
 esac
