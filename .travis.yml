@@ -1,12 +1,16 @@
 language: C
 
-dist: bionic
 
-os:
-  - linux
-  - windows
-  env:
-    - HDF5_ROOT=./Download/hdf5
+matrix:
+  include:
+    - os: linux
+      dist: bionic
+
+#os:
+#  - linux
+#  - windows
+#  env:
+#    - HDF5_ROOT=./Download/hdf5
 
 #  - linux
  # - osx
