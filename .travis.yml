@@ -3,7 +3,6 @@ language: C
 os:
   - windows
   - linux
-    dist: bionic
 
 env:
   - HDF5_ROOT=./Download/hdf5
@@ -20,18 +19,17 @@ matrix:
     - os: linux
       dist: bionic
 
+  before_install:
+    - ci/bin/travis.sh before_install
 
-before_install:
-  - ci/bin/travis.sh before_install
-
-jobs:
-  include:
-    - stage: build
-      script:
-        - ci/bin/travis.sh build 
-    - stage: test
-      script:
-        - ci/bin/travis.sh test 
-    - stage: distribution
-      script:
-        - ci/bin/travis.sh dist 
+  jobs:
+    include:
+      - stage: build
+        script:
+          - ci/bin/travis.sh build
+      - stage: test
+        script:
+          - ci/bin/travis.sh test
+      - stage: distribution
+        script:
+          - ci/bin/travis.sh dist
