@@ -8,9 +8,9 @@ os:
   - linux
   - osx
 
-cache:
-  directories:
-    - Download
+# cache:
+#   directories:
+#     - Download
 
 before_install:
   - ci/bin/travis.sh before_install
