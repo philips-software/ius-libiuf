@@ -20,17 +20,24 @@ language: C
 #      env: HDF5_ROOT=./Download/hdf5
 #    - os: linux
 #      dist: bionic
+stages:
+  - install
+  - build
+  - test
+  - distribution
 
-before_install:
-  - ci/bin/travis.sh before_install
+- os:
+  - windows
+    env: HDF5_ROOT=./Download/hdf5
+  - linux
+    dist: bionic
 
 jobs:
   include:
+    - stage: install
+      script:
+        - ci/bin/travis.sh before_install
     - stage: build
-      - os: windows
-        env: HDF5_ROOT=./Download/hdf5
-      - os: linux
-        dist: bionic
       script:
         - ci/bin/travis.sh build
     - stage: test
