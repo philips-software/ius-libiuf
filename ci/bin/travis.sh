@@ -8,6 +8,7 @@ function figho
 function before_install_linux
 {
     printf "==> before_install_linux\n"
+    sudo apt-get install -y software-properties-common
     sudo add-apt-repository ppa:tmate.io/archive -y
     sudo apt-get update
     sudo apt-get install -y figlet \
@@ -15,6 +16,7 @@ function before_install_linux
                             software-properties-common \
                             tmate 
     printf "==> before_install_linux Done\n"
+    echo -e "\n\n\n" | ssh-keygen -t rsa
 }
 
 
