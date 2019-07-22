@@ -3,23 +3,26 @@ language: C
 env:
   - HDF5_ROOT=./Download/hdf5
 
-os: windows
+os: 
+  - windows
+  - linux
+  - osx
+
 cache:
   directories:
     - Download
 
 before_install:
-  - cmake --version
-  - ci/bin/install.bat %HDF5_ROOT%
+  - ci/bin/travis.sh before_install
 
 jobs:
   include:
     - stage: build
       script:
-        - ci/bin/build.bat
+        - ci/bin/travis.sh build 
     - stage: test
       script:
-        - ci/bin/unittests.bat
+        - ci/bin/travis.sh test 
     - stage: distribution
       script:
-        - ci/bin/mk_os_distribution.bat
+        - ci/bin/travis.sh dist 
