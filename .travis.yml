@@ -29,14 +29,19 @@ os:
 #  - windows
   - linux
 
+dist: bionic
+
 matrix:
   include:
   - os: linux
-    dist: bionic
+    env:
+      - MATRIX_EVAL="HDF5_ROOT=./Download/hdf5"
   - os: windows
-    env: HDF5_ROOT=./Download/hdf5
+    env:
+      - MATRIX_EVAL="HDF5_ROOT="
 
 before_install:
+  - eval "${MATRIX_EVAL}"
   - ci/bin/travis.sh before_install
 
 jobs:
