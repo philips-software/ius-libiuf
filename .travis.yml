@@ -41,8 +41,6 @@ matrix:
       - MATRIX_EVAL="HDF5_ROOT=./Download/hdf5"
 
 before_install:
-  - set HDF5_ROOT=Download\hdf5
-  - echo $HDF5_ROOT
   - ci/bin/travis.sh before_install
 
 jobs:
