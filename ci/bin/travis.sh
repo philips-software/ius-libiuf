@@ -69,7 +69,6 @@ function dist_linux
 function before_install_windows
 {
     printf "==> before_install_windows\n"
-    env
     choco install figlet-go
     ci/bin/install.bat $HDF5_ROOT
     printf "==> before_install_windows Done\n"
@@ -78,6 +77,7 @@ function before_install_windows
 function build_windows
 {
     figho "Building....Windows.."
+    export HDF5_ROOT=./Download/hdf5
     ci/bin/build.bat
     figho "Done.."
 }
