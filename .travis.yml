@@ -12,19 +12,19 @@ stages:
   - distribution
 
 os:
-  - windows
+#  - windows
   - linux
 
 dist: bionic
 
-matrix:
-  include:
-  - os: linux
-    env:
-      - MATRIX_EVAL="HDF5_ROOT="
-  - os: windows
-    env:
-      - MATRIX_EVAL="HDF5_ROOT=./Download/hdf5"
+#matrix:
+#  include:
+#  - os: linux
+#    env:
+#      - MATRIX_EVAL="HDF5_ROOT="
+#  - os: windows
+#    env:
+#      - MATRIX_EVAL="HDF5_ROOT=./Download/hdf5"
 
 before_install:
   - ci/bin/travis.sh before_install
