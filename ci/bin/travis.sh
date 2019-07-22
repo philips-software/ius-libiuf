@@ -13,8 +13,7 @@ function before_install_linux
 # Install some custom requirements on macOS
 # e.g. brew install pyenv-virtualenv
 case "${TRAVIS_OS_NAME}" in
-    osx)
-    linux)
+    osx|linux)
         eval $1_${TRAVIS_OS_NAME}
         ;;
     windows)
