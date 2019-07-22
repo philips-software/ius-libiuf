@@ -1,6 +1,9 @@
 language: C
 
 
+os:
+  - windows
+
 matrix:
   include:
     - os: windows
