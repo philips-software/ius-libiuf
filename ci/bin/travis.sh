@@ -107,7 +107,7 @@ case "${TRAVIS_OS_NAME}" in
         eval $1_${TRAVIS_OS_NAME}
         ;;
     windows)
-        export HDF5_ROOT=./Download/hdf5
+        env | findstr HDF5
         eval $1_${TRAVIS_OS_NAME}
         ;;
 esac

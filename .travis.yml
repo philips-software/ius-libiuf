@@ -4,12 +4,10 @@ language: C
 os:
   - windows
 
-env:
-  - HDF5_ROOT=./Download/hdf5
-
 matrix:
   include:
     - os: windows
+      env: HDF5_ROOT=./Download/hdf5
 
   #    - os: linux
 #      dist: bionic
