@@ -6,7 +6,7 @@ os:
   - windows
   env:
     - HDF5_ROOT=./Download/hdf5
-  - linux
+#  - linux
  # - osx
 
 # cache:
