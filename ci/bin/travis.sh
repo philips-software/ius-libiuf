@@ -5,26 +5,10 @@ function figho
     echo $* | figlet
 }
 
-function before_install_linux
-{
-    printf "==> before_install_linux\n"
-    sudo apt-get install -y software-properties-common
-    sudo add-apt-repository ppa:tmate.io/archive -y
-    sudo apt-get update
-    sudo apt-get install -y figlet \
-                            coreutils \
-                            software-properties-common \
-                            libhdf5-dev \
-                            gcovr \
-                            tmate 
-    printf "==> before_install_linux Done\n"
-    echo  | ssh-keygen -t rsa -N ""
- }
-
-
 function tmate_remote_debug
 {
-    figho "Tmate session.."  
+    figho "Tmate session.."
+    echo  | ssh-keygen -t rsa -N ""
     tmate -S /tmp/tmate.sock new-session -d               # Launch tmate in a detached state
     tmate -S /tmp/tmate.sock wait tmate-ready             # Blocks until the SSH connection is established
     tmate -S /tmp/tmate.sock display -p '#{tmate_ssh}'    # Prints the SSH connection string
@@ -38,31 +22,49 @@ function tmate_remote_debug
         fi
         sleep 10
     done
-    figho "Tmate closed.."  
+    figho "Tmate closed.."
 }
+
+function before_install_linux
+{
+    printf "==> before_install_linux\n"
+    sudo apt-get install -y software-properties-common
+    sudo add-apt-repository ppa:tmate.io/archive -y
+    sudo apt-get update
+    sudo apt-get install -y figlet \
+                            coreutils \
+                            software-properties-common \
+                            libhdf5-dev \
+                            gcovr \
+                            tmate 
+    printf "==> before_install_linux Done\n"
+ }
+
+
 
 function build_linux
 {
     figho "Building....Linux.."
     ci/bin/build.sh
     #tmate_remote_debug
-    figho "Building....Done.."
+    figho "Done.."
 }
 
 function test_linux
 {
     figho "Testing....Linux.."
+    ci/bin/build.sh
     ci/bin/unittests.sh
-    #tmate_remote_debug
-    figho "Testing....Done.."
+    figho "Done.."
 }
 
 function dist_linux
 {
     figho "Dist....Linux.."
-    ci/bin/unittests.sh
-    #tmate_remote_debug
-    figho "Dist....Done.."
+    ci/bin/build.sh
+    ci/bin/mksdk.sh
+    ci/bin/mk_os_distribution.sh.sh
+    figho "Done.."
 }
 
 
