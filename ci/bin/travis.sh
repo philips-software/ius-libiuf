@@ -66,6 +66,38 @@ function dist_linux
 }
 
 
+function before_install_windows
+{
+    printf "==> before_install_windows\n"
+    ci/bin/install.bat $HDF5_ROOT
+    printf "==> before_install_windows Done\n"
+}
+
+function build_windows
+{
+    figho "Building....Windows.."
+    ci/bin/build.bat
+    figho "Done.."
+}
+
+function test_windows
+{
+    ci/bin/build.bat
+    figho "Testing....Windows.."
+    ci/bin/unittests.bat
+    figho "Done.."
+}
+
+function dist_windows
+{
+    ci/bin/build.bat
+    figho "Dist....Windows.."
+    ci/bin/mk_os_distribution.bat
+    ci/bin/mksdk.sh
+    figho "Done.."
+}
+
+
 # Install some custom requirements on macOS
 # e.g. brew install pyenv-virtualenv
 case "${TRAVIS_OS_NAME}" in
@@ -73,6 +105,6 @@ case "${TRAVIS_OS_NAME}" in
         eval $1_${TRAVIS_OS_NAME}
         ;;
     windows)
-        # Install some custom Python 3.3 requirements on macOS
+        eval $1_${TRAVIS_OS_NAME}
         ;;
 esac
