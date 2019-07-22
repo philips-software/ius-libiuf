@@ -52,16 +52,16 @@ function build_linux
 
 function test_linux
 {
-    figho "Testing....Linux.."
     ci/bin/build.sh
+    figho "Testing....Linux.."
     ci/bin/unittests.sh
     figho "Done.."
 }
 
 function dist_linux
 {
-    figho "Dist....Linux.."
     ci/bin/build.sh
+    figho "Dist....Linux.."
     ci/bin/mksdk.sh
     ci/bin/mk_os_distribution.sh.sh
     figho "Done.."
