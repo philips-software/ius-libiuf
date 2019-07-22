@@ -1,9 +1,9 @@
 language: C
 
-
 os:
   - windows
   - linux
+    dist: bionic
 
 env:
   - HDF5_ROOT=./Download/hdf5
