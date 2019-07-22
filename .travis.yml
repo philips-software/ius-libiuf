@@ -4,11 +4,10 @@ env:
   - HDF5_ROOT=./Download/hdf5
 
 os: 
+ # - osx
  # - windows
   - linux
     dist: bionic
-
- # - osx
 
 # cache:
 #   directories:

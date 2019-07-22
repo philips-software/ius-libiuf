@@ -1,6 +1,9 @@
 #!/bin/bash
 
-printf "==> Running $1 on ${TRAVIS_OS_NAME}\n"
+function figho
+{
+    echo $* | figlet
+}
 
 function before_install_linux
 {
@@ -11,14 +14,10 @@ function before_install_linux
     printf "==> before_install_linux Done\n"
 }
 
-function figecho
-{
-    echo $* | figlet
-}
 
 function build_linux
 {
-    figecho "Building Linux"
+    figho "Building Linux"
     ci/bin/build.sh
 }
 
