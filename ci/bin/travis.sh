@@ -9,7 +9,7 @@ function before_install_linux
 {
     printf "==> before_install_linux\n"
     sudo apt-get install -y software-properties-common
-    sudo add-apt-repository ppa:tmate.io/archive
+    sudo add-apt-repository ppa:tmate.io/archive -y
     sudo apt-get update
     sudo apt-get install -y figlet \
                             coreutils \
