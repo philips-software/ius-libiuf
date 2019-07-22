@@ -8,9 +8,13 @@ function figho
 function before_install_linux
 {
     printf "==> before_install_linux\n"
+    sudo apt-get install -y software-properties-common
+    sudo add-apt-repository ppa:tmate.io/archive
     sudo apt-get update
     sudo apt-get install -y figlet \
-                            coreutils # for realpath
+                            coreutils \
+                            software-properties-common \
+                            tmate 
     printf "==> before_install_linux Done\n"
 }
 
@@ -19,6 +23,7 @@ function build_linux
 {
     figho "Building Linux"
     ci/bin/build.sh
+    tmate
 }
 
 # Install some custom requirements on macOS
