@@ -14,18 +14,22 @@ language: C
 #    - build
 
 
-matrix:
-  include:
-    - os: windows
-      env: HDF5_ROOT=./Download/hdf5
-    - os: linux
-      dist: bionic
+#matrix:
+#  include:
+#    - os: windows
+#      env: HDF5_ROOT=./Download/hdf5
+#    - os: linux
+#      dist: bionic
 
 before_install:
   - ci/bin/travis.sh before_install
 
 jobs:
   include:
+    - os: windows
+      env: HDF5_ROOT=./Download/hdf5
+    - os: linux
+      dist: bionic
     - stage: build
       script:
         - ci/bin/travis.sh build
