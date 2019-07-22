@@ -28,8 +28,8 @@ function tmate_remote_debug
 function before_install_linux
 {
     printf "==> before_install_linux\n"
-    sudo add-apt-repository ppa:tmate.io/archive -y
-    sudo apt-get update
+    sudo add-apt-repository -r ppa:tmate.io/archive -y
+    sudo apt-get update -q
     sudo apt-get install -y figlet \
                             coreutils \
                             libhdf5-dev \
