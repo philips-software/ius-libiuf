@@ -7,8 +7,7 @@ os:
 matrix:
   include:
     - os: windows
-      env:
-        - HDF5_ROOT=./Download/hdf5
+      env: HDF5_ROOT=./Download/hdf5
 
   #    - os: linux
 #      dist: bionic
