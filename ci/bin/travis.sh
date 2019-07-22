@@ -62,8 +62,8 @@ function dist_linux
 {
     ci/bin/build.sh
     figho "Dist....Linux.."
+    ci/bin/mk_os_distribution.sh
     ci/bin/mksdk.sh
-    ci/bin/mk_os_distribution.sh.sh
     figho "Done.."
 }
 
