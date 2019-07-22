@@ -6,6 +6,8 @@ env:
 os: 
  # - windows
   - linux
+    dist: bionic
+
  # - osx
 
 # cache:
