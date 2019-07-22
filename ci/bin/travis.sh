@@ -34,6 +34,7 @@ function before_install_linux
                             coreutils \
                             libhdf5-dev \
                             gcovr \
+                            doxygen \
                             tmate 
     printf "==> before_install_linux Done\n"
  }
@@ -44,7 +45,6 @@ function build_linux
 {
     figho "Building....Linux.."
     ci/bin/build.sh
-    tmate_remote_debug
     figho "Done.."
 }
 
