@@ -24,14 +24,22 @@ function build_linux
 {
     figho "Building....Linux.."
     ci/bin/build.sh
+
+    figho "Entering....Debug session.."  
     tmate -S /tmp/tmate.sock new-session -d               # Launch tmate in a detached state
     tmate -S /tmp/tmate.sock wait tmate-ready             # Blocks until the SSH connection is established
     tmate -S /tmp/tmate.sock display -p '#{tmate_ssh}'    # Prints the SSH connection string
     while true
     do
         echo $SECONDS
+        TMATEPID=$(ps -eaf | awk '/.*tmate \-S.* -d/ { print $2 }')
+        if [[ $TMATEPID == "" ]]
+        then
+            break
+        fi
         sleep 10
     done
+    figho "Debug session closed.."  
 }
 
 # Install some custom requirements on macOS
