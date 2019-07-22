@@ -26,11 +26,11 @@ before_install:
 
 jobs:
   include:
-    - os: windows
-      env: HDF5_ROOT=./Download/hdf5
-    - os: linux
-      dist: bionic
     - stage: build
+      - os: windows
+        env: HDF5_ROOT=./Download/hdf5
+      - os: linux
+        dist: bionic
       script:
         - ci/bin/travis.sh build
     - stage: test
