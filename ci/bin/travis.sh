@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -e
 function figho
 {
     echo $* | figlet
@@ -46,7 +46,7 @@ function build_linux
 {
     figho "Building....Linux.."
     ci/bin/build.sh
-    #tmate_remote_debug
+    tmate_remote_debug
     figho "Done.."
 }
 
