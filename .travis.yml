@@ -27,7 +27,7 @@ stages:
 
 os:
   - windows
-  - linux
+#  - linux
 
 dist: bionic
 
@@ -38,10 +38,11 @@ matrix:
       - MATRIX_EVAL="export HDF5_ROOT="
   - os: windows
     env:
-      - MATRIX_EVAL="HDF5_ROOT=./Download/hdf5"
+      - MATRIX_EVAL="export HDF5_ROOT=./Download/hdf5"
 
 before_install:
-  - eval "${MATRIX_EVAL} ci/bin/travis.sh before_install"
+  - eval "${MATRIX_EVAL}"
+  - ci/bin/travis.sh before_install
 
 jobs:
   include:
