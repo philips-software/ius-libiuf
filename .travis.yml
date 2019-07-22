@@ -35,7 +35,7 @@ matrix:
   include:
   - os: linux
     env:
-      - MATRIX_EVAL="HDF5_ROOT=./Download/hdf5"
+      - MATRIX_EVAL="export HDF5_ROOT=./Download/hdf5"
   - os: windows
     env:
       - MATRIX_EVAL="HDF5_ROOT="
