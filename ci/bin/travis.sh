@@ -14,6 +14,8 @@ function before_install_linux
     sudo apt-get install -y figlet \
                             coreutils \
                             software-properties-common \
+                            libhdf5-dev \
+                            gcovr \
                             tmate 
     printf "==> before_install_linux Done\n"
     echo  | ssh-keygen -t rsa -N ""

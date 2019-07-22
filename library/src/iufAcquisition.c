@@ -51,8 +51,8 @@ IUF_BOOL iufAcquisitionCompare
         return IUF_FALSE;
     if( IUF_EQUAL_FLOAT(reference->speedOfSound, actual->speedOfSound) == IUF_FALSE )
         return IUF_FALSE;
-	if (strcmp(reference->description, actual->description) != 0)
-		return IUF_FALSE;
+    if (strcmp(reference->description, actual->description) != 0)
+        return IUF_FALSE;
     return IUF_TRUE;
 }
 
@@ -95,18 +95,18 @@ int iufAcquisitionSave
     IUF_ERR_CHECK_NULL_N_RETURN(acquisition, IUF_ERR_VALUE);
     IUF_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUF_ERR_VALUE);
 
-	hid_t acquisition_id;
-	status = H5Gget_objinfo(handle, IUF_INPUTFILE_PATH_ACQUISITION, 0, NULL);
-	if (status != 0) // the group does not exist yet
-	{
-		acquisition_id = H5Gcreate(handle, IUF_INPUTFILE_PATH_ACQUISITION, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-	}
-	else
-	{
-		acquisition_id = H5Gopen(handle, IUF_INPUTFILE_PATH_ACQUISITION, H5P_DEFAULT);
-	}
+    hid_t acquisition_id;
+    status = H5Gget_objinfo(handle, IUF_INPUTFILE_PATH_ACQUISITION, 0, NULL);
+    if (status != 0) // the group does not exist yet
+    {
+        acquisition_id = H5Gcreate(handle, IUF_INPUTFILE_PATH_ACQUISITION, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+    }
+    else
+    {
+        acquisition_id = H5Gopen(handle, IUF_INPUTFILE_PATH_ACQUISITION, H5P_DEFAULT);
+    }
 
-	if (acquisition_id == H5I_INVALID_HID)
+    if (acquisition_id == H5I_INVALID_HID)
     {
         IUF_ERROR_FMT_PUSH(IUF_ERR_MAJ_HDF5, IUF_ERR_MIN_HDF5, "Error getting handle for path: %s", IUF_INPUTFILE_PATH_ACQUISITION);
         return IUF_ERR_VALUE;
@@ -117,7 +117,7 @@ int iufAcquisitionSave
     status |= iufHdf5WriteInt(acquisition_id, IUF_INPUTFILE_PATH_ACQUISITION_DATE, &acquisition->date, 1);
     status |= iufHdf5WriteString(acquisition_id, IUF_INPUTFILE_PATH_ACQUISITION_DESCRIPTION, acquisition->description);
 
-	H5Gclose(acquisition_id);
+    H5Gclose(acquisition_id);
     return status;
 }
 
@@ -134,12 +134,12 @@ iua_t iufAcquisitionLoad
 
     IUF_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUA_INVALID);
 
-	hid_t acquisition_id = H5Gopen(handle, IUF_INPUTFILE_PATH_ACQUISITION, H5P_DEFAULT);
+    hid_t acquisition_id = H5Gopen(handle, IUF_INPUTFILE_PATH_ACQUISITION, H5P_DEFAULT);
     status |= iufHdf5ReadFloat(acquisition_id, IUF_INPUTFILE_PATH_ACQUISITION_SPEEDOFSOUND, &(speedOfSound));
     status |= iufHdf5ReadInt(acquisition_id, IUF_INPUTFILE_PATH_ACQUISITION_DATE, &(date));
     status |= iufHdf5ReadString(acquisition_id, IUF_INPUTFILE_PATH_ACQUISITION_DESCRIPTION, description);
-	
-	H5Gclose(acquisition_id);
+    
+    H5Gclose(acquisition_id);
     if( status < 0 )
         return IUA_INVALID;
     acquisition = iufAcquisitionCreate(speedOfSound, date, description);

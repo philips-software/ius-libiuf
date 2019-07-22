@@ -116,5 +116,5 @@ iufr_t iufFrameLoad
     if( status < 0 )
         return IUF_INVALID;
 
-	return iufFrameCreate(patternListLabel,dataIndex,time);
+    return iufFrameCreate(patternListLabel,dataIndex,time);
 }
