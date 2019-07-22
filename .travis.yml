@@ -27,7 +27,7 @@ stages:
 
 os:
   - windows
-#  - linux
+  - linux
 
 dist: bionic
 
