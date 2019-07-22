@@ -21,13 +21,12 @@ language: C
 #    - os: linux
 #      dist: bionic
 stages:
-  - install
   - build
   - test
   - distribution
 
 os:
-  - windows
+#  - windows
   - linux
 
 matrix:
@@ -37,12 +36,11 @@ matrix:
   - os: windows
     env: HDF5_ROOT=./Download/hdf5
 
+before_install:
+  - ci/bin/travis.sh before_install
 
 jobs:
   include:
-    - stage: install
-      script:
-        - ci/bin/travis.sh before_install
     - stage: build
       script:
         - ci/bin/travis.sh build
