@@ -6,7 +6,8 @@ function before_install_linux
 {
     printf "==> before_install_linux\n"
     sudo apt-get update
-    sudo apt-get install -y figlet
+    sudo apt-get install -y figlet \
+                            coreutils # for realpath
     printf "==> before_install_linux Done\n"
 }
 
@@ -17,7 +18,7 @@ function figecho
 
 function build_linux
 {
-    figecho "Building for Linux"
+    figecho "Building Linux"
     ci/bin/build.sh
 }
 
