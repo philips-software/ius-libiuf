@@ -1,25 +1,11 @@
 language: C
 
-#os:
-#  - windows
-#  - linux
-#
-#env:
-#  -
-#
-#cache:
-#  timeout: 1800  # 30 mins
-#  directories:
-#    - Download
-#    - build
+cache:
+  timeout: 1800  # 30 mins
+  directories:
+    - Download
+    - build
 
-
-#matrix:
-#  include:
-#    - os: windows
-#      env: HDF5_ROOT=./Download/hdf5
-#    - os: linux
-#      dist: bionic
 stages:
   - build
   - test
