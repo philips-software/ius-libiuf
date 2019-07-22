@@ -25,6 +25,10 @@ function tmate_remote_debug
     figho "Tmate closed.."
 }
 
+
+#-----------------------------
+# L I N U X - C I
+#-----------------------------
 function before_install_linux
 {
     printf "==> before_install_linux\n"
@@ -65,7 +69,9 @@ function dist_linux
     figho "Done.."
 }
 
-
+#-----------------------------
+# W I N D O W S - C I
+#-----------------------------
 function before_install_windows
 {
     printf "==> before_install_windows\n"
@@ -100,6 +106,9 @@ function dist_windows
 }
 
 
+#-----------------------------
+# M A I N - E N T R Y - C I
+#-----------------------------
 # Install some custom requirements on macOS
 # e.g. brew install pyenv-virtualenv
 case "${TRAVIS_OS_NAME}" in

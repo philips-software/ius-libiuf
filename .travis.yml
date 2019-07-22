@@ -7,25 +7,18 @@ os:
 env:
   - HDF5_ROOT=./Download/hdf5
 
+cache:
+  timeout: 1800  # 30 mins
+  directories:
+    - Download
+    - build
+
 matrix:
   include:
     - os: windows
+    - os: linux
+      dist: bionic
 
-  #    - os: linux
-#      dist: bionic
-
-#os:
-#  - linux
-#  - windows
-#  env:
-#    - HDF5_ROOT=./Download/hdf5
-
-#  - linux
- # - osx
-
-# cache:
-#   directories:
-#     - Download
 
 before_install:
   - ci/bin/travis.sh before_install
