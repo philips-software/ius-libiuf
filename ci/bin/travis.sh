@@ -1,5 +1,8 @@
 #!/bin/bash
 
+printf "printf stderr Running $1 on ${TRAVIS_OS_NAME}" >&2
+printf "prinft stdout Running $1 on ${TRAVIS_OS_NAME}"
+echo "echo stderr Running $1 on ${TRAVIS_OS_NAME}" >&2
 echo "echo stdout Running $1 on ${TRAVIS_OS_NAME}"
 
 # Install some custom requirements on macOS
