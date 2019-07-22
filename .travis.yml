@@ -3,6 +3,7 @@ language: C
 
 os:
   - windows
+  - linux
 
 env:
   - HDF5_ROOT=./Download/hdf5
