@@ -1,18 +1,21 @@
 #!/bin/bash
 
-printf "printf stderr Running $1 on ${TRAVIS_OS_NAME}" >&2
-printf "prinft stdout Running $1 on ${TRAVIS_OS_NAME}"
-echo "echo stderr Running $1 on ${TRAVIS_OS_NAME}" >&2
-echo "echo stdout Running $1 on ${TRAVIS_OS_NAME}"
+printf "==> Running $1 on ${TRAVIS_OS_NAME}\n"
+
+function before_install_linux
+{
+    printf "==> +  before_install_linux $1 on ${TRAVIS_OS_NAME}\n"
+    sudo apt-get update
+    sudo apt-get install -y figlet
+    printf "==> -  before_install_linux Done\n"
+}
 
 # Install some custom requirements on macOS
 # e.g. brew install pyenv-virtualenv
 case "${TRAVIS_OS_NAME}" in
     osx)
-        # Install some custom Python 3.2 requirements on macOS
-        ;;
     linux)
-        # Install some custom Python 3.3 requirements on macOS
+        eval $1_${TRAVIS_OS_NAME}
         ;;
     windows)
         # Install some custom Python 3.3 requirements on macOS
