@@ -46,7 +46,25 @@ function build_linux
     figho "Building....Linux.."
     ci/bin/build.sh
     #tmate_remote_debug
+    figho "Building....Done.."
 }
+
+function test_linux
+{
+    figho "Testing....Linux.."
+    ci/bin/unittests.sh
+    #tmate_remote_debug
+    figho "Testing....Done.."
+}
+
+function dist_linux
+{
+    figho "Dist....Linux.."
+    ci/bin/unittests.sh
+    #tmate_remote_debug
+    figho "Dist....Done.."
+}
+
 
 # Install some custom requirements on macOS
 # e.g. brew install pyenv-virtualenv
