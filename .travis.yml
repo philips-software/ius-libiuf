@@ -3,11 +3,12 @@ language: C
 env:
   - HDF5_ROOT=./Download/hdf5
 
-os: 
+os: linux
+  dist: bionic
  # - osx
  # - windows
-  - linux
-    dist: bionic
+  # - linux
+    # dist: bionic
 
 # cache:
 #   directories:
