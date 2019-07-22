@@ -26,11 +26,17 @@ stages:
   - test
   - distribution
 
-- os:
+os:
   - windows
-    env: HDF5_ROOT=./Download/hdf5
   - linux
-    dist: bionic
+
+env:
+  - HDF5_ROOT=./Download/hdf5
+
+#  - windows
+#    - env: HDF5_ROOT=./Download/hdf5
+#  - linux
+#    dist: bionic
 
 jobs:
   include:
