@@ -4,10 +4,21 @@ printf "==> Running $1 on ${TRAVIS_OS_NAME}\n"
 
 function before_install_linux
 {
-    printf "==> +  before_install_linux $1 on ${TRAVIS_OS_NAME}\n"
+    printf "==> before_install_linux\n"
     sudo apt-get update
     sudo apt-get install -y figlet
-    printf "==> -  before_install_linux Done\n"
+    printf "==> before_install_linux Done\n"
+}
+
+function figecho
+{
+    echo $* | figlet
+}
+
+function build_linux
+{
+    figecho "Building for Linux"
+    ci/bin/build.sh
 }
 
 # Install some custom requirements on macOS
