@@ -45,7 +45,7 @@ function build_linux
 {
     figho "Building....Linux.."
     ci/bin/build.sh
-    tmate_remote_debug
+    #tmate_remote_debug
 }
 
 # Install some custom requirements on macOS
