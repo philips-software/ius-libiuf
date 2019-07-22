@@ -25,6 +25,7 @@ function build_linux
 # e.g. brew install pyenv-virtualenv
 case "${TRAVIS_OS_NAME}" in
     osx|linux)
+        rm -rf build
         eval $1_${TRAVIS_OS_NAME}
         ;;
     windows)
