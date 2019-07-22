@@ -35,10 +35,10 @@ matrix:
   include:
   - os: linux
     env:
-      - MATRIX_EVAL="export HDF5_ROOT=./Download/hdf5"
+      - MATRIX_EVAL="HDF5_ROOT="
   - os: windows
     env:
-      - MATRIX_EVAL="HDF5_ROOT="
+      - MATRIX_EVAL="HDF5_ROOT=./Download/hdf5"
 
 before_install:
   - eval "${MATRIX_EVAL}"
