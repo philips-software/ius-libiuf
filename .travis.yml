@@ -13,6 +13,10 @@ stages:
 
 dist: bionic
 
+os:
+  - linux
+  - windows
+
 matrix:
   include:
   - name: "Linux pipeline"
