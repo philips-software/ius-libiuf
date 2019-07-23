@@ -15,10 +15,6 @@ os:
 #  - windows
   - linux
 
-env:
-  - HDF5_ROOT=/Download/hdf5
-  - HDF5_ROOT=
-
 dist: bionic
 
 matrix:
