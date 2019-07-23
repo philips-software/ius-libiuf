@@ -40,14 +40,3 @@ before_install: ci/bin/travis.sh before_install
 
 script: ci/bin/travis.sh $STAGE
 
-jobs:
-  include:
-    - stage: build
-      script:
-        - ci/bin/travis.sh build
-    - stage: test
-      script:
-        - ci/bin/travis.sh test
-    - stage: distribution
-      script:
-        - ci/bin/travis.sh dist
