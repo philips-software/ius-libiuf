@@ -1,6 +1,4 @@
 #!/bin/bash
-set -e
-
 
 function figho
 {
@@ -132,14 +130,23 @@ function dist_windows
 #-----------------------------
 # M A I N - E N T R Y - C I
 #-----------------------------
+if (( $# != 1 )) || [[ "$TRAVIS_OS_NAME" == "" ]]
+then
+    printf "Usage: TRAVIS_OS_NAME=osname ${0##*/} stage\n" >&2
+    exit 1
+fi
 
-#
-# For the shell newbies:
-# - concatenate environment variables
-# - call whatever is the result of the
-#   concatenation.
-#
-# Example: $1 = build, $TRAVIS_OS_NAME = windows
-#          will invoke build_windows function
-#
-eval $1_${TRAVIS_OS_NAME}
+# Assemple function name out of
+# 1st argument and TRAVIS_OS_NAME environment
+calling_function=$1_${TRAVIS_OS_NAME}
+
+# check whether function has been defined
+type $calling_function &>/dev/null
+if (( $? != 0 ))
+then
+    figho "! error !"
+    printf "Function $calling_function not defined in ${0##*/}\n"
+else
+    # function exists so ..invoke
+    $calling_function
+fi
