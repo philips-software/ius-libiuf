@@ -146,6 +146,7 @@ if (( $? != 0 ))
 then
     figho "! error !"
     printf "Function $calling_function not defined in ${0##*/}\n"
+    exit 1
 else
     # function exists so ..invoke
     $calling_function
