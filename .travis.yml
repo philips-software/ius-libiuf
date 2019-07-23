@@ -25,12 +25,12 @@ before_install: ci/bin/travis.sh before_install
 
 jobs:
   include:
-     - stage: build
-       os: linux
-       script: ./ci/bin/travis.sh build
-     - stage: test
-       os: linux
-       script: ./ci/bin/travis.sh test
+    - stage: build
+      os: linux
+      script: ./ci/bin/travis.sh build
+    - stage: test
+      os: linux
+      script: ./ci/bin/travis.sh test
     - stage: qa
       os: linux
       script: ./ci/bin/travis.sh qa
