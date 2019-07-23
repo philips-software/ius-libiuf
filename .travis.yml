@@ -19,15 +19,18 @@ dist: bionic
 
 matrix:
   include:
-  - os: linux
+  - name: "Linux build"
+    os: linux
     env:
-      - HDF5_ROOT= STAGE=build
-  - os: linux
+      - STAGE=build
+  - name: "Linux qa"
+    os: linux
     env:
-      - HDF5_ROOT= STAGE=test
-  - os: linux
+      - STAGE=test
+  - name: "Linux dist"
+    os: linux
     env:
-      - HDF5_ROOT= STAGE=dist
+      - STAGE=dist
 #  - os: windows
 #    env:
 #      - MATRIX_EVAL="HDF5_ROOT=./Download/hdf5"
