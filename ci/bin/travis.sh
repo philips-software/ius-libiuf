@@ -1,11 +1,20 @@
 #!/bin/bash
 set -e
+
+
 function figho
 {
     echo $* | figlet
 }
 
+
 function tmate_remote_debug
+#
+# Call this function when in need of debugging aids.
+# This routine allows you to ssh into the build session
+# and expect environment variables and such.
+# (It is using tmate.io tunneling services)
+#
 {
     figho "Tmate session.."
     echo  | ssh-keygen -t rsa -N ""

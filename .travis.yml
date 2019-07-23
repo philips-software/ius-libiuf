@@ -8,43 +8,27 @@ cache:
 
 stages:
   - build
-  - test
+  - qa
   - distribution
-
-#os:
-##  - windows
-#  - linux
 
 dist: bionic
 
 matrix:
   include:
-  - name: "Linux build"
+  - name: "Linux pipeline"
     os: linux
-    env:
-      - STAGE=build
-  - name: "Linux qa"
-    os: linux
-    env:
-      - STAGE=test
-  - name: "Linux dist"
-    os: linux
-    env:
-      - STAGE=dist
-  - name: "Windows build"
+  - name: "Windows pipeline"
     os: windows
     env:
-      - STAGE=build HDF5_ROOT=./Download/hdf5
-  - name: "Windows qa"
-    os: windows
-    env:
-      - STAGE=test HDF5_ROOT=./Download/hdf5
-  - name: "Windows dist"
-    os: windows
-    env:
-      - STAGE=dist HDF5_ROOT=./Download/hdf5
+      - HDF5_ROOT=./Download/hdf5
 
 before_install: ci/bin/travis.sh before_install
 
-script: ci/bin/travis.sh $STAGE
-
+jobs:
+  include:
+    - stage: build
+      script: ./ci/bin/travis.sh build
+    - stage: qa
+      script: ./ci/bin/travis.sh test
+    - stage: distribution
+      script: ./ci/bin/travis.sh dist
