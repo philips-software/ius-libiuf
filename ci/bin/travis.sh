@@ -14,13 +14,13 @@ function tmate_remote_debug
     tmate -S /tmp/tmate.sock display -p '#{tmate_ssh}'    # Prints the SSH connection string
     while true
     do
-        echo $SECONDS
+        printf "."
         TMATEPID=$(ps -eaf | awk '/.*tmate \-S.* -d/ { print $2 }')
         if [[ $TMATEPID == "" ]]
         then
             break
         fi
-        sleep 10
+        sleep 2
     done
     figho "Tmate closed.."
 }
@@ -109,15 +109,11 @@ function dist_windows
 #-----------------------------
 # M A I N - E N T R Y - C I
 #-----------------------------
-# Install some custom requirements on macOS
-# e.g. brew install pyenv-virtualenv
 case "${TRAVIS_OS_NAME}" in
     osx|linux)
-        export HDF5_ROOT=
         eval $1_${TRAVIS_OS_NAME}
         ;;
     windows)
-        export HDF5_ROOT=./Download/hdf5
         eval $1_${TRAVIS_OS_NAME}
         ;;
 esac
