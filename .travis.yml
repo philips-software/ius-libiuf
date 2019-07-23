@@ -14,6 +14,12 @@ stages:
 
 dist: bionic
 
+addons:
+  sonarcloud:
+    organization: philips-software
+    token:
+      secure: "RDU+vXqSUhyaJsAHd7k9+/uLYxXwtDkhD+lKQCdStxDwdX66U+to7c9/ghc7ZaSMfEajGL/mixKl45Fm+5cuXnBpbbY4WAcuq7JAF+qIRp+LI2xpP9KPRseyE6OxE5xfbQuoRcwPfp0Z045SqoZjWi7zVDuVMOZ+G14kWkeK+n3ddzCiZ8WJ4V/CPoNPVQdv21EN8NkLEeYEjtS4DXHtEJcAeX384UU2ogGKxFz1GKd19xknBLB9CZrESxeqyZmqxBlV3bZ8Yxxx08PkIt0kncorXsi7nqQsBFOqY9ZOXyXj6wDkB/pBCVVTs9UemITzotX4aLfqNZeq53XmW2tdBcS7iN8SLmJY1nkoMbDn49Ub7Lym9OYnGsbJ40PGgVW2OGxCt6nLQjBqfBxOjhmTsHZ6v/Z3CHLfIWIkcwn6DHatCWin/WM76N9AxAuFl7AthxbNQxML0xs8dcaiKywgbpbvpqCBOawJcwyr+J6RN5ecuyqDMnSPTxtpcjZ1hoflFJiG6f058H8Ydr/RiwDkP+XxXOUnoCqYT+1N8BGh++dR+UmHUpvpEe2pGF4RubUGJQ7ZMCd52ZZA3+1SXY1+fiugHYS/4JGBOG2+3UTTcvRAvoMpFQ84eEtJor4KFM5sMWesf8H5+zgrFYmnFnSf40HZ+IKTBzhZ/JGZ8efLXvU="
+
 before_install: ci/bin/travis.sh before_install
 
 jobs:
