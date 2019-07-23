@@ -7,10 +7,10 @@ cache:
     - build
 
 stages:
-  # - build
-  # - test
+#  - build
+#  - test
   - qa
-  # - distribution
+#  - distribution
 
 dist: bionic
 
@@ -34,7 +34,7 @@ jobs:
     - stage: qa
       os: linux
       script:
-        # - ./ci/bin/travis.sh qa
+        - ./ci/bin/travis.sh qa
         - sonar-scanner
     # - stage: distribution
     #   os: linux
