@@ -17,6 +17,8 @@ matrix:
   include:
   - name: "Linux pipeline"
     os: linux
+    env:
+      - HDF5_ROOT=
   - name: "Windows pipeline"
     os: windows
     env:
