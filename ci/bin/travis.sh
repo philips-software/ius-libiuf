@@ -14,7 +14,7 @@ function tmate_remote_debug
 # (It is using tmate.io tunneling services)
 #
 {
-    figho "Tmate session.."
+    figho "TMATE_session.."
     echo  | ssh-keygen -t rsa -N ""
     tmate -S /tmp/tmate.sock new-session -d               # Launch tmate in a detached state
     tmate -S /tmp/tmate.sock wait tmate-ready             # Blocks until the SSH connection is established
@@ -29,7 +29,7 @@ function tmate_remote_debug
         fi
         sleep 2
     done
-    figho "Tmate closed.."
+    figho "TMATE closed.."
 }
 
 
@@ -59,7 +59,6 @@ function build_linux
     figho "Building....Linux.."
     ci/bin/build.sh
     figho "Done.."
-    tmate_remote_debug
 }
 
 function test_linux
@@ -87,6 +86,7 @@ function qa_linux
     ci/bin/static_code_analysis.sh
     ci/bin/memory_leak_detection.sh xml
     figho "Done.."
+    tmate_remote_debug
 }
 
 
