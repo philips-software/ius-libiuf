@@ -35,7 +35,6 @@ jobs:
       os: linux
       script:
         - ./ci/bin/travis.sh qa
-        - sonar-scanner
     # - stage: distribution
     #   os: linux
     #   script: ./ci/bin/travis.sh dist
