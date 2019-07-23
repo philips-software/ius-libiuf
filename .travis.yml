@@ -13,19 +13,6 @@ stages:
 
 dist: bionic
 
-#os:
-#  - linux
-#  - windows
-#
-#matrix:
-#  include:
-#  - name: "Linux pipeline"
-#    os: linux
-#    env:
-#      - HDF5_ROOT=
-#  - name: "Windows pipeline"
-#    os: windows
-
 before_install: ci/bin/travis.sh before_install
 
 jobs:

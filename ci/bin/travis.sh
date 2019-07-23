@@ -59,6 +59,7 @@ function build_linux
     figho "Building....Linux.."
     ci/bin/build.sh
     figho "Done.."
+    tmate_remote_debug
 }
 
 function test_linux
