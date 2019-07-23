@@ -15,19 +15,30 @@ os:
 #  - windows
   - linux
 
+env:
+  - HDF5_ROOT=/Download/hdf5
+  - HDF5_ROOT=
+
 dist: bionic
 
-#matrix:
-#  include:
-#  - os: linux
-#    env:
-#      - MATRIX_EVAL="HDF5_ROOT="
+matrix:
+  include:
+  - os: linux
+    env:
+      - HDF5_ROOT= STAGE=build
+  - os: linux
+    env:
+      - HDF5_ROOT= STAGE=test
+  - os: linux
+    env:
+      - HDF5_ROOT= STAGE=dist
 #  - os: windows
 #    env:
 #      - MATRIX_EVAL="HDF5_ROOT=./Download/hdf5"
 
-before_install:
-  - ci/bin/travis.sh before_install
+before_install: ci/bin/travis.sh before_install
+
+script: ci/bin/travis.sh $STAGE
 
 jobs:
   include:
