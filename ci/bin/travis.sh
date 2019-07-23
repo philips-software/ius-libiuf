@@ -85,7 +85,7 @@ function qa_linux
     ci/bin/code_coverage.sh
     ci/bin/static_code_analysis.sh
     ci/bin/memory_leak_detection.sh xml
-    sonar-scanner
+#    sonar-scanner
     figho "Done.."
 #    tmate_remote_debug
 }
