@@ -11,9 +11,9 @@ stages:
   - test
   - distribution
 
-os:
-#  - windows
-  - linux
+#os:
+##  - windows
+#  - linux
 
 dist: bionic
 
@@ -31,9 +31,18 @@ matrix:
     os: linux
     env:
       - STAGE=dist
-#  - os: windows
-#    env:
-#      - MATRIX_EVAL="HDF5_ROOT=./Download/hdf5"
+  - name: "Windows build"
+    os: windows
+    env:
+      - STAGE=build HDF5_ROOT=./Download/hdf5
+  - name: "Windows qa"
+    os: windows
+    env:
+      - STAGE=test HDF5_ROOT=./Download/hdf5
+  - name: "Windows dist"
+    os: windows
+    env:
+      - STAGE=dist HDF5_ROOT=./Download/hdf5
 
 before_install: ci/bin/travis.sh before_install
 
