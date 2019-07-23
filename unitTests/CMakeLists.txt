@@ -98,8 +98,8 @@ add_test(suite_1_test unitTests)
 
 if(CMAKE_COMPILER_IS_GNUCC)
     SETUP_TARGET_FOR_COVERAGE_GCOVR_XML(
-        NAME gcovr-report                    # New target name
-        EXECUTABLE ctest3 -j ${PROCESSOR_COUNT} # Executable in PROJECT_BINARY_DIR
+        NAME gcovr-report              # New target name
+        EXECUTABLE $ENV{CTEST}         # Executable in PROJECT_BINARY_DIR
         DEPENDENCIES unitTests         # Dependencies to build first
     )
 endif()

@@ -8,6 +8,7 @@ cache:
 
 stages:
   - build
+  - test
   - qa
   - distribution
 
@@ -20,9 +21,12 @@ jobs:
     - stage: build
       os: linux
       script: ./ci/bin/travis.sh build
-    - stage: qa
+    - stage: test
       os: linux
       script: ./ci/bin/travis.sh test
+    - stage: qa
+      os: linux
+      script: ./ci/bin/travis.sh qs
     - stage: distribution
       os: linux
       script: ./ci/bin/travis.sh dist
@@ -30,7 +34,7 @@ jobs:
       os: windows
       env: HDF5_ROOT=./Download/hdf5
       script: ./ci/bin/travis.sh build
-    - stage: qa
+    - stage: test
       os: windows
       env: HDF5_ROOT=./Download/hdf5
       script: ./ci/bin/travis.sh test

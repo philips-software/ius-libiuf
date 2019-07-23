@@ -46,6 +46,8 @@ function before_install_linux
     sudo apt-get install -y figlet \
                             coreutils \
                             libhdf5-dev \
+                            cppcheck \
+                            valgrind \
                             gcovr \
                             doxygen \
                             tmate 
@@ -78,6 +80,17 @@ function dist_linux
     ci/bin/mksdk.sh
     figho "Done.."
 }
+
+function qa_linux
+{
+    ci/bin/build.sh
+    figho "QA....Linux.."
+    ci/bin/code_coverage.sh
+    ci/bin/static_code_analysis.sh
+    ci/bin/memory_leak_detection.sh xml
+    figho "Done.."
+}
+
 
 #-----------------------------
 # W I N D O W S - C I
@@ -119,11 +132,14 @@ function dist_windows
 #-----------------------------
 # M A I N - E N T R Y - C I
 #-----------------------------
-case "${TRAVIS_OS_NAME}" in
-    osx|linux)
-        eval $1_${TRAVIS_OS_NAME}
-        ;;
-    windows)
-        eval $1_${TRAVIS_OS_NAME}
-        ;;
-esac
+
+#
+# For the shell newbies:
+# - concatenate environment variables
+# - call whatever is the result of the
+#   concatenation.
+#
+# Example: $1 = build, $TRAVIS_OS_NAME = windows
+#          will invoke build_windows function
+#
+eval $1_${TRAVIS_OS_NAME}
