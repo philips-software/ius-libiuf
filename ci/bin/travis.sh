@@ -133,8 +133,10 @@ function dist_windows
 function before_install_osx
 {
     printf "==> before_install_osx\n"
+
+    # Install tested version 3.14.0 of cmake
     brew unlink cmake
-    brew install https://raw.githubusercontent.com/Homebrew/homebrew-core/2f58eb8791f88dbf380523508a3a9aaf815f3976/Formula/cmake.rb
+    brew install tmate figlet https://raw.githubusercontent.com/Homebrew/homebrew-core/2f58eb8791f88dbf380523508a3a9aaf815f3976/Formula/cmake.rb
     cmake --version | figlet
     tmate_remote_debug
     printf "==> before_install_osx Done\n"
