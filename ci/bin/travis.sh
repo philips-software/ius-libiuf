@@ -127,6 +127,41 @@ function dist_windows
     figho "Done.."
 }
 
+#-----------------------------
+# M A C O S - C I
+#-----------------------------
+function before_install_osx
+{
+    printf "==> before_install_osx\n"
+    sudo brew install -y figlet
+    printf "==> before_install_osx Done\n"
+ }
+
+
+
+function build_osx
+{
+    figho "Building....Linux.."
+    ci/bin/build.sh
+    figho "Done.."
+}
+
+function test_osx
+{
+    ci/bin/build.sh
+    figho "Testing....MacOS.."
+    ci/bin/unittests.sh
+    figho "Done.."
+}
+
+function dist_osx
+{
+    ci/bin/build.sh
+    figho "Dist....MacOS.."
+    ci/bin/mk_os_distribution.sh
+    ci/bin/mksdk.sh
+    figho "Done.."
+}
 
 #-----------------------------
 # M A I N - E N T R Y - C I
