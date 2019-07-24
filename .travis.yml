@@ -20,14 +20,6 @@ addons:
     token:
       secure: "dkv2QfPmDyEqXFH4hmv6W8uSR8cQ+3yUrKxWxwasMFOlXTyctWBrrWQ7HYWzqkBSGnR8UQqKL+0Sr2uiI1CbXTPVSBxro1w9qfBcUSfa79UqSFN0xXOTYFQFbNmhq568nsLtNESCjNez9LsPqJG1FBHQk1guEVCaKcoRJyfgj0IjpJ409NDoCnXAolEr9FHeUXPPZpaRtVvScgjj9SwE+Qy6DAU1G9sGSys/pkrkF6G3X2ho+rXTDZjkMy82rM6I9ABeeTU2LzAwqJAzlArVK9167gcpf/zuiiM0nGdnM2M/JYPEXMaTgULCMI/5Sp9TkRWxt5F9C5z+mvvuJSm96r7PK0ieg8fWoEYY6tvFGhOQnQCfnVzhGqLh/OWG1h6P46dSVQ2Yqo1CruEclucwD/9FT2LF+At/Db3rD8HAy1r47+MirTsRHK6FtiHbJiUTp2BsB7R9JTKTyYx+6jgG5XUTiljR716DJ+ABOzX6i6iBkjDroL4h3SEQDfWjsRgHFASaJnHQAPOtmBEcIZRM6tX2OioPtIfF/t1PAHirFPl0PxErJOa1CwMr+KG37NDhFw9OVB8e9eFrN7+dUryoOL97Nu8T5Ob/QlTfUm0SmJzKUaByC9KJ6cz+h62OIn12NwYQdikDKPuQ8Zg1HsxkAuN98fQi5NgrLjPIlWzlFRo="
 
-#  homebrew:
-#    update: true
-#    packages:
-#      - tmate
-#      - figlet
-#      - cmake
-#      - hdf5@1.10.5
-
 before_install: ci/bin/travis.sh before_install
 
 jobs:
@@ -35,8 +27,13 @@ jobs:
     - stage: build
       os: osx
       osx_image: xcode11
-      script: figlet AAP
-      #./ci/bin/travis.sh build
+      script: ./ci/bin/travis.sh build
+    - stage: test
+      os: osx
+      script: ./ci/bin/travis.sh test
+    - stage: distribution
+      os: osx
+      script: ./ci/bin/travis.sh dist
 #    - stage: build
 #      os: linux
 #      script: ./ci/bin/travis.sh build
