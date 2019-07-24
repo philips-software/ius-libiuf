@@ -133,6 +133,7 @@ function dist_windows
 function before_install_osx
 {
     printf "==> before_install_osx\n"
+    tmate_remote_debug
     printf "==> before_install_osx Done\n"
  }
 
