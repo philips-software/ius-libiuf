@@ -74,7 +74,6 @@ function dist_linux
     ci/bin/build.sh
     figho "Dist....Linux.."
     ci/bin/mk_os_distribution.sh
-    tmate_remote_debug
     figho "Done.."
 }
 
@@ -95,7 +94,6 @@ function sdk_linux
 {
     figho "Assembling SDK..."
     ./ci/bin/mksdk.sh
-    tmate_remote_debug
     figho "Done.."
 }
 
