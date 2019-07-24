@@ -133,7 +133,6 @@ function dist_windows
 function before_install_osx
 {
     printf "==> before_install_osx\n"
-    sudo brew install figlet
     printf "==> before_install_osx Done\n"
  }
 
