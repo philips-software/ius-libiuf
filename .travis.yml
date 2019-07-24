@@ -27,6 +27,7 @@ jobs:
   include:
     - stage: build
       os: osx
+      osx_image: xcode11
       script: ./ci/bin/travis.sh build
 #    - stage: build
 #      os: linux
