@@ -7,9 +7,9 @@ cache:
     - build
 
 stages:
-  - build
-  - test
-  - qa
+#  - build
+#  - test
+#  - qa
   - distribution
   - sdk
   - sdk_test
@@ -39,18 +39,18 @@ jobs:
 #      name: "MacOS distribution"
 #      os: osx
 #      script: ./ci/bin/travis.sh dist
-    - stage: build
-      name: "Linux build"
-      os: linux
-      script: ./ci/bin/travis.sh build
-    - stage: test
-      name: "Linux test"
-      os: linux
-      script: ./ci/bin/travis.sh test
-    - stage: qa
-      name: "QA step (Linux only)"
-      os: linux
-      script: ./ci/bin/travis.sh qa
+#    - stage: build
+#      name: "Linux build"
+#      os: linux
+#      script: ./ci/bin/travis.sh build
+#    - stage: test
+#      name: "Linux test"
+#      os: linux
+#      script: ./ci/bin/travis.sh test
+#    - stage: qa
+#      name: "QA step (Linux only)"
+#      os: linux
+#      script: ./ci/bin/travis.sh qa
     - stage: distribution
       name: "Linux distribution"
       os: linux
