@@ -37,29 +37,29 @@ jobs:
       os: osx
       osx_image: xcode11
       script: ./ci/bin/travis.sh build
-#    - stage: test
-#      name: "MacOS test"
-#      os: osx
-#      script: ./ci/bin/travis.sh test
-#    - stage: build
-#      name: "Linux build"
-#      os: linux
-#      script: ./ci/bin/travis.sh build
-#    - stage: test
-#      name: "Linux test"
-#      os: linux
-#      script: ./ci/bin/travis.sh test
-#    - stage: qa
-#      name: "QA step (Linux only)"
-#      os: linux
-#      script: ./ci/bin/travis.sh qa
-#    - stage: build
-#      name: "Windows build"
-#      os: windows
-#      env: HDF5_ROOT=./Download/hdf5
-#      script: ./ci/bin/travis.sh build
-#    - stage: test
-#      name: "Windows test"
-#      os: windows
-#      env: HDF5_ROOT=./Download/hdf5
-#      script: ./ci/bin/travis.sh test
+    - stage: test
+      name: "MacOS test"
+      os: osx
+      script: ./ci/bin/travis.sh test
+    - stage: build
+      name: "Linux build"
+      os: linux
+      script: ./ci/bin/travis.sh build
+    - stage: test
+      name: "Linux test"
+      os: linux
+      script: ./ci/bin/travis.sh test
+    - stage: qa
+      name: "QA step (Linux only)"
+      os: linux
+      script: ./ci/bin/travis.sh qa
+    - stage: build
+      name: "Windows build"
+      os: windows
+      env: HDF5_ROOT=./Download/hdf5
+      script: ./ci/bin/travis.sh build
+    - stage: test
+      name: "Windows test"
+      os: windows
+      env: HDF5_ROOT=./Download/hdf5
+      script: ./ci/bin/travis.sh test
