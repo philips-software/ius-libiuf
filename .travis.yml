@@ -26,26 +26,29 @@ before_install: ci/bin/travis.sh before_install
 jobs:
   include:
     - stage: build
-      os: linux
+      os: osx
       script: ./ci/bin/travis.sh build
-    - stage: test
-      os: linux
-      script: ./ci/bin/travis.sh test
-    - stage: qa
-      os: linux
-      script: ./ci/bin/travis.sh qa
-    - stage: distribution
-      os: linux
-      script: ./ci/bin/travis.sh dist
-    - stage: build
-      os: windows
-      env: HDF5_ROOT=./Download/hdf5
-      script: ./ci/bin/travis.sh build
-    - stage: test
-      os: windows
-      env: HDF5_ROOT=./Download/hdf5
-      script: ./ci/bin/travis.sh test
-    - stage: distribution
-      os: windows
-      env: HDF5_ROOT=./Download/hdf5
-      script: ./ci/bin/travis.sh dist
+#    - stage: build
+#      os: linux
+#      script: ./ci/bin/travis.sh build
+#    - stage: test
+#      os: linux
+#      script: ./ci/bin/travis.sh test
+#    - stage: qa
+#      os: linux
+#      script: ./ci/bin/travis.sh qa
+#    - stage: distribution
+#      os: linux
+#      script: ./ci/bin/travis.sh dist
+#    - stage: build
+#      os: windows
+#      env: HDF5_ROOT=./Download/hdf5
+#      script: ./ci/bin/travis.sh build
+#    - stage: test
+#      os: windows
+#      env: HDF5_ROOT=./Download/hdf5
+#      script: ./ci/bin/travis.sh test
+#    - stage: distribution
+#      os: windows
+#      env: HDF5_ROOT=./Download/hdf5
+#      script: ./ci/bin/travis.sh dist
