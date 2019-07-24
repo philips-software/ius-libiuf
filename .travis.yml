@@ -24,51 +24,51 @@ env:
   CMAKE_BUILD_PARALLEL_LEVEL=4
 
 stages:
-  - doc
   - build
   - test
   - qa
+  - doc
 
 before_install: ci/bin/travis.sh before_install
 
 jobs:
   include:
     - stage: build
-      name: "Build documentation"
+      name: "MacOS build"
+      os: osx
+      osx_image: xcode11
+      script: ./ci/bin/travis.sh build
+    - stage: test
+      name: "MacOS test"
+      os: osx
+      script: ./ci/bin/travis.sh test
+    - stage: build
+      name: "Linux build"
+      os: linux
+      script: ./ci/bin/travis.sh build
+    - stage: test
+      name: "Linux test"
+      os: linux
+      script: ./ci/bin/travis.sh test
+    - stage: qa
+      name: "QA step (Linux only)"
+      os: linux
+      script: ./ci/bin/travis.sh qa
+    - stage: doc
+      name: "Preparing documentation"
       os: linux
       script:
         - cd dox ; doxygen ; cd .. ; mv dox/html/ website/
-#    - stage: build
-#      name: "MacOS build"
-#      os: osx
-#      osx_image: xcode11
-#      script: ./ci/bin/travis.sh build
-#    - stage: test
-#      name: "MacOS test"
-#      os: osx
-#      script: ./ci/bin/travis.sh test
-#    - stage: build
-#      name: "Linux build"
-#      os: linux
-#      script: ./ci/bin/travis.sh build
-#    - stage: test
-#      name: "Linux test"
-#      os: linux
-#      script: ./ci/bin/travis.sh test
-#    - stage: qa
-#      name: "QA step (Linux only)"
-#      os: linux
-#      script: ./ci/bin/travis.sh qa
-#    - stage: build
-#      name: "Windows build"
-#      os: windows
-#      env: HDF5_ROOT=./Download/hdf5
-#      script: ./ci/bin/travis.sh build
-#    - stage: test
-#      name: "Windows test"
-#      os: windows
-#      env: HDF5_ROOT=./Download/hdf5
-#      script: ./ci/bin/travis.sh test
+    - stage: build
+      name: "Windows build"
+      os: windows
+      env: HDF5_ROOT=./Download/hdf5
+      script: ./ci/bin/travis.sh build
+    - stage: test
+      name: "Windows test"
+      os: windows
+      env: HDF5_ROOT=./Download/hdf5
+      script: ./ci/bin/travis.sh test
 
 deploy:
   provider: pages
@@ -77,7 +77,3 @@ deploy:
   local_dir: website/
   on:
     branch: add-support-for-Travis-CI-CD
-
-
-
-
