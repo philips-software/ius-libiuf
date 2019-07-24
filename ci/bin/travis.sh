@@ -91,6 +91,14 @@ function qa_linux
 }
 
 
+function sdk_linux
+{
+    figho "Assembling SDK..."
+    ./ci/bin/mksdk.sh
+    figho "Done.."
+}
+
+
 #-----------------------------
 # W I N D O W S - C I
 #-----------------------------
