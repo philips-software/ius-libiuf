@@ -64,7 +64,9 @@ In order to build and test the code, the required packages need to be installed:
 
 ##  2. <a name='Usage'></a>Usage
 
-Examples of how the SDK can be used ara available in the [examples](examples) folder. Furthermore, developer documentation can be generated (stored in dox/html/index.html) as follows:
+Examples of how the SDK can be used are available in the [examples](examples) folder. 
+Furthermore, developer documentation can be found online at [this location](https://philips-software.github.io/ius-libiuf/index.html)
+or generated (stored in dox/html/index.html) as follows:
 ```
 cd dox
 doxygen
