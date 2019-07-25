@@ -81,12 +81,17 @@ function qa_linux
 {
     ci/bin/build.sh
     figho "QA....Linux.."
-    ci/bin/code_coverage.sh
-    ci/bin/static_code_analysis.sh
-    ci/bin/memory_leak_detection.sh xml
+    figho "Starting code coverage scan.."
+    ci/bin/code_coverage.sh &
+    figho "Starting static code analysis.."
+    ci/bin/static_code_analysis.sh &
+    figho "Starting runtime analysis.."
+    ci/bin/memory_leak_detection.sh xml &
+    wait
+    tmate_remote_debug
+    figho "Running Sonar.."
     sonar-scanner
     figho "Done.."
-#    tmate_remote_debug
 }
 
 
