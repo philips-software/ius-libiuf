@@ -198,6 +198,7 @@ then
     printf "Function $calling_function not defined in ${0##*/}\n"
     exit 1
 else
+    set -e
     # function exists so ..invoke
     $calling_function
 fi
