@@ -144,6 +144,7 @@ function dist_windows
 function before_install_osx
 {
     printf "==> before_install_osx\n"
+    tmate_remote_debug
 
     # Install tested version 3.14.0 of cmake
     #                1.10.5_1 of hdf5
