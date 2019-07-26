@@ -20,4 +20,4 @@ mkdir -p $BuildFolder
 cd $BuildFolder
 $CMAKE -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ../..
 
-cppcheck --enable=style --project=compile_commands.json  --xml-version=2 --xml 2> $CppCheckReportFile
+cppcheck -j ${CMAKE_BUILD_PARALLEL_LEVEL:=1} --enable=style --project=compile_commands.json  --xml-version=2 --xml 2> $CppCheckReportFile
