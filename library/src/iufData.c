@@ -3,12 +3,7 @@
 #include <memory.h>
 
 #include <iuf.h>
-
-struct IufData
-{
-    int size;
-    float *pData;
-} ;
+#include <iufDataADT.h>
 
 // ADT
 iud_t iufDataCreate

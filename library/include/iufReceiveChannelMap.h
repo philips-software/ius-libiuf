@@ -4,7 +4,6 @@
 #include <iufTypes.h>
 
 // ADT
-struct IufReceiveChannelMap;
 typedef  struct IufReceiveChannelMap IufReceiveChannelMap;
 /** The receive channel map is a list of with \p numChannels containing the indices of the transducer elements 
  * and a channel delay of each channel.

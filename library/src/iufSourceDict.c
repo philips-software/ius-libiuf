@@ -4,23 +4,8 @@
 #include <hashmap.h>
 
 #include <iuf.h>
+#include <iufSourceDictADT.h>
 #include <iufSourcePrivate.h>
-
-// ADT
-struct HashableSource
-{
-    ius_t source;
-    char key[256];
-} ;
-
-typedef struct HashableSource HashableSource;
-
-struct IufSourceDict
-{
-    struct hashmap map;
-    IUF_BOOL deepDelete;
-    char **keys;
-} ;
 
 /* Declare type-specific blob_hashmap_* functions with this handy macro */
 HASHMAP_FUNCS_CREATE(HashableSource, const char, struct HashableSource)
@@ -34,7 +19,7 @@ iusd_t iufSourceDictCreate
     IUF_ERR_ALLOC_NULL_N_RETURN(dict, IufSourceDict, IUFD_INVALID);
     hashmap_init(&dict->map, hashmap_hash_string, hashmap_compare_string, 0);
     dict->deepDelete = IUF_FALSE;
-    dict->keys = NULL;
+    dict->kys = NULL;
     return dict;
 }
 
@@ -54,8 +39,8 @@ static void iufSourceDictDeleteKeys
     iusd_t dict
 )
 {
-    if (dict->keys != NULL)
-        free(dict->keys);
+    if (dict->kys != NULL)
+        free(dict->kys);
 }
 
 int iufSourceDictDelete
@@ -163,7 +148,7 @@ char **iufSourceDictGetKeys
 )
 {
     IUF_ERR_CHECK_NULL_N_RETURN(dict, NULL);
-    return dict->keys;
+    return dict->kys;
 }
 
 static int iufSourceDictUpdateKeys
@@ -175,7 +160,7 @@ static int iufSourceDictUpdateKeys
     // allocate memory for the keys
     int keyIndex;
     size_t size = iufSourceDictGetSize(dict);
-    dict->keys = calloc(size+1, sizeof(char*));
+    dict->kys = calloc(size+1, sizeof(char*));
     IUF_ERR_ALLOC_NULL_N_RETURN(dict, char *, IUF_ERR_VALUE);
 
     struct hashmap_iter *iter;
@@ -185,9 +170,9 @@ static int iufSourceDictUpdateKeys
     for (iter = hashmap_iter(&dict->map), keyIndex=0; iter; iter = hashmap_iter_next(&dict->map, iter), keyIndex++)
     {
         iterElement = HashableSource_hashmap_iter_get_data(iter);
-        dict->keys[keyIndex] = iterElement->key;
+        dict->kys[keyIndex] = iterElement->key;
     }
-    dict->keys[keyIndex] = NULL;
+    dict->kys[keyIndex] = NULL;
     return IUF_E_OK;
 }
 

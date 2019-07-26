@@ -1,0 +1,59 @@
+%import s0list.it
+
+%define EXTEND_DICT_ADT(name, type)
+    %include <iuf##name##ADT.h>
+    %include <iuf##name.h>
+    S02LIST(iuf##name##GetKeys)
+
+//    %define TOSTR(name) #name
+//    %enddef
+
+   %extend Iuf ## name {
+    S02LIST(keys)
+
+    Iuf ## name() {
+        return iuf ## name ## Create();
+    }
+
+    ~Iuf ## name() {
+        iuf ## name ## Delete($self);
+    }
+
+   size_t __len__()
+    {
+        return (int) iuf ## name ## GetSize($self);
+    }
+
+    void __setitem__(char *key, type *value)
+    {
+        iuf ## name ## Set($self, key, value);
+    }
+
+    type *__getitem__(char *key)
+    {
+        return iuf ## name ## Get($self, key);
+    }
+
+    int __contains__(char *item)
+    {
+        return iuf ## name ## Get($self,item) != NULL;
+    }
+
+    int __eq__(Iuf ## name *a)
+    {
+    return iuf ## name ## Compare($self,a);
+    }
+
+    int __ne__(Iuf ## name *a)
+    {
+    return !iuf ## name ## Compare($self,a);
+    }
+
+    char **keys()
+    {
+        return iuf ## name ## GetKeys($self);
+    }
+
+    };
+%enddef
+

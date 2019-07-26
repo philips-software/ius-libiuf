@@ -46,10 +46,10 @@ iudm_t iufDemodulationCreate
 	int filterKernelSize
 )
 {
-    if( centerFrequency <= 0.0f )
+    if( centerFrequency < 0.0f )
     {
         IUF_ERROR_FMT_PUSH(IUF_ERR_MAJ_VALUE, IUF_ERR_MIN_ARG_VALUE,
-                           "centerFrequency argument should be > 0.0, but was: '%f'", centerFrequency);
+                           "centerFrequency argument should be >= 0.0, but was: '%f'", centerFrequency);
         return IUDM_INVALID;
     }
 
