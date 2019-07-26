@@ -33,16 +33,16 @@ before_install: ci/bin/travis.sh before_install
 
 jobs:
   include:
-#    - stage: build
-#      name: "MacOS build"
-#      os: osx
-#      osx_image: xcode11
-#      script: ./ci/bin/travis.sh build
+    - stage: build
+      name: "MacOS build"
+      os: osx
+      osx_image: xcode11
+      script: ./ci/bin/travis.sh build
     - stage: test
       name: "MacOS test"
       os: osx
       osx_image: xcode11
-#      script: ./ci/bin/travis.sh test
+      script: ./ci/bin/travis.sh test
 #    - stage: build
 #      name: "Linux build"
 #      os: linux
