@@ -41,7 +41,8 @@ jobs:
     - stage: test
       name: "MacOS test"
       os: osx
-      script: ./ci/bin/travis.sh test
+      osx_image: xcode11
+#      script: ./ci/bin/travis.sh test
 #    - stage: build
 #      name: "Linux build"
 #      os: linux
