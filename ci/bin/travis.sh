@@ -151,6 +151,7 @@ function dist_windows
 function before_install_osx
 {
     printf "==> before_install_osx\n"
+    brew install tmate
     tmate_remote_debug
 
     # Install tested version 3.14.0 of cmake
