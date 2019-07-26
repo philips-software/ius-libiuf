@@ -274,7 +274,7 @@ iurcmd_t iufReceiveChannelMapDictLoad
 		status = iufReceiveChannelMapDictSet(dict, memberName, receiveChannelMap);
 		H5Gclose(subgroupId);
 	}
-	H5Gclose(handle);
+	H5Gclose(groupId);
 	
 	if (status != IUF_E_OK)
 	{
