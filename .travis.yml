@@ -21,7 +21,7 @@ addons:
 dist: bionic
 
 env:
-  CMAKE_BUILD_PARALLEL_LEVEL=2
+  CMAKE_BUILD_PARALLEL_LEVEL=4
 
 stages:
   - build
