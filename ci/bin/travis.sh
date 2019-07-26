@@ -1,8 +1,15 @@
 #!/bin/bash
 
+
 function figho
 {
-    echo $* | figlet
+    which figlet &> /dev/null
+    if [[ $? == 0 ]]
+    then
+        echo $* | figlet
+    else
+        echo $*
+    fi
 }
 
 
