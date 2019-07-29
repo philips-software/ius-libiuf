@@ -1,3 +1,55 @@
-add_subdirectory(python2)
-add_subdirectory(python3)
-install(DIRECTORY "${CMAKE_SOURCE_DIR}/python/test" DESTINATION ${PROJECT_BINARY_DIR}/dist/python PATTERN "*.py")
+# Include python
+find_package(PythonLibs REQUIRED)
+include_directories(${PYTHON_INCLUDE_PATH})
+
+# Set up swig
+find_package(SWIG REQUIRED)
+include(${SWIG_USE_FILE})
+
+set(CMAKE_SWIG_FLAGS "")
+include_directories(
+        ${CMAKE_SOURCE_DIR}/library/include
+        ${HDF5_INCLUDE_DIR})
+
+SET(UseSWIG_TARGET_NAME_PREFERENCE STANDARD)
+
+# Add swig module
+swig_add_library(libiuf
+        TYPE SHARED
+        LANGUAGE python
+        SOURCES libiuf.i)
+
+swig_link_libraries(libiuf
+        ${PYTHON_LIBRARIES}
+        ${IUF_LIBRARIES}
+        ${HDF5_LIBRARIES}
+        ${HDF5_HL_LIBRARIES}
+        ${UUID_LIBRARIES}
+        dg
+        Unity)
+
+
+if(APPLE)
+    set_target_properties(libiuf PROPERTIES
+            SUFFIX ".so"
+            )
+    set_property(TARGET libiuf APPEND PROPERTY
+            LINK_FLAGS "-flat_namespace -undefined suppress"
+            )
+endif()
+
+
+# Files to install with Python
+set(PYTHON_INSTALL_FILES
+        ${CMAKE_CURRENT_BINARY_DIR}/libiuf.py
+        ${CMAKE_CURRENT_BINARY_DIR}/_libiuf.so)
+
+# Configure setup.py and copy to output directory
+set(SETUP_PY_IN ${CMAKE_CURRENT_SOURCE_DIR}/setup.py.in)
+set(SETUP_PY_OUT ${CMAKE_CURRENT_BINARY_DIR}/setup.py)
+configure_file(${SETUP_PY_IN} ${SETUP_PY_OUT})
+
+# Install target to call setup.py
+add_custom_target(install-python
+        DEPENDS libiuf
+        COMMAND python ${SETUP_PY_OUT} install)

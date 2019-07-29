@@ -1,8 +1,20 @@
 cmake_minimum_required(VERSION 3.00)
 project(iufLibrary C)
 
+if(POLICY CMP0086)
+    cmake_policy(SET CMP0086 NEW)
+endif()
+
+if(POLICY CMP0078)
+    cmake_policy(SET CMP0078 NEW)
+endif()
+
+# Adding customized cmake module
+list(APPEND CMAKE_MODULE_PATH  "${CMAKE_SOURCE_DIR}/external/cmake_modules/")
+
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/external/cmake_modules" ${CMAKE_MODULE_PATH})
+
+
 if(CMAKE_COMPILER_IS_GNUCC)
     include(CodeCoverage)
     APPEND_COVERAGE_COMPILER_FLAGS()
@@ -12,7 +24,7 @@ endif()
 if(MSVC)
     # disable the security warnings for sprintf()
     add_definitions(/D _CRT_SECURE_NO_WARNINGS /D _CRT_NONSTDC_NO_DEPRECATE)
-set(HDF5_USE_STATIC_LIBRARIES "TRUE")
+    set(HDF5_USE_STATIC_LIBRARIES "TRUE")
 else()
     if(UNIX AND NOT APPLE)
         set(UUID_LIBRARIES -luuid)
@@ -40,10 +52,17 @@ endif()
 
 add_subdirectory(library)
 
-if(NOT CMAKE_CONFIG STREQUAL Debug)
+
+# Add subdirectories for each language if desired
+option(BUILD_PYTHON "Build Python SWIG module" ON)
+if(BUILD_PYTHON)
     add_subdirectory(python)
-#    install(DIRECTORY python DESTINATION ${PROJECT_BINARY_DIR}/dist)
 endif()
+#
+#if(NOT CMAKE_CONFIG STREQUAL Debug)
+#    add_subdirectory(python)
+##    install(DIRECTORY python DESTINATION ${PROJECT_BINARY_DIR}/dist)
+#endif()
 
 # Distribution stuff
 install(DIRECTORY library/include DESTINATION ${PROJECT_BINARY_DIR}/dist
