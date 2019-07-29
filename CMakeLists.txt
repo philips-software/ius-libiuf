@@ -53,16 +53,10 @@ endif()
 add_subdirectory(library)
 
 
-# Add subdirectories for each language if desired
-option(BUILD_PYTHON "Build Python SWIG module" ON)
-if(BUILD_PYTHON)
+if(NOT CMAKE_CONFIG STREQUAL Debug)
     add_subdirectory(python)
+#    install(DIRECTORY python DESTINATION ${PROJECT_BINARY_DIR}/dist)
 endif()
-#
-#if(NOT CMAKE_CONFIG STREQUAL Debug)
-#    add_subdirectory(python)
-##    install(DIRECTORY python DESTINATION ${PROJECT_BINARY_DIR}/dist)
-#endif()
 
 # Distribution stuff
 install(DIRECTORY library/include DESTINATION ${PROJECT_BINARY_DIR}/dist
