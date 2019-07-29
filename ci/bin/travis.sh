@@ -116,7 +116,7 @@ function sdk_linux
 function before_install_windows
 {
     printf "==> before_install_windows\n"
-    choco install figlet-go python
+    choco install figlet-go python swig
     ci/bin/install.bat $HDF5_ROOT
     printf "==> before_install_windows Done\n"
 }
