@@ -45,3 +45,4 @@ for i in range(0,args.numElements):
 # Write YAML file
 with io.open(args.fileName, 'w', encoding='utf8') as outfile:
     yaml.dump(transducer, outfile, default_flow_style=False, allow_unicode=True)
+

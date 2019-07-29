@@ -17,11 +17,11 @@ def load_config(config_file):
 
 config = load_config(args.inputConfig)
 shapeDict = {"IUF_INVALID_TRANSDUCER_SHAPE": 0, 
-                                                         "IUF_LINE": 1, 
-                                                         "IUF_CIRCLE": 2,
-                                                         "IUF_PLANE": 3, 	
-                                                         "IUF_CYLINDER": 4, 	
-                                                         "IUF_SPHERE": 5}
+             "IUF_LINE": 1, 
+             "IUF_CIRCLE": 2,
+             "IUF_PLANE": 3, 	
+             "IUF_CYLINDER": 4, 	
+             "IUF_SPHERE": 5}
 shapesType = h5py.special_dtype(enum=('i', shapeDict))
 stringType = h5py.special_dtype(vlen=str)
 
@@ -52,6 +52,3 @@ with h5py.File(args.outputFile, 'w') as f:
            sizeGroup.create_dataset('SY', (1,1), 'f', data=config['Elements'][elementName]['Size']['SY'])
            elGroup.create_dataset('Phi', (1,1), 'f', data=config['Elements'][elementName]['Phi'])
    f.close()
-
-#   for m in f.attrs.keys():
-#      print('{} => {}'.format(m, f.attrs[m]))
