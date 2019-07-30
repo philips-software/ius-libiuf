@@ -5,7 +5,7 @@ cd %BinFolder%
 set BuildFolder=%CD%\build
 mkdir %BuildFolder% & pushd %BuildFolder%
 popd
-echo === Building iuf in %BuildFolder%
+echo === C library - UnitTests
 set PlatformFolder=%BuildFolder%\Windows
 mkdir %PlatformFolder% & pushd %PlatformFolder%
 set Config=Debug
@@ -21,7 +21,12 @@ cmake --build . --config %Config%
 if errorlevel 1 exit /B 1
 ctest --verbose
 if errorlevel 1 exit /B 1
+echo === C library - UnitTests - Done
+
+echo === Python binding - UnitTests
+cmake --build . --target install-python
 popd
 
-%~dp0\py_unittests.bat
+python -m unittest discover python\tests
 if errorlevel 1 exit /B 1
+echo === Python binding - UnitTests - Done

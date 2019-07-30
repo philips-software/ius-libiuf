@@ -1,17 +1,16 @@
-# Include python
 find_package(PythonLibs REQUIRED)
-include_directories(${PYTHON_INCLUDE_PATH})
-
-# Set up swig
 find_package(SWIG REQUIRED)
+
+
 include(${SWIG_USE_FILE})
 
 set(CMAKE_SWIG_FLAGS "")
 include_directories(
+        ${PYTHON_INCLUDE_PATH}
         ${CMAKE_SOURCE_DIR}/library/include
         ${HDF5_INCLUDE_DIR})
 
-SET(UseSWIG_TARGET_NAME_PREFERENCE STANDARD)
+set(UseSWIG_TARGET_NAME_PREFERENCE STANDARD)
 
 # Add swig module
 swig_add_library(libiuf
@@ -40,9 +39,15 @@ endif()
 
 
 # Files to install with Python
-set(PYTHON_INSTALL_FILES
-        ${CMAKE_CURRENT_BINARY_DIR}/libiuf.py
-        ${CMAKE_CURRENT_BINARY_DIR}/_libiuf.so)
+if(MSVC)
+    set(PYTHON_INSTALL_FILES
+            ${CMAKE_CURRENT_BINARY_DIR}/libiuf.py
+            ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CONFIG}/_libiuf.pyd)
+else()
+    set(PYTHON_INSTALL_FILES
+            ${CMAKE_CURRENT_BINARY_DIR}/libiuf.py
+            ${CMAKE_CURRENT_BINARY_DIR}/_libiuf.so)
+endif()
 
 # Configure setup.py and copy to output directory
 set(SETUP_PY_IN ${CMAKE_CURRENT_SOURCE_DIR}/setup.py.in)
@@ -51,5 +56,4 @@ configure_file(${SETUP_PY_IN} ${SETUP_PY_OUT})
 
 # Install target to call setup.py
 add_custom_target(install-python
-        DEPENDS libiuf
         COMMAND python ${SETUP_PY_OUT} install)

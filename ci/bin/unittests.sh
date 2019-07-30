@@ -14,11 +14,15 @@ else
     CTEST=ctest
 fi
 
-echo === UnitTests
-cd $BuildFolder
-$CMAKE -DCMAKE_BUILD_TYPE=Debug ../..
-$CMAKE --build .
-$CTEST --verbose
-cd -
+echo === C library - UnitTests
 
-# $ScriptPath/py_unittests.sh
+cd $BuildFolder
+$CMAKE -DCMAKE_BUILD_TYPE=Release ../..
+$CTEST --verbose
+echo === C library - UnitTests - Done
+
+echo === Python binding - UnitTests
+$CMAKE --build . --target install-python
+cd -
+python -m unittest discover python/tests
+echo === Python binding - UnitTests - Done
