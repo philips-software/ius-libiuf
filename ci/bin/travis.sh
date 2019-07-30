@@ -116,9 +116,9 @@ function sdk_linux
 function before_install_windows
 {
     printf "==> before_install_windows\n"
-    choco install figlet-go python pip swig
+    choco install figlet-go python swig
     ci/bin/install_hdf5.bat $HDF5_ROOT
-    pip install setuptools
+    python -m pip install setuptools
     printf "==> before_install_windows Done\n"
 }
 
