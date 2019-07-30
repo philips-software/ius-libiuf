@@ -69,7 +69,6 @@ jobs:
           branch:
             - master
             - develop
-            - add-support-for-Travis-CI-CD
     - stage: build
       name: "Windows build"
       os: windows
