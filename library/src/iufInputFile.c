@@ -53,7 +53,7 @@ iuifi_t iufInputFileInstanceCreate
     iuifi_t instanceData = (iuifi_t) calloc(1, sizeof(IufInputFileInstance));
     IUF_ERR_ALLOC_NULL_N_RETURN(instanceData, IufInputFileInstance, IUIFI_INVALID);
 
-	instanceData->IufVersion = iufGetVersionMajor();
+	instanceData->IufVersion = atoi(iufGetVersionMajor());
 	instanceData->pFilename = "";
 	instanceData->frameList = IUFL_INVALID;
 	instanceData->patternListDict = IUPALD_INVALID;

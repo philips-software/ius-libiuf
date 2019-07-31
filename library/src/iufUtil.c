@@ -17,6 +17,11 @@ char* iufGetVersionMinor(void) {
     return IUF_VERSION_MINOR;
 }
 
+char* iufGetVersion(void) {
+    return IUF_VERSION;
+}
+
+
 IUF_BOOL fileExists(const char *fname)
 {
     FILE *file = fopen(fname, "r");

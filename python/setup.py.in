@@ -1,7 +1,8 @@
 import setuptools.command.install
 import shutil
-from distutils.sysconfig import get_python_lib
+from   distutils.sysconfig import get_python_lib
 
+import libiuf
 
 class CompiledLibInstall(setuptools.command.install.install):
     """
@@ -26,7 +27,7 @@ class CompiledLibInstall(setuptools.command.install.install):
 if __name__ == '__main__':
     setuptools.setup(
         name='libiuf',
-        version='2.1.0-dev',
+        version=libiuf.__version__,
         packages=['libiuf'],
         license='MIT',
         author='Danny Ruijzendaal',

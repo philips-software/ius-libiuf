@@ -7,3 +7,7 @@
 
 // Process symbols in header
 %include "iuf.h"
+
+%pythoncode %{
+    __version__ = iufGetVersion()
+%}

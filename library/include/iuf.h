@@ -177,7 +177,22 @@
 #define  IUF_IQ_TYPE "IUFIQFILETYPE_V3"
 #define  IUF_COMPOUND_TYPE "IUFCOMPOUNDFILETYPE_V3"
 
-int iufGetVersionMajor
+char *iufGetVersionMajor
+(
+  void
+);
+
+char* iufGetVersionPatch
+(
+  void
+);
+
+char* iufGetVersionMinor
+(
+  void
+);
+
+char* iufGetVersion
 (
   void
 );

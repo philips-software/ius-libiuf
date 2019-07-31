@@ -50,7 +50,7 @@ iuiqfi_t iufIqFileInstanceCreate
     iuiqfi_t instanceData = (iuiqfi_t) calloc(1, sizeof(IufIqFileInstance));
     IUF_ERR_ALLOC_NULL_N_RETURN(instanceData, IufIqFileInstance, IUIQFI_INVALID);
 
-	instanceData->IufVersion = iufGetVersionMajor();
+	instanceData->IufVersion = atoi(iufGetVersionMajor());
 	instanceData->pFilename = "";
 	instanceData->frameList = IUFL_INVALID;
 	instanceData->iqPatternListDict = IUIQPALD_INVALID;

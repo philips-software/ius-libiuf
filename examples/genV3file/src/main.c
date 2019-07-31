@@ -51,7 +51,7 @@ int main
     char *argv[]
 )
 {
-    int version = iufGetVersionMajor();
+    int version = atoi(iufGetVersionMajor());
     int numFrames = 10;
     char *ultrasoundMode = "bmode";
     iufErrorLog(IUF_TRUE);

@@ -10,8 +10,12 @@ class TestGetMajorVersion(unittest.TestCase):
         pass
 
     def testListNew(self):
-        v = iufGetVersionMajor()
-        self.assertTrue(v != 0)
+        ma = iufGetVersionMajor()
+        mi = iufGetVersionMinor()
+        p = iufGetVersionPatch()
+        assembled_version = "{0}.{1}.{2}".format(ma, mi, p)
+        version = iufGetVersion()
+        self.assertEqual(version, assembled_version)
 
 
 if __name__ == '__main__':

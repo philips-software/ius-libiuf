@@ -31,8 +31,6 @@ hid_t  IUF_ERR_MIN_ASSERT_FAILED;
 #define IUF_ERR_MAJ_VALUE_MSG           "Value Error"
 #define IUF_ERR_MAJ_ERROR_MSG           "Error handling"
 #define IUF_NAME                        "IUF-SDK"
-#define IUF_VERSION                     IUF_VERSION_MAJOR "." IUF_VERSION_MINOR "." IUF_VERSION_PATCH
-
 
 #define IUF_ERR_MIN_ARG_VALUE_MSG           "Value invalid for argument"
 #define IUF_ERR_MIN_ARG_NULL_VALUE_MSG      "NULL value invalid for argument"
