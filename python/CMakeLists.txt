@@ -40,9 +40,12 @@ endif()
 
 # Files to install with Python
 if(MSVC)
+    set_target_properties( libiuf PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} )
+    set_target_properties( libiuf PROPERTIES LIBRARY_OUTPUT_DIRECTORY_DEBUG ${CMAKE_CURRENT_BINARY_DIR} )
+    set_target_properties( libiuf PROPERTIES LIBRARY_OUTPUT_DIRECTORY_RELEASE ${CMAKE_CURRENT_BINARY_DIR} )
     set(PYTHON_INSTALL_FILES
             ${CMAKE_CURRENT_BINARY_DIR}/libiuf.py
-            ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CONFIG}/_libiuf.pyd)
+            ${CMAKE_CURRENT_BINARY_DIR}/_libiuf.pyd)
 else()
     set(PYTHON_INSTALL_FILES
             ${CMAKE_CURRENT_BINARY_DIR}/libiuf.py
