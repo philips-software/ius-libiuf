@@ -118,7 +118,8 @@ function before_install_windows
     printf "==> before_install_windows\n"
     choco install figlet-go python swig
     ci/bin/install_hdf5.bat $HDF5_ROOT
-    python -m pip install setuptools
+    python -m pip install --upgrade pip
+    [[ -f python/requirements.txt ]] &&  python -m pip install -r python/requirements.txt
     printf "==> before_install_windows Done\n"
 }
 
