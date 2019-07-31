@@ -72,7 +72,9 @@ jobs:
     - stage: build
       name: "Windows build"
       os: windows
-      env: HDF5_ROOT=./Download/hdf5
+      env:
+        - HDF5_ROOT=./Download/hdf5
+        - PATH=/c/Python37:/c/Python37/Scripts:$PATH
       script: ./ci/bin/travis.sh build
     - stage: test
       name: "Windows test"
