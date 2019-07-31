@@ -1,12 +1,23 @@
 #!/bin/bash
 
 
+function termwidth
+{
+    which tput &> /dev/null
+    if [[ $? == 0 ]]
+    then
+        echo $(tput cols)
+    else
+        echo 120
+    fi
+}
+
 function figho
 {
     which figlet &> /dev/null
     if [[ $? == 0 ]]
     then
-        echo $* | figlet
+        echo $* | figlet -w $(termwidth)
     else
         echo $*
     fi
@@ -127,7 +138,6 @@ function before_install_windows
 function build_windows
 {
     figho "Building....Windows.."
-    export HDF5_ROOT=./Download/hdf5
     ci/bin/build.bat
     figho "Done.."
 }
