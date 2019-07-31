@@ -116,7 +116,8 @@ function sdk_linux
 function before_install_windows
 {
     printf "==> before_install_windows\n"
-    choco install figlet-go python swig
+    choco install python --version 3.7.4
+    choco install figlet-go swig
     ci/bin/install_hdf5.bat $HDF5_ROOT
     python -m pip install --upgrade pip
     [[ -f python/requirements.txt ]] &&  python -m pip install -r python/requirements.txt

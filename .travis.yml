@@ -79,5 +79,5 @@ jobs:
       os: windows
       env:
       - HDF5_ROOT=./Download/hdf5
-      - PATH=/c/Python36:/c/Python36/Scripts:$PATH
+      - PATH=/c/Python37:/c/Python37/Scripts:$PATH
       script: ./ci/bin/travis.sh test
