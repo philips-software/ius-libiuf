@@ -3,6 +3,10 @@
 #include <unistd.h>
 #include <string.h>
 #include <math.h>
+#include <iuf2DTransducerElementPrivate.h>
+
+#define IMAGING_DEPTH_MM 100.0
+#define WINDOW_RESOLUTION_Y 480
 
 static void printUsage(char **argv)
 {
@@ -29,8 +33,41 @@ static char *writeTransducer(iut_t transducer)
 
 static char *writeResource(iupal_t patternList, iut_t transducer, iua_t acquisition, iurs_t receiveSettings)
 {
-    char* script = (char *)calloc(500, sizeof(char)); // 500 characters should be enough
-    int numWaves;
+    char* script = (char *)calloc(5000, sizeof(char)); // 5000 characters should be enough
+    // get all keys from the patternList dictionary and for each key go though its list and accumulate the transmits
+    char **keys = iufPatternListDictGetKeys(patternListDict);
+    int patternListDictSize = iufPatternListDictGetSize(patternListDict);
+    int numElements = iufTransducerGetNumElements(transducer);
+
+    // determine numWaves
+    int i=0, numWaves=0;
+    for (i = 0; i < patternListDictSize; i++)
+    {
+        iupal_t patternList = iufPatternListDictGet(patternListDict, keys[i]);
+        numWaves += iufPatternListGetSize(patternList);
+    }
+
+    // determine rowsPerFrame
+    double lambdaMm = iufAcquisitionGetSpeedOfSound(acquisition) / iufTransducerGetCenterFrequency(transducer);
+    IufTransducerShape shape = iufTransducerGetShape(transducer);
+    double elementPitch=0.0;
+    if (shape == IUF_2D_SHAPE)
+    {
+        iu2dte_t element0 = iuf2DTransducerGetElement((iu2dt_t)transducer, 0);
+        iu2dte_t element1 = iuf2DTransducerGetElement((iu2dt_t)transducer, 1);
+        elementPitch = IUF_ABS(iuf2DTransducerElementGetPosition(element1)->x -
+                               iuf2DTransducerElementGetPosition(element0)->x);
+    }
+    double D = (iufTransducerGetNumElements(transducer) - 1) * elementPitch;
+    double rayDelta = (0.25) * asin(1.22*lambdaMm/D);
+
+    int numRays      = round(2*(M_PI/4)/rayDelta);
+    double maxAqcLength = round(IMAGING_DEPTH_MM/lambdaMm);
+    double lineLengthRcvBuffer = 128 * ceil(maxAqcLength / 16.0);
+    int rowsPerFrame = 16 * ceil(lineLengthRcvBuffer * numRays / 16);
+    int interBufferRowsPerFrame = 16 * ceil(2^nextpow2(SFormat.endDepth/PData.pdeltaZ) / 16);
+    int interBufferColsPerFrame = PData.Size(2);
+
     sprintf(script, "Resource.Parameters.connector             = 1;\n" \
                     "Resource.Parameters.numTransmit           = %d;\n" \
                     "Resource.Parameters.numRcvChannels        = %d;\n" \
@@ -41,13 +78,38 @@ static char *writeResource(iupal_t patternList, iut_t transducer, iua_t acquisit
                     "Resource.Parameters.fakeScanhead          = 0;\n" \
                     "Resource.Parameters.verbose               = 2;\n" \
                     "Resource.RcvBuffer(1).datatype            = \'int16\';\n" \
-                    "Resource.RcvBuffer(1).rowsPerFrame = (lineLengthRcvBuffer) * numWaves;\n" \
+                    "Resource.RcvBuffer(1).rowsPerFrame = %d;\n" \
                     "Resource.RcvBuffer(1).colsPerFrame =  Resource.Parameters.numRcvChannels;\n" \
-                    "Resource.RcvBuffer(1).numFrames    = par.nrDMAs;\n",
-                    iufTransducerGetNumElements(transducer),
-                    iufTransducerGetNumElements(transducer),
-                    iufAcquisitionGetSpeedOfSound(acquisition));
-
+                    "Resource.RcvBuffer(1).numFrames    = 20;\n" \
+                    "Resource.InterBuffer(1).datatype     = 'complex';\n" \
+                    "Resource.InterBuffer(1).numFrames    = 1;\n"\
+                    "Resource.InterBuffer(1).rowsPerFrame = %d;\n" \
+                    "Resource.InterBuffer(1).colsPerFrame = %d;\n" \
+                    "Resource.ImageBuffer(1).datatype     = 'double';\n" \
+                    "Resource.ImageBuffer(1).rowsPerFrame = Resource.InterBuffer(1).rowsPerFrame;\n" \
+                    "Resource.ImageBuffer(1).colsPerFrame = Resource.InterBuffer(1).colsPerFrame;\n" \
+                    "Resource.ImageBuffer(1).numFrames    = 1;\n" \
+                    "Resource.DisplayWindow(1).Title      = [%s, ...\n" \
+                    " ' (', %d,' active elements)', ...\n"\
+                    " ', max ', %f,' cm', ...\n" \
+                    " ', Fc = ', %f, ' MHz', ...\n" \
+                    " ', numRays = ', %d];\n" \
+                    " Resource.DisplayWindow(1).pdelta     = %f;\n" \
+                    " Resource.DisplayWindow(1).Position   = [%d,%d,%d,%d]\n" \
+                    " Resource.DisplayWindow(1).ReferencePt = [%d,%d];\n" \
+                    " Resource.DisplayWindow(1).Colormap    = gray(256);\n",
+             iufTransducerGetNumElements(transducer), // Parameters.numTransmit
+             iufTransducerGetNumElements(transducer), // Parameters.numRcvChannels
+             iufAcquisitionGetSpeedOfSound(acquisition), // Parameters.speedOfSound
+             rowsPerFrame, //RcvBuffer(1).rowsPerFrame
+             interBufferRowsPerFrame, //InterBuffer(1).rowsPerFrame
+             interBufferColsPerFrame, //InterBuffer(1).rowsPerFrame
+             windowTitle, numElements, IMAGING_DEPTH_MM, numRays,
+             IMAGING_DEPTH_MM / (double)WINDOW_RESOLUTION_Y,
+             WINDOW_POS_X, WINDOW_POS_Y, WINDOW_WIDTH, WINDOW_HEIGHT,
+             refX, refY
+            )
+    );
 }
 
 static char *writeTx(iupal_t patternList,
@@ -62,9 +124,23 @@ static char *writeTx(iupal_t patternList,
 
     double unitScale = iufTransducerGetCenterFrequency(transducer)/1.540;
     int numTransmits = iufPatternListGetSize(patternList);
+    double transducerWidth = 0.0;
+
+    IufTransducerShape transShape = iufTransducerGetShape(transducer);
+    if (transShape == IUF_LINE)
+    {
+        iu2dte_t elem2DFirst = iuf2DTransducerGetElement((iu2dt_t) transducer, 0);
+        iu2dte_t elem2DLast = iuf2DTransducerGetElement((iu2dt_t) transducer, numElements - 1);
+        transducerWidth = abs(elem2DFirst->position.x - elem2DLast->position.x);
+    }
+    else
+    {
+       return "%% writeTX error: only 2D linear transducers are currently supported.\n error=1;\n";
+    }
 
     sprintf(script, "%%%% Specify TX structure array.\n" \
                     "scaleToWvl = %f;\n,", unitScale);
+
     for (int t=0; t < numTransmits; t++)
     {
         iupa_t pattern = iufPatternListGet(patternList, t);
@@ -90,37 +166,29 @@ static char *writeTx(iupal_t patternList,
                 pos2d = iuf2DNonParametricSourceGetPosition((iu2dnps_t)source, 0);
                 break;
             case IUF_2D_PARAMETRIC_SOURCE:
-                theta = iuf2DParametricSourceGetStartTheta((iu2dps_t)source);
-                fNumber = iuf2DParametricSourceGetFNumber((iu2dps_t)source);
-                return "%% writeTX error: paramatric 2D source currently not implemented\n";
+                //theta = iuf2DParametricSourceGetStartTheta((iu2dps_t)source);
+                //fNumber = iuf2DParametricSourceGetFNumber((iu2dps_t)source);
+                return "%% writeTX error: parametric 2D source currently not implemented.\n error=1;\n";
             case IUF_3D_NON_PARAMETRIC_SOURCE:
                 pos3d = iuf3DNonParametricSourceGetPosition((iu3dnps_t)source, 0);
                 break;
             case IUF_3D_PARAMETRIC_SOURCE:
-                theta = iuf3DParametricSourceGetStartTheta((iu3dps_t)source);
-                theta = iuf3DParametricSourceGetStartPhi((iu3dps_t)source);
-                fNumber = iuf3DParametricSourceGetFNumber((iu3dps_t)source);
-                return "%% writeTX error: parametric 3D source currently not implemented\n";
+                //theta = iuf3DParametricSourceGetStartTheta((iu3dps_t)source);
+                //phi = iuf3DParametricSourceGetStartPhi((iu3dps_t)source);
+                //fNumber = iuf3DParametricSourceGetFNumber((iu3dps_t)source);
+                return "%% writeTX error: parametric 3D source currently not implemented.\n error=1;\n";
             default:
                 return "%% writeTX error: unknown sourceType.\n";
         }
-        IufTransducerShape transShape = iufTransducerGetShape(transducer);
-        if (transShape == IUF_LINE)
-        {
-        transElemFirst =
-        P.radius      = (P.aperture/2);
-        TXorgs = P.radius * tan(theta);
-
         strcat(script, "TX(%d).Origin = [%f 0.0 0.0] * scaleToWvl;\n " \
                        "TX(%d).focus  = %f * scaleToWvl;\n " \
                        "TX(%d).Steer  = [%f, 0];\n" \
                        "TX(%d).Delay  = computeTXDelays(TX(%d));\n;" \
-                       "TX(%d).delayOffsetSec = %f\n;",
-                        t,
-
-
+                        t, transducerWidth * tan(theta),
+                        t, focus,
+                        t, theta,
+                        t, t);
     }
-
     return script;
 }
 
