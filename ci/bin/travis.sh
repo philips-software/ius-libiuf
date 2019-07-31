@@ -146,7 +146,6 @@ function test_windows
 {
     ci/bin/build.bat
     figho "Testing....Windows.."
-    cscript C:\Windows\System32\Scregedit.wsf /ar /v
     ci/bin/unittests.bat
     figho "Done.."
 }
