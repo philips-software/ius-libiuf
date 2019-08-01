@@ -39,15 +39,19 @@ endif()
 
 
 # Files to install with Python
-if(MSVC)
-    set(PYTHON_INSTALL_FILES
-            ${CMAKE_CURRENT_BINARY_DIR}/libiuf.py
-            ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CONFIG}/_libiuf.pyd)
+set(SWIG_LIBIUF_PY ${CMAKE_CURRENT_BINARY_DIR}/libiuf.py)
+
+if(MSVC)   
+    set(SWIG_LIBIUF_SO ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CONFIG}/_libiuf.pyd)
+    set(CPYCMD  ${CMAKE_COMMAND} -E copy
+                ${SWIG_LIBIUF_SO}
+                ${CMAKE_CURRENT_BINARY_DIR})
 else()
-    set(PYTHON_INSTALL_FILES
-            ${CMAKE_CURRENT_BINARY_DIR}/libiuf.py
-            ${CMAKE_CURRENT_BINARY_DIR}/_libiuf.so)
+    set(SWIG_LIBIUF_SO ${CMAKE_CURRENT_BINARY_DIR}/_libiuf.so)
+    set(CPYCMD echo Installing Python Module)
 endif()
+
+set(PYTHON_INSTALL_FILES ${SWIG_LIBIUF_PY} ${SWIG_LIBIUF_SO})
 
 # Configure setup.py and copy to output directory
 set(SETUP_PY_IN ${CMAKE_CURRENT_SOURCE_DIR}/setup.py.in)
@@ -56,4 +60,5 @@ configure_file(${SETUP_PY_IN} ${SETUP_PY_OUT})
 
 # Install target to call setup.py
 add_custom_target(install-python
+        COMMAND ${CPYCMD}
         COMMAND python ${SETUP_PY_OUT} install)
