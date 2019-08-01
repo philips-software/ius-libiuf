@@ -1,28 +1,82 @@
-language: C
+language: c
+
 notifications:
   slack:
     rooms:
-    - secure: s8BNZHPiw7N6B19mWbv9JG73opIi3ltiUeWl3BVpC7SbRDnDfnXNA+tM7u5+r5OMSGJgXdiiPSM8O+82Zasi+1gVdOy59PRQMHZvbw+3yMN8HNMMreF//n3JXrerbQJk4O1taamwI+Y4W530M1tvWnM95e+kAp45vPyQFxnQr5L8R6pDzsrVx5T6ZS4zk4MSI7FwSTEoZrjZQz5GV8lbxEWMFe05zK5a+0x63whNsD/IeXYw0MKX348yHH0SWH4lVNALK8zyvQe/Z1TV1OsOjpTp6mmgL8k4brEWLkHuBQTfB1C+V0NyyMXIH2V463/ntxd1tbfnce/bchTkTK9NhKqsp5rHUKxEWVbRcnc4k/T6+SG/MXFKdHHQcGQDyt4hoD9lmDUdGZDkc9+largi7eQyVA1MAIKI4UQofXojLy1NJq1cy4gYkluD45XMCa7rtvLMqAJ859O4cC1A9EwzArdyoMc9j8cnRKs1WhfJdKY884f3Coz5GW+oacJNxrL2YYn8nawmaz6LChJuHvffMZ+vWxcpA7RKfc3NnsVuNN48hrtarpeFTc0b7U7MqEcFyQUuTcpO7EjYw9b2uyEdva4GykzxF4pw+0Cn1THaRDIOe7znibcFv4cqLM8+Th5+S0aWORfkbvtiKqkLJlyKyBMj3P5TRVloXlDV/XVzxbs=
-    - secure: ahuOzoZAmeXwNJb+p7wUFcGthrE8o1m+4R2k6qgSM80rH8rePuUI/fLNzIGXKGMhqgs5Vc75YhFbK6jOQvNFJLbdLv3XJZZw2JNg434T3pfwuG8F0MH/HqN1MJ48VLEYCjfaJVdovHHHEUqs5MnwY2DoJhDWsEEW7K8IivirVVeXtn2oev1UapJ6mXXsNi6RNYGgsvSARcpLdTch/g8yYh6LGrxJ2ZrPIDmpdzN8oGTXmaeLr7LC1NDbcXRfN+GH9ByTDirEjOrx4llG0RGIzKWA86+o4dbbZox5VfGOuUv8rp36LWGSIt4v/zW9SWVMjWlw4JXp5L3SG4kIbhHS3nvCtW8fgVQYdoD58GYzwTzRxkR0/9+o95kqyDrLqmjhXv65LxGtjDoUxR/JlPGUmVnXtQMnAfuwqFBOJeR7EbV6s0d0preTo3W0EvlgJRmxIFSGhAqDbYg2Qhd36xoXYn/zxUu9SrxC+AoceUVSzYCLZTW1d0xPkFQXWg4/5Sphfbd5x0zey5fKbIyiespA5u+bxXYEj8h1kRFv2LVyHSc1nFNDRyorrvytUglsKGurtvg77FlkXB0vlHobr0m7IsCroZrfzK8a8xOAcLJoQ33OOo802Fmpau7EmzvkBILP6/uXMo88lCobA9RUwUrxBPsvubHiT2VHjpBGAr3AAXE=
+      - secure: "s8BNZHPiw7N6B19mWbv9JG73opIi3ltiUeWl3BVpC7SbRDnDfnXNA+tM7u5+r5OMSGJgXdiiPSM8O+82Zasi+1gVdOy59PRQMHZvbw+3yMN8HNMMreF//n3JXrerbQJk4O1taamwI+Y4W530M1tvWnM95e+kAp45vPyQFxnQr5L8R6pDzsrVx5T6ZS4zk4MSI7FwSTEoZrjZQz5GV8lbxEWMFe05zK5a+0x63whNsD/IeXYw0MKX348yHH0SWH4lVNALK8zyvQe/Z1TV1OsOjpTp6mmgL8k4brEWLkHuBQTfB1C+V0NyyMXIH2V463/ntxd1tbfnce/bchTkTK9NhKqsp5rHUKxEWVbRcnc4k/T6+SG/MXFKdHHQcGQDyt4hoD9lmDUdGZDkc9+largi7eQyVA1MAIKI4UQofXojLy1NJq1cy4gYkluD45XMCa7rtvLMqAJ859O4cC1A9EwzArdyoMc9j8cnRKs1WhfJdKY884f3Coz5GW+oacJNxrL2YYn8nawmaz6LChJuHvffMZ+vWxcpA7RKfc3NnsVuNN48hrtarpeFTc0b7U7MqEcFyQUuTcpO7EjYw9b2uyEdva4GykzxF4pw+0Cn1THaRDIOe7znibcFv4cqLM8+Th5+S0aWORfkbvtiKqkLJlyKyBMj3P5TRVloXlDV/XVzxbs="
+      - secure: "ahuOzoZAmeXwNJb+p7wUFcGthrE8o1m+4R2k6qgSM80rH8rePuUI/fLNzIGXKGMhqgs5Vc75YhFbK6jOQvNFJLbdLv3XJZZw2JNg434T3pfwuG8F0MH/HqN1MJ48VLEYCjfaJVdovHHHEUqs5MnwY2DoJhDWsEEW7K8IivirVVeXtn2oev1UapJ6mXXsNi6RNYGgsvSARcpLdTch/g8yYh6LGrxJ2ZrPIDmpdzN8oGTXmaeLr7LC1NDbcXRfN+GH9ByTDirEjOrx4llG0RGIzKWA86+o4dbbZox5VfGOuUv8rp36LWGSIt4v/zW9SWVMjWlw4JXp5L3SG4kIbhHS3nvCtW8fgVQYdoD58GYzwTzRxkR0/9+o95kqyDrLqmjhXv65LxGtjDoUxR/JlPGUmVnXtQMnAfuwqFBOJeR7EbV6s0d0preTo3W0EvlgJRmxIFSGhAqDbYg2Qhd36xoXYn/zxUu9SrxC+AoceUVSzYCLZTW1d0xPkFQXWg4/5Sphfbd5x0zey5fKbIyiespA5u+bxXYEj8h1kRFv2LVyHSc1nFNDRyorrvytUglsKGurtvg77FlkXB0vlHobr0m7IsCroZrfzK8a8xOAcLJoQ33OOo802Fmpau7EmzvkBILP6/uXMo88lCobA9RUwUrxBPsvubHiT2VHjpBGAr3AAXE="
+
+#cache:
+#  timeout: 3600  # 60 mins
+#  directories:
+#    - Download
+#    - build
+
 addons:
   sonarcloud:
     organization: philips-software
     token:
       secure: xveQZgimJtiola4CjxLzLj53V1/PUazqVyyn6yfxPhFK2l1KywO1NxSsFSLJmIB1WdBwr50pqHVlIUKgMvc1qB+Q9SsRdN3pmjrpYHRR+AvslfnExeiUPATsYJHIZpw6NDq6RaV9JIZdWum53cy7g+uKgmzT1BljPtjTjAvimxIcT5jLbgHsu/w4gP81FM/Y8Haqn/MIKyMnae3dm1remKkB+vAXac+jqNLSlBmp74VqdHGe/WVkcqg6ARbV0mHIf5eDhkPGULGITXJA8HgqlLGEI9wiKoa/FnSJCOgxffmbsigfcFEeSkwS606aQule5MKrY6XgTuZbZzSR7CPrG2OUri310Il3CO30VsedQoez+oo0iXoq9Ub0+KI62WsoGBaVR6uj/bzk3gGr1sWafMZ12Fl9oJj7oWMptZ6bcDHo8/RTkN+Sql3fopC96zKlXigbqGcsRlceOvZuq6mluo7XheXLiWy5/sCrLn9hl66Cg9ej1DXjdnyjr2m9dKXi+w3rgs8nGjSZ/ftHhWs91/nNn3cMbiD/Bqz4XRnTP8ZZos7yHW4dJYoR7PIf7GegEIJxKIACs+hbssYhTYZqpPJCzADdHCpWjcWLMPWo9z4jX90x5YEgpo9/f5Ko4FZIubZ7ATpptxztrDcYSFuDWhmOPTFjbhXOfN0sskdACso=
+
 dist: bionic
+
 env:
-  matrix:
-  - CMAKE_BUILD_PARALLEL_LEVEL=4
-  global:
+  CMAKE_BUILD_PARALLEL_LEVEL=4
+
 stages:
-- build
-- test
-- qa
-- doc
+  - build
+  - test
+  - qa
+  - doc
+
 before_install: ci/bin/travis.sh before_install
+
 jobs:
   include:
-  - stage: qa
-    name: QA step (Linux only)
-    os: linux
-    script: "./ci/bin/travis.sh qa"
+    #    - stage: build
+    #      name: "MacOS build"
+    #      os: osx
+    #      osx_image: xcode11
+    #      script: ./ci/bin/travis.sh build
+    #    - stage: test
+    #      name: "MacOS test"
+    #      os: osx
+    #      osx_image: xcode11
+    #      script: ./ci/bin/travis.sh test
+    #    - stage: build
+    #      name: "Linux build"
+    #      os: linux
+    #      script: ./ci/bin/travis.sh build
+    #    - stage: test
+    #      name: "Linux test"
+    #      os: linux
+    #      script: ./ci/bin/travis.sh test
+    - stage: qa
+      name: "QA step (Linux only)"
+      os: linux
+      script: ./ci/bin/travis.sh qa
+#    - stage: doc
+#      name: "Deploying documentation (GitHub pages)"
+#      os: linux
+#      script:
+#        - cd dox ; doxygen ; cd .. ; mv dox/html/ website/
+#      deploy:
+#        provider: pages
+#        skip_cleanup: true
+#        github_token: $GITHUB_TOKEN # Set in travis-ci.org dashboard
+#        local_dir: website/
+#        on:
+#          branch:
+#            - master
+#            - develop
+#            - add-support-for-Travis-CI-CD
+#    - stage: build
+#      name: "Windows build"
+#      os: windows
+#      env: HDF5_ROOT=./Download/hdf5
+#      script: ./ci/bin/travis.sh build
+#    - stage: test
+#      name: "Windows test"
+#      os: windows
+#      env: HDF5_ROOT=./Download/hdf5
+#      script: ./ci/bin/travis.sh test

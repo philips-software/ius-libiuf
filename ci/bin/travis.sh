@@ -89,12 +89,13 @@ function qa_linux
     ci/bin/build.sh
     figho "QA....Linux.."
     printf "Starting code coverage scan..\m"
-    ci/bin/code_coverage.sh
+    ci/bin/code_coverage.sh &
     printf "Starting static code analysis..\n"
-    ci/bin/static_code_analysis.sh
+    ci/bin/static_code_analysis.sh &
     printf "Starting runtime analysis..\n"
-    ci/bin/memory_leak_detection.sh xml
-#    tmate_remote_debug
+    ci/bin/memory_leak_detection.sh xml &
+    wait
+    tmate_remote_debug
     printf "Running Sonar..\n"
     sonar-scanner
     figho "Done.."
