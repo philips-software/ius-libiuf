@@ -96,7 +96,7 @@ function qa_linux
     ci/bin/memory_leak_detection.sh xml
 #    tmate_remote_debug
     printf "Running Sonar..\n"
-#    sonar-scanner
+    sonar-scanner
     figho "Done.."
 }
 
