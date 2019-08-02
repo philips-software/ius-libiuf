@@ -27,9 +27,10 @@ static char *writeTransducer(iut_t transducer)
     return script;
 }
 
-static char *writeResource(iupal_t patternList, iut_t transducer, iua_t acquisition, iurs_t receiveSettings)
+static char *writeResource(iupal_t patternList, iut_t transducer, iua_t acquisition, iursd_t receiveSettingsDict)
 {
     char* script = (char *)calloc(500, sizeof(char)); // 500 characters should be enough
+/*
     int numWaves;
     sprintf(script, "Resource.Parameters.connector             = 1;\n" \
                     "Resource.Parameters.numTransmit           = %d;\n" \
@@ -47,24 +48,72 @@ static char *writeResource(iupal_t patternList, iut_t transducer, iua_t acquisit
                     iufTransducerGetNumElements(transducer),
                     iufTransducerGetNumElements(transducer),
                     iufAcquisitionGetSpeedOfSound(acquisition));
+*/
+  return script;
+}
 
+static char *writeTw(iupd_t pulseDict)
+{
+    char *script = (char *) calloc(5000, sizeof(char));
+
+    sprintf(script, "%%%% Specify TW structure array.\n");
+    char **keys = iufPulseDictGetKeys(pulseDict);
+    for (size_t i=0; i < iufPulseDictGetSize(pulseDict); i++)
+    {
+        iup_t pulse = iufPulseDictGet(pulseDict, keys[i]);
+        IufPulseType pulseType = iufPulseGetType(pulse);
+        if (pulseType == IUF_PARAMETRIC_PULSETYPE)
+        {
+            sprintf(script, "TW(%d) = iusComputeTW(%f,%d);\n",
+                    (int)i,
+                    iufParametricPulseGetFrequency((iupp_t)pulse),
+                    iufParametricPulseGetNumPulses((iupp_t)pulse));
+        }
+        else
+        {
+            sprintf(script, "%% Non-parametric pulse currently not supported; error=1;\n");
+        }
+    }
+    return script;
+}
+
+static char *writeTGC(iursd_t receiveSettingsDict)
+{
+    char *script = (char *) calloc(5000, sizeof(char));
+
+    sprintf(script, "%%%% Specify TGC structure array.\n");
+    char **keys = iufReceiveSettingsDictGetKeys(receiveSettingsDict);
+    for (size_t i=0; i < iufReceiveSettingsDictGetSize(receiveSettingsDict); i++)
+    {
+        iutgc_t tgc = iufReceiveSettingsGetTGC(iufReceiveSettingsDictGet(receiveSettingsDict,keys[i]));
+        if (iufTGCGetNumValues(tgc) > 1)
+        {
+            sprintf(script, "%%%% Currently only a default TGC is supported.\n");
+        }
+        sprintf(script, "TGC(%d).CntrlPts = iusgTGCSetPoints;\n" \
+                        "TGC(%d).rangeMax = SFormat.endDepth;\n" \
+                        "TGC(%d).Waveform = computeTGCWaveform(TGC);",
+                        (int)i,(int)i,(int)i);
+    }
+    return script;
 }
 
 static char *writeTx(iupal_t patternList,
-                     iut_t transducer,
+                     iut_t   transducer,
                      iutad_t apodizationDict,
-                     iupd_t pulseDict,
-                     iusd_t sourceDict,
+                     iupd_t  pulseDict,
+                     iusd_t  sourceDict,
                      iursd_t receiveSettingsDict)
 {
     char *script = (char *) calloc(5000, sizeof(char));
-    char *apodizationString = (char *) calloc(500, sizeof(char));
+    //char *apodizationString = (char *) calloc(500, sizeof(char));
 
     double unitScale = iufTransducerGetCenterFrequency(transducer)/1.540;
-    int numTransmits = iufPatternListGetSize(patternList);
+    //int numTransmits = iufPatternListGetSize(patternList);
 
     sprintf(script, "%%%% Specify TX structure array.\n" \
                     "scaleToWvl = %f;\n,", unitScale);
+#if 0
     for (int t=0; t < numTransmits; t++)
     {
         iupa_t pattern = iufPatternListGet(patternList, t);
@@ -120,7 +169,7 @@ static char *writeTx(iupal_t patternList,
 
 
     }
-
+#endif
     return script;
 }
 
@@ -145,14 +194,18 @@ static char *parseIuf(iuif_t iuf, char *label)
         iut_t transducer = iufInputFileGetTransducer(iuf);
         iupal_t patternList = iufPatternListDictGet(iufInputFileGetPatternListDict(iuf), label);
         iua_t acquisition = iufInputFileGetAcquisition(iuf);
-        iurs_t receiveSettings = iufReceiveSettingsDictGet(iufInputFileGetReceiveSettingsDict(iuf), label);
-        iup_t pulse = iufPulseDictGet(iufInputFileGetPulseDict(iuf), label);
-        iuta_t apodization = iufTransmitApodizationDictGet(iufInputFileGetTransmitApodizationDict(iuf), label);
-        ius_t sources = iufSourceDictGet(iufInputFileGetSourceDict(iuf), label);
+        iursd_t receiveSettingsDict = iufInputFileGetReceiveSettingsDict(iuf);
+        iupd_t pulseDict = iufInputFileGetPulseDict(iuf);
+        iutad_t apodizationDict = iufInputFileGetTransmitApodizationDict(iuf);
+        iusd_t sourcesDict = iufInputFileGetSourceDict(iuf);
 
         transducerScript = writeTransducer(transducer);
-        resourceScript = writeResource(patternList, transducer, acquisition, receiveSettings);
-        txScript = writeTx(patternList, transducer, apodization, pulse, sources, receiveSettings);
+        resourceScript = writeResource(patternList, transducer, acquisition, receiveSettingsDict);
+        txrxScript = writeTxRx(patternList, transducer,
+                               apodizationDict, pulseDict, sourcesDict, receiveSettingsDict);
+        twScript = writeTw(pulseDict);
+        tgcScript = writeTGC(receiveSettingsDict);
+
 
     }
     else
