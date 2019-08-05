@@ -109,13 +109,13 @@ function qa_linux
     $WrapperPath --out-dir bw-outputs ci/bin/build.sh
 
     figho "QA....Linux.."
-    tmate_remote_debug
+#    tmate_remote_debug
     printf "Starting code coverage scan..\m"
     ci/bin/code_coverage.sh
-    printf "Starting static code analysis..\n"
-    ci/bin/static_code_analysis.sh
-    printf "Starting runtime analysis..\n"
-    ci/bin/memory_leak_detection.sh xml
+#    printf "Starting static code analysis..\n"
+#    ci/bin/static_code_analysis.sh
+#    printf "Starting runtime analysis..\n"
+#    ci/bin/memory_leak_detection.sh xml
     printf "Running Sonar..\n"
     sonar-scanner
     figho "Done.."
