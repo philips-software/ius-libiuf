@@ -84,18 +84,40 @@ function dist_linux
     figho "Done.."
 }
 
+function tmp_qa_buildfix
+# This function is a workaround
+# that fixes the '..libinterceptor-${PLATFORM}.so' from LD_PRELOAD cannot be preloaded
+# (cannot open shared object file): ignored.', please remoe when fixed in future
+# build-wrapper release.
+# For details See:
+# https://community.sonarsource.com/t/sonarqube-c-ubuntu-build-wrapper-ld-preload-error/300/7
+#
+{
+  WrapperPath=$1
+  (( $? != 0 )) && printf "Error: missing sonar build-wrapper, bailing out\n" && exit -1
+  # copy libinterceptor-x86_64.so into libinterceptor-haswell.so
+  WrapperFolder=${WrapperPath%/*}
+  cp $WrapperFolder/libinterceptor-x86_64.so $WrapperFolder/libinterceptor-haswell.so
+}
+
 function qa_linux
 {
-    ci/bin/build.sh
+    # Get build wrapper path
+    WrapperPath=$(which build-wrapper-linux-x86-64)
+
+    tmp_qa_buildfix $WrapperPath
+    $WrapperPath --out-dir bw-outputs ci/bin/build.sh
+
     figho "QA....Linux.."
+#    tmate_remote_debug
     printf "Starting code coverage scan..\m"
     ci/bin/code_coverage.sh
-    printf "Starting static code analysis..\n"
-    ci/bin/static_code_analysis.sh
-    printf "Starting runtime analysis..\n"
-    ci/bin/memory_leak_detection.sh xml
+#    printf "Starting static code analysis..\n"
+#    ci/bin/static_code_analysis.sh
+#    printf "Starting runtime analysis..\n"
+#    ci/bin/memory_leak_detection.sh xml
     printf "Running Sonar..\n"
-#    sonar-scanner
+    sonar-scanner
     figho "Done.."
 }
 

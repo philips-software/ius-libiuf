@@ -10,61 +10,10 @@ if(IS_DIRECTORY "${CMAKE_SOURCE_DIR}/library/${CMAKE_SYSTEM_NAME}")
     link_directories(${CMAKE_SOURCE_DIR}/library/${CMAKE_SYSTEM_NAME})
 endif()
 
-#add_library(dg STATIC
-#        include/dataGenerators.h
-#        src/dataGenerators.c)
 add_subdirectory(dg)
 
-
-add_executable(unitTests
-        src/unitTests.c
-        src/testIuf2DNonParametricSource.c
-        src/testIuf2DParametricSource.c
-        src/testIuf2DTransducer.c
-        src/testIuf2DTransducerElement.c
-        src/testIuf2DTransducerElementList.c
-        src/testIuf3DNonParametricSource.c
-        src/testIuf3DParametricSource.c
-        src/testIuf3DTransducer.c
-        src/testIuf3DTransducerElement.c
-        src/testIuf3DTransducerElementList.c
-        src/testIufAcquisition.c
-        src/testIufDataStream.c
-        src/testIufDataStreamDict.c
-		src/testIufDemodulation.c
-        src/testIufDemodulationDict.c
-        src/testIufErrorHandling.c
-        src/testIufFile.c
-        src/testIufFilter.c
-        src/testIufFrame.c
-        src/testIufFrameList.c
-        src/testIufInputFile.c
-		src/testIufIqFile.c
-        src/testIufIqPattern.c
-        src/testIufIqPatternList.c
-        src/testIufIqPatternListDict.c
-        src/testIufHistoryNode.c
-        src/testIufHistoryNodeList.c
-        src/testIufNonParametricPulse.c
-        src/testIufParameterDict.c
-        src/testIufParametricPulse.c
-        src/testIufPattern.c
-        src/testIufPatternList.c
-        src/testIufPatternListDict.c
-        src/testIufPulseDict.c
-        src/testIufPulse.c
-        src/testIufReceiveSettings.c
-        src/testIufReceiveSettingsDict.c
-        src/testIufReceiveChannelMap.c
-        src/testIufReceiveChannelMapDict.c
-        src/testIufSourceDict.c
-        src/testIufSource.c
-        src/testIufTransducer.c
-        src/testIufTransmitApodization.c
-        src/testIufTransmitApodizationDict.c
-        src/testIufTGC.c
-        src/util.c
-        )
+file(GLOB UNITTESTS_SRCS "src/*.c")
+add_executable(unitTests ${UNITTESTS_SRCS})
 
 if(MSVC)
     # disable the security warnings for sprintf() in bee2.c
@@ -97,10 +46,11 @@ set_property(TARGET unitTests PROPERTY C_STANDARD 99)
 add_test(suite_1_test unitTests)
 
 if(CMAKE_COMPILER_IS_GNUCC)
+    include(CodeCoverage)
+    APPEND_COVERAGE_COMPILER_FLAGS()
     SETUP_TARGET_FOR_COVERAGE_GCOVR_XML(
         NAME gcovr-report              # New target name
-        EXECUTABLE $ENV{CTEST}         # Executable in PROJECT_BINARY_DIR
+        EXECUTABLE $ENV{CTEST} unitTests        # Executable in PROJECT_BINARY_DIR
         DEPENDENCIES unitTests         # Dependencies to build first
     )
 endif()
-
