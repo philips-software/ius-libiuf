@@ -104,6 +104,7 @@ const char *iufFileGetType
     if (file == NULL)
     {
         IUF_ERROR_PUSH(IUF_ERR_MAJ_VALUE, IUF_ERR_MIN_ARG_NULL_VALUE, "iufFile");
+        return NULL;
     }
     return iufHistoryNodeGetType(file->history);
 }

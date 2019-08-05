@@ -54,7 +54,7 @@ iuifi_t iufInputFileInstanceCreate
     IUF_ERR_ALLOC_NULL_N_RETURN(instanceData, IufInputFileInstance, IUIFI_INVALID);
 
 	instanceData->IufVersion = iufGetVersionMajor();
-	instanceData->pFilename = "";
+	instanceData->pFilename = NULL;
 	instanceData->frameList = IUFL_INVALID;
 	instanceData->patternListDict = IUPALD_INVALID;
 	instanceData->pulseDict = IUPD_INVALID;
@@ -76,7 +76,11 @@ int iufInputFileInstanceDelete
 {
     IUF_ERR_CHECK_NULL_N_RETURN(instance, IUF_ERR_VALUE);
     iufDataStreamDictDelete(instance->dataStreamDict);
-    free((void *)instance->pFilename);
+    if(instance->pFilename != NULL)
+    {
+        free((void *)instance->pFilename);
+    }
+
     if(instance->deepDelete == IUF_TRUE)
     {
         iufFrameListDelete(instance->frameList);
@@ -255,10 +259,12 @@ iud_t iufInputFileChannelCreate
 
 static iuifi_t inputFileInstanceLoad
 (
-    iuifi_t instance
+    hid_t handle
 )
 {
-    IUF_ERR_CHECK_NULL_N_RETURN(instance, IUIFI_INVALID);
+    IUF_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUIFI_INVALID);
+    iuifi_t instance = iufInputFileInstanceCreate();
+    instance->handle = handle;
     instance->frameList = iufFrameListLoad(instance->handle);
     if (instance->frameList == IUFL_INVALID)
     {
@@ -338,19 +344,13 @@ void *iufInputFileInstanceLoad
     hid_t handle
 )
 {
-    iuifi_t instance = iufInputFileInstanceCreate();
-    iuifi_t new_instance;
-    instance->handle = handle;
-    new_instance = inputFileInstanceLoad(instance);
-    if( new_instance == IUIFI_INVALID )
+    iuifi_t instance = inputFileInstanceLoad(handle);
+    if( instance != IUIFI_INVALID )
     {
-        iufInputFileInstanceDelete(instance);
-        instance = new_instance;
+        instance->deepDelete = IUF_TRUE;
     }
-    instance->deepDelete = IUF_TRUE;
     return (void *)instance;
 }
-
 
 iuhn_t iufInputFileLoadNode
 (
@@ -358,9 +358,7 @@ iuhn_t iufInputFileLoadNode
 )
 {
     iuhn_t node = iufHistoryNodeCreate(IUF_INPUT_TYPE);
-    iuifi_t instance = iufInputFileInstanceCreate();
-    instance->handle = handle;
-    instance = inputFileInstanceLoad(instance);
+    iuifi_t instance = inputFileInstanceLoad(handle);
     iufHistoryNodeSetInstanceData(node,instance);
     return node;
 }

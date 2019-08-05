@@ -123,11 +123,14 @@ iuhnl_t iufHistoryNodeListLoad
     IUF_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUHNL_INVALID);
     for (i=0;i<numHistoryNodes;i++)
     {
-        sprintf(parentPath, "parent%d", i);
+        snprintf(parentPath, IUF_MAX_HDF5_PATH, "parent%d", i);
         hid_t group_id = H5Gopen(handle, parentPath, H5P_DEFAULT);
         if (group_id != H5I_INVALID_HID)
         {
-            node = iufHistoryNodeLoadAnyType(group_id);
+            // todo:
+            //      is this ok iso
+            // iufHistoryNodeLoadAnyType(group_id)
+            node = iufHistoryNodeLoad(group_id);
             status |= iufHistoryNodeListSet(nodeList, node, i);
             status |= H5Gclose(group_id );
         }
@@ -137,12 +140,12 @@ iuhnl_t iufHistoryNodeListLoad
         }
     }
 
+    nodeList->deepDelete = IUF_TRUE;
     if (status!=0)
     {
         iufHistoryNodeListDelete(nodeList);
         nodeList = IUHNL_INVALID;
     }
-    nodeList->deepDelete = IUF_TRUE;
     return nodeList;
 }
 

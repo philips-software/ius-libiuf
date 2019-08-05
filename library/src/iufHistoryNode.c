@@ -288,18 +288,7 @@ iuhn_t iufHistoryNodeLoadAnyType
 )
 {
     if ( handle == H5I_INVALID_HID ) return IUHN_INVALID;
-
-    iuhn_t node = iufHistoryNodeLoad(handle);
-    if ( node == IUHN_INVALID ) return IUHN_INVALID;
-    if ( strcmp( node->pType, IUF_INPUT_TYPE) == 0 )
-    {
-        node = iufInputFileLoadNode(handle);
-    }
-	else if (strcmp(node->pType, IUF_IQ_TYPE) == 0)
-	{
-		node = iufIqFileLoadNode(handle);
-	}
-    return node;
+    return iufHistoryNodeLoad(handle);
 }
 
 int iufHistoryNodeSaveInstance
