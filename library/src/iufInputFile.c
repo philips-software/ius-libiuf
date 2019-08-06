@@ -352,17 +352,6 @@ void *iufInputFileInstanceLoad
     return (void *)instance;
 }
 
-//iuhn_t iufInputFileLoadNode
-//(
-//    hid_t handle
-//)
-//{
-//    iuhn_t node = iufHistoryNodeCreate(IUF_INPUT_TYPE);
-//    iuifi_t instance = inputFileInstanceLoad(handle);
-//    iufHistoryNodeSetInstanceData(node,instance);
-//    return node;
-//}
-
 iuif_t iufInputFileNodeLoad
 (
     const char *pFilename

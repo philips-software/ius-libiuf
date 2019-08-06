@@ -28,11 +28,6 @@ int iufIqFileSaveInstance
     iuiqfi_t instanceData
 );
 
-iuhn_t iufIqFileLoadNode
-(
-    hid_t handle
-);
-
 void *iufIqFileInstanceLoad
 (
     hid_t handle

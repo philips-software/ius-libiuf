@@ -90,7 +90,7 @@ static IUF_BOOL iufHistoryNodeCompareInstanceData
     {
         iuifi_t refInstance = iufHistoryNodeGetInstanceData((iuhn_t)reference);
         iuifi_t actInstance = iufHistoryNodeGetInstanceData((iuhn_t)actual);
-        IUF_BOOL equal = iufInputFileCompareInstance(refInstance,actInstance);
+        equal = iufInputFileCompareInstance(refInstance,actInstance);
         return equal;
     }
 
@@ -98,7 +98,7 @@ static IUF_BOOL iufHistoryNodeCompareInstanceData
     {
         iuiqfi_t refInstance = iufHistoryNodeGetInstanceData((iuhn_t)reference);
         iuiqfi_t actInstance = iufHistoryNodeGetInstanceData((iuhn_t)actual);
-        IUF_BOOL equal = iufIqFileCompareInstance(refInstance,actInstance);
+        equal = iufIqFileCompareInstance(refInstance,actInstance);
         return equal;
     }
 

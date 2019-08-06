@@ -334,17 +334,6 @@ void *iufIqFileInstanceLoad
 }
 
 
-iuhn_t iufIqFileLoadNode
-(
-    hid_t handle
-)
-{
-    iuhn_t node = iufHistoryNodeCreate(IUF_IQ_TYPE);
-    iuiqfi_t instance = iqFileInstanceLoad(handle);
-    iufHistoryNodeSetInstanceData(node,instance);
-    return node;
-}
-
 iuiqf_t iufIqFileNodeLoad
 (
     const char *pFilename
