@@ -1,5 +1,5 @@
 # IUF file IO library SDK
-[![Build Status](https://travis-ci.com/philips-software/ius-libiuf.svg?branch=develop)](https://travis-ci.com/philips-software/ius-libiuf) [![License: MIT](https://img.shields.io/badge/License-MIT-brightgreen.svg)](https://opensource.org/licenses/MIT)[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=philips-software_ius-libiuf&metric=alert_status)](https://sonarcloud.io/dashboard?id=philips-software_ius-libiuf)
+[![Build Status](https://travis-ci.com/philips-software/ius-libiuf.svg?branch=develop)](https://travis-ci.com/philips-software/ius-libiuf) [![License: MIT](https://img.shields.io/badge/License-MIT-brightgreen.svg)](https://opensource.org/licenses/MIT) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=philips-software_ius-libiuf&metric=alert_status)](https://sonarcloud.io/dashboard?id=philips-software_ius-libiuf)
 
 **Description**:
 
