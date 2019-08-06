@@ -172,8 +172,6 @@ function dist_windows
 function before_install_osx
 {
     printf "==> before_install_osx\n"
-    # Install tested version 3.14.0 of cmake
-    #                1.10.5_1 of hdf5
     brew install  figlet
     printf "==> before_install_osx Done\n"
  }
@@ -182,7 +180,7 @@ function before_install_osx
 
 function build_osx
 {
-    figho "Building....Linux.."
+    figho "Building....MacOS.."
     ci/bin/build.sh
     figho "Done.."
 }
