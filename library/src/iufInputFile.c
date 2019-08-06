@@ -20,14 +20,14 @@
 struct IufInputFileInstance
 {
     iufl_t frameList;
-	iupald_t patternListDict;            /**< a dictionary of pattern lists              */
+    iupald_t patternListDict;            /**< a dictionary of pattern lists              */
     iupd_t pulseDict;                    /**< a dictionary of pulses                      */
     iusd_t pulseSourceDict;              /**< a dictionary of sources                     */
-	iurcmd_t receiveChannelMapDict;      /**< a dictionary of receiveChannelMaps          */
-	iutad_t transmitApodizationDict;     /**< a dictionary of transmitApodizations        */
-	iursd_t receiveSettingsDict;         /**< a dictionary of receiveSettings             */
-	iut_t transducer;                    /**< The transducer description                  */
-	iua_t acquisition;                    /**< The description of the performed acquisition */
+    iurcmd_t receiveChannelMapDict;      /**< a dictionary of receiveChannelMaps          */
+    iutad_t transmitApodizationDict;     /**< a dictionary of transmitApodizations        */
+    iursd_t receiveSettingsDict;         /**< a dictionary of receiveSettings             */
+    iut_t transducer;                    /**< The transducer description                  */
+    iua_t acquisition;                    /**< The description of the performed acquisition */
     int IufVersion;                      /**< The version of input file format */
 
 
@@ -53,19 +53,19 @@ iuifi_t iufInputFileInstanceCreate
     iuifi_t instanceData = (iuifi_t) calloc(1, sizeof(IufInputFileInstance));
     IUF_ERR_ALLOC_NULL_N_RETURN(instanceData, IufInputFileInstance, IUIFI_INVALID);
 
-	instanceData->IufVersion = iufGetVersionMajor();
-	instanceData->pFilename = NULL;
-	instanceData->frameList = IUFL_INVALID;
-	instanceData->patternListDict = IUPALD_INVALID;
-	instanceData->pulseDict = IUPD_INVALID;
+    instanceData->IufVersion = iufGetVersionMajor();
+    instanceData->pFilename = NULL;
+    instanceData->frameList = IUFL_INVALID;
+    instanceData->patternListDict = IUPALD_INVALID;
+    instanceData->pulseDict = IUPD_INVALID;
     instanceData->pulseSourceDict = IUFD_INVALID;
-	instanceData->receiveChannelMapDict = IURCMD_INVALID;
+    instanceData->receiveChannelMapDict = IURCMD_INVALID;
     instanceData->transmitApodizationDict = IUTAD_INVALID;
     instanceData->receiveSettingsDict = IURSD_INVALID;
     instanceData->transducer = IUT_INVALID;
-	instanceData->acquisition = IUA_INVALID;
-	instanceData->dataStreamDict = iufDataStreamDictCreate();
-	instanceData->deepDelete = IUF_FALSE;
+    instanceData->acquisition = IUA_INVALID;
+    instanceData->dataStreamDict = iufDataStreamDictCreate();
+    instanceData->deepDelete = IUF_FALSE;
     return instanceData;
 }
 
@@ -116,24 +116,24 @@ iuif_t iufInputFileCreate
 )
 {
     IUF_ERR_CHECK_NULL_N_RETURN(filename, IUIF_INVALID);
-	iuifi_t instanceData = iufInputFileInstanceCreate();
-	if (instanceData == IUIFI_INVALID)
-	{
+    iuifi_t instanceData = iufInputFileInstanceCreate();
+    if (instanceData == IUIFI_INVALID)
+    {
         IUF_ERROR_PUSH(IUF_ERR_MAJ_MEMORY, IUF_ERR_MIN_ALLOC,  "calloc of IufInputFileInstance failed");
-		return IUIF_INVALID;
-	}
+        return IUIF_INVALID;
+    }
 
     instanceData->pFilename = strdup(filename);
     instanceData->handle = H5Fcreate(filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
-	if (instanceData->handle == H5I_INVALID_HID)
-	{
+    if (instanceData->handle == H5I_INVALID_HID)
+    {
         IUF_ERROR_FMT_PUSH(IUF_ERR_MAJ_ERROR, IUF_ERR_MIN_HDF5,  "unable to create file %s", filename);
         iufInputFileInstanceDelete(instanceData);
-		return IUIF_INVALID;
-	}
-	iuhn_t node = iufHistoryNodeCreate(IUF_INPUT_TYPE);
-	iufHistoryNodeSetInstanceData(node,(void *)instanceData);
-	return (iuif_t)node;
+        return IUIF_INVALID;
+    }
+    iuhn_t node = iufHistoryNodeCreate(IUF_INPUT_TYPE);
+    iufHistoryNodeSetInstanceData(node,(void *)instanceData);
+    return (iuif_t)node;
 }
 
 
@@ -352,16 +352,16 @@ void *iufInputFileInstanceLoad
     return (void *)instance;
 }
 
-iuhn_t iufInputFileLoadNode
-(
-    hid_t handle
-)
-{
-    iuhn_t node = iufHistoryNodeCreate(IUF_INPUT_TYPE);
-    iuifi_t instance = inputFileInstanceLoad(handle);
-    iufHistoryNodeSetInstanceData(node,instance);
-    return node;
-}
+//iuhn_t iufInputFileLoadNode
+//(
+//    hid_t handle
+//)
+//{
+//    iuhn_t node = iufHistoryNodeCreate(IUF_INPUT_TYPE);
+//    iuifi_t instance = inputFileInstanceLoad(handle);
+//    iufHistoryNodeSetInstanceData(node,instance);
+//    return node;
+//}
 
 iuif_t iufInputFileNodeLoad
 (
@@ -421,7 +421,7 @@ int iufInputFileNodeSave
     IUF_ERR_CHECK_NULL_N_RETURN(inputFile, IUF_ERR_VALUE);
     iuifi_t instance = iufHistoryNodeGetInstanceData((iuhn_t)inputFile);
     status |= iufHistoryNodeSave(inputFile, instance->handle);
-	return status;
+    return status;
 }
 
 
@@ -440,7 +440,7 @@ int iufInputFileClose
     return status;
 }
 
-static int iufInputFileCompareInstance
+int iufInputFileCompareInstance
 (
     iuifi_t reference,
     iuifi_t actual
@@ -454,11 +454,11 @@ static int iufInputFileCompareInstance
     if ( iufPatternListDictCompare(reference->patternListDict, actual->patternListDict)  == IUF_FALSE ) return IUF_FALSE;
     if ( iufPulseDictCompare(reference->pulseDict, actual->pulseDict)  == IUF_FALSE ) return IUF_FALSE;
     if ( iufSourceDictCompare(reference->pulseSourceDict, actual->pulseSourceDict)  == IUF_FALSE ) return IUF_FALSE;
-    if ( iufReceiveChannelMapDictCompare(reference->receiveChannelMapDict, actual->receiveChannelMapDict) == IUF_FALSE) return IUF_FALSE;
+    if ( iufReceiveChannelMapDictCompare(reference->receiveChannelMapDict, actual->receiveChannelMapDict) == IUF_FALSE ) return IUF_FALSE;
     if ( iufTransmitApodizationDictCompare(reference->transmitApodizationDict, actual->transmitApodizationDict)  == IUF_FALSE ) return IUF_FALSE;
     if ( iufReceiveSettingsDictCompare(reference->receiveSettingsDict, actual->receiveSettingsDict)  == IUF_FALSE ) return IUF_FALSE;
-    if ( iufTransducerCompare(reference->transducer, actual->transducer) == IUF_FALSE) return IUF_FALSE;
-    if (iufAcquisitionCompare(reference->acquisition, actual->acquisition) == IUF_FALSE) return IUF_FALSE;
+    if ( iufTransducerCompare(reference->transducer, actual->transducer) == IUF_FALSE ) return IUF_FALSE;
+    if ( iufAcquisitionCompare(reference->acquisition, actual->acquisition) == IUF_FALSE ) return IUF_FALSE;
     return IUF_TRUE;
 }
 
@@ -477,9 +477,7 @@ int iufInputFileCompare
     iuifi_t actInstance = iufHistoryNodeGetInstanceData((iuhn_t)actual);
     IUF_BOOL equal = iufInputFileCompareInstance(refInstance,actInstance);
     if (equal == IUF_FALSE) return IUF_FALSE;
-
-
-    return equal;
+    return IUF_TRUE;
 }
 
 // Getters
@@ -634,8 +632,8 @@ int iufInputFileSetSourceDict
 
 int iufInputFileSetReceiveChannelMapDict
 (
-	iuif_t inputFile,
-	iurcmd_t receiveChannelMapDict
+    iuif_t inputFile,
+    iurcmd_t receiveChannelMapDict
 )
 {
     IUF_ERR_CHECK_NULL_N_RETURN(inputFile, IUF_ERR_VALUE);
@@ -647,8 +645,8 @@ int iufInputFileSetReceiveChannelMapDict
 
 int iufInputFileSetTransmitApodizationDict
 (
-	iuif_t inputFile,
-	iutad_t transmitApodizationDict
+    iuif_t inputFile,
+    iutad_t transmitApodizationDict
 )
 {
     IUF_ERR_CHECK_NULL_N_RETURN(inputFile, IUF_ERR_VALUE);

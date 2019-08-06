@@ -16,6 +16,11 @@ iuiqf_t iufIqFileSpecificsLoad
     iuiqf_t iqFile
 );
 
+int iufIqFileCompareInstance
+(
+    iuiqfi_t reference,
+    iuiqfi_t actual
+);
 
 int iufIqFileSaveInstance
 (

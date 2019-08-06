@@ -416,7 +416,7 @@ int iufIqFileClose
 	return status;
 }
 
-static int iufIqFileCompareInstance
+int iufIqFileCompareInstance
 (
     iuiqfi_t reference,
     iuiqfi_t actual

@@ -16,7 +16,7 @@ int iufFileDelete
     iuf_t file
 )
 {
-    if (file == NULL)
+    if( file == NULL )
     {
         IUF_ERROR_PUSH(IUF_ERR_MAJ_VALUE, IUF_ERR_MIN_ARG_FILENAME, "iufFile argument is NULL");
         return IUF_ERR_VALUE;
@@ -42,6 +42,7 @@ int iufFileCompare
 {
     if( reference == actual ) return IUF_TRUE;
     if( reference == NULL || actual == NULL ) return IUF_FALSE;
+    if( iufHistoryNodeCompare(reference->history, actual->history) == IUF_FALSE ) return IUF_FALSE;
     return IUF_TRUE;
 }
 

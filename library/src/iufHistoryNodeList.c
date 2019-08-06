@@ -127,9 +127,6 @@ iuhnl_t iufHistoryNodeListLoad
         hid_t group_id = H5Gopen(handle, parentPath, H5P_DEFAULT);
         if (group_id != H5I_INVALID_HID)
         {
-            // todo:
-            //      is this ok iso
-            // iufHistoryNodeLoadAnyType(group_id)
             node = iufHistoryNodeLoad(group_id);
             status |= iufHistoryNodeListSet(nodeList, node, i);
             status |= H5Gclose(group_id );
