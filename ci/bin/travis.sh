@@ -21,6 +21,7 @@ function tmate_remote_debug
 # (It is using tmate.io tunneling services)
 #
 {
+  set -x
     figho "TMATE Session.."
     echo  | ssh-keygen -t rsa -N ""
     tmate -S /tmp/tmate.sock new-session -d               # Launch tmate in a detached state
@@ -37,6 +38,7 @@ function tmate_remote_debug
         sleep 2
     done
     figho "TMATE closed.."
+set +x
 }
 
 
