@@ -3,8 +3,8 @@
 
 function figho
 {
-    which figlet &> /dev/null
-    if [[ $? == 0 ]]
+    LOCATION=$(command -v figlet)
+    if [[ "$LOCATION" != "" ]]
     then
         echo $* | figlet
     else
@@ -21,8 +21,7 @@ function tmate_remote_debug
 # (It is using tmate.io tunneling services)
 #
 {
-  set -x
-    echo "TMATE Session.."
+    figho "TMATE Session.."
     echo  | ssh-keygen -t rsa -N ""
     tmate -S /tmp/tmate.sock new-session -d               # Launch tmate in a detached state
     tmate -S /tmp/tmate.sock wait tmate-ready             # Blocks until the SSH connection is established
@@ -37,8 +36,7 @@ function tmate_remote_debug
         fi
         sleep 2
     done
-    echo  "TMATE closed.."
-set +x
+    figho  "TMATE closed.."
 }
 
 
