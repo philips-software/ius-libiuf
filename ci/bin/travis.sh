@@ -174,7 +174,7 @@ function before_install_osx
     printf "==> before_install_osx\n"
     # Install tested version 3.14.0 of cmake
     #                1.10.5_1 of hdf5
-    brew install tmate figlet
+    brew upgrade tmate
     tmate_remote_debug
     brew unlink cmake
     brew install tmate figlet \
