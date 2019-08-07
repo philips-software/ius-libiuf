@@ -62,8 +62,8 @@ iupad_t ncFillParameterDict
     char generatedValue[1024];
     for (elementID=0;elementID<numElements;elementID++)
     {
-        sprintf(generatedKey,"key_%d", elementID);
-        sprintf(generatedValue,"value_%d", elementID);
+        snprintf(generatedKey, sizeof(generatedKey), "key_%d", elementID);
+        snprintf(generatedValue, sizeof(generatedValue), "value_%d", elementID);
         iufParameterDictSet(dict, generatedKey, generatedValue);
     }
 

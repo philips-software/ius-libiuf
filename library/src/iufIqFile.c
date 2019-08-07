@@ -51,7 +51,7 @@ iuiqfi_t iufIqFileInstanceCreate
     IUF_ERR_ALLOC_NULL_N_RETURN(instanceData, IufIqFileInstance, IUIQFI_INVALID);
 
 	instanceData->IufVersion = iufGetVersionMajor();
-	instanceData->pFilename = "";
+	instanceData->pFilename = NULL;
 	instanceData->frameList = IUFL_INVALID;
 	instanceData->iqPatternListDict = IUIQPALD_INVALID;
 	instanceData->pulseDict = IUPD_INVALID;
@@ -74,7 +74,11 @@ int iufIqFileInstanceDelete
     IUF_ERR_CHECK_NULL_N_RETURN(instance, IUF_ERR_VALUE);
     iufDataStreamDictDelete(instance->iDataStreamDict);
     iufDataStreamDictDelete(instance->qDataStreamDict);
-    free((void *)instance->pFilename);
+    if(instance->pFilename != NULL)
+    {
+        free((void *)instance->pFilename);
+    }
+
     if (instance->deepDelete == IUF_TRUE)
     {
         iufFrameListDelete(instance->frameList);
@@ -236,10 +240,12 @@ iud_t iufIqFileChannelCreate
 
 static iuiqfi_t iqFileInstanceLoad
 (
-    iuiqfi_t instance
+    hid_t handle
 )
 {
-    IUF_ERR_CHECK_NULL_N_RETURN(instance, IUIQFI_INVALID);
+    IUF_ERR_EVAL_N_RETURN(handle == H5I_INVALID_HID, IUIQFI_INVALID);
+    iuiqfi_t instance = iufIqFileInstanceCreate();
+    instance->handle = handle;
     instance->frameList = iufFrameListLoad(instance->handle);
     if (instance->frameList == IUFL_INVALID)
     {
@@ -319,32 +325,14 @@ void *iufIqFileInstanceLoad
     hid_t handle
 )
 {
-    iuiqfi_t instance = iufIqFileInstanceCreate();
-    iuiqfi_t new_instance;
-    instance->handle = handle;
-    new_instance = iqFileInstanceLoad(instance);
-    if( new_instance == IUIQFI_INVALID )
+    iuiqfi_t instance = iqFileInstanceLoad(handle);
+    if( instance != IUIQFI_INVALID )
     {
-        iufIqFileInstanceDelete(instance);
-        instance = new_instance;
+        instance->deepDelete = IUF_TRUE;
     }
-    instance->deepDelete = IUF_TRUE;
     return (void *)instance;
 }
 
-
-iuhn_t iufIqFileLoadNode
-(
-    hid_t handle
-)
-{
-    iuhn_t node = iufHistoryNodeCreate(IUF_IQ_TYPE);
-    iuiqfi_t instance = iufIqFileInstanceCreate();
-    instance->handle = handle;
-    instance = iqFileInstanceLoad(instance);
-    iufHistoryNodeSetInstanceData(node,instance);
-    return node;
-}
 
 iuiqf_t iufIqFileNodeLoad
 (
@@ -417,7 +405,7 @@ int iufIqFileClose
 	return status;
 }
 
-static int iufIqFileCompareInstance
+int iufIqFileCompareInstance
 (
     iuiqfi_t reference,
     iuiqfi_t actual
@@ -816,10 +804,10 @@ static hid_t iufIqFileGetReadSpace
         
     if ( dataStream == IUDS_INVALID)
     {
+        int path_size = (int) strlen(label) + 3;
         dataStream = iufDataStreamCreate();
-		path = (char *)calloc(strlen(label) + 3, sizeof(char));
-		sprintf(path, "%s/%c", label, comp);
-
+		path = (char *)calloc(path_size, sizeof(char));
+		snprintf(path, path_size, "%s/%c", label, comp);
         dataStream->rfDataset = H5Dopen(instance->handle, path, H5P_DEFAULT);
         if (component == IUF_IQ_COMPONENT_I)
         {
@@ -829,6 +817,7 @@ static hid_t iufIqFileGetReadSpace
         {
             iufDataStreamDictSet(instance->qDataStreamDict,label,dataStream);
         }
+        free(path);
     }
     return H5Dget_space(dataStream->rfDataset);
 }

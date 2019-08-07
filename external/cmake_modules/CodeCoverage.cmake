@@ -224,6 +224,7 @@ function(SETUP_TARGET_FOR_COVERAGE_GCOVR_XML)
 
         # Running gcovr
         COMMAND ${GCOVR_PATH} --xml
+            --keep
             -r ${PROJECT_SOURCE_DIR} ${GCOVR_EXCLUDES}
             --object-directory=${PROJECT_BINARY_DIR}
             -o ${Coverage_NAME}.xml
@@ -234,8 +235,9 @@ function(SETUP_TARGET_FOR_COVERAGE_GCOVR_XML)
 
     # Show info where to find the report
     add_custom_command(TARGET ${Coverage_NAME} POST_BUILD
-        COMMAND ;
+        COMMAND find ${PROJECT_BINARY_DIR} -name *.o | xargs gcov;
         COMMENT "Cobertura code coverage report saved in ${Coverage_NAME}.xml."
+        COMMENT "gcov files stored in  ${PROJECT_BINARY_DIR}."
     )
 
 endfunction() # SETUP_TARGET_FOR_COVERAGE_GCOVR_XML
