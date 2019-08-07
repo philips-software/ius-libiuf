@@ -157,7 +157,7 @@ iu2dtel_t iuf2DTransducerElementListLoad
     iu2dte_t loadedElement;
     for (i=0;i < size;i++)
     {
-        sprintf(path, IUF_INPUTFILE_PATH_TRANSDUCER_ELEMENT, i);
+        snprintf(path, sizeof(path), IUF_INPUTFILE_PATH_TRANSDUCER_ELEMENT, i);
         hid_t element_single_id = H5Gopen(elements_id, path, H5P_DEFAULT);
         loadedElement = iuf2DTransducerElementLoad(element_single_id);
         if(loadedElement == IU2DTE_INVALID)
@@ -211,7 +211,7 @@ int iuf2DTransducerElementListSave
         sourceElement = iuf2DTransducerElementListGet(list,i);
         if(sourceElement == IU2DTE_INVALID) continue;
 
-        sprintf(path, IUF_INPUTFILE_PATH_TRANSDUCER_ELEMENT, i);
+        snprintf(path, sizeof(path), IUF_INPUTFILE_PATH_TRANSDUCER_ELEMENT, i);
         hid_t element_single_id = H5Gcreate(elements_id, path, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
         status = iuf2DTransducerElementSave(sourceElement, element_single_id);
         H5Gclose(element_single_id);

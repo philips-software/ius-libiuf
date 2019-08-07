@@ -184,7 +184,7 @@ int iufHistoryNodeListSave
 
     for (i=0;i<node->numHistoryNodes;i++)
     {
-        sprintf(parentPath, "parent%d", i);
+        snprintf(parentPath, IUF_MAX_HDF5_PATH, "parent%d", i);
         hid_t group_id = H5Gcreate(handle, parentPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
         status |= iufHistoryNodeSaveAnyType(node->pHistoryNodes[i], group_id);
         status |= H5Gclose(group_id );

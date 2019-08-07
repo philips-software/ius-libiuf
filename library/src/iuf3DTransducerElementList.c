@@ -164,7 +164,7 @@ iu3dtel_t iuf3DTransducerElementListLoad
     iu3dte_t loadedElement;
     for (i=0;i < size;i++)
     {
-        sprintf(path, IUF_INPUTFILE_PATH_TRANSDUCER_ELEMENT, i);
+        snprintf(path, sizeof(path), IUF_INPUTFILE_PATH_TRANSDUCER_ELEMENT, i);
         hid_t element_id = H5Gopen(elements_id, path, H5P_DEFAULT);
         loadedElement = iuf3DTransducerElementLoad(element_id);
         if(loadedElement == IU3DTE_INVALID)
@@ -216,7 +216,7 @@ int iuf3DTransducerElementListSave
         sourceElement = iuf3DTransducerElementListGet(list,i);
         if(sourceElement == IU3DTE_INVALID) continue;
 
-        sprintf(path, IUF_INPUTFILE_PATH_TRANSDUCER_ELEMENT, i);
+        snprintf(path, sizeof(path), IUF_INPUTFILE_PATH_TRANSDUCER_ELEMENT, i);
         hid_t singleElementId = H5Gcreate(group_id, path, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
         status = iuf3DTransducerElementSave(sourceElement, singleElementId);
         H5Gclose(singleElementId);

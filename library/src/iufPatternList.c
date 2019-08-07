@@ -190,7 +190,7 @@ iupal_t iufPatternListLoad
 	// Load patterns
 	for (i = 0; i < numPatterns; i++)
 	{
-		sprintf(path, IUF_INPUTFILE_PATH_PATTERNLIST_PATTERN, i);
+        snprintf(path, sizeof(path), IUF_INPUTFILE_PATH_PATTERNLIST_PATTERN, i);
 		hid_t patternId = H5Gopen(handle, path, H5P_DEFAULT);
 		pattern = iufPatternLoad(patternId);
 		if (pattern == IUPA_INVALID)
@@ -247,7 +247,7 @@ int iufPatternListSave
 	{
 		pattern = iufPatternListGet(list, i);
 		if (pattern == IUPA_INVALID) continue;
-		sprintf(path, IUF_INPUTFILE_PATH_PATTERNLIST_PATTERN, i);
+        snprintf(path, sizeof(path), IUF_INPUTFILE_PATH_PATTERNLIST_PATTERN, i);
 		hid_t pattern_id = H5Gcreate(handle, path, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 		status = iufPatternSave(pattern, pattern_id);
 		H5Gclose(pattern_id);
