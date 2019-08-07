@@ -135,8 +135,8 @@ TEST(IufParameterDict, testIufParameterDictCompare)
     // Fix.
     for (elementID=0;elementID<1000;elementID++)
     {
-        sprintf(generatedKey,"key_%d", elementID);
-        sprintf(generatedValue,"value_%d", elementID);
+        snprintf(generatedKey,sizeof(generatedKey),"key_%d", elementID);
+        snprintf(generatedValue,sizeof(generatedValue),"value_%d", elementID);
         status = iufParameterDictSet(dict, generatedKey, generatedValue);
         TEST_ASSERT_EQUAL(IUF_E_OK,status);
         TEST_ASSERT_EQUAL_STRING(generatedValue,iufParameterDictGet(dict, generatedKey));

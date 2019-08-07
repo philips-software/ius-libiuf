@@ -91,7 +91,7 @@ TEST(IufDataStreamDict, testIufDataStreamDictCompare)
     iuds_t generatedValue;
     for (elementID=0;elementID<1000;elementID++)
     {
-        sprintf(generatedKey,"key_%d", elementID);
+        snprintf(generatedKey,sizeof(generatedKey),"key_%d", elementID);
         generatedValue = iufDataStreamCreate();
         generatedValue->fileChunkConfig=(hid_t)elementID;
         generatedValue->rfDataset=(hid_t)elementID+1;

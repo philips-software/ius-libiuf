@@ -392,9 +392,6 @@ herr_t iufHdf5WriteGrid
         sprintf( pVariableNameDim, "%s/numPointsX", pGridName );
         returnValue |= H5LTmake_dataset_int( handle, pVariableNameDim, 1,
                                              &dims[0], &(pGrid->numPoints1) );
-        //sprintf(pVariableNameDim, "%s/numPointsY");
-        //returnValue |= H5LTmake_dataset_int( handle, pVariableNameDim, 1,
-        //                                     &dims[0], &(pGrid->numPoints0) );
     }
     else
     {
