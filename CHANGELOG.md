@@ -7,7 +7,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 ## [Unreleased]
 
-- Fixed Reliability issues detected by SonarCloud
+## [2.3]
+
+- Fixed Missing Reliability issues detected by SonarCloud
 
 ## [2.2]
 
@@ -21,3 +23,4 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 [2.1]: https://github.com/philips-software/ius-libiuf/releases/tag/2.1
 [2.2]: https://github.com/philips-software/ius-libiuf/releases/tag/2.2
+[2.3]: https://github.com/philips-software/ius-libiuf/releases/tag/2.3
