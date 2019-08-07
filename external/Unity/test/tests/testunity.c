@@ -4532,7 +4532,7 @@ static void printFloatValue(float f)
 
     UnityPrintFloat(f);
 
-    sprintf(expected, "%.6g", f);
+    snprintf(expected, sizeof(expected), "%.6g", f);
 
     /* We print all NaN's as "nan", not "-nan" */
     if(strcmp(expected, "-nan") == 0) strcpy(expected, "nan");
@@ -4541,8 +4541,8 @@ static void printFloatValue(float f)
     double lower = (double)f * 0.9999995;
     double higher = (double)f * 1.0000005;
 
-    if (isfinite(lower)) sprintf(expected_lower, "%.6g", lower); else strcpy(expected_lower, expected);
-    if (isfinite(higher)) sprintf(expected_higher, "%.6g", higher); else strcpy(expected_higher, expected);
+    if (isfinite(lower)) snprintf(expected_lower, sizeof(expected_lower), "%.6g", lower); else strcpy(expected_lower, expected);
+    if (isfinite(higher)) snprintf(expected_higher, sizeof(expected_higher), "%.6g", higher); else strcpy(expected_higher, expected);
 
     if (strcmp(expected, getBufferPutcharSpy()) != 0 &&
         strcmp(expected_lower, getBufferPutcharSpy()) != 0 &&

@@ -3,8 +3,8 @@
 
 function figho
 {
-    which figlet &> /dev/null
-    if [[ $? == 0 ]]
+    LOCATION=$(command -v figlet)
+    if [[ "$LOCATION" != "" ]]
     then
         echo $* | figlet
     else
@@ -21,7 +21,7 @@ function tmate_remote_debug
 # (It is using tmate.io tunneling services)
 #
 {
-    figho "TMATE Session.."
+    echo "TMATE Session.."
     echo  | ssh-keygen -t rsa -N ""
     tmate -S /tmp/tmate.sock new-session -d               # Launch tmate in a detached state
     tmate -S /tmp/tmate.sock wait tmate-ready             # Blocks until the SSH connection is established
@@ -36,7 +36,7 @@ function tmate_remote_debug
         fi
         sleep 2
     done
-    figho "TMATE closed.."
+    echo  "TMATE closed.."
 }
 
 
@@ -172,13 +172,7 @@ function dist_windows
 function before_install_osx
 {
     printf "==> before_install_osx\n"
-    # Install tested version 3.14.0 of cmake
-    #                1.10.5_1 of hdf5
-    brew unlink cmake
-    brew install tmate figlet \
-    https://raw.githubusercontent.com/Homebrew/homebrew-core/2f58eb8791f88dbf380523508a3a9aaf815f3976/Formula/cmake.rb \
-    https://raw.githubusercontent.com/Homebrew/homebrew-core/ac1d63eb675c3a963a363bf7ef0504024de81487/Formula/hdf5.rb
-    brew link cmake
+    brew install  figlet
     printf "==> before_install_osx Done\n"
  }
 
@@ -186,7 +180,7 @@ function before_install_osx
 
 function build_osx
 {
-    figho "Building....Linux.."
+    figho "Building....MacOS.."
     ci/bin/build.sh
     figho "Done.."
 }

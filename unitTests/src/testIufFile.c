@@ -30,7 +30,59 @@ TEST_TEAR_DOWN(IufFile)
     remove(pErrorFilename);
 }
 
+TEST(IufFile, testIufInvalidArgs)
+{
+    int numFrames = 10;
+    int numSamplesPerLine = 10;
+    int numChannels = 8;
+    char *pFilename = "testIufInvalidArgs.hdf5";
+    iuif_t iufInputFile = dgGenerateInputFile(pFilename, "S5-1", "bmode", numFrames, numSamplesPerLine, numChannels);
+    iufInputFileNodeSave(iufInputFile);
+    iufInputFileClose(iufInputFile);
 
+    TEST_ASSERT_EQUAL(IUFI_INVALID, iufFileLoad(NULL));
+    TEST_ASSERT_EQUAL(IUFI_INVALID, iufFileLoad("UnknownFile"));
+    iuf_t file = iufFileLoad(pFilename);
+    iuhn_t node = iufFileGetHistoryTree(file);
+    TEST_ASSERT_EQUAL(IUF_ERR_VALUE, iufFileSetHistoryTree(NULL,NULL));
+    TEST_ASSERT_EQUAL(IUF_ERR_VALUE, iufFileSetHistoryTree(file,NULL));
+    TEST_ASSERT_EQUAL(IUF_ERR_VALUE, iufFileSetHistoryTree(NULL,node));
+
+    TEST_ASSERT_EQUAL(IUHN_INVALID, iufFileGetHistoryTree(NULL));
+    TEST_ASSERT_EQUAL(NULL, iufFileGetType(NULL));
+}
+
+TEST(IufFile, testIufInputFileCompare)
+{
+    int numFrames = 10;
+    int numSamplesPerLine = 10;
+    int numChannels = 8;
+    char *pFilename = "testIufInputFileCompare.hdf5";
+    char *pFilename2 = "testIufInputFileCompare2.hdf5";
+    char *pFilename3 = "testIufInputFileCompare3.hdf5";
+    iuif_t iufInputFile = dgGenerateInputFile(pFilename, "S5-1", "bmode", numFrames, numSamplesPerLine, numChannels);
+    iufInputFileNodeSave(iufInputFile);
+
+    iuif_t iufInputFile2 = dgGenerateInputFile(pFilename2, "S5-1", "bmode", numFrames, numSamplesPerLine, numChannels);
+    iufInputFileNodeSave(iufInputFile2);
+    iufInputFileClose(iufInputFile2);
+
+    iuif_t iufInputFile3 = dgGenerateInputFile(pFilename3, "S5-1", "cwc", numFrames, numSamplesPerLine, numChannels);
+    iufInputFileNodeSave(iufInputFile3);
+    iufInputFileClose(iufInputFile3);
+
+    iuf_t iufFile = iufFileLoad(pFilename);
+    iuf_t iufFile2 = iufFileLoad(pFilename2);
+    iuf_t iufFile3 = iufFileLoad(pFilename3);
+    iuf_t iufFile4 = iufFileLoad(pFilename);
+
+    TEST_ASSERT_EQUAL(IUF_TRUE, iufFileCompare(iufFile, iufFile4));
+    TEST_ASSERT_EQUAL(IUF_TRUE, iufFileCompare(NULL, NULL));
+    TEST_ASSERT_EQUAL(IUF_FALSE, iufFileCompare(iufFile, iufFile2));
+    TEST_ASSERT_EQUAL(IUF_FALSE, iufFileCompare(iufFile, iufFile3));
+    TEST_ASSERT_EQUAL(IUF_FALSE, iufFileCompare(iufFile, NULL));
+    TEST_ASSERT_EQUAL(IUF_FALSE, iufFileCompare(NULL, iufFile2));
+}
 
 TEST(IufFile, testIufInputFileHistoryScenario)
 {
@@ -64,7 +116,6 @@ TEST(IufFile, testIufInputFileHistoryScenario)
     TEST_ASSERT_EQUAL(0, numAlgoParams);
     dgDeleteInputFile(iufInputFile);
     iufFileDelete(iufFile);
-    iufFileDelete(NULL);
 
 }
 
@@ -131,6 +182,8 @@ TEST(IufFile, testIufCWCFileHistoryScenario)
 TEST_GROUP_RUNNER(IufFile)
 {
     // testIufCWCFileHistoryScenario
+    RUN_TEST_CASE(IufFile, testIufInvalidArgs);
+    RUN_TEST_CASE(IufFile, testIufInputFileCompare);
     RUN_TEST_CASE(IufFile, testIufInputFileHistoryScenario);
-//    RUN_TEST_CASE(IufFile, testIufCWCFileHistoryScenario);
+    RUN_TEST_CASE(IufFile, testIufCWCFileHistoryScenario);
 }

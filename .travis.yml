@@ -6,11 +6,11 @@ notifications:
       - secure: "s8BNZHPiw7N6B19mWbv9JG73opIi3ltiUeWl3BVpC7SbRDnDfnXNA+tM7u5+r5OMSGJgXdiiPSM8O+82Zasi+1gVdOy59PRQMHZvbw+3yMN8HNMMreF//n3JXrerbQJk4O1taamwI+Y4W530M1tvWnM95e+kAp45vPyQFxnQr5L8R6pDzsrVx5T6ZS4zk4MSI7FwSTEoZrjZQz5GV8lbxEWMFe05zK5a+0x63whNsD/IeXYw0MKX348yHH0SWH4lVNALK8zyvQe/Z1TV1OsOjpTp6mmgL8k4brEWLkHuBQTfB1C+V0NyyMXIH2V463/ntxd1tbfnce/bchTkTK9NhKqsp5rHUKxEWVbRcnc4k/T6+SG/MXFKdHHQcGQDyt4hoD9lmDUdGZDkc9+largi7eQyVA1MAIKI4UQofXojLy1NJq1cy4gYkluD45XMCa7rtvLMqAJ859O4cC1A9EwzArdyoMc9j8cnRKs1WhfJdKY884f3Coz5GW+oacJNxrL2YYn8nawmaz6LChJuHvffMZ+vWxcpA7RKfc3NnsVuNN48hrtarpeFTc0b7U7MqEcFyQUuTcpO7EjYw9b2uyEdva4GykzxF4pw+0Cn1THaRDIOe7znibcFv4cqLM8+Th5+S0aWORfkbvtiKqkLJlyKyBMj3P5TRVloXlDV/XVzxbs="
       - secure: "ahuOzoZAmeXwNJb+p7wUFcGthrE8o1m+4R2k6qgSM80rH8rePuUI/fLNzIGXKGMhqgs5Vc75YhFbK6jOQvNFJLbdLv3XJZZw2JNg434T3pfwuG8F0MH/HqN1MJ48VLEYCjfaJVdovHHHEUqs5MnwY2DoJhDWsEEW7K8IivirVVeXtn2oev1UapJ6mXXsNi6RNYGgsvSARcpLdTch/g8yYh6LGrxJ2ZrPIDmpdzN8oGTXmaeLr7LC1NDbcXRfN+GH9ByTDirEjOrx4llG0RGIzKWA86+o4dbbZox5VfGOuUv8rp36LWGSIt4v/zW9SWVMjWlw4JXp5L3SG4kIbhHS3nvCtW8fgVQYdoD58GYzwTzRxkR0/9+o95kqyDrLqmjhXv65LxGtjDoUxR/JlPGUmVnXtQMnAfuwqFBOJeR7EbV6s0d0preTo3W0EvlgJRmxIFSGhAqDbYg2Qhd36xoXYn/zxUu9SrxC+AoceUVSzYCLZTW1d0xPkFQXWg4/5Sphfbd5x0zey5fKbIyiespA5u+bxXYEj8h1kRFv2LVyHSc1nFNDRyorrvytUglsKGurtvg77FlkXB0vlHobr0m7IsCroZrfzK8a8xOAcLJoQ33OOo802Fmpau7EmzvkBILP6/uXMo88lCobA9RUwUrxBPsvubHiT2VHjpBGAr3AAXE="
 
-cache:
-  timeout: 3600  # 60 mins
-  directories:
-    - Download
-    - build
+#cache:
+#  timeout: 3600  # 60 mins
+#  directories:
+#    - Download
+#    - build
 
 addons:
   sonarcloud:

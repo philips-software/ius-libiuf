@@ -53,4 +53,9 @@ if(CMAKE_COMPILER_IS_GNUCC)
         EXECUTABLE $ENV{CTEST} unitTests        # Executable in PROJECT_BINARY_DIR
         DEPENDENCIES unitTests         # Dependencies to build first
     )
+    SETUP_TARGET_FOR_COVERAGE_GCOVR_HTML(
+            NAME gcovr-report-html              # New target name
+            EXECUTABLE $ENV{CTEST} unitTests        # Executable in PROJECT_BINARY_DIR
+            DEPENDENCIES unitTests         # Dependencies to build first
+    )
 endif()
