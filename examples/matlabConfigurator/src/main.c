@@ -28,8 +28,6 @@ static char *writeTransducer(iut_t transducer)
 }
 
 
-
-
 static char *writeResource(iupal_t patternList, iut_t transducer, iua_t acquisition, iursd_t receiveSettingsDict)
 {
     char* script = (char *)calloc(5000, sizeof(char)); // 5000 characters should be enough
@@ -101,9 +99,7 @@ static char *writeResource(iupal_t patternList, iut_t transducer, iua_t acquisit
             windowTitle, numElements, IMAGING_DEPTH_MM, numRays,
             IMAGING_DEPTH_MM / (double)WINDOW_RESOLUTION_Y,
             WINDOW_POS_X, WINDOW_POS_Y, WINDOW_WIDTH, WINDOW_HEIGHT,
-            refX, refY
-    )
-    );
+            refX, refY);
 }
 
 static char *writeTx(iupal_t patternList,
