@@ -1,36 +1,45 @@
+import io
+import os
 import setuptools.command.install
-import shutil
-from   distutils.sysconfig import get_python_lib
+import ${LIBRARY_NAME}
 
-import libiuf
 
-class CompiledLibInstall(setuptools.command.install.install):
-    """
-    Specialized install to install to python libs
-    """
-
-    def run(self):
-        """
-        Run method called by setup
-        :return:
-        """
-        # Get filenames from CMake variable
-        filenames = '${PYTHON_INSTALL_FILES}'.split(';')
-
-        # Directory to install to
-        install_dir = get_python_lib()
-
-        # Install files
-        [shutil.copy(filename, install_dir) for filename in filenames]
+def read(*filenames, **kwargs):
+    encoding = kwargs.get('encoding', 'utf-8')
+    sep = kwargs.get('sep', os.linesep)
+    buf = []
+    for filename in filenames:
+        with io.open(filename, encoding=encoding) as f:
+            buf.append(f.read())
+    return sep.join(buf)
 
 
 if __name__ == '__main__':
     setuptools.setup(
-        name='libiuf',
-        version=libiuf.__version__,
-        packages=['libiuf'],
+        name='${LIBRARY_NAME}',
+        version=${LIBRARY_NAME}.__version__,
+        description='IUF file IO library SDK',
+        long_description=read('README.md'),
+        long_description_content_type='text/markdown',
+        author='IUF SDK Team',
+        author_email='al_libiuf@natlab.research.philips.com',
+        url='https://github.com/philips-software/ius-libiuf',
+        packages=setuptools.find_packages(),
+        provides=['${LIBRARY_NAME}'],
+        # package_data={'${LIBRARY_NAME}': ['${SWIG_LIBIUF_SO}', '${LIBRARY_NAME}.py']},
         license='MIT',
-        author='Danny Ruijzendaal',
-        author_email='danny.ruijzendaal@philips.com',
-        cmdclass={'install': CompiledLibInstall}
-    )
+        install_requires=['numpy', 'pyyaml'],-
+        tests_require=["nose2"],
+        test_suite="nose2.collector.collector",
+        # See: https://pypi.org/classifiers/
+        classifiers=[
+            'Development Status :: 4 - Beta',
+            'Intended Audience :: Science/Research',
+            'License :: OSI Approved :: MIT License',
+            'Operating System :: MacOS :: MacOS X',
+            'Operating System :: POSIX :: Linux',
+            'Operating System :: Microsoft :: Windows',
+            'Programming Language :: C',
+            'Programming Language :: Python :: 3.7'
+        ]
+)

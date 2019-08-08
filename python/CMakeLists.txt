@@ -4,21 +4,22 @@ find_package(SWIG REQUIRED)
 
 include(${SWIG_USE_FILE})
 
-set(CMAKE_SWIG_FLAGS "")
 include_directories(
         ${PYTHON_INCLUDE_PATH}
         ${CMAKE_SOURCE_DIR}/library/include
         ${HDF5_INCLUDE_DIR})
 
+set(CMAKE_SWIG_FLAGS "")
 set(UseSWIG_TARGET_NAME_PREFERENCE STANDARD)
+set(LIBRARY_NAME piuf)
 
 # Add swig module
-swig_add_library(libiuf
+swig_add_library(${LIBRARY_NAME}
         TYPE SHARED
         LANGUAGE python
-        SOURCES libiuf.i)
+        SOURCES ${LIBRARY_NAME}.i)
 
-swig_link_libraries(libiuf
+swig_link_libraries(${LIBRARY_NAME}
         ${PYTHON_LIBRARIES}
         ${IUF_LIBRARIES}
         ${HDF5_LIBRARIES}
@@ -29,25 +30,25 @@ swig_link_libraries(libiuf
 
 
 if(APPLE)
-    set_target_properties(libiuf PROPERTIES
+    set_target_properties(${LIBRARY_NAME} PROPERTIES
             SUFFIX ".so"
             )
-    set_property(TARGET libiuf APPEND PROPERTY
+    set_property(TARGET ${LIBRARY_NAME} APPEND PROPERTY
             LINK_FLAGS "-flat_namespace -undefined suppress"
             )
 endif()
 
 
 # Files to install with Python
-set(SWIG_LIBIUF_PY ${CMAKE_CURRENT_BINARY_DIR}/libiuf.py)
+set(SWIG_LIBIUF_PY ${CMAKE_CURRENT_BINARY_DIR}/${LIBRARY_NAME}.py)
 
 if(MSVC)   
-    set(SWIG_LIBIUF_SO ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CONFIG}/_libiuf.pyd)
+    set(SWIG_LIBIUF_SO ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CONFIG}/_${LIBRARY_NAME}.pyd)
     set(CPYCMD  ${CMAKE_COMMAND} -E copy
                 ${SWIG_LIBIUF_SO}
                 ${CMAKE_CURRENT_BINARY_DIR})
 else()
-    set(SWIG_LIBIUF_SO ${CMAKE_CURRENT_BINARY_DIR}/_libiuf.so)
+    set(SWIG_LIBIUF_SO ${CMAKE_CURRENT_BINARY_DIR}/_${LIBRARY_NAME}.so)
     set(CPYCMD echo Installing Python Module)
 endif()
 
@@ -57,8 +58,10 @@ set(PYTHON_INSTALL_FILES ${SWIG_LIBIUF_PY} ${SWIG_LIBIUF_SO})
 set(SETUP_PY_IN ${CMAKE_CURRENT_SOURCE_DIR}/setup.py.in)
 set(SETUP_PY_OUT ${CMAKE_CURRENT_BINARY_DIR}/setup.py)
 configure_file(${SETUP_PY_IN} ${SETUP_PY_OUT})
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/README.md ${CMAKE_CURRENT_BINARY_DIR}/README.md COPYONLY)
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/tests DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 # Install target to call setup.py
 add_custom_target(install-python
         COMMAND ${CPYCMD}
-        COMMAND python ${SETUP_PY_OUT} install)
+        COMMAND python -m pip install .)

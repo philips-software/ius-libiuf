@@ -1,5 +1,5 @@
 import unittest
-from libiuf import *
+from piuf import *
 
 
 class TestGetMajorVersion(unittest.TestCase):

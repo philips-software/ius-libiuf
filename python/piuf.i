@@ -1,4 +1,4 @@
-%module libiuf
+%module piuf
 
 // Add necessary symbols to generated header
 %{
