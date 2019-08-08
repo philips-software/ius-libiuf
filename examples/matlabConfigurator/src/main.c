@@ -4,6 +4,9 @@
 #include <string.h>
 #include <math.h>
 
+#define DEFAULT_IMAGING_DEPTH 0.010
+#define PIXEL_DELTA 0.875
+
 static void printUsage(char **argv)
 {
     printf("Usage: for %s:\n", argv[0]);
@@ -28,18 +31,17 @@ static char *writeTransducer(iut_t transducer)
 }
 
 
-static char *writeResource(iupal_t patternList, iut_t transducer, iua_t acquisition, iursd_t receiveSettingsDict)
+static char *writeResource(iupal_t patternList, iut_t transducer, iua_t acquisition, double depth)
 {
     char* script = (char *)calloc(5000, sizeof(char)); // 5000 characters should be enough
+
     // get all keys from the patternList dictionary and for each key go though its list and accumulate the transmits
     int numElements = iufTransducerGetNumElements(transducer);
-
-    // determine numWaves
     int i=0;
     int numWaves = iufPatternListGetSize(patternList);
 
     // determine rowsPerFrame
-    double lambdaMm = iufAcquisitionGetSpeedOfSound(acquisition) / iufTransducerGetCenterFrequency(transducer);
+    double lambdaMm = 0.001 * iufAcquisitionGetSpeedOfSound(acquisition) / iufTransducerGetCenterFrequency(transducer);
     IufTransducerShape shape = iufTransducerGetShape(transducer);
     double elementPitch=0.0;
     if (shape == IUF_2D_SHAPE)
@@ -49,57 +51,53 @@ static char *writeResource(iupal_t patternList, iut_t transducer, iua_t acquisit
         elementPitch = IUF_ABS(iuf2DTransducerElementGetPosition(element1).x -
                                iuf2DTransducerElementGetPosition(element0).x);
     }
-    double D = (iufTransducerGetNumElements(transducer) - 1) * elementPitch;
+    double D = (iufTransducerGetNumElements(transducer) - 1) * elementPitch * 1000.0; // in mm
     double rayDelta = (0.25) * asin(1.22*lambdaMm/D);
     int numRays = round(2*(M_PI/4)/rayDelta);
-    double maxAqcLength = round(IMAGING_DEPTH_MM/lambdaMm);
+    double maxAqcLength = round(depth/lambdaMm);
     double lineLengthRcvBuffer = 128 * ceil(maxAqcLength / 16.0);
     int rowsPerFrame = 16 * ceil(lineLengthRcvBuffer * numRays / 16.0);
 
-
-    int interBufferRowsPerFrame = (int)(16 * ceil(2^ceil(log2(maxAqcLength))) / 16);
+    int interBufferRowsPerFrame = (int)(16 * ceil(2^ceil(log2(maxAqcLength))) / 16); // verify this formula
     int interBufferColsPerFrame = PData.Size(2);
 
-    sprintf(script, "Resource.Parameters.connector             = 1;\n" \
+    double sizeX = ceil((depth));
+    sprintf(script, "PData.Coord = 'rectangular';\n" \
+                    "PData.PDelta = [%f, 1.0, 1.0]; \n" \
+                    "PData.Size = []; \n" \
+                    "PData.Origin = [] \n" \
+                    "PData.Region.Shape.Name = 'Rectangle' \n" \              LEFT OF HER!!!!
+                    "PData.Region.Shape.Position = [%f, %f, %f] "\
+                    "PData.Region.Shape.Position  'width', ); \n "\
                     "Resource.Parameters.numTransmit           = %d;\n" \
-                    "Resource.Parameters.numRcvChannels        = %d;\n" \
+                    "Resource.Parameters.numRcvChannels        = Resource.Parameters.numTransmit;\n" \
                     "Resource.Parameters.speedOfSound          = %f;\n" \
-                    "Resource.Parameters.speedCorrectionFactor = 1.0;\n" \
-                    "Resource.Parameters.startEvent            = 1;\n" \
-                    "Resource.Parameters.simulateMode          = 0;\n " \
-                    "Resource.Parameters.fakeScanhead          = 0;\n" \
                     "Resource.Parameters.verbose               = 2;\n" \
                     "Resource.RcvBuffer(1).datatype            = \'int16\';\n" \
-                    "Resource.RcvBuffer(1).rowsPerFrame = %d;\n" \
-                    "Resource.RcvBuffer(1).colsPerFrame =  Resource.Parameters.numRcvChannels;\n" \
-                    "Resource.RcvBuffer(1).numFrames    = 20;\n" \
-                    "Resource.InterBuffer(1).datatype     = 'complex';\n" \
-                    "Resource.InterBuffer(1).numFrames    = 1;\n"\
-                    "Resource.InterBuffer(1).rowsPerFrame = %d;\n" \
-                    "Resource.InterBuffer(1).colsPerFrame = %d;\n" \
-                    "Resource.ImageBuffer(1).datatype     = 'double';\n" \
-                    "Resource.ImageBuffer(1).rowsPerFrame = Resource.InterBuffer(1).rowsPerFrame;\n" \
-                    "Resource.ImageBuffer(1).colsPerFrame = Resource.InterBuffer(1).colsPerFrame;\n" \
-                    "Resource.ImageBuffer(1).numFrames    = 1;\n" \
-                    "Resource.DisplayWindow(1).Title      = [%s, ...\n" \
+                    "Resource.RcvBuffer(1).rowsPerFrame        = %d;\n" \
+                    "Resource.RcvBuffer(1).colsPerFrame        = Resource.Parameters.numRcvChannels;\n" \
+                    "Resource.RcvBuffer(1).numFrames           = 20; %% for cineloop\n" \
+                    "Resource.InterBuffer(1).numFrames         = 1;\n"\
+                    "Resource.ImageBuffer(1).numFrames         = 1;\n" \
+                    "Resource.DisplayWindow(1).Title           = [%s, ...\n" \
                     " ' (', %d,' active elements)', ...\n"\
                     " ', max ', %f,' cm', ...\n" \
                     " ', Fc = ', %f, ' MHz', ...\n" \
                     " ', numRays = ', %d];\n" \
-                    " Resource.DisplayWindow(1).pdelta     = %f;\n" \
-                    " Resource.DisplayWindow(1).Position   = [%d,%d,%d,%d]\n" \
-                    " Resource.DisplayWindow(1).ReferencePt = [%d,%d];\n" \
-                    " Resource.DisplayWindow(1).Colormap    = gray(256);\n",
-            iufTransducerGetNumElements(transducer), // Parameters.numTransmit
-            iufTransducerGetNumElements(transducer), // Parameters.numRcvChannels
-            iufAcquisitionGetSpeedOfSound(acquisition), // Parameters.speedOfSound
-            rowsPerFrame, //RcvBuffer(1).rowsPerFrame
-            interBufferRowsPerFrame, //InterBuffer(1).rowsPerFrame
-            interBufferColsPerFrame, //InterBuffer(1).rowsPerFrame
-            windowTitle, numElements, IMAGING_DEPTH_MM, numRays,
-            IMAGING_DEPTH_MM / (double)WINDOW_RESOLUTION_Y,
-            WINDOW_POS_X, WINDOW_POS_Y, WINDOW_WIDTH, WINDOW_HEIGHT,
-            refX, refY);
+                    " Resource.DisplayWindow(1).pdelta         = %f;\n" \
+                    " Resource.DisplayWindow(1).AxesUnits      = 'mm';\n" \
+                    " Resource.DisplayWindow(1).Position       = [%d,%d,%d,%d]\n" \
+                    " Resource.DisplayWindow(1).ReferencePt    = [%d,%d];\n", \
+                    PIXEL_DELTA,
+                    iufTransducerGetNumElements(transducer), // Parameters.numTransmit
+                    iufAcquisitionGetSpeedOfSound(acquisition), // Parameters.speedOfSound
+                    rowsPerFrame,            //RcvBuffer(1).rowsPerFrame
+                    interBufferRowsPerFrame, //InterBuffer(1).rowsPerFrame
+                    interBufferColsPerFrame, //InterBuffer(1).rowsPerFrame
+                    windowTitle, numElements, IMAGING_DEPTH_MM, numRays,
+                    IMAGING_DEPTH_MM / (double)WINDOW_RESOLUTION_Y,
+                    WINDOW_POS_X, WINDOW_POS_Y, WINDOW_WIDTH, WINDOW_HEIGHT,
+                    refX, refY);
 }
 
 static char *writeTx(iupal_t patternList,
@@ -210,7 +208,7 @@ static char *writeTw(iupd_t pulseDict)
     return script;
 }
 
-static char *writeTGC(iursd_t receiveSettingsDict)
+static char *writeTGC(iursd_t receiveSettingsDict, double maxDepthWL)
 {
     char *script = (char *) calloc(5000, sizeof(char));
 
@@ -224,15 +222,15 @@ static char *writeTGC(iursd_t receiveSettingsDict)
             sprintf(script, "%%%% Currently only a default TGC is supported.\n");
         }
         sprintf(script, "TGC(%d).CntrlPts = iusgTGCSetPoints;\n" \
-                        "TGC(%d).rangeMax = SFormat.endDepth;\n" \
+                        "TGC(%d).rangeMax = %f ;\n" \
                         "TGC(%d).Waveform = computeTGCWaveform(TGC);",
-                (int)i,(int)i,(int)i);
+                        (int)i,(int)i, maxDepthWL, (int)i);
     }
     return script;
 }
 
 
-static char *parseIuf(iuif_t iuf, char *label)
+static char *parseIuf(iuif_t iuf, char *label, double depth)
 {
     char *script = (char *) calloc(8000, sizeof(char));
     sprintf(script, "%% Script generated from file:\n");
@@ -259,11 +257,13 @@ static char *parseIuf(iuif_t iuf, char *label)
         iusd_t sourcesDict = iufInputFileGetSourceDict(iuf);
 
         transducerScript = writeTransducer(transducer);
-        resourceScript = writeResource(patternList, transducer, acquisition, receiveSettingsDict);
+        double lambdaMm = iufAcquisitionGetSpeedOfSound(acquisition) / iufTransducerGetCenterFrequency(transducer);
+        double depthWL = depth/lambdaMm;
+        resourceScript = writeResource(patternList, transducer, acquisition, depth);
         txScript = writeTx(patternList, transducer,
                            apodizationDict, pulseDict, sourcesDict, receiveSettingsDict);
         twScript = writeTw(pulseDict);
-        tgcScript = writeTGC(receiveSettingsDict);
+        tgcScript = writeTGC(receiveSettingsDict, depthWL);
 
 
     }
@@ -289,6 +289,7 @@ int main
     FILE *outputFile;
     iuif_t iuf;
     char *label;
+    double imaging_depth = DEFAULT_IMAGING_DEPTH;
 
     while((opt = getopt(argc, argv, ":i:o:")) != -1)
     {
@@ -304,7 +305,11 @@ int main
                 break;
             case 'l':
                 printf("label: %s\n", optarg);
-                label = label;
+                label = optarg;
+                break;
+            case 'd':
+                printf("depth: %s\n", optarg);
+                imaging_depth = atoi(optarg);
             case ':':
                 printf("option needs a value\n");
                 break;
@@ -314,13 +319,15 @@ int main
         }
     }
 
+
+
     if (!iuf)
     {
         printUsage(argv);
         exit(1);
     }
 
-    veraScript = parseIuf(iuf);
+    veraScript = parseIuf(iuf, label, imaging_depth);
     fprintf(outputFile, "%s", veraScript);
 
     fclose(outputFile);
