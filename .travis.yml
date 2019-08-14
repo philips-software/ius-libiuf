@@ -24,64 +24,64 @@ env:
   CMAKE_BUILD_PARALLEL_LEVEL=4
 
 stages:
-#  - build
-#  - test
+  - build
+  - test
   - qa
-#  - doc
+  - doc
 
 before_install: ci/bin/travis.sh before_install
 
 jobs:
   include:
-    - stage: build
-      name: "MacOS build"
-      os: osx
-      osx_image: xcode11
-      env: PATH=/usr/local/opt/swig@3/bin:$PATH
-      script: ./ci/bin/travis.sh build
-    - stage: test
-      name: "MacOS test"
-      os: osx
-      env: PATH=/usr/local/opt/swig@3/bin:$PATH
-      osx_image: xcode11
-      script: ./ci/bin/travis.sh test
-    - stage: build
-      name: "Linux build"
-      os: linux
-      script: ./ci/bin/travis.sh build
-    - stage: test
-      name: "Linux test"
-      os: linux
-      script: ./ci/bin/travis.sh test
+#    - stage: build
+#      name: "MacOS build"
+#      os: osx
+#      osx_image: xcode11
+#      env: PATH=/usr/local/opt/swig@3/bin:$PATH
+#      script: ./ci/bin/travis.sh build
+#    - stage: test
+#      name: "MacOS test"
+#      os: osx
+#      env: PATH=/usr/local/opt/swig@3/bin:$PATH
+#      osx_image: xcode11
+#      script: ./ci/bin/travis.sh test
+#    - stage: build
+#      name: "Linux build"
+#      os: linux
+#      script: ./ci/bin/travis.sh build
+#    - stage: test
+#      name: "Linux test"
+#      os: linux
+#      script: ./ci/bin/travis.sh test
     - stage: qa
       name: "QA step (Linux only)"
       os: linux
       script: ./ci/bin/travis.sh qa
-    - stage: doc
-      name: "Deploying documentation (GitHub pages)"
-      os: linux
-      script:
-        - cd dox ; doxygen ; cd .. ; mv dox/html/ website/
-      deploy:
-        provider: pages
-        skip_cleanup: true
-        github_token: $GITHUB_TOKEN # Set in travis-ci.org dashboard
-        local_dir: website/
-        on:
-          branch:
-            - master
-            - develop
-    - stage: build
-      name: "Windows build"
-      os: windows
-      env:
-        - HDF5_ROOT=./Download/hdf5
-        - PATH=/c/Python37:/c/Python37/Scripts:$PATH
-      script: ./ci/bin/travis.sh build
-    - stage: test
-      name: "Windows test"
-      os: windows
-      env:
-        - HDF5_ROOT=./Download/hdf5
-        - PATH=/c/Python37:/c/Python37/Scripts:$PATH
-      script: ./ci/bin/travis.sh test
+#    - stage: doc
+#      name: "Deploying documentation (GitHub pages)"
+#      os: linux
+#      script:
+#        - cd dox ; doxygen ; cd .. ; mv dox/html/ website/
+#      deploy:
+#        provider: pages
+#        skip_cleanup: true
+#        github_token: $GITHUB_TOKEN # Set in travis-ci.org dashboard
+#        local_dir: website/
+#        on:
+#          branch:
+#            - master
+#            - develop
+#    - stage: build
+#      name: "Windows build"
+#      os: windows
+#      env:
+#        - HDF5_ROOT=./Download/hdf5
+#        - PATH=/c/Python37:/c/Python37/Scripts:$PATH
+#      script: ./ci/bin/travis.sh build
+#    - stage: test
+#      name: "Windows test"
+#      os: windows
+#      env:
+#        - HDF5_ROOT=./Download/hdf5
+#        - PATH=/c/Python37:/c/Python37/Scripts:$PATH
+#      script: ./ci/bin/travis.sh test
