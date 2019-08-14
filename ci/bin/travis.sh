@@ -172,7 +172,7 @@ function dist_windows
 function before_install_osx
 {
     printf "==> before_install_osx\n"
-    brew install  figlet
+    brew install  figlet swig
     printf "==> before_install_osx Done\n"
  }
 
