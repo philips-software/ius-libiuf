@@ -37,10 +37,12 @@ jobs:
       name: "MacOS build"
       os: osx
       osx_image: xcode11
+      env: PATH=/usr/local/opt/swig@3/bin:$PATH
       script: ./ci/bin/travis.sh build
     - stage: test
       name: "MacOS test"
       os: osx
+      env: PATH=/usr/local/opt/swig@3/bin:$PATH
       osx_image: xcode11
       script: ./ci/bin/travis.sh test
     - stage: build
