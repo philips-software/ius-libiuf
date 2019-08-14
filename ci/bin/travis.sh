@@ -48,7 +48,8 @@ function before_install_linux
     printf "==> before_install_linux\n"
     sudo add-apt-repository -r ppa:tmate.io/archive -y
     sudo apt-get update -q
-    sudo apt-get install -y figlet \
+    sudo apt-get install -y swig \
+                            figlet \
                             coreutils \
                             libhdf5-dev \
                             cppcheck \
@@ -137,7 +138,7 @@ function before_install_windows
 {
     printf "==> before_install_windows\n"
     choco install figlet-go
-    ci/bin/install.bat $HDF5_ROOT
+    ci/bin/install_hdf5.bat $HDF5_ROOT
     printf "==> before_install_windows Done\n"
 }
 
