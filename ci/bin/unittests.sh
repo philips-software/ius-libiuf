@@ -24,5 +24,5 @@ echo === C library - UnitTests - Done
 echo === Python binding - UnitTests
 $CMAKE --build . --target install-python
 cd -
-python -m unittest discover python/tests
+python3 -m unittest discover python/tests
 echo === Python binding - UnitTests - Done

@@ -12,9 +12,6 @@ include_directories(
 set(CMAKE_SWIG_FLAGS "")
 set(UseSWIG_TARGET_NAME_PREFERENCE STANDARD)
 set(LIBRARY_NAME piuf)
-set(LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/python)
-set(LIBRARY_OUTPUT_DIRECTORY_DEBUG ${PROJECT_BINARY_DIR}/python)
-set(LIBRARY_OUTPUT_DIRECTORY_RELEASE ${PROJECT_BINARY_DIR}/python)
 
 # Add swig module
 swig_add_library(${LIBRARY_NAME}
@@ -42,13 +39,23 @@ if(APPLE)
 endif()
 
 
-# Files to install with Python
-set(SWIG_LIBIUF_PY ${CMAKE_CURRENT_BINARY_DIR}/${LIBRARY_NAME}.py)
 
-if(MSVC)   
-    set(SWIG_LIBIUF_SO ${CMAKE_CURRENT_BINARY_DIR}/_${LIBRARY_NAME}.pyd)
+if(MSVC)
+    # Files to install with Python
+    set(SWIG_LIBIUF_PY ${LIBRARY_NAME}.py)
+    set(SWIG_LIBIUF_SO _${LIBRARY_NAME}.pyd)
+    set(PYTHON_COMMAND python)
+    set_target_properties( ${LIBRARY_NAME}
+            PROPERTIES
+            ARCHIVE_OUTPUT_DIRECTORY_RELEASE "${CMAKE_BINARY_DIR}/python"
+            LIBRARY_OUTPUT_DIRECTORY_RELEASE "${CMAKE_BINARY_DIR}/python"
+            RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_BINARY_DIR}/python"
+            )
 else()
+    # Files to install with Python
+    set(SWIG_LIBIUF_PY ${CMAKE_CURRENT_BINARY_DIR}/${LIBRARY_NAME}.py)
     set(SWIG_LIBIUF_SO ${CMAKE_CURRENT_BINARY_DIR}/_${LIBRARY_NAME}.so)
+    set(PYTHON_COMMAND python3)
 endif()
 
 set(PYTHON_INSTALL_FILES ${SWIG_LIBIUF_PY} ${SWIG_LIBIUF_SO})
@@ -62,4 +69,4 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/tests DESTINATION ${CMAKE_CURRENT_BINARY_D
 
 # Install target to call setup.py
 add_custom_target(install-python
-        COMMAND python -m pip install .)
+        COMMAND ${PYTHON_COMMAND} setup.py install)

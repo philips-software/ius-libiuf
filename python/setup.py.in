@@ -24,7 +24,6 @@ if __name__ == '__main__':
         author='IUF SDK Team',
         author_email='al_libiuf@natlab.research.philips.com',
         url='https://github.com/philips-software/ius-libiuf',
-        provides=['${LIBRARY_NAME}'],
         license='MIT',
         packages=[''],
         package_dir={'': '.'},
