@@ -42,7 +42,9 @@ static void iufDemodulationDictDeleteKeys
 )
 {
     if (dict->kys != NULL)
+    {
         free(dict->kys);
+    }
 }
 
 int iufDemodulationDictDelete

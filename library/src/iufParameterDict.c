@@ -29,7 +29,9 @@ static void iufParameterDictDeleteKeys
 )
 {
     if (dict->kys != NULL)
+    {
         free(dict->kys);
+    }
 }
 
 int iufParameterDictDelete

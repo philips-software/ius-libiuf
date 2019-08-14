@@ -24,10 +24,10 @@ env:
   CMAKE_BUILD_PARALLEL_LEVEL=4
 
 stages:
-  - build
-  - test
+#  - build
+#  - test
   - qa
-  - doc
+#  - doc
 
 before_install: ci/bin/travis.sh before_install
 

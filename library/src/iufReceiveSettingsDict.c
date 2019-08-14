@@ -36,7 +36,9 @@ static void iufReceiveSettingsDictDeleteKeys
 )
 {
     if (dict->kys != NULL)
+    {
         free(dict->kys);
+    }
 }
 
 int iufReceiveSettingsDictDelete

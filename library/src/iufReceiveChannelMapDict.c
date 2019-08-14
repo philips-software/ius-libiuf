@@ -29,7 +29,9 @@ static void iufReceiveChannelMapDictDeleteKeys
 )
 {
     if (dict->kys != NULL)
+    {
         free(dict->kys);
+    }
 }
 
 int iufReceiveChannelMapDictDelete

@@ -44,7 +44,9 @@ static void iufTransmitApodizationDictDeleteKeys
 )
 {
     if (dict->kys != NULL)
+    {
         free(dict->kys);
+    }
 }
 
 int iufTransmitApodizationDictDelete

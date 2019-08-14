@@ -40,7 +40,9 @@ static void iufSourceDictDeleteKeys
 )
 {
     if (dict->kys != NULL)
+    {
         free(dict->kys);
+    }
 }
 
 int iufSourceDictDelete

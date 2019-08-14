@@ -40,8 +40,10 @@ static void iufIqPatternListDictDeleteKeys
 	iuiqpald_t dict
 )
 {
-	if (dict->kys != NULL)
-		free(dict->kys);
+    if (dict->kys != NULL)
+    {
+        free(dict->kys);
+    }
 }
 
 int iufIqPatternListDictDelete

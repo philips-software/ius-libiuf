@@ -33,7 +33,9 @@ static void iufPulseDictDeleteKeys
 )
 {
     if (dict->kys != NULL)
-    free(dict->kys);
+    {
+        free(dict->kys);
+    }
 }
 
 int iufPulseDictDeepDelete

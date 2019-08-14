@@ -43,7 +43,9 @@ static void iufPatternListDictDeleteKeys
 )
 {
     if (dict->kys != NULL)
+    {
         free(dict->kys);
+    }
 }
 
 int iufPatternListDictDelete
