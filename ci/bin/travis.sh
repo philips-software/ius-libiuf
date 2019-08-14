@@ -48,7 +48,7 @@ function before_install_linux
     printf "==> before_install_linux\n"
     sudo add-apt-repository -r ppa:tmate.io/archive -y
     sudo apt-get update -q
-    sudo apt-get install -y swig \
+    sudo apt-get install -y swig=3.0.12* \
                             figlet \
                             coreutils \
                             libhdf5-dev \
@@ -136,8 +136,9 @@ function sdk_linux
 #-----------------------------
 function before_install_windows
 {
-    printf "==> before_install_windows\n"
-    choco install figlet-go python swig
+    printf "==> before_install_wqindows\n"
+    choco install figlet-go python
+    choco install swig --version 3.0.12
     ci/bin/install_hdf5.bat $HDF5_ROOT
     printf "==> before_install_windows Done\n"
 }
@@ -173,7 +174,7 @@ function dist_windows
 function before_install_osx
 {
     printf "==> before_install_osx\n"
-    brew install  figlet swig
+    brew install  figlet swig@3
     printf "==> before_install_osx Done\n"
  }
 
