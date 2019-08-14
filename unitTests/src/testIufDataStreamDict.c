@@ -32,14 +32,15 @@ TEST_TEAR_DOWN(IufDataStreamDict)
 }
 
 
-TEST(IufDataStreamDict, testIufDataStreamDictCreate)
+TEST(IufDataStreamDict, testIufDataStreamDictCreateDelete)
 {
     iudsd_t obj = iufDataStreamDictCreate();
     iudsd_t notherObj = iufDataStreamDictCreate();
     TEST_ASSERT(obj != IUDSD_INVALID);
     TEST_ASSERT(notherObj != IUDSD_INVALID);
-    iufDataStreamDictDelete(obj);
-    iufDataStreamDictDelete(notherObj);
+    TEST_ASSERT(iufDataStreamDictDelete(obj) == IUF_E_OK);
+    TEST_ASSERT(iufDataStreamDictDelete(notherObj) == IUF_E_OK);
+    TEST_ASSERT(iufDataStreamDictDelete(NULL) != IUF_E_OK);
 }
 
 
@@ -100,6 +101,8 @@ TEST(IufDataStreamDict, testIufDataStreamDictCompare)
         TEST_ASSERT_EQUAL(generatedValue,iufDataStreamDictGet(dict, generatedKey));
         equal = iufDataStreamDictCompare(dict, notherDict);
         TEST_ASSERT_EQUAL(IUF_FALSE,equal);
+        equal = iufDataStreamDictCompare(notherDict, dict);
+        TEST_ASSERT_EQUAL(IUF_FALSE,equal);
 
         generatedValue = iufDataStreamCreate();
         generatedValue->fileChunkConfig=(hid_t)elementID;
@@ -108,6 +111,8 @@ TEST(IufDataStreamDict, testIufDataStreamDictCompare)
         TEST_ASSERT_EQUAL(IUF_E_OK,status);
         TEST_ASSERT_EQUAL_STRING(generatedValue,iufDataStreamDictGet(notherDict, generatedKey));
         equal = iufDataStreamDictCompare(dict, notherDict);
+        TEST_ASSERT_EQUAL(IUF_TRUE,equal);
+        equal = iufDataStreamDictCompare(notherDict, dict);
         TEST_ASSERT_EQUAL(IUF_TRUE,equal);
     }
 
@@ -118,7 +123,7 @@ TEST(IufDataStreamDict, testIufDataStreamDictCompare)
 
 TEST_GROUP_RUNNER(IufDataStreamDict)
 {
-    RUN_TEST_CASE(IufDataStreamDict, testIufDataStreamDictCreate);
+    RUN_TEST_CASE(IufDataStreamDict, testIufDataStreamDictCreateDelete);
     RUN_TEST_CASE(IufDataStreamDict, testIufDataStreamDictCompare);
     RUN_TEST_CASE(IufDataStreamDict, testIufDataStreamDictSetGet);
 }

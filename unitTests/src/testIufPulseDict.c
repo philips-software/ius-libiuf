@@ -32,14 +32,16 @@ TEST_TEAR_DOWN(IufPulseDict)
 }
 
 
-TEST(IufPulseDict, testIufPulseDictCreate)
+TEST(IufPulseDict, testIufPulseDictCreateDelete)
 {
     iupd_t obj = iufPulseDictCreate();
     iupd_t notherObj = iufPulseDictCreate();
     TEST_ASSERT(obj != IUPD_INVALID);
     TEST_ASSERT(notherObj != IUPD_INVALID);
-    iufPulseDictDelete(obj);
-    iufPulseDictDelete(notherObj);
+    TEST_ASSERT(iufPulseDictDelete(obj) == IUF_E_OK);
+    TEST_ASSERT(iufPulseDictDelete(notherObj) == IUF_E_OK);
+    TEST_ASSERT(iufPulseDictDelete(NULL) != IUF_E_OK);
+    TEST_ASSERT(iufPulseDictDeepDelete(NULL) != IUF_E_OK);
 }
 
 TEST(IufPulseDict, testIufPulseDictSetGet)
@@ -157,9 +159,13 @@ TEST(IufPulseDict, testIufPulseDictCompare)
     TEST_ASSERT_EQUAL(IUF_E_OK,status);
     equal = iufPulseDictCompare(dict, notherDict);
     TEST_ASSERT_EQUAL(IUF_FALSE,equal);
+    equal = iufPulseDictCompare(notherDict, dict);
+    TEST_ASSERT_EQUAL(IUF_FALSE,equal);
     status = iufPulseDictSet(notherDict,label,(iup_t) parametricPulse);
     TEST_ASSERT_EQUAL(IUF_E_OK,status);
     equal = iufPulseDictCompare(dict, notherDict);
+    TEST_ASSERT_EQUAL(IUF_TRUE,equal);
+    equal = iufPulseDictCompare(notherDict, dict);
     TEST_ASSERT_EQUAL(IUF_TRUE,equal);
 
     char *label2 = "NON Parametric pulse for testIufPulseDictCompare";
@@ -167,11 +173,14 @@ TEST(IufPulseDict, testIufPulseDictCompare)
     TEST_ASSERT_EQUAL(IUF_E_OK,status);
     equal = iufPulseDictCompare(dict, notherDict);
     TEST_ASSERT_EQUAL(IUF_FALSE,equal);
+    equal = iufPulseDictCompare(notherDict, dict);
+    TEST_ASSERT_EQUAL(IUF_FALSE,equal);
     status = iufPulseDictSet(notherDict,label2,(iup_t) nonParametricPulse);
     TEST_ASSERT_EQUAL(IUF_E_OK,status);
     equal = iufPulseDictCompare(dict, notherDict);
     TEST_ASSERT_EQUAL(IUF_TRUE,equal);
-
+    equal = iufPulseDictCompare(notherDict, dict);
+    TEST_ASSERT_EQUAL(IUF_TRUE,equal);
 
     // invalid params
     equal = iufPulseDictCompare(dict, NULL);
@@ -213,19 +222,30 @@ TEST(IufPulseDict, testIufSerialization)
     TEST_ASSERT(status == IUF_E_OK);
 
     // save
+    status = iufPulseDictSave(dict, H5I_INVALID_HID);
+    TEST_ASSERT(status != IUF_E_OK);
+
     hid_t handle = H5Fcreate( filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT );
     TEST_ASSERT(handle > 0);
+
+    status = iufPulseDictSave(NULL, handle);
+    TEST_ASSERT(status != IUF_E_OK);
+
     status = iufPulseDictSave(dict, handle);
     H5Fclose(handle);
     TEST_ASSERT_EQUAL(IUF_E_OK,status);
 
     // read back
+    iupd_t savedObj = iufPulseDictLoad(H5I_INVALID_HID);
+    TEST_ASSERT_EQUAL(NULL,savedObj);
+
     handle = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT );
-    iupd_t savedObj = iufPulseDictLoad(handle);
+    savedObj = iufPulseDictLoad(handle);
     TEST_ASSERT(savedObj != NULL);
     H5Fclose(handle);
 
     TEST_ASSERT_EQUAL(IUF_TRUE, iufPulseDictCompare(dict,savedObj));
+    TEST_ASSERT_EQUAL(IUF_TRUE, iufPulseDictCompare(savedObj,dict));
 
     iufPulseDelete((iup_t)parametricPulse);
     iufPulseDelete((iup_t)nonParametricPulse);
@@ -235,7 +255,7 @@ TEST(IufPulseDict, testIufSerialization)
 
 TEST_GROUP_RUNNER(IufPulseDict)
 {
-    RUN_TEST_CASE(IufPulseDict, testIufPulseDictCreate);
+    RUN_TEST_CASE(IufPulseDict, testIufPulseDictCreateDelete);
     RUN_TEST_CASE(IufPulseDict, testIufPulseDictCompare);
     RUN_TEST_CASE(IufPulseDict, testIufPulseDictSetGet);
     RUN_TEST_CASE(IufPulseDict, testIufPulseDictGetKeys)

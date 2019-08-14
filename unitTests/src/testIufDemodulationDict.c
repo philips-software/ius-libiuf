@@ -34,15 +34,17 @@ TEST_TEAR_DOWN(IufDemodulationDict)
 }
 
 
-TEST(IufDemodulationDict, testIufCreateDict)
+TEST(IufDemodulationDict, testIufCreateDeleteDict)
 {
 	iudmd_t obj = iufDemodulationDictCreate();
 	iudmd_t notherObj = iufDemodulationDictCreate();
 
 	TEST_ASSERT(obj != IUDMD_INVALID);
 	TEST_ASSERT(notherObj != IUDMD_INVALID);
-	iufDemodulationDictDelete(obj);
-	iufDemodulationDictDelete(notherObj);
+    TEST_ASSERT(iufDemodulationDictDelete(obj) == IUF_E_OK);
+    TEST_ASSERT(iufDemodulationDictDelete(notherObj) == IUF_E_OK);
+    TEST_ASSERT(iufDemodulationDictDelete(NULL) != IUF_E_OK);
+    TEST_ASSERT(iufDemodulationDictDeepDelete(NULL) != IUF_E_OK);
 }
 
 
@@ -164,6 +166,8 @@ TEST(IufDemodulationDict, testIufCompareDict)
 	TEST_ASSERT_EQUAL(IUF_TRUE, equal);
 	equal = iufDemodulationDictCompare(dict, notherDict);
 	TEST_ASSERT_EQUAL(IUF_TRUE, equal);
+    equal = iufDemodulationDictCompare(notherDict, dict);
+    TEST_ASSERT_EQUAL(IUF_TRUE, equal);
 
 	// Fill
 	status = iufDemodulationDictSet(dict, pObjLabel, obj);
@@ -173,6 +177,8 @@ TEST(IufDemodulationDict, testIufCompareDict)
 
 	equal = iufDemodulationDictCompare(dict, notherDict);
 	TEST_ASSERT_EQUAL(IUF_FALSE, equal);
+    equal = iufDemodulationDictCompare(notherDict, dict);
+    TEST_ASSERT_EQUAL(IUF_FALSE, equal);
 
 	status = iufDemodulationDictSet(notherDict, pObjLabel, obj);
 	TEST_ASSERT_EQUAL(IUF_E_OK, status);
@@ -181,12 +187,16 @@ TEST(IufDemodulationDict, testIufCompareDict)
 
 	equal = iufDemodulationDictCompare(dict, notherDict);
 	TEST_ASSERT_EQUAL(IUF_TRUE, equal);
+    equal = iufDemodulationDictCompare(notherDict, dict);
+    TEST_ASSERT_EQUAL(IUF_TRUE, equal);
 
 	status = iufDemodulationDictSet(notherDict, pDifferentLabel, differentObj);
 	TEST_ASSERT_EQUAL(IUF_E_OK, status);
 
 	equal = iufDemodulationDictCompare(dict, notherDict);
 	TEST_ASSERT_EQUAL(IUF_FALSE, equal);
+    equal = iufDemodulationDictCompare(notherDict, dict);
+    TEST_ASSERT_EQUAL(IUF_FALSE, equal);
 
 	iufDemodulationDelete(obj);
 	iufDemodulationDelete(differentObj);
@@ -227,7 +237,7 @@ TEST(IufDemodulationDict, testIufSerialization)
 
 TEST_GROUP_RUNNER(IufDemodulationDict)
 {
-	RUN_TEST_CASE(IufDemodulationDict, testIufCreateDict);
+	RUN_TEST_CASE(IufDemodulationDict, testIufCreateDeleteDict);
 	RUN_TEST_CASE(IufDemodulationDict, testIufSetGetDict);
     RUN_TEST_CASE(IufDemodulationDict, testIufDictGetKeys)
 	RUN_TEST_CASE(IufDemodulationDict, testIufCompareDict);

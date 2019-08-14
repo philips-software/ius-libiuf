@@ -20,4 +20,4 @@ echo === Generating code coverage for unit tests
 mkdir -p $BuildFolder
 cd $BuildFolder
 $CMAKE -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ../..
-make gcovr-report
+make gcovr-report-html

@@ -34,15 +34,17 @@ TEST_TEAR_DOWN(IufReceiveSettingsDict)
 
 
 
-TEST(IufReceiveSettingsDict, testIufCreateDict)
+TEST(IufReceiveSettingsDict, testIufCreateDeleteDict)
 {
     iursd_t obj = iufReceiveSettingsDictCreate();
     iursd_t notherObj = iufReceiveSettingsDictCreate();
 
     TEST_ASSERT(obj != IURSD_INVALID);
     TEST_ASSERT(notherObj != IURSD_INVALID);
-    iufReceiveSettingsDictDelete(obj);
-    iufReceiveSettingsDictDelete(notherObj);
+    TEST_ASSERT(iufReceiveSettingsDictDelete(obj) == IUF_E_OK);
+    TEST_ASSERT(iufReceiveSettingsDictDelete(notherObj) == IUF_E_OK);
+    TEST_ASSERT(iufReceiveSettingsDictDelete(NULL) != IUF_E_OK);
+    TEST_ASSERT(iufReceiveSettingsDictDeepDelete(NULL) != IUF_E_OK);
 }
 
 
@@ -165,6 +167,8 @@ TEST(IufReceiveSettingsDict, testIufCompareDict)
 
     equal = iufReceiveSettingsDictCompare(dict, notherDict);
     TEST_ASSERT_EQUAL(IUF_FALSE, equal);
+    equal = iufReceiveSettingsDictCompare(notherDict, dict);
+    TEST_ASSERT_EQUAL(IUF_FALSE, equal);
 
     status = iufReceiveSettingsDictSet(notherDict,pObjLabel,obj);
     TEST_ASSERT_EQUAL(IUF_E_OK,status);
@@ -173,12 +177,23 @@ TEST(IufReceiveSettingsDict, testIufCompareDict)
 
     equal = iufReceiveSettingsDictCompare(dict, notherDict);
     TEST_ASSERT_EQUAL(IUF_TRUE, equal);
+    equal = iufReceiveSettingsDictCompare(notherDict, dict);
+    TEST_ASSERT_EQUAL(IUF_TRUE, equal);
 
     status = iufReceiveSettingsDictSet(notherDict,pDifferentLabel,differentObj);
     TEST_ASSERT_EQUAL(IUF_E_OK,status);
 
     equal = iufReceiveSettingsDictCompare(dict, notherDict);
     TEST_ASSERT_EQUAL(IUF_FALSE, equal);
+    equal = iufReceiveSettingsDictCompare(notherDict, dict);
+    TEST_ASSERT_EQUAL(IUF_FALSE, equal);
+
+    status = iufReceiveSettingsDictRemove(notherDict,pDifferentLabel);
+    TEST_ASSERT_EQUAL(IUF_E_OK,status);
+    equal = iufReceiveSettingsDictCompare(dict, notherDict);
+    TEST_ASSERT_EQUAL(IUF_TRUE, equal);
+    equal = iufReceiveSettingsDictCompare(notherDict, dict);
+    TEST_ASSERT_EQUAL(IUF_TRUE, equal);
 
     iufReceiveSettingsDelete(obj);
     iufReceiveSettingsDelete(differentObj);
@@ -196,15 +211,25 @@ TEST(IufReceiveSettingsDict, testIufSerialization)
     iursd_t  dict = dgGenerateReceiveSettingsDict("bmode", 0);
 
     // Save
+    int status = iufReceiveSettingsDictSave(dict, H5I_INVALID_HID);
+    TEST_ASSERT(status != IUF_E_OK);
+
     hid_t handle = H5Fcreate(filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
     TEST_ASSERT(handle > 0);
-    int status = iufReceiveSettingsDictSave(dict, handle);
+
+    status = iufReceiveSettingsDictSave(NULL, handle);
+    TEST_ASSERT(status != IUF_E_OK);
+
+    status = iufReceiveSettingsDictSave(dict, handle);
     H5Fclose(handle);
     TEST_ASSERT_EQUAL(IUF_E_OK, status);
 
     // read back
+    iursd_t savedDict = iufReceiveSettingsDictLoad(H5I_INVALID_HID);
+    TEST_ASSERT_EQUAL(NULL,savedDict);
+
     handle = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT);
-    iursd_t savedDict = iufReceiveSettingsDictLoad(handle);
+    savedDict = iufReceiveSettingsDictLoad(handle);
     TEST_ASSERT_NOT_EQUAL(NULL, savedDict);
     H5Fclose(handle);
 
@@ -219,7 +244,7 @@ TEST(IufReceiveSettingsDict, testIufSerialization)
 
 TEST_GROUP_RUNNER(IufReceiveSettingsDict)
 {
-    RUN_TEST_CASE(IufReceiveSettingsDict, testIufCreateDict);
+    RUN_TEST_CASE(IufReceiveSettingsDict, testIufCreateDeleteDict);
     RUN_TEST_CASE(IufReceiveSettingsDict, testIufSetGetDict);
     RUN_TEST_CASE(IufReceiveSettingsDict, testIufDictKeys)
     RUN_TEST_CASE(IufReceiveSettingsDict, testIufCompareDict);

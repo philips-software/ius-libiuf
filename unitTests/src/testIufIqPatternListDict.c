@@ -32,14 +32,16 @@ TEST_TEAR_DOWN(IufIqPatternListDict)
 }
 
 
-TEST(IufIqPatternListDict, testIufCreatePatternListDict)
+TEST(IufIqPatternListDict, testIufCreateDeletePatternListDict)
 {
 	iuiqpald_t obj = iufIqPatternListDictCreate();
     iuiqpald_t notherObj = iufIqPatternListDictCreate();
 	TEST_ASSERT(obj != IUIQPALD_INVALID);
 	TEST_ASSERT(notherObj != IUIQPALD_INVALID);
-	iufIqPatternListDictDelete(obj);
-	iufIqPatternListDictDelete(notherObj);
+    TEST_ASSERT(iufIqPatternListDictDelete(obj) == IUF_E_OK);
+    TEST_ASSERT(iufIqPatternListDictDelete(notherObj) == IUF_E_OK);
+    TEST_ASSERT(iufIqPatternListDictDelete(NULL) != IUF_E_OK);
+    TEST_ASSERT(iufIqPatternListDictDeepDelete(NULL) != IUF_E_OK);
 }
 
 
@@ -178,6 +180,8 @@ TEST(IufIqPatternListDict, testIufComparePatternListDict)
 	TEST_ASSERT_EQUAL(IUF_TRUE, equal);
 	equal = iufIqPatternListDictCompare(dict, notherDict);
 	TEST_ASSERT_EQUAL(IUF_TRUE, equal);
+    equal = iufIqPatternListDictCompare(notherDict, dict);
+    TEST_ASSERT_EQUAL(IUF_TRUE, equal);
 
 	iuiqpal_t patternListDual = iufIqPatternListCreate(2,NULL,NULL);
 	iuiqpal_t patternListSingle = iufIqPatternListCreate(1,NULL,NULL);
@@ -191,15 +195,22 @@ TEST(IufIqPatternListDict, testIufComparePatternListDict)
 	TEST_ASSERT_EQUAL(IUF_E_OK, status);
 	equal = iufIqPatternListDictCompare(dict, notherDict);
 	TEST_ASSERT_EQUAL(IUF_FALSE, equal);
-	status = iufIqPatternListDictSet(notherDict, labelDual, patternListDual);
+    equal = iufIqPatternListDictCompare(notherDict, dict);
+    TEST_ASSERT_EQUAL(IUF_FALSE, equal);
+
+    status = iufIqPatternListDictSet(notherDict, labelDual, patternListDual);
 	TEST_ASSERT_EQUAL(IUF_E_OK, status);
 	equal = iufIqPatternListDictCompare(dict, notherDict);
 	TEST_ASSERT_EQUAL(IUF_TRUE, equal);
+    equal = iufIqPatternListDictCompare(notherDict, dict);
+    TEST_ASSERT_EQUAL(IUF_TRUE, equal);
 
 	status = iufIqPatternListDictSet(dict, labelSingle, patternListSingle);
 	TEST_ASSERT_EQUAL(IUF_E_OK, status);
 	equal = iufIqPatternListDictCompare(dict, notherDict);
 	TEST_ASSERT_EQUAL(IUF_FALSE, equal);
+    equal = iufIqPatternListDictCompare(notherDict, dict);
+    TEST_ASSERT_EQUAL(IUF_FALSE, equal);
 
 	// invalid params
 	equal = iufIqPatternListDictCompare(dict, NULL);
@@ -255,15 +266,24 @@ TEST(IufIqPatternListDict, testIufSerialization)
 	TEST_ASSERT(status == IUF_E_OK);
 
 	// save
-	hid_t handle = H5Fcreate(filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
+    status = iufIqPatternListDictSave(dict, H5I_INVALID_HID);
+    TEST_ASSERT(status != IUF_E_OK);
+
+    hid_t handle = H5Fcreate(filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
 	TEST_ASSERT(handle > 0);
+    status = iufIqPatternListDictSave(NULL, handle);
+    TEST_ASSERT(status != IUF_E_OK);
+
 	status = iufIqPatternListDictSave(dict, handle);
 	H5Fclose(handle);
 	TEST_ASSERT_EQUAL(IUF_E_OK, status);
 
 	// read back
+    iuiqpald_t savedObj = iufIqPatternListDictLoad(H5I_INVALID_HID);
+    TEST_ASSERT_EQUAL(NULL,savedObj);
+
 	handle = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT);
-	iuiqpald_t savedObj = iufIqPatternListDictLoad(handle);
+	savedObj = iufIqPatternListDictLoad(handle);
 	TEST_ASSERT(savedObj != NULL);
 	H5Fclose(handle);
 
@@ -279,7 +299,7 @@ TEST(IufIqPatternListDict, testIufSerialization)
 
 TEST_GROUP_RUNNER(IufIqPatternListDict)
 {
-	RUN_TEST_CASE(IufIqPatternListDict, testIufCreatePatternListDict);
+	RUN_TEST_CASE(IufIqPatternListDict, testIufCreateDeletePatternListDict);
 	RUN_TEST_CASE(IufIqPatternListDict, testIufComparePatternListDict);
     RUN_TEST_CASE(IufIqPatternListDict, testIufPatternListDictSetGet);
     RUN_TEST_CASE(IufIqPatternListDict, testIufPatternListDictGetKeys)

@@ -33,14 +33,15 @@ TEST_TEAR_DOWN(IufParameterDict)
     remove(pErrorFilename);
 }
 
-TEST(IufParameterDict, testIufParameterDictCreate)
+TEST(IufParameterDict, testIufParameterDictCreateDelete)
 {
     iupad_t obj = iufParameterDictCreate();
     iupad_t notherObj = iufParameterDictCreate();
     TEST_ASSERT(obj != IUPAD_INVALID);
     TEST_ASSERT(notherObj != IUPAD_INVALID);
-    iufParameterDictDelete(obj);
-    iufParameterDictDelete(notherObj);
+    TEST_ASSERT(iufParameterDictDelete(obj) == IUF_E_OK);
+    TEST_ASSERT(iufParameterDictDelete(notherObj) == IUF_E_OK);
+    TEST_ASSERT(iufParameterDictDelete(NULL) != IUF_E_OK);
 }
 
 
@@ -125,6 +126,8 @@ TEST(IufParameterDict, testIufParameterDictCompare)
     TEST_ASSERT_EQUAL(IUF_TRUE,equal);
     equal = iufParameterDictCompare(dict, notherDict);
     TEST_ASSERT_EQUAL(IUF_TRUE,equal);
+    equal = iufParameterDictCompare(notherDict, dict);
+    TEST_ASSERT_EQUAL(IUF_TRUE,equal);
 
     char generatedKey[1024];
     char generatedValue[1024];
@@ -142,11 +145,15 @@ TEST(IufParameterDict, testIufParameterDictCompare)
         TEST_ASSERT_EQUAL_STRING(generatedValue,iufParameterDictGet(dict, generatedKey));
         equal = iufParameterDictCompare(dict, notherDict);
         TEST_ASSERT_EQUAL(IUF_FALSE,equal);
+        equal = iufParameterDictCompare(notherDict, dict);
+        TEST_ASSERT_EQUAL(IUF_FALSE,equal);
 
         status = iufParameterDictSet(notherDict, generatedKey, generatedValue);
         TEST_ASSERT_EQUAL(IUF_E_OK,status);
         TEST_ASSERT_EQUAL_STRING(generatedValue,iufParameterDictGet(notherDict, generatedKey));
         equal = iufParameterDictCompare(dict, notherDict);
+        TEST_ASSERT_EQUAL(IUF_TRUE,equal);
+        equal = iufParameterDictCompare(notherDict, dict);
         TEST_ASSERT_EQUAL(IUF_TRUE,equal);
     }
 
@@ -164,23 +171,32 @@ TEST(IufParameterDict, testIufSerialization)
     char *dictPath =  "/ParameterDict";
 
     // save
+    int status = iufParameterDictSave(dict, H5I_INVALID_HID);
+    TEST_ASSERT(status != IUF_E_OK);
+
     hid_t handle = H5Fcreate( filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT );
     TEST_ASSERT(handle > 0);
     hid_t group_id = H5Gcreate(handle, dictPath, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
     TEST_ASSERT(group_id > 0);
 
-    int status = iufParameterDictSave(dict, group_id);
+    status = iufParameterDictSave(NULL, group_id);
+    TEST_ASSERT(status != IUF_E_OK);
+
+    status = iufParameterDictSave(dict, group_id);
     H5Gclose(group_id);
     H5Fclose(handle);
     TEST_ASSERT_EQUAL(IUF_E_OK,status);
 
     // read back
+    iupad_t savedObj = iufParameterDictLoad(H5I_INVALID_HID);
+    TEST_ASSERT_EQUAL(NULL,savedObj);
+
     handle = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT );
     TEST_ASSERT(handle > 0);
     group_id = H5Gopen(handle, dictPath, H5P_DEFAULT);
     TEST_ASSERT(group_id > 0);
 
-    iupad_t savedObj = iufParameterDictLoad(group_id);
+    savedObj = iufParameterDictLoad(group_id);
     TEST_ASSERT(savedObj != NULL);
     H5Gclose(group_id);
     H5Fclose(handle);
@@ -237,7 +253,7 @@ TEST(IufParameterDict, testIufSerializationErrorFlow)
 
 TEST_GROUP_RUNNER(IufParameterDict)
 {
-    RUN_TEST_CASE(IufParameterDict, testIufParameterDictCreate);
+    RUN_TEST_CASE(IufParameterDict, testIufParameterDictCreateDelete);
     RUN_TEST_CASE(IufParameterDict, testIufParameterDictCompare);
     RUN_TEST_CASE(IufParameterDict, testIufParameterDictSetGet);
     RUN_TEST_CASE(IufParameterDict, testIufParameterDictGetKeys)

@@ -40,8 +40,10 @@ TEST(IufTransmitApodizationDict, testIufTransmitApodizationDictCreate)
 
     TEST_ASSERT(obj != IUTAD_INVALID);
     TEST_ASSERT(notherObj != IUTAD_INVALID);
-    iufTransmitApodizationDictDelete(obj);
-    iufTransmitApodizationDictDelete(notherObj);
+    TEST_ASSERT(iufTransmitApodizationDictDelete(obj) == IUF_E_OK);
+    TEST_ASSERT(iufTransmitApodizationDictDelete(notherObj) == IUF_E_OK);
+    TEST_ASSERT(iufTransmitApodizationDictDelete(NULL) != IUF_E_OK);
+    TEST_ASSERT(iufTransmitApodizationDictDeepDelete(NULL) != IUF_E_OK);
 }
 
 TEST(IufTransmitApodizationDict, testIufTransmitApodizationDictSetGet)
@@ -146,6 +148,8 @@ TEST(IufTransmitApodizationDict, testIufTransmitApodizationDictCompare)
     equal = iufTransmitApodizationDictCompare(dict, dict);
     TEST_ASSERT_EQUAL(IUF_TRUE, equal);
     equal = iufTransmitApodizationDictCompare(dict, notherDict);
+    TEST_ASSERT_EQUAL(IUF_FALSE, equal);
+    equal = iufTransmitApodizationDictCompare(notherDict, dict);
     TEST_ASSERT_EQUAL(IUF_FALSE, equal);
 
     // invalid params

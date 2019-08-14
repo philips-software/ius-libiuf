@@ -39,8 +39,10 @@ TEST(IufReceiveChannelMapDict, testIufReceiveChannelMapDictCreate)
 
 	TEST_ASSERT(obj != IURCMD_INVALID);
 	TEST_ASSERT(notherObj != IURCMD_INVALID);
-	iufReceiveChannelMapDictDelete(obj);
-	iufReceiveChannelMapDictDelete(notherObj);
+    TEST_ASSERT(iufReceiveChannelMapDictDelete(obj) == IUF_E_OK);
+    TEST_ASSERT(iufReceiveChannelMapDictDelete(notherObj) == IUF_E_OK);
+    TEST_ASSERT(iufReceiveChannelMapDictDelete(NULL) != IUF_E_OK);
+    TEST_ASSERT(iufReceiveChannelMapDictDeepDelete(NULL) != IUF_E_OK);
 }
 
 TEST(IufReceiveChannelMapDict, testIufReceiveChannelMapDictSetGet)
@@ -155,6 +157,8 @@ TEST(IufReceiveChannelMapDict, testIufReceiveChannelMapDictCompare)
 	TEST_ASSERT_EQUAL(IUF_TRUE, equal);
 	equal = iufReceiveChannelMapDictCompare(dict, notherDict);
 	TEST_ASSERT_EQUAL(IUF_FALSE, equal);
+    equal = iufReceiveChannelMapDictCompare(notherDict, dict);
+    TEST_ASSERT_EQUAL(IUF_FALSE, equal);
 
 	// invalid params
 	equal = iufReceiveChannelMapDictCompare(dict, NULL);
@@ -177,22 +181,30 @@ TEST(IufReceiveChannelMapDict, testIufReceiveChannelMapDictSerialization)
 	int channelMap[8] = { 0, 1, 2, 3, 4, 5, 6, 7 };
 
 	// create and save
-	iurcm_t obj = iufReceiveChannelMapCreate(numChannels);
+    iurcm_t obj = iufReceiveChannelMapCreate(numChannels);
 	int status = iufReceiveChannelMapSetMap(obj, channelMap);
 
 	iurcmd_t receiveChannelMapDict = iufReceiveChannelMapDictCreate();
 	status |= iufReceiveChannelMapDictSet(receiveChannelMapDict, label, obj);
 	TEST_ASSERT(status == IUF_E_OK);
 
-	hid_t handle = H5Fcreate(filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
+    status = iufReceiveChannelMapDictSave(receiveChannelMapDict, H5I_INVALID_HID);
+    TEST_ASSERT(status != IUF_E_OK);
+
+    hid_t handle = H5Fcreate(filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
 	TEST_ASSERT(handle > 0);
-	status = iufReceiveChannelMapDictSave(receiveChannelMapDict, handle);
+    status = iufReceiveChannelMapDictSave(NULL, handle);
+    TEST_ASSERT(status != IUF_E_OK);
+    status = iufReceiveChannelMapDictSave(receiveChannelMapDict, handle);
 	H5Fclose(handle);
 	TEST_ASSERT_EQUAL(IUF_E_OK, status);
 
 	// read back
+    iurcmd_t savedDict = iufReceiveChannelMapDictLoad(H5I_INVALID_HID);
+    TEST_ASSERT_EQUAL(NULL,savedDict);
+
 	handle = H5Fopen(filename, H5F_ACC_RDONLY, H5P_DEFAULT);
-	iurcmd_t savedDict = iufReceiveChannelMapDictLoad(handle);
+	savedDict = iufReceiveChannelMapDictLoad(handle);
 	TEST_ASSERT_NOT_EQUAL(NULL, savedDict);
 	H5Fclose(handle);
 
