@@ -4,6 +4,7 @@
 #include <iufInputFilePrivate.h>
 #include <iufIqFilePrivate.h>
 #include <iufParameterDictPrivate.h>
+#include <iufHistoryNodePrivate.h>
 #include <iufHistoryNodeListPrivate.h>
 #include "iufHistoryNodeADT.h"
 
@@ -48,11 +49,11 @@ int iufHistoryNodeDelete
 )
 {
     IUF_ERR_CHECK_NULL_N_RETURN(historyNode, IUF_ERR_VALUE);
-    if(historyNode->numberOfParents!=0 && historyNode->deepDelete == IUF_TRUE)
+    if ( historyNode->numberOfParents!=0 && historyNode->deepDelete == IUF_TRUE )
     {
         iufHistoryNodeListDelete(historyNode->parents);
     }
-    if(historyNode->numberOfParameters!=0 && historyNode->deepDelete == IUF_TRUE)
+    if ( historyNode->numberOfParameters!=0 && historyNode->deepDelete == IUF_TRUE )
     {
         iufParameterDictDelete(historyNode->parameters);
     }
@@ -70,12 +71,41 @@ IUF_BOOL iufHistoryNodeCompareWithId
 {
     if ( reference == actual ) return IUF_TRUE;
     if ( reference == NULL || actual == NULL ) return IUF_FALSE;
-    if( strcmp( reference->pId, actual->pId ) != 0 )
+    if ( strcmp( reference->pId, actual->pId ) != 0 )
     {
         return IUF_FALSE;
     }
     return iufHistoryNodeCompare(reference,actual);
 }
+
+static IUF_BOOL iufHistoryNodeCompareInstanceData
+(
+    iuhn_t reference,
+    iuhn_t actual
+)
+{
+    IUF_BOOL equal ;
+
+    if ( strcmp(reference->pType,IUF_INPUT_TYPE) == 0 )
+    {
+        iuifi_t refInstance = iufHistoryNodeGetInstanceData((iuhn_t)reference);
+        iuifi_t actInstance = iufHistoryNodeGetInstanceData((iuhn_t)actual);
+        equal = iufInputFileCompareInstance(refInstance,actInstance);
+        return equal;
+    }
+
+    if ( strcmp(reference->pType, IUF_IQ_TYPE) == 0 )
+    {
+        iuiqfi_t refInstance = iufHistoryNodeGetInstanceData((iuhn_t)reference);
+        iuiqfi_t actInstance = iufHistoryNodeGetInstanceData((iuhn_t)actual);
+        equal = iufIqFileCompareInstance(refInstance,actInstance);
+        return equal;
+    }
+
+    equal = strcmp(reference->pType, actual->pType) == 0;
+    return equal;
+}
+
 
 IUF_BOOL iufHistoryNodeCompare
 (
@@ -85,12 +115,22 @@ IUF_BOOL iufHistoryNodeCompare
 {
     if ( reference == actual ) return IUF_TRUE;
     if ( reference == NULL || actual == NULL ) return IUF_FALSE;
+    if ( reference->numberOfParameters != actual->numberOfParameters )
+    {
+        return IUF_FALSE;
+    }
+
     if ( reference->numberOfParents != actual->numberOfParents )
     {
         return IUF_FALSE;
     }
 
-    if ( reference->numberOfParameters != actual->numberOfParameters )
+    if ( iufParameterDictCompare(reference->parameters,actual->parameters) == IUF_FALSE )
+    {
+        return IUF_FALSE;
+    }
+
+    if ( iufHistoryNodeListCompare(reference->parents,actual->parents) == IUF_FALSE )
     {
         return IUF_FALSE;
     }
@@ -100,12 +140,12 @@ IUF_BOOL iufHistoryNodeCompare
         return IUF_FALSE;
     }
 
-    if( iufHistoryNodeListCompare(reference->parents,actual->parents) == IUF_FALSE )
+    if ( iufHistoryNodeCompareInstanceData(reference, actual) == IUF_FALSE )
     {
         return IUF_FALSE;
     }
 
-    return iufParameterDictCompare(reference->parameters,actual->parameters);
+    return IUF_TRUE;
 }
 
 
@@ -288,18 +328,7 @@ iuhn_t iufHistoryNodeLoadAnyType
 )
 {
     if ( handle == H5I_INVALID_HID ) return IUHN_INVALID;
-
-    iuhn_t node = iufHistoryNodeLoad(handle);
-    if ( node == IUHN_INVALID ) return IUHN_INVALID;
-    if ( strcmp( node->pType, IUF_INPUT_TYPE) == 0 )
-    {
-        node = iufInputFileLoadNode(handle);
-    }
-	else if (strcmp(node->pType, IUF_IQ_TYPE) == 0)
-	{
-		node = iufIqFileLoadNode(handle);
-	}
-    return node;
+    return iufHistoryNodeLoad(handle);
 }
 
 int iufHistoryNodeSaveInstance

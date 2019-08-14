@@ -1,23 +1,12 @@
 #!/bin/bash
 
 
-function termwidth
-{
-    which tput &> /dev/null
-    if [[ $? == 0 ]]
-    then
-        echo $(tput cols)
-    else
-        echo 120
-    fi
-}
-
 function figho
 {
-    which figlet &> /dev/null
-    if [[ $? == 0 ]]
+    LOCATION=$(command -v figlet)
+    if [[ "$LOCATION" != "" ]]
     then
-        echo $* | figlet -w $(termwidth)
+        echo $* | figlet
     else
         echo $*
     fi
@@ -32,7 +21,7 @@ function tmate_remote_debug
 # (It is using tmate.io tunneling services)
 #
 {
-    figho "TMATE Session.."
+    echo "TMATE Session.."
     echo  | ssh-keygen -t rsa -N ""
     tmate -S /tmp/tmate.sock new-session -d               # Launch tmate in a detached state
     tmate -S /tmp/tmate.sock wait tmate-ready             # Blocks until the SSH connection is established
@@ -47,7 +36,7 @@ function tmate_remote_debug
         fi
         sleep 2
     done
-    figho "TMATE closed.."
+    echo  "TMATE closed.."
 }
 
 
@@ -59,8 +48,7 @@ function before_install_linux
     printf "==> before_install_linux\n"
     sudo add-apt-repository -r ppa:tmate.io/archive -y
     sudo apt-get update -q
-    sudo apt-get install -y swig \
-                            figlet \
+    sudo apt-get install -y figlet \
                             coreutils \
                             libhdf5-dev \
                             cppcheck \
@@ -96,19 +84,40 @@ function dist_linux
     figho "Done.."
 }
 
+function tmp_qa_buildfix
+# This function is a workaround
+# that fixes the '..libinterceptor-${PLATFORM}.so' from LD_PRELOAD cannot be preloaded
+# (cannot open shared object file): ignored.', please remoe when fixed in future
+# build-wrapper release.
+# For details See:
+# https://community.sonarsource.com/t/sonarqube-c-ubuntu-build-wrapper-ld-preload-error/300/7
+#
+{
+  WrapperPath=$1
+  (( $? != 0 )) && printf "Error: missing sonar build-wrapper, bailing out\n" && exit -1
+  # copy libinterceptor-x86_64.so into libinterceptor-haswell.so
+  WrapperFolder=${WrapperPath%/*}
+  cp $WrapperFolder/libinterceptor-x86_64.so $WrapperFolder/libinterceptor-haswell.so
+}
+
 function qa_linux
 {
-    ci/bin/build.sh
+    # Get build wrapper path
+    WrapperPath=$(which build-wrapper-linux-x86-64)
+
+    tmp_qa_buildfix $WrapperPath
+    $WrapperPath --out-dir bw-outputs ci/bin/build.sh
+
     figho "QA....Linux.."
+#    tmate_remote_debug
     printf "Starting code coverage scan..\m"
     ci/bin/code_coverage.sh
-    printf "Starting static code analysis..\n"
-    ci/bin/static_code_analysis.sh
-    printf "Starting runtime analysis..\n"
-    ci/bin/memory_leak_detection.sh xml
-#    tmate_remote_debug
+#    printf "Starting static code analysis..\n"
+#    ci/bin/static_code_analysis.sh
+#    printf "Starting runtime analysis..\n"
+#    ci/bin/memory_leak_detection.sh xml
     printf "Running Sonar..\n"
-#    sonar-scanner
+    sonar-scanner
     figho "Done.."
 }
 
@@ -127,17 +136,15 @@ function sdk_linux
 function before_install_windows
 {
     printf "==> before_install_windows\n"
-    choco install python --version 3.7.4
-    choco install figlet-go swig
-    ci/bin/install_hdf5.bat $HDF5_ROOT
-    python -m pip install --upgrade pip
-    [[ -f python/requirements.txt ]] &&  python -m pip install -r python/requirements.txt
+    choco install figlet-go
+    ci/bin/install.bat $HDF5_ROOT
     printf "==> before_install_windows Done\n"
 }
 
 function build_windows
 {
     figho "Building....Windows.."
+    export HDF5_ROOT=./Download/hdf5
     ci/bin/build.bat
     figho "Done.."
 }
@@ -165,13 +172,7 @@ function dist_windows
 function before_install_osx
 {
     printf "==> before_install_osx\n"
-    # Install tested version 3.14.0 of cmake
-    #                1.10.5_1 of hdf5
-    brew unlink cmake
-    brew install swig tmate figlet \
-    https://raw.githubusercontent.com/Homebrew/homebrew-core/2f58eb8791f88dbf380523508a3a9aaf815f3976/Formula/cmake.rb \
-    https://raw.githubusercontent.com/Homebrew/homebrew-core/ac1d63eb675c3a963a363bf7ef0504024de81487/Formula/hdf5.rb
-    brew link cmake
+    brew install  figlet
     printf "==> before_install_osx Done\n"
  }
 
@@ -179,7 +180,7 @@ function before_install_osx
 
 function build_osx
 {
-    figho "Building....Linux.."
+    figho "Building....MacOS.."
     ci/bin/build.sh
     figho "Done.."
 }

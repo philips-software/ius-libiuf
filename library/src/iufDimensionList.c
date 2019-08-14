@@ -161,7 +161,7 @@ iudiml_t iufDimensionListLoad
 	// Load patterns
 	for (i = 0; i < numDimensions; i++)
 	{
-		sprintf(path, IUF_PATH_DIMENSIONLIST_DIMENSION, i);
+        snprintf(path, sizeof(path), IUF_PATH_DIMENSIONLIST_DIMENSION, i);
 		hid_t dimensionId = H5Gopen(handle, path, H5P_DEFAULT);
 		dimension = iufDimensionLoad(dimensionId);
 		if (dimension == IUDIM_INVALID)
@@ -227,7 +227,7 @@ int iufDimensionListSave
 	{
 		dimension = iufDimensionListGet(list, i);
 		if (dimension == IUDIM_INVALID) continue;
-		sprintf(path, IUF_PATH_DIMENSIONLIST_DIMENSION, i);
+        snprintf(path, sizeof(path), IUF_PATH_DIMENSIONLIST_DIMENSION, i);
 		hid_t dimension_id = H5Gcreate(handle, path, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 		status = iufDimensionSave(dimension, dimension_id);
 		H5Gclose(dimension_id);

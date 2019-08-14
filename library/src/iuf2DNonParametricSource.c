@@ -130,7 +130,7 @@ static int iuf2DNonParametricSourceSaveLocations
     {
         sourceElement = &source->pLocations[i];
         if(sourceElement == IU2DP_INVALID) continue;
-		sprintf(path, IUF_INPUTFILE_PATH_SOURCE_LOCATION, i);
+		snprintf(path, sizeof(path), IUF_INPUTFILE_PATH_SOURCE_LOCATION, i);
 		location_id = H5Gcreate(locationList_id, path, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
         status = iuf2DPositionSave(sourceElement, location_id);
 		H5Gclose(location_id);
@@ -158,7 +158,7 @@ static int iuf2DNonParametricSourceLoadLocations
     status = iufHdf5ReadInt(locationList_id, IUF_INPUTFILE_PATH_SOURCE_LOCATIONLISTSIZE, &(source->numLocations));
     for (p = 0; p < source->numLocations; p++)
     {
-        sprintf(path, IUF_INPUTFILE_PATH_SOURCE_LOCATION, p);
+        snprintf(path, sizeof(path), IUF_INPUTFILE_PATH_SOURCE_LOCATION, p);
 		hid_t location_id = H5Gopen(locationList_id, path, H5P_DEFAULT);
         pos = iuf2DPositionLoad(location_id);
         if (pos == IU2DP_INVALID)

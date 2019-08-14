@@ -187,7 +187,7 @@ int iufSourceDictSet
     IUF_ERR_CHECK_NULL_N_RETURN(key, IUF_ERR_VALUE);
     HashableSource *newMember = calloc(1, sizeof(HashableSource));
     newMember->source = member;
-    strcpy(newMember->key,key);
+    strncpy(newMember->key,key, sizeof(newMember->key));
     if (HashableSource_hashmap_put(&dict->map, newMember->key, newMember) != newMember)
     {
         IUF_ERROR_FMT_PUSH(IUF_ERR_MAJ_VALUE, IUF_ERR_MIN_ARG_DUPLICATE_KEY, "discarding blob with duplicate key: %s", key);

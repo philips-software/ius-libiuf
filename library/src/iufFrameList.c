@@ -147,7 +147,7 @@ iufl_t iufFrameListLoad
     // Load frames
     for (i=0;i < numFrames; i++)
     {
-        sprintf(path, IUF_INPUTFILE_PATH_FRAMELIST_FRAME, i);
+        snprintf(path, sizeof(path), IUF_INPUTFILE_PATH_FRAMELIST_FRAME, i);
 	
 		hid_t frame_id = H5Gopen(frameList_id, path, H5P_DEFAULT);
         sourceElement = iufFrameLoad(frame_id);
@@ -229,7 +229,7 @@ int iufFrameListSave
         sourceElement = iufFrameListGet(list,i);
         if(sourceElement == IUF_INVALID) continue;
 
-        sprintf(path, IUF_INPUTFILE_PATH_FRAMELIST_FRAME, i);
+        snprintf(path, sizeof(path), IUF_INPUTFILE_PATH_FRAMELIST_FRAME, i);
 		hid_t frame_id = H5Gcreate(group_id, path, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
 		
         status = iufFrameSave(sourceElement, frame_id);

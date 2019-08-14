@@ -171,16 +171,16 @@ int *        pDim2
 
     if ( strcmp( pGridName, "PolarGrid" ) == 0 )
     {
-        sprintf( pVariableNameDim2, "%s/numPointsRadial", pGridName );
-        sprintf( pVariableNameDim1, "%s/numPointsTheta", pGridName );
+        snprintf( pVariableNameDim2, sizeof(pVariableNameDim2), "%s/numPointsRadial", pGridName );
+        snprintf( pVariableNameDim1, sizeof(pVariableNameDim1), "%s/numPointsTheta", pGridName );
         status  = iufHdf5ReadInt( handle, pVariableNameDim2, pDim2 );
         status |= iufHdf5ReadInt( handle, pVariableNameDim1, pDim1 );
         *pDim0 = 0;  // elevation dimension not yet supported
     }
     else if ( strcmp( pGridName, "CartesianGrid" ) == 0 )
     {
-        sprintf( pVariableNameDim2, "%s/numPointsZ", pGridName );
-        sprintf( pVariableNameDim1, "%s/numPointsX", pGridName );
+        snprintf( pVariableNameDim2, sizeof(pVariableNameDim2), "%s/numPointsZ", pGridName );
+        snprintf( pVariableNameDim1, sizeof(pVariableNameDim1), "%s/numPointsX", pGridName );
         status  = iufHdf5ReadInt( handle, pVariableNameDim2, pDim2 );
         status |= iufHdf5ReadInt( handle, pVariableNameDim1, pDim1 );
         *pDim0 = 0;  // elevation dimension not yet supported
@@ -374,27 +374,21 @@ herr_t iufHdf5WriteGrid
 
     if ( strcmp( pGridName, "PolarGrid" ) == 0 )
     {
-        sprintf(pVariableNameDim, "%s/numPointsRadial",pGridName );
+        snprintf(pVariableNameDim, sizeof(pVariableNameDim), "%s/numPointsRadial",pGridName );
         returnValue = H5LTmake_dataset_int( handle, pVariableNameDim, 1,
                                             &dims[0], &(pGrid->numPoints2) );
-        sprintf(pVariableNameDim, "%s/numPointsTheta", pGridName );
+        snprintf(pVariableNameDim, sizeof(pVariableNameDim), "%s/numPointsTheta", pGridName );
         returnValue |= H5LTmake_dataset_int( handle, pVariableNameDim, 1,
                                              &dims[0], &(pGrid->numPoints1) );
-        //sprintf(pVariableNameDim, "%s/numPointsPhi");
-        //returnValue |= H5LTmake_dataset_int( handle, pVariableNameDim, 1,
-        //    &dim[0], &(pGrid->numPoints0) );
     }
     else if ( strcmp( pGridName, "CartesianGrid" ) == 0 )
     {
-        sprintf( pVariableNameDim, "%s/numPointsZ", pGridName );
+        snprintf( pVariableNameDim, sizeof(pVariableNameDim), "%s/numPointsZ", pGridName );
         returnValue = H5LTmake_dataset_int( handle, pVariableNameDim, 1,
                                             &dims[0], &(pGrid->numPoints2) );
-        sprintf( pVariableNameDim, "%s/numPointsX", pGridName );
+        snprintf( pVariableNameDim, sizeof(pVariableNameDim), "%s/numPointsX", pGridName );
         returnValue |= H5LTmake_dataset_int( handle, pVariableNameDim, 1,
                                              &dims[0], &(pGrid->numPoints1) );
-        //sprintf(pVariableNameDim, "%s/numPointsY");
-        //returnValue |= H5LTmake_dataset_int( handle, pVariableNameDim, 1,
-        //                                     &dims[0], &(pGrid->numPoints0) );
     }
     else
     {

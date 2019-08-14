@@ -170,7 +170,7 @@ int iufErrorFormatAndPush
     va_list aptr;
     static char msg[IUF_MAX_STRING_LENGTH];
     va_start(aptr, msgFormat);
-    count = vsprintf(msg, msgFormat, aptr);
+    count = vsnprintf(msg, IUF_MAX_STRING_LENGTH, msgFormat, aptr);
     va_end(aptr);
     if (count<0)
     {
@@ -210,8 +210,8 @@ int build_error_string(unsigned int n, const struct H5E_error2_t *err_desc, void
     const char *maj_name;
     const char *min_name;
     char *fillme = (char *)cb_data;
+    char errorstring_buffer[IUF_MAX_STRING_LENGTH];
 
-    IUF_UNUSED(cb_data);
     /* Get the error class's name */
     H5Eget_class_name(err_desc->cls_id,class_name,32);
 
@@ -219,16 +219,18 @@ int build_error_string(unsigned int n, const struct H5E_error2_t *err_desc, void
     maj_name = H5Eget_major (err_desc->maj_num);
     min_name = H5Eget_minor (err_desc->min_num);
 
+    strncpy(errorstring_buffer, (char *)cb_data, (size_t)IUF_MAX_STRING_LENGTH);
     /* Print error information */
-    sprintf(fillme + strlen(fillme), "%s-DIAG: Error detected in IUF-SDK:\n", class_name);
-    sprintf(fillme + strlen(fillme), "  #%03d: %s line %d in %s(): %s\n",
+    snprintf(errorstring_buffer + strlen(fillme), IUF_MAX_STRING_LENGTH, "%s-DIAG: Error detected in IUF-SDK:\n", class_name);
+    snprintf(errorstring_buffer + strlen(fillme), IUF_MAX_STRING_LENGTH, "  #%03d: %s line %d in %s(): %s\n",
                                      n,
                                      err_desc->file_name,
                                      err_desc->line,
                                      err_desc->func_name,
                                      err_desc->desc);
-    sprintf(fillme + strlen(fillme), "   major: %s\n", maj_name);
-    sprintf(fillme + strlen(fillme), "   minor: %s\n", min_name);
+    snprintf(errorstring_buffer + strlen(fillme), IUF_MAX_STRING_LENGTH, "   major: %s\n", maj_name);
+    snprintf(errorstring_buffer + strlen(fillme), IUF_MAX_STRING_LENGTH, "   minor: %s\n", min_name);
+    strncpy(fillme, errorstring_buffer, (size_t)IUF_MAX_STRING_LENGTH);
     return 0;
 }
 

@@ -184,7 +184,7 @@ int iufReceiveSettingsDictSet
     IUF_ERR_CHECK_NULL_N_RETURN(key, IUF_ERR_VALUE);
     HashableReceiveSettings *newMember = calloc(1, sizeof(HashableReceiveSettings));
     newMember->receiveSettings = member;
-    strcpy(newMember->key,key);
+    strncpy(newMember->key,key, sizeof(newMember->key));
     if (HashableReceiveSettings_hashmap_put(&dict->map, newMember->key, newMember) != newMember)
     {
         IUF_ERROR_FMT_PUSH(IUF_ERR_MAJ_VALUE, IUF_ERR_MIN_ARG_DUPLICATE_KEY, "discarding blob with duplicate key: %s", key);

@@ -15,6 +15,7 @@
 /* set the following to the number of 100ns ticks of the actual
 resolution of your system's clock */
 #define UUIDS_PER_TICK 1024
+#define UUID_STRING_BUFFER_SIZE 37
 
 #ifdef _WIN32
 #include <Windows.h>
@@ -165,13 +166,13 @@ void snpuid(char *str, size_t size, netperf_uuid_t u) {
     int i;
     char *tmp = str;
 
-    if (size < 38) {
+    if (size < UUID_STRING_BUFFER_SIZE) {
         snprintf(tmp, size, "%s", "uuid string too small");
         return;
     }
 
     /* perhaps this is a trifle optimistic but what the heck */
-    sprintf(tmp,
+    snprintf(tmp, size,
         "%8.8x-%4.4x-%4.4x-%2.2x%2.2x-",
         u.time_low,
         u.time_mid,
@@ -180,7 +181,7 @@ void snpuid(char *str, size_t size, netperf_uuid_t u) {
         u.clock_seq_low);
     tmp += 24;
     for (i = 0; i < 6; i++) {
-        sprintf(tmp, "%2.2x", u.node[i]);
+        snprintf(tmp, size, "%2.2x", u.node[i]);
         tmp += 2;
     }
     *tmp = 0;
@@ -210,7 +211,7 @@ char *iufUuidCreate()
     uuid_time_t timestamp;
     uint16_t clockseq;
     uuid_node_t node;
-    char *uuid_str = (char *)calloc(38, sizeof(char));
+    char *uuid_str = (char *)calloc(UUID_STRING_BUFFER_SIZE, sizeof(char));
 
     /* get time, node ID, saved state from non-volatile storage */
     get_current_time(&timestamp);
@@ -221,7 +222,7 @@ char *iufUuidCreate()
 
     /* stuff fields into the UUID */
     format_uuid_v1(&uuid, clockseq, timestamp, node);
-    snpuid(uuid_str, 38, uuid);
+    snpuid(uuid_str, UUID_STRING_BUFFER_SIZE, uuid);
 
     return uuid_str;
 }
@@ -243,7 +244,7 @@ char *iufUuidCreate()
   uuid_generate_time_safe(uuid);
 #endif
   // unparse (to string)
-  uuid_str = (char *)calloc(37, sizeof(char));    // ex. "1b4e28ba-2fa1-11d2-883f-0016d3cca427" + "\0"
+  uuid_str = (char *)calloc(UUID_STRING_BUFFER_SIZE, sizeof(char));    // ex. "1b4e28ba-2fa1-11d2-883f-0016d3cca427" + "\0"
   uuid_unparse_lower(uuid, uuid_str);
 
   return uuid_str; 
@@ -254,8 +255,7 @@ void setIufUuidCreate(char* c)
 {
   char* id = iufUuidCreate();
   
-  strcpy(c, id);
-
+  strncpy(c, id, UUID_STRING_BUFFER_SIZE);
   free(id);
 }
 

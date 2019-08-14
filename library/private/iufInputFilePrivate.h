@@ -16,16 +16,16 @@ iuif_t iufInputFileSpecificsLoad
     iuif_t inputFile
 );
 
+int iufInputFileCompareInstance
+(
+    iuifi_t reference,
+    iuifi_t actual
+);
 
 int iufInputFileSaveInstance
 (
     hid_t handle,
     iuifi_t instanceData
-);
-
-iuhn_t iufInputFileLoadNode
-(
-    hid_t handle
 );
 
 void *iufInputFileInstanceLoad
