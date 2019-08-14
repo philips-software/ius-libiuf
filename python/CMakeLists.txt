@@ -12,6 +12,9 @@ include_directories(
 set(CMAKE_SWIG_FLAGS "")
 set(UseSWIG_TARGET_NAME_PREFERENCE STANDARD)
 set(LIBRARY_NAME piuf)
+set(LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/python)
+set(LIBRARY_OUTPUT_DIRECTORY_DEBUG ${PROJECT_BINARY_DIR}/python)
+set(LIBRARY_OUTPUT_DIRECTORY_RELEASE ${PROJECT_BINARY_DIR}/python)
 
 # Add swig module
 swig_add_library(${LIBRARY_NAME}
@@ -43,13 +46,9 @@ endif()
 set(SWIG_LIBIUF_PY ${CMAKE_CURRENT_BINARY_DIR}/${LIBRARY_NAME}.py)
 
 if(MSVC)   
-    set(SWIG_LIBIUF_SO ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CONFIG}/_${LIBRARY_NAME}.pyd)
-    set(CPYCMD  ${CMAKE_COMMAND} -E copy
-                ${SWIG_LIBIUF_SO}
-                ${CMAKE_CURRENT_BINARY_DIR})
+    set(SWIG_LIBIUF_SO ${CMAKE_CURRENT_BINARY_DIR}/_${LIBRARY_NAME}.pyd)
 else()
     set(SWIG_LIBIUF_SO ${CMAKE_CURRENT_BINARY_DIR}/_${LIBRARY_NAME}.so)
-    set(CPYCMD echo Installing Python Module)
 endif()
 
 set(PYTHON_INSTALL_FILES ${SWIG_LIBIUF_PY} ${SWIG_LIBIUF_SO})
@@ -63,5 +62,4 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/tests DESTINATION ${CMAKE_CURRENT_BINARY_D
 
 # Install target to call setup.py
 add_custom_target(install-python
-        COMMAND ${CPYCMD}
         COMMAND python -m pip install .)

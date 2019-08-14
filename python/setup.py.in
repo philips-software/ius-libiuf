@@ -24,13 +24,11 @@ if __name__ == '__main__':
         author='IUF SDK Team',
         author_email='al_libiuf@natlab.research.philips.com',
         url='https://github.com/philips-software/ius-libiuf',
-        packages=setuptools.find_packages(),
         provides=['${LIBRARY_NAME}'],
-        # package_data={'${LIBRARY_NAME}': ['${SWIG_LIBIUF_SO}', '${LIBRARY_NAME}.py']},
         license='MIT',
-        install_requires=['numpy', 'pyyaml'],-
-        tests_require=["nose2"],
-        test_suite="nose2.collector.collector",
+        packages=[''],
+        package_dir={'': '.'},
+        package_data={'': ['${SWIG_LIBIUF_SO}', '${SWIG_LIBIUF_PY}']},
         # See: https://pypi.org/classifiers/
         classifiers=[
             'Development Status :: 4 - Beta',
