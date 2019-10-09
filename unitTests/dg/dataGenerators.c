@@ -89,6 +89,24 @@ iursd_t dgGenerateReceiveSettingsDict
     return dict;
 }
 
+iursd_t dgGenerateReceiveSettingsDictVerasonics
+(
+        char *label,
+        int numSamplesPerLine,
+        float sampleFrequency
+)
+{
+    int status=0;
+    // Create
+    iursd_t  dict = iufReceiveSettingsDictCreate();
+    // Fill
+    iurs_t obj = iufReceiveSettingsCreate(sampleFrequency, numSamplesPerLine, 1);
+
+    status |= iufReceiveSettingsDictSet(dict,label,obj);
+    TEST_ASSERT_EQUAL(IUF_E_OK,status);
+    return dict;
+}
+
 iudmd_t dgGenerateDemodulationDict
 (
 	char *label,
@@ -228,6 +246,62 @@ iuif_t dgGenerateInputFile
     status = iufInputFileSetAcquisition(inputFile, acquisition);
     TEST_ASSERT(status == IUF_E_OK);
 
+
+    iut_t transducer = dgGenerateTransducer(transducerName);
+    status = iufInputFileSetTransducer(inputFile, transducer);
+    TEST_ASSERT(status == IUF_E_OK);
+
+    return inputFile;
+}
+
+iuif_t dgGenerateInputFileVerasonics
+(
+        char *ptestFileName,
+        char *transducerName,
+        char *label,
+        int numFrames,
+        int numSamplesPerLine,
+        int numChannels
+)
+{
+    // create
+    iuif_t inputFile = iufInputFileCreate(ptestFileName);
+    TEST_ASSERT(inputFile != IUIF_INVALID);
+
+    // fill
+    iufl_t frameList = dgGenerateFrameList(numFrames);
+    int status = iufInputFileSetFrameList(inputFile,frameList);
+    TEST_ASSERT(status == IUF_E_OK);
+
+    iupd_t pulseDict = dgGeneratePulseDictVerasonics();
+    status = iufInputFileSetPulseDict(inputFile, pulseDict);
+    TEST_ASSERT(status == IUF_E_OK);
+
+    iusd_t sourceDict = dgGenerateSourceDictVerasonics(label);
+    status = iufInputFileSetSourceDict(inputFile, sourceDict);
+    TEST_ASSERT(status == IUF_E_OK);
+
+    iurcmd_t receiveChannelMapDict = dgGenerateReceiveChannelMapDictVerasonics(label, numChannels);
+    status = iufInputFileSetReceiveChannelMapDict(inputFile, receiveChannelMapDict);
+    TEST_ASSERT(status == IUF_E_OK);
+
+    iutad_t transmitApodizationDict = dgGenerateTransmitApodizationDictVerasonics(label, numChannels);
+    status = iufInputFileSetTransmitApodizationDict(inputFile, transmitApodizationDict);
+    TEST_ASSERT(status == IUF_E_OK);
+
+    float sampleFrequency = 4000.0f; // todo calculate the correct samplefrequency based on samplesperline?
+    iursd_t receiveSettingsDict = dgGenerateReceiveSettingsDictVerasonics(label, numSamplesPerLine, sampleFrequency);
+    status = iufInputFileSetReceiveSettingsDict(inputFile, receiveSettingsDict);
+    TEST_ASSERT_EQUAL(IUF_E_OK, status);
+
+    iupald_t patternListDict = dgGeneratePatternListDict(label,receiveSettingsDict,receiveChannelMapDict);
+    status = iufInputFileSetPatternListDict(inputFile,patternListDict);
+    TEST_ASSERT(status == IUF_E_OK);
+
+    // save
+    iua_t acquisition = dgGenerateAcquisition();
+    status = iufInputFileSetAcquisition(inputFile, acquisition);
+    TEST_ASSERT(status == IUF_E_OK);
 
     iut_t transducer = dgGenerateTransducer(transducerName);
     status = iufInputFileSetTransducer(inputFile, transducer);
@@ -492,6 +566,28 @@ iupd_t dgGeneratePulseDict
   return dict;
 }
 
+iupd_t dgGeneratePulseDictVerasonics
+(
+        void
+)
+{
+    float   pulseFrequency=8000000.0f;   /**< frequency that the pulse represents in Hz */
+    float   pulseAmplitude=80.0f;        /**< (max) amplitude of the pulse in Volts */
+    int     numPulses=2;                 /**< number of cycles that the pulse represents */
+    int     status;
+
+    // create
+    iupd_t dict = iufPulseDictCreate();
+    TEST_ASSERT(dict != IUPD_INVALID);
+
+    // fill
+    char *parametricLabel = "bmode";
+    iupp_t parametricPulse = iufParametricPulseCreate(pulseFrequency, pulseAmplitude, numPulses);
+    status = iufPulseDictSet(dict,parametricLabel, (iup_t) parametricPulse);
+    TEST_ASSERT(status == IUF_E_OK);
+    return dict;
+}
+
 iusd_t dgGenerateSourceDict
 (
     void
@@ -527,6 +623,29 @@ iusd_t dgGenerateSourceDict
     return dict;
 }
 
+iusd_t dgGenerateSourceDictVerasonics
+(
+        char *label
+)
+{
+    int numLocationsTheta = 5; /**< number of locations */
+    float angularDelta = 0.13f;
+    float FNumber = -0.955f;
+    float startAngle = 3.14f;
+    float startTheta = startAngle;
+    float deltaTheta = angularDelta;
+    int status;
+
+    // create
+    iusd_t dict = iufSourceDictCreate();
+    TEST_ASSERT(dict != IUFD_INVALID);
+    iu2dps_t parametricSource = iuf2DParametricSourceCreate(numLocationsTheta,
+                FNumber, deltaTheta, startTheta);
+    TEST_ASSERT(parametricSource != IU2DPS_INVALID);
+    status = iufSourceDictSet(dict, label, (ius_t) parametricSource);
+    TEST_ASSERT_EQUAL(IUF_E_OK,status);
+    return dict;
+}
 
 iurcm_t dgGenerateReceiveChannelMap
 (
@@ -534,8 +653,13 @@ iurcm_t dgGenerateReceiveChannelMap
 )
 {
     int status,i;
-    int channelMap[8] = {0, 1, 2, 3, 4, 5, 6, 7};
-
+    int *channelMap;//[8] = {0, 1, 2, 3, 4, 5, 6, 7};
+    channelMap = (int *)calloc(numChannels, sizeof(int));
+    TEST_ASSERT(channelMap != NULL);
+    for(i=0;i<numChannels;i++)
+    {
+        channelMap[i]=i;
+    }
     // fill
     iurcm_t receiveChannelMap = iufReceiveChannelMapCreate(numChannels);
     TEST_ASSERT(receiveChannelMap != NULL);
@@ -543,18 +667,15 @@ iurcm_t dgGenerateReceiveChannelMap
     status = iufReceiveChannelMapSetMap(receiveChannelMap, channelMap);
     TEST_ASSERT(status == IUF_E_OK);
 
-    status = iufReceiveChannelMapSetMap(receiveChannelMap, channelMap);
-    TEST_ASSERT(status == IUF_E_OK);
-
     // Delays
     for(i=0;i<numChannels;i++)
     {
-        float delay = i*2.0f;
+        float delay = 0.0f;//i*2.0f;
         status |= iufReceiveChannelMapSetStartDelay(receiveChannelMap, i, delay);
         TEST_ASSERT(status == IUF_E_OK);
     }
 
-
+    free(channelMap);
     return receiveChannelMap;
 }
 
@@ -574,6 +695,24 @@ iurcmd_t dgGenerateReceiveChannelMapDict
     TEST_ASSERT(status == IUF_E_OK);
     return dict;
 }
+
+iurcmd_t dgGenerateReceiveChannelMapDictVerasonics
+(
+       char *label,
+       int numChannels
+)
+{
+    int status;
+    iurcmd_t dict = iufReceiveChannelMapDictCreate();
+    TEST_ASSERT(dict != IURCMD_INVALID);
+
+    // fill
+    iurcm_t receiveChannelMap = dgGenerateReceiveChannelMap(numChannels);
+    status = iufReceiveChannelMapDictSet(dict, label, receiveChannelMap);
+    TEST_ASSERT(status == IUF_E_OK);
+    return dict;
+}
+
 
 iua_t dgGenerateAcquisition()
 {
@@ -636,3 +775,29 @@ iutad_t dgGenerateTransmitApodizationDict
 	return dict;
 }
 
+iutad_t dgGenerateTransmitApodizationDictVerasonics
+(
+        char *label,
+        int numElements
+)
+{
+    int status;
+    float *apodization;
+    apodization = (float *)malloc(numElements*sizeof(float));
+    for (int i = 0; i<numElements; i++)
+    {
+        apodization[i]=1.0f;
+    }
+
+    iutad_t dict = iufTransmitApodizationDictCreate();
+    TEST_ASSERT(dict != IUTAD_INVALID);
+
+    // fill
+    iuta_t transmitApodization = iufTransmitApodizationCreate(apodization, numElements);
+    TEST_ASSERT(transmitApodization != NULL);
+
+    status = iufTransmitApodizationDictSet(dict, label, transmitApodization);
+    TEST_ASSERT(status == IUF_E_OK);
+
+    return dict;
+}
