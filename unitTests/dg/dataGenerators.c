@@ -3,14 +3,12 @@
 #include <iuf.h>
 #include <dg/dataGenerators.h>
 
-
-
-static const char *pPulseLabel = "pulseLabel";
-static const char *pSourceLabel = "sourceLabel";
-static const char *pChannelMapLabel = "channelMapLabel";
-static const char *pApodizationLabel = "apodizationLabel";
-static const char *pReceivesettingsLabel = "receivesettingsLabel";
-static const char *pDemodulationLabel = "demodulationLabel";
+static const char *pPulseLabel = "bmode";
+static const char *pSourceLabel = "bmode";
+static const char *pChannelMapLabel = "bmode";
+static const char *pApodizationLabel = "bmode";
+static const char *pReceivesettingsLabel = "bmode";
+static const char *pDemodulationLabel = "bmode";
 
 void dgFillData
 (
@@ -267,12 +265,9 @@ iuif_t dgGenerateInputFileVerasonics
     // create
     iuif_t inputFile = iufInputFileCreate(ptestFileName);
     TEST_ASSERT(inputFile != IUIF_INVALID);
+    int status;
 
     // fill
-    iufl_t frameList = dgGenerateFrameList(numFrames);
-    int status = iufInputFileSetFrameList(inputFile,frameList);
-    TEST_ASSERT(status == IUF_E_OK);
-
     iupd_t pulseDict = dgGeneratePulseDictVerasonics();
     status = iufInputFileSetPulseDict(inputFile, pulseDict);
     TEST_ASSERT(status == IUF_E_OK);
@@ -296,6 +291,10 @@ iuif_t dgGenerateInputFileVerasonics
 
     iupald_t patternListDict = dgGeneratePatternListDict(label,receiveSettingsDict,receiveChannelMapDict);
     status = iufInputFileSetPatternListDict(inputFile,patternListDict);
+    TEST_ASSERT(status == IUF_E_OK);
+
+    iufl_t frameList = dgGenerateFrameListVerasonics(numFrames, label);
+    status = iufInputFileSetFrameList(inputFile,frameList);
     TEST_ASSERT(status == IUF_E_OK);
 
     // save
@@ -432,6 +431,26 @@ int dgIqFileAddGeneratedData
 iufl_t dgGenerateFrameList
 (
     int numFrames
+)
+{
+    iufr_t obj;
+    int status,i;
+    iufl_t frameList = iufFrameListCreate(numFrames);
+    TEST_ASSERT_NOT_EQUAL(IUFL_INVALID, frameList);
+
+    for (i=0;i<numFrames;i++)
+    {
+        obj = iufFrameCreate("test",i+2,i*0.01f);
+        status = iufFrameListSet(frameList, obj, i);
+        TEST_ASSERT_EQUAL(IUF_E_OK, status);
+    }
+    return frameList;
+}
+
+iufl_t dgGenerateFrameListVerasonics
+(
+        int numFrames,
+        char *label
 )
 {
     iufr_t obj;
@@ -732,21 +751,21 @@ iut_t dgGenerateTransducer
     char *transducerName
 )
 {
-    const int numTransducerElements = 128;
+    const int numTransducerElements = 80;
     int i = 0;
 
     // create and fill
-    const float transducerPitch = 0.000005f;
+    const float transducerPitch = 0.254f*0.0001f; // in meters
 
-    iu3dt_t transducer = iuf3DTransducerCreate(transducerName, IUF_PLANE, 2500000.0f, numTransducerElements);
-    TEST_ASSERT(transducer != IU3DT_INVALID);
+    iu2dt_t transducer = iuf2DTransducerCreate(transducerName, IUF_LINE, 2500000.0f, numTransducerElements);
+    TEST_ASSERT(transducer != IU2DT_INVALID);
     for (i = 0; i < numTransducerElements; i++)
     {
-        iu3dp_t elemPos = iuf3DPositionCreate((float)(10.0-numTransducerElements/2.0)*transducerPitch, 0.0f, 0.0f);
-        iu3ds_t elemSize = iuf3DSizeCreate(0.0001f,0.0001f,0.0001f);
-        iu3da_t elemAngle = iuf3DAngleCreate(0.0f,0.3f);
-        iu3dte_t element = iuf3DTransducerElementCreate(elemPos, elemAngle, elemSize);
-        iuf3DTransducerSetElement(transducer, i, element);
+        iu2dp_t elemPos = iuf2DPositionCreate(((float)i-(numTransducerElements/2.0))*transducerPitch, 0.0f);
+        iu2ds_t elemSize = iuf2DSizeCreate(0.25f*0.001f, 0.02f);
+        float elemAngle = 0.0f;
+        iu2dte_t element = iuf2DTransducerElementCreate(elemPos, elemAngle, elemSize);
+        iuf2DTransducerSetElement(transducer, i, element);
     }
 
     return  (iut_t)transducer;

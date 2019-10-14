@@ -779,6 +779,7 @@ TEST_GROUP_RUNNER(IufInputFile)
     RUN_TEST_CASE(IufInputFile, iufInputFileSetGetAcquisition);
     RUN_TEST_CASE(IufInputFile, iufInputFileSetGetTransducer);
     RUN_TEST_CASE(IufInputFile, testIufInputFileSerialization);
+    RUN_TEST_CASE(IufInputFile, testIufInputFileVeraSonics);
     RUN_TEST_CASE(IufInputFile, testIufInputFileDataIOSaveFrame);
     RUN_TEST_CASE(IufInputFile, testIufInputFileDataIOSaveResponse);
     RUN_TEST_CASE(IufInputFile, testIufInputFileDataIOSaveChannel);

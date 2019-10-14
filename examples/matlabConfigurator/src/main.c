@@ -6,7 +6,7 @@
 #include <iufPositionPrivate.h>
 
 #define DEFAULT_IMAGING_DEPTH 0.010
-#define PIXEL_DELTA 0.875
+#define PIXEL_DELTA (0.875f)
 #define WINDOW_RESOLUTION_Y 480
 #define WINDOW_POS_X 220
 #define WINDOW_POS_Y 440
@@ -42,7 +42,6 @@ static char *writeTransducer(iut_t transducer)
     return script;
 }
 
-
 static char *writeResource(iut_t transducer, iua_t acquisition, double depth)
 {
     char* script = (char *)calloc(5000, sizeof(char)); // 5000 characters should be enough
@@ -51,11 +50,11 @@ static char *writeResource(iut_t transducer, iua_t acquisition, double depth)
     int numElements = iufTransducerGetNumElements(transducer);
 
     // determine rowsPerFrame
-    double lambdaMm = 0.001 * iufAcquisitionGetSpeedOfSound(acquisition) / iufTransducerGetCenterFrequency(transducer);
+    double lambdaMm = 1000.0f * iufAcquisitionGetSpeedOfSound(acquisition) / iufTransducerGetCenterFrequency(transducer);
     IufTransducerShape shape = iufTransducerGetShape(transducer);
     double elementPitch=0.0;
 
-    if (shape == IUF_2D_SHAPE)
+    if (shape == IUF_LINE)
     {
         iu2dte_t element0 = iuf2DTransducerGetElement((iu2dt_t)transducer, 0);
         iu2dte_t element1 = iuf2DTransducerGetElement((iu2dt_t)transducer, 1);
@@ -65,18 +64,19 @@ static char *writeResource(iut_t transducer, iua_t acquisition, double depth)
     double D = (iufTransducerGetNumElements(transducer) - 1) * elementPitch * 1000.0; // in mm
     double rayDelta = (0.25) * asin(1.22*lambdaMm/D);
     int numRays = round(2*(M_PI/4)/rayDelta);
-    double maxAqcLength = round(depth/lambdaMm);
+    double maxAqcLength = round((depth*1000.0f)/lambdaMm);
     double lineLengthRcvBuffer = 128 * ceil(maxAqcLength / 16.0);
+    float pixel_delta = PIXEL_DELTA;
     int rowsPerFrame = 16 * ceil(lineLengthRcvBuffer * numRays / 16.0);
-    int numColumns = ceil(2*(maxAqcLength+M_PI/4)*sin(-M_PI/4)/PIXEL_DELTA);
-    double originX = -(numColumns/2)*PIXEL_DELTA;
+    int numColumns = 512; //ceil(2.0f*(maxAqcLength+M_PI/4.0f)*sin(-M_PI/4.0f)/pixel_delta);
+    double originX = -(numColumns/2.0f)*pixel_delta;
 
     //int interBufferRowsPerFrame = (int)(16 * ceil(pow(2,ceil(log2(maxAqcLength)))) / 16); // verify this formula
     //int interBufferColsPerFrame = numColumns;
     const char windowTitle[] = "Generated file:";
 
     sprintf(script, "PData.Coord  = 'rectangular'; \n" \
-                    "PData.PDelta = [%f 1.0 1.0];  \n" \
+                    "PData.PDelta = [Trans.spacing 0.0 0.5];  \n" \
                     "PData.Size   = [%d %d 1];   \n" \
                     "PData.Origin = [%f 0.0 0.0];  \n" \
                     "Resource.Parameters.numTransmit           = %d;\n" \
@@ -98,8 +98,7 @@ static char *writeResource(iut_t transducer, iua_t acquisition, double depth)
                     " Resource.DisplayWindow(1).AxesUnits      = 'mm';\n" \
                     " Resource.DisplayWindow(1).Position       = [%d,%d,%d,%d];\n" \
                     " Resource.DisplayWindow(1).ReferencePt    = [PData.Origin(1),PData.Origin(3)];\n",
-                    PIXEL_DELTA, // PData PDelta x
-                    (int)ceil(maxAqcLength), numColumns, // PData size z and x
+                    rowsPerFrame, iufTransducerGetNumElements(transducer), // PData size z and x
                     originX, //PData origin
                     iufTransducerGetNumElements(transducer), // Parameters.numTransmit
                     iufAcquisitionGetSpeedOfSound(acquisition), // Parameters.speedOfSound
@@ -122,7 +121,7 @@ static char *writeTx(iupal_t patternList,
     char *apodizationString = (char *) calloc(5000, sizeof(char));
     char *txString = (char *) calloc(500, sizeof(char));
 
-    double unitScale = iufTransducerGetCenterFrequency(transducer)/1.540;
+    double unitScale = iufTransducerGetCenterFrequency(transducer)/1540.0;
     int numTransmits = iufPatternListGetSize(patternList);
     double transducerWidth = 0.0;
     int numElements = iufTransducerGetNumElements(transducer);
@@ -144,7 +143,7 @@ static char *writeTx(iupal_t patternList,
     }
 
     sprintf(script, "%%%% Specify TX structure array.\n" \
-                    "scaleToWvl = %f;\n,", unitScale);
+                    "scaleToWvl = %f;\n", unitScale);
 
     for (int t=0; t < numTransmits; t++)
     {
@@ -162,7 +161,8 @@ static char *writeTx(iupal_t patternList,
         // iu2dp_t pos2d;
         // iu3dp_t pos3d;
         double focus = 50; // focus value is 50 mm
-        double theta=0.0, fNumber=0.0;
+        double theta=0.0, deltaTheta=0.0, fNumber=0.0;
+        int numSources;
 
         switch (sourceType)
         {
@@ -171,12 +171,26 @@ static char *writeTx(iupal_t patternList,
                 return "%% writeTX error: non-parametric 2D source currently not implemented.\n error=1;\n";
                 // break;
             case IUF_2D_PARAMETRIC_SOURCE:
+                numSources = iuf2DParametricSourceGetNumLocations((iu2dps_t)source);
                 theta = iuf2DParametricSourceGetStartTheta((iu2dps_t)source);
                 fNumber = iuf2DParametricSourceGetFNumber((iu2dps_t)source);
-                if (iuf2DParametricSourceGetNumLocations((iu2dps_t)source) > 1)
+                deltaTheta = iuf2DParametricSourceGetDeltaTheta((iu2dps_t)source);
+                for (int i=0; i< numSources; i++)
                 {
-                    return "%% writeTX error: parametric 2D source with more then 1 source point currently not implemented.\n " \
-                           "error=1;\n";
+                    // we assume transmit t matches source t%numSources
+                    focus = IUF_ABS(fNumber) < IUF_FLT_EPS ? 0.0 : transducerWidth / fNumber;
+                    int txCount = t*numSources+i;
+                    sprintf(txString, "TX(%d).Apod   = [%s];\n" \
+                                      "TX(%d).Origin = [%f 0.0 0.0] * scaleToWvl;\n" \
+                                      "TX(%d).focus  = %f * scaleToWvl;\n" \
+                                      "TX(%d).Steer  = [%f, 0];\n" \
+                                      "TX(%d).Delay  = computeTXDelays(TX(%d));\n",
+                                      txCount, apodizationString,
+                                      txCount, transducerWidth * tan(theta),
+                                      txCount, focus,
+                                      txCount, theta+i*deltaTheta,
+                                      txCount, txCount);
+                    strcat(script, txString);
                 }
                 break;
             case IUF_3D_NON_PARAMETRIC_SOURCE:
@@ -190,8 +204,8 @@ static char *writeTx(iupal_t patternList,
             default:
                 return "%% writeTX error: unknown sourceType.\nerror=1; \n";
         }
+#if 0
         focus = IUF_ABS(fNumber) < IUF_FLT_EPS ? 0.0 : transducerWidth / fNumber;
-
         sprintf(txString, "TX(%d).Apod = [%s];\n" \
                        "TX(%d).Origin = [%f 0.0 0.0] * scaleToWvl;\n " \
                        "TX(%d).focus  = %f * scaleToWvl;\n " \
@@ -203,6 +217,7 @@ static char *writeTx(iupal_t patternList,
                        t, theta,
                        t, t);
         strcat(script, txString);
+#endif
     }
     free(elementString);
     free(apodizationString);
@@ -216,7 +231,9 @@ static char *writeRx(iupal_t patternList,
                      double depth)
 {
     int numReceives = iufPatternListGetSize(patternList);
+    char *receive = (char *)calloc(5000, sizeof(char));
     char *script = (char *)calloc(50000, sizeof(char));
+
     char **receiveSettingsKeys = iufReceiveSettingsDictGetKeys(receiveSettingsDict);
     int numKeys = (int)iufReceiveSettingsDictGetSize(receiveSettingsDict);
     int t=0;
@@ -232,7 +249,7 @@ static char *writeRx(iupal_t patternList,
                 if (!strcmp(receiveSettingsKeys[k], receiveSettingsLabel)) break; //breaks if k is the key index
             }
 
-            sprintf(script, "Receive(%d).Apod =  ones(1,%d);\n"       \
+            sprintf(receive, "Receive(%d).Apod =  ones(1,%d);\n"       \
                            "Receive(%d).mode = 0;\n"       \
                            "Receive(%d).startDepth = 0;\n" \
                            "Receive(%d).endDepth = %f;\n"    \
@@ -252,6 +269,7 @@ static char *writeRx(iupal_t patternList,
                            t,               // lowpass filter
                            t, t);           // input filter
             t++;
+            strcat(script, receive);
         }
     }
     return script;
@@ -437,7 +455,6 @@ static char *parseIuf(iuif_t iuf, char *label, double depth)
 
         double lambdaMm = iufAcquisitionGetSpeedOfSound(acquisition) / iufTransducerGetCenterFrequency(transducer);
         double depthWL = depth/lambdaMm;
-
         strcat(script, writeTransducer(transducer));
         strcat(script, writeResource(transducer, acquisition, depth));
         strcat(script, writeTx(patternList, transducer, apodizationDict, sourcesDict));

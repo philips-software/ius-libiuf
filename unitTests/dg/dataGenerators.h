@@ -94,6 +94,12 @@ iufl_t dgGenerateFrameList
 	int numFrames
 );
 
+iufl_t dgGenerateFrameListVerasonics
+(
+    int numFrames,
+    char *label
+);
+
 iupal_t dgGeneratePatternList
 (
 	int numPatterns,
