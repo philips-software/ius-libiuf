@@ -235,7 +235,7 @@ iuif_t dgGenerateInputFile
     status = iufInputFileSetReceiveSettingsDict(inputFile, receiveSettingsDict);
     TEST_ASSERT_EQUAL(IUF_E_OK, status);
 
-    iupald_t patternListDict = dgGeneratePatternListDict(label,receiveSettingsDict,receiveChannelMapDict);
+    iupald_t patternListDict = dgGeneratePatternListDict(label,receiveSettingsDict,receiveChannelMapDict, sourceDict);
     status = iufInputFileSetPatternListDict(inputFile,patternListDict);
     TEST_ASSERT(status == IUF_E_OK);
 
@@ -284,12 +284,12 @@ iuif_t dgGenerateInputFileVerasonics
     status = iufInputFileSetTransmitApodizationDict(inputFile, transmitApodizationDict);
     TEST_ASSERT(status == IUF_E_OK);
 
-    float sampleFrequency = 4000.0f; // todo calculate the correct samplefrequency based on samplesperline?
+    float sampleFrequency = 4000000.0f; // todo calculate the correct samplefrequency based on samplesperline?
     iursd_t receiveSettingsDict = dgGenerateReceiveSettingsDictVerasonics(label, numSamplesPerLine, sampleFrequency);
     status = iufInputFileSetReceiveSettingsDict(inputFile, receiveSettingsDict);
     TEST_ASSERT_EQUAL(IUF_E_OK, status);
 
-    iupald_t patternListDict = dgGeneratePatternListDict(label,receiveSettingsDict,receiveChannelMapDict);
+    iupald_t patternListDict = dgGeneratePatternListDict(label,receiveSettingsDict,receiveChannelMapDict, sourceDict);
     status = iufInputFileSetPatternListDict(inputFile,patternListDict);
     TEST_ASSERT(status == IUF_E_OK);
 
@@ -460,7 +460,7 @@ iufl_t dgGenerateFrameListVerasonics
 
     for (i=0;i<numFrames;i++)
     {
-        obj = iufFrameCreate("test",i+2,i*0.01f);
+        obj = iufFrameCreate("bmode",i+2,i*0.01f);
         status = iufFrameListSet(frameList, obj, i);
         TEST_ASSERT_EQUAL(IUF_E_OK, status);
     }
@@ -497,14 +497,24 @@ iupald_t dgGeneratePatternListDict
 (
     char *label,
     iursd_t receiveSettingsDict,
-    iurcmd_t receiveChannelMapDict
+    iurcmd_t receiveChannelMapDict,
+    iusd_t sourceDict
 )
 {
   int status;
-
+  int numPatterns;
   // fill list
   iupald_t patternListDict = iufPatternListDictCreate();
-  iupal_t bmodePatternList = dgGeneratePatternList(1,0.01f,receiveSettingsDict,receiveChannelMapDict);
+  ius_t source = iufSourceDictGet(sourceDict, label);
+  if (iufSourceGetType(source) == IUF_2D_PARAMETRIC_SOURCE)
+  {
+      numPatterns = iuf2DParametricSourceGetNumLocations((iu2dps_t)source);
+  }
+  else //todo determine numPatterns in other cases
+  {
+     numPatterns=1;
+  }
+  iupal_t bmodePatternList = dgGeneratePatternList(numPatterns,0.01f,receiveSettingsDict,receiveChannelMapDict);
   status = iufPatternListDictSet(patternListDict, label, bmodePatternList);
   TEST_ASSERT_EQUAL(IUF_E_OK, status);
   return patternListDict;

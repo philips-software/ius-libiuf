@@ -112,7 +112,8 @@ iupald_t dgGeneratePatternListDict
 (
 	char *label,
 	iursd_t receiveSettingsDict,
-	iurcmd_t receiveChannelMapDict
+	iurcmd_t receiveChannelMapDict,
+	iusd_t sourceDict
 );
 
 iuiqpal_t dgGenerateIqPatternList

@@ -143,7 +143,7 @@ TEST(IufInputFile, iufInputFileSetGetPatternListDict)
 {
     IUF_BOOL equal;
     int status;
-    iupald_t patternListDict = dgGeneratePatternListDict("mylabel",NULL,NULL);
+    iupald_t patternListDict = dgGeneratePatternListDict("mylabel",NULL,NULL, NULL);
     iuif_t obj = iufInputFileCreate(pFilename);
 
     status = iufInputFileSetPatternListDict(obj, patternListDict);

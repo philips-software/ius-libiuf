@@ -12,7 +12,6 @@
 #define WINDOW_POS_Y 440
 #define WINDOW_WIDTH (640+100)
 #define WINDOW_HEIGHT (480+100)
-#define NUM_FRAMES 20
 
 #define SEQ_CONTROL_JUMP 1
 #define SEQ_CONTROL_RETURN_TO_MATLAB 2
@@ -29,6 +28,7 @@ static void printUsage(char **argv)
            "[inputfile.iuf] that is used. Currently only 1 label is supported\n");
 }
 
+// write transducer initialization function
 static char *writeTransducer(iut_t transducer)
 {
     char *script = (char *)calloc(500, sizeof(char)); // 500 should be large enough to hold string
@@ -42,7 +42,16 @@ static char *writeTransducer(iut_t transducer)
     return script;
 }
 
-static char *writeResource(iut_t transducer, iua_t acquisition, double depth)
+// Write the Resource struct.
+//   - It uses a PData object that describes the area and 'density' of the image reconstruction
+//   - It contains Parameters: {numTransmits, numRcvChannels, speedOfSound, verbose }
+//                 RcvBuffer: {type, rows, cols, numFrames}
+//                 InterBuffer: {numFrames}
+//                 ImageBuffer: {numFrames}
+//                 DisplayWindow: {Title, pdelta, AxesUnits, Position, ReferencePt}
+//  These values can be determined from the iufTransducer, iufAcquisition , depth and numFrames
+//
+static char *writeResource(iut_t transducer, iua_t acquisition, double depth, int numFrames)
 {
     char* script = (char *)calloc(5000, sizeof(char)); // 5000 characters should be enough
 
@@ -103,7 +112,7 @@ static char *writeResource(iut_t transducer, iua_t acquisition, double depth)
                     iufTransducerGetNumElements(transducer), // Parameters.numTransmit
                     iufAcquisitionGetSpeedOfSound(acquisition), // Parameters.speedOfSound
                     rowsPerFrame,            //RcvBuffer(1).rowsPerFrame
-                    NUM_FRAMES,              //RcvBuffer.numFrames
+                    numFrames,              //RcvBuffer.numFrames
                     windowTitle, numElements, DEFAULT_IMAGING_DEPTH,              // window info
                     iufTransducerGetCenterFrequency(transducer), numRays, // window info
                     maxAqcLength / (double)WINDOW_RESOLUTION_Y,          // displayWindow.pdelta
@@ -111,12 +120,20 @@ static char *writeResource(iut_t transducer, iua_t acquisition, double depth)
     return script;
 }
 
+// Writes the TX structure from the file info:
+// a TX structure sets the transmit delays of the transducer array
+// This is done by setting TX(n).delay using the Verasonic's helper function computeTXDelays
+// that takes TX.focus, TX.steer and TX.origin as inputs.
+// In addition a transmit apodization is set.
+// For each pattern in the patternList a TX is written, using the specific source and apodization.
+
+//TODO: FIX data generator to create a Verasonics pattern: for each parametric source item a pattern
 static char *writeTx(iupal_t patternList,
                      iut_t transducer,
                      iutad_t apodizationDict,
                      iusd_t sourceDict)
 {
-    char *script = (char *) calloc(50000, sizeof(char));
+    char *script = (char *) calloc(500000, sizeof(char));
     char *elementString = (char *) calloc(50, sizeof(char));
     char *apodizationString = (char *) calloc(5000, sizeof(char));
     char *txString = (char *) calloc(500, sizeof(char));
@@ -150,14 +167,15 @@ static char *writeTx(iupal_t patternList,
         iupa_t pattern = iufPatternListGet(patternList, t);
         iuta_t apodization = iufTransmitApodizationDictGet(apodizationDict,
                                                            (char *)iufPatternGetApodizationLabel(pattern));
+        sprintf(apodizationString, ""); // start from beginning with coefficients.
         for (int i = 0; i < numElements; i++)
         {
             sprintf(elementString, "%f%c", iufTransmitApodizationGetElement(apodization,i),i==numElements-1?' ':',');
             strcat(apodizationString, elementString);
         }
+
         ius_t source = iufSourceDictGet(sourceDict, (char *)iufPatternGetSourceLabel(pattern));
         IufSourceType sourceType = iufSourceGetType(source);
-
         // iu2dp_t pos2d;
         // iu3dp_t pos3d;
         double focus = 50; // focus value is 50 mm
@@ -179,7 +197,7 @@ static char *writeTx(iupal_t patternList,
                 {
                     // we assume transmit t matches source t%numSources
                     focus = IUF_ABS(fNumber) < IUF_FLT_EPS ? 0.0 : transducerWidth / fNumber;
-                    int txCount = t*numSources+i;
+                    int txCount = t*numSources+i+1;
                     sprintf(txString, "TX(%d).Apod   = [%s];\n" \
                                       "TX(%d).Origin = [%f 0.0 0.0] * scaleToWvl;\n" \
                                       "TX(%d).focus  = %f * scaleToWvl;\n" \
@@ -204,20 +222,6 @@ static char *writeTx(iupal_t patternList,
             default:
                 return "%% writeTX error: unknown sourceType.\nerror=1; \n";
         }
-#if 0
-        focus = IUF_ABS(fNumber) < IUF_FLT_EPS ? 0.0 : transducerWidth / fNumber;
-        sprintf(txString, "TX(%d).Apod = [%s];\n" \
-                       "TX(%d).Origin = [%f 0.0 0.0] * scaleToWvl;\n " \
-                       "TX(%d).focus  = %f * scaleToWvl;\n " \
-                       "TX(%d).Steer  = [%f, 0];\n" \
-                       "TX(%d).Delay  = computeTXDelays(TX(%d));\n;",
-                       t, apodizationString,
-                       t, transducerWidth * tan(theta),
-                       t, focus,
-                       t, theta,
-                       t, t);
-        strcat(script, txString);
-#endif
     }
     free(elementString);
     free(apodizationString);
@@ -225,49 +229,56 @@ static char *writeTx(iupal_t patternList,
     return script;
 }
 
+// The Receive structure can not be directly related to a iufReceiveSettings.
+// For each frame and each transmit in the frame a Receive structure is written.
+// Receive.Apod is not defined in an inputFile... Can be an input parameter to this exec.
+// Receive.mode ???
+// Receive.startDepth : currently assumed 0
+// Receive.endDepth: in Wavelengths?
+// Receive.TGC: 1 //currently not used
+// Receive.bufnum = 1; //simple bmode only
+// Receive.framenum: frame number
+// Receive.acqnum: pattern index in frame
+// Receive.sampleMode = 1; //? keep at 1
+// Receive.lowPassCoef and Receive.inputFilter are considered constant
 static char *writeRx(iupal_t patternList,
-                     iursd_t receiveSettingsDict,
                      int numElements,
-                     double depth)
+                     double depth,
+                     int numFrames)
 {
     int numReceives = iufPatternListGetSize(patternList);
     char *receive = (char *)calloc(5000, sizeof(char));
     char *script = (char *)calloc(50000, sizeof(char));
 
-    char **receiveSettingsKeys = iufReceiveSettingsDictGetKeys(receiveSettingsDict);
-    int numKeys = (int)iufReceiveSettingsDictGetSize(receiveSettingsDict);
-    int t=0;
-    for (int f=0; f<NUM_FRAMES; f++)
+    int t=1;
+
+    strcat(script, "lowPassCoef = [0 0 0 0 0 0 0 0 0 0 0 1];\n" \
+        "inputFilter = firpm(40,[0 0.02 0.22 0.78 0.98 1],[0 0 1 1 0 0]);\n" \
+        "inputFilter = inputFilter(1:21);\n");
+
+    for (int f=0; f<numFrames; f++)
     {
         for (int i=0; i<numReceives ; i++)
         {
-            int k=0;
-            iupa_t pattern = iufPatternListGet(patternList, i);
-            const char *receiveSettingsLabel = iufPatternGetReceivesettingsLabel(pattern);
-            for (k=0; k <numKeys; k++)
-            {
-                if (!strcmp(receiveSettingsKeys[k], receiveSettingsLabel)) break; //breaks if k is the key index
-            }
-
-            sprintf(receive, "Receive(%d).Apod =  ones(1,%d);\n"       \
-                           "Receive(%d).mode = 0;\n"       \
-                           "Receive(%d).startDepth = 0;\n" \
-                           "Receive(%d).endDepth = %f;\n"    \
-                           "Receive(%d).TGC = %d;\n"         \
-                           "Receive(%d).bufnum = 1;\n"      \
-                           "Receive(%d).framenum = %d;\n"    \
-                           "Receive(%d).acqNum = %d;\n"      \
-                           "Receive(%d).sampleMode = 1;\n"  \
-                           "Receive(%d).LowPassCoef = lowPassCoeff;\n" \
-                           "Receive(%d).InputFilter = inputFilter;\n",
-                           t, numElements,  // Apodization length
-                           t, t, t, depth,  // endDepth
-                           t, k+1,          // +1 is Matlab offset, tgc is the receivesettings/tgc key index
-                           t,               // bufnum
-                           t, f+1,          // framenum
-                           t, i,             // item in the patternList
-                           t,               // lowpass filter
-                           t, t);           // input filter
+            sprintf(receive, "Receive(%d).Apod =  ones(1,%d);\n" \
+                             "Receive(%d).mode = 0;\n"           \
+                             "Receive(%d).startDepth = 0;\n"     \
+                             "Receive(%d).endDepth = %f;\n"      \
+                             "Receive(%d).TGC = %d;\n"           \
+                             "Receive(%d).bufnum = 1;\n"         \
+                             "Receive(%d).framenum = %d;\n"      \
+                             "Receive(%d).acqNum = %d;\n"        \
+                             "Receive(%d).sampleMode = 1;\n"     \
+                             "Receive(%d).LowPassCoef = lowPassCoeff;\n" \
+                             "Receive(%d).InputFilter = inputFilter;\n",
+                             t, numElements,  // Apodization length
+                             t, t, t, depth,  // endDepth
+                             t, f+1,          // +1 is Matlab offset, tgc is the receivesettings/tgc key index
+                             t,               // bufnum
+                             t, f+1,          // framenum
+                             t, i+1,          // item in the patternList
+                             t,               // lowpass filter
+                             t, t);           // input filter
             t++;
             strcat(script, receive);
         }
@@ -275,6 +286,7 @@ static char *writeRx(iupal_t patternList,
     return script;
 }
 
+// The TW is derived from pulse
 static char *writeTw(iupd_t pulseDict)
 {
     char *script = (char *) calloc(5000, sizeof(char));
@@ -300,23 +312,28 @@ static char *writeTw(iupd_t pulseDict)
     return script;
 }
 
-static char *writeTGC(iursd_t receiveSettingsDict, double maxDepthWL)
+// TGC is not worked out in detail yet (TGC(1) = 1)
+static char *writeTGC(iupal_t patternList, iursd_t receiveSettingsDict, double maxDepthWL)
 {
     char *script = (char *) calloc(5000, sizeof(char));
+    char *tgcScript = (char *) calloc(500, sizeof(char));
+    int numPatterns = iufPatternListGetSize(patternList);
 
     sprintf(script, "%%%% Specify TGC structure array.\n");
-    char **keys = iufReceiveSettingsDictGetKeys(receiveSettingsDict);
-    for (size_t i=0; i < iufReceiveSettingsDictGetSize(receiveSettingsDict); i++)
+    for (int p=0; p<numPatterns; p++) //for all patterns
     {
-        iutgc_t tgc = iufReceiveSettingsGetTGC(iufReceiveSettingsDictGet(receiveSettingsDict,keys[i]));
+        iupa_t pattern = iufPatternListGet(patternList, p);
+        char *receiveSettingsLabel = (char *)iufPatternGetReceivesettingsLabel(pattern);
+        iutgc_t tgc = iufReceiveSettingsGetTGC(iufReceiveSettingsDictGet(receiveSettingsDict, receiveSettingsLabel));
         if (iufTGCGetNumValues(tgc) > 1)
         {
-            sprintf(script, "%%%% Currently only a default TGC is supported.\n");
+            sprintf(tgcScript, "%%%% Currently only a default TGC is supported.\n");
         }
-        sprintf(script, "TGC(%d).CntrlPts = iusgTGCSetPoints;\n" \
-                        "TGC(%d).rangeMax = %f ;\n" \
-                        "TGC(%d).Waveform = computeTGCWaveform(TGC);\n",
-                        (int)i,(int)i, maxDepthWL, (int)i);
+        sprintf(tgcScript, "TGC(%d).CntrlPts = iusgTGCSetPoints;\n" \
+                           "TGC(%d).rangeMax = %f ;\n" \
+                           "TGC(%d).Waveform = computeTGCWaveform(TGC(%d));\n",
+                           (int)p+1,(int)p+1, maxDepthWL, (int)p+1, (int)p+1);
+        strcat(script, tgcScript);
     }
     return script;
 }
@@ -379,14 +396,15 @@ static char *writeProcess(void)
     return script;
 }
 
-static char *writeEvents(iufl_t frameList, iupal_t patternList)
+static char *writeEvents(iufl_t frameList, iupal_t patternList, char * label)
 {
     char *script = (char *) calloc(80000, sizeof(char));
     char *scriptLine = (char *) calloc(800, sizeof(char));
     int numFrames = iufFrameListGetSize(frameList);
-    int numEventsPerFrame = iufPatternListGetSize(patternList);
-    int numEvents=0;
+
+    //int numEvents=0;
     int n = SEQ_CONTROL_DELAYS; // the index to start the TimeToNextAcq
+    int eventNum = 1;
     double dt = 0.0;
     double prevRelativeTimeInFrame = 0.0;
 
@@ -404,42 +422,55 @@ static char *writeEvents(iufl_t frameList, iupal_t patternList)
     for (int f=0; f < numFrames; f++)
     {
         iufr_t frame = iufFrameListGet(frameList, f);
-        double frameTime = iufFrameGetTime(frame);
-        prevRelativeTimeInFrame = frameTime;
-        for (int e = 0; e < numEventsPerFrame; e++, n++) {
-            iupa_t pattern = iufPatternListGet(patternList, e);
-            double curRelativeTimeInFrame = iufPatternGetTimeInFrame(pattern);
-            dt = curRelativeTimeInFrame - prevRelativeTimeInFrame;
-            sprintf(scriptLine, "seqControl(%d).command = timeToNextAcq\n", n + 1);
-            strcat(script, scriptLine);
-            sprintf(scriptLine, "seqControl(%d).argument = %f\n", n + 1, dt);
-            strcat(script, scriptLine);
-            sprintf(scriptLine, "seqControl(%d).condition = 'ignore'\n", n + 1);
-            strcat(script, scriptLine);
-            prevRelativeTimeInFrame = curRelativeTimeInFrame;
-            n++;
+        if (!strcmp(iufFrameGetPatternListLabel(frame), label))  //it is frame with the label matching the patternList
+        {
+            int numEventsPerFrame = iufPatternListGetSize(patternList);
+            prevRelativeTimeInFrame = iufFrameGetTime(frame);
+            for (int e = 0; e < numEventsPerFrame; e++, n++, eventNum++) {
+                iupa_t pattern = iufPatternListGet(patternList, e);
+                double curRelativeTimeInFrame = iufPatternGetTimeInFrame(pattern);
+                dt = curRelativeTimeInFrame - prevRelativeTimeInFrame;
+                sprintf(scriptLine, "seqControl(%d).command = timeToNextAcq\n", n);
+                strcat(script, scriptLine);
+                sprintf(scriptLine, "seqControl(%d).argument = %f\n", n, dt);
+                strcat(script, scriptLine);
+                sprintf(scriptLine, "seqControl(%d).condition = 'ignore'\n", n);
+                strcat(script, scriptLine);
+                sprintf(scriptLine, "Event(%d).info       = 'Acquire B-mode ray line';\n", eventNum);
+                strcat(script, scriptLine);
+                sprintf(scriptLine, "Event(%d).tx         = %d;\n", eventNum, e);
+                strcat(script, scriptLine);
+                sprintf(scriptLine, "Event(%d).rcv        = %d;\n", eventNum, f);
+                strcat(script, scriptLine);
+                sprintf(scriptLine, "Event(%d).recon      = 0;\n", eventNum);
+                strcat(script, scriptLine);
+                sprintf(scriptLine, "Event(%d).process    = 0;\n", eventNum);
+                strcat(script, scriptLine);
+                sprintf(scriptLine, "Event(%d).seqControl = [%d,%d];\n", eventNum, n, SEQ_CONTROL_TRIGGER);
+                strcat(script, scriptLine);
+                prevRelativeTimeInFrame = curRelativeTimeInFrame;
+            }
         }
     }
+    sprintf(scriptLine, "Event(%d).info       = 'Jump back to first event';\n", eventNum);
+    strcat(script, scriptLine);
+    sprintf(scriptLine, "Event(%d).tx         = 0;\n", eventNum);
+    strcat(script, scriptLine);
+    sprintf(scriptLine, "Event(%d).rcv        = 0;\n", eventNum);
+    strcat(script, scriptLine);
+    sprintf(scriptLine, "Event(%d).recon      = 0;\n", eventNum);
+    strcat(script, scriptLine);
+    sprintf(scriptLine, "Event(%d).process    = 0;\n", eventNum);
+    strcat(script, scriptLine);
+    sprintf(scriptLine, "Event(%d).seqControl = 1;\n", eventNum);
+    strcat(script, scriptLine);
 
-    strcat(script, "for i = 1 : Resource.RcvBuffer(1).numFrames\n");
-    for (int e = 0; e < numEventsPerFrame; e++)
-    {
-        sprintf(scriptLine, "\tfor j = 1 : %d\n", numEvents); strcat(script, scriptLine);
-        strcat(script, "\t\tEvent(n).info       = 'Acquire B-mode ray line';\n");
-        strcat(script, "\t\tEvent(n).tx         = j;\n");
-        sprintf(scriptLine, "\t\tEvent(n).rcv        = %d*(i-1) + j;\n", numEvents); strcat(script, scriptLine);
-        strcat(script, "\t\tEvent(n).recon      = 0;\n");
-        strcat(script, "\t\tEvent(n).process    = 0;\n");
-        sprintf(script, "\t\tEvent(n).seqControl = [%d,%d];\n", e*(numFrames-1)+e-1, SEQ_CONTROL_TRIGGER);
-        strcat(script, "\tend\n");
-    }
-    strcat(script, "end\n");
     return script;
 }
 
 static char *parseIuf(iuif_t iuf, char *label, double depth)
 {
-    char *script = (char *) calloc(80000, sizeof(char));
+    char *script = (char *) calloc(120000, sizeof(char));
     sprintf(script, "%% Script generated from file:\n");
 
     if (iuf)
@@ -452,18 +483,19 @@ static char *parseIuf(iuif_t iuf, char *label, double depth)
         iutad_t apodizationDict = iufInputFileGetTransmitApodizationDict(iuf);
         iusd_t sourcesDict = iufInputFileGetSourceDict(iuf);
         iufl_t frameList = iufInputFileGetFrameList(iuf);
+        int numFrames = iufFrameListGetSize(frameList);
 
         double lambdaMm = iufAcquisitionGetSpeedOfSound(acquisition) / iufTransducerGetCenterFrequency(transducer);
         double depthWL = depth/lambdaMm;
         strcat(script, writeTransducer(transducer));
-        strcat(script, writeResource(transducer, acquisition, depth));
+        strcat(script, writeResource(transducer, acquisition, depth, numFrames));
         strcat(script, writeTx(patternList, transducer, apodizationDict, sourcesDict));
         strcat(script, writeTw(pulseDict));
-        strcat(script, writeTGC(receiveSettingsDict, depthWL));
-        strcat(script, writeRx(patternList, receiveSettingsDict, iufTransducerGetNumElements(transducer), depthWL));
+        strcat(script, writeTGC(patternList, receiveSettingsDict, depthWL));
+        strcat(script, writeRx(patternList, iufTransducerGetNumElements(transducer), depthWL, numFrames));
         strcat(script, writeRecon(patternList));
         strcat(script, writeProcess()); //processing of data is currently a fixed 2 item array
-        strcat(script, writeEvents(frameList, patternList));
+        strcat(script, writeEvents(frameList, patternList, label)); //writes the patterns of each frame with certain label
     }
     else
     {
