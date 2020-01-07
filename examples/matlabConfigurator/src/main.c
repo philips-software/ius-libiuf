@@ -135,8 +135,8 @@ static char *writeTx(iupal_t patternList,
 {
     char *script = (char *) calloc(500000, sizeof(char));
     char *elementString = (char *) calloc(50, sizeof(char));
-    char *apodizationString = (char *) calloc(5000, sizeof(char));
-    char *txString = (char *) calloc(500, sizeof(char));
+    char *apodizationString;
+    char *txString = (char *) calloc(9000, sizeof(char));
 
     double unitScale = iufTransducerGetCenterFrequency(transducer)/1540.0;
     int numTransmits = iufPatternListGetSize(patternList);
@@ -158,7 +158,6 @@ static char *writeTx(iupal_t patternList,
     {
         return "%% writeTX error: only 2D linear transducers are currently supported.\n error=1;\n";
     }
-
     sprintf(script, "%%%% Specify TX structure array.\n" \
                     "scaleToWvl = %f;\n", unitScale);
 
@@ -167,12 +166,13 @@ static char *writeTx(iupal_t patternList,
         iupa_t pattern = iufPatternListGet(patternList, t);
         iuta_t apodization = iufTransmitApodizationDictGet(apodizationDict,
                                                            (char *)iufPatternGetApodizationLabel(pattern));
-        sprintf(apodizationString, ""); // start from beginning with coefficients.
+        apodizationString= (char *) calloc(5000, sizeof(char));
         for (int i = 0; i < numElements; i++)
         {
             sprintf(elementString, "%f%c", iufTransmitApodizationGetElement(apodization,i),i==numElements-1?' ':',');
             strcat(apodizationString, elementString);
         }
+        fprintf(stderr, "%s\n\n", apodizationString);
 
         ius_t source = iufSourceDictGet(sourceDict, (char *)iufPatternGetSourceLabel(pattern));
         IufSourceType sourceType = iufSourceGetType(source);
@@ -182,6 +182,7 @@ static char *writeTx(iupal_t patternList,
         double theta=0.0, deltaTheta=0.0, fNumber=0.0;
         int numSources;
 
+        fprintf(stderr, "sourceType = %d\n", (int)sourceType);
         switch (sourceType)
         {
             case IUF_2D_NON_PARAMETRIC_SOURCE:
@@ -193,6 +194,8 @@ static char *writeTx(iupal_t patternList,
                 theta = iuf2DParametricSourceGetStartTheta((iu2dps_t)source);
                 fNumber = iuf2DParametricSourceGetFNumber((iu2dps_t)source);
                 deltaTheta = iuf2DParametricSourceGetDeltaTheta((iu2dps_t)source);
+                fprintf(stderr, "numSources=%d\n", numSources);
+                fprintf(stderr, "fNumber=%f\n", fNumber);
                 for (int i=0; i< numSources; i++)
                 {
                     // we assume transmit t matches source t%numSources
@@ -208,6 +211,7 @@ static char *writeTx(iupal_t patternList,
                                       txCount, focus,
                                       txCount, theta+i*deltaTheta,
                                       txCount, txCount);
+                    fprintf(stderr, "%s", txString);
                     strcat(script, txString);
                 }
                 break;
@@ -222,9 +226,9 @@ static char *writeTx(iupal_t patternList,
             default:
                 return "%% writeTX error: unknown sourceType.\nerror=1; \n";
         }
+        free(apodizationString);
     }
     free(elementString);
-    free(apodizationString);
     free(txString);
     return script;
 }
@@ -487,15 +491,25 @@ static char *parseIuf(iuif_t iuf, char *label, double depth)
 
         double lambdaMm = iufAcquisitionGetSpeedOfSound(acquisition) / iufTransducerGetCenterFrequency(transducer);
         double depthWL = depth/lambdaMm;
+        fprintf(stderr, "1...\n");
         strcat(script, writeTransducer(transducer));
+        fprintf(stderr, "2...\n");
         strcat(script, writeResource(transducer, acquisition, depth, numFrames));
+        fprintf(stderr, "3...\n");
         strcat(script, writeTx(patternList, transducer, apodizationDict, sourcesDict));
+        fprintf(stderr, "4...\n");
         strcat(script, writeTw(pulseDict));
+        fprintf(stderr, "5...\n");
         strcat(script, writeTGC(patternList, receiveSettingsDict, depthWL));
+        fprintf(stderr, "6...\n");
         strcat(script, writeRx(patternList, iufTransducerGetNumElements(transducer), depthWL, numFrames));
+        fprintf(stderr, "7...\n");
         strcat(script, writeRecon(patternList));
+        fprintf(stderr, "8...\n");
         strcat(script, writeProcess()); //processing of data is currently a fixed 2 item array
+        fprintf(stderr, "9...\n");
         strcat(script, writeEvents(frameList, patternList, label)); //writes the patterns of each frame with certain label
+        fprintf(stderr, "10...\n");
     }
     else
     {
@@ -507,13 +521,16 @@ static char *parseIuf(iuif_t iuf, char *label, double depth)
 
 int main(int argc, char *argv[])
 {
-    int version = iufGetVersionMajor();
+    int version; 
     int opt;
     char *veraScript;
     FILE *outputFile;
-    iuif_t iuf;
+    iuif_t iuf = NULL;
     char *label;
     double imaging_depth = DEFAULT_IMAGING_DEPTH;
+    int optionCount=0;
+    
+    version = iufGetVersionMajor();
 
     while((opt = getopt(argc, argv, ":i:o:l:d")) != -1)
     {
@@ -534,6 +551,7 @@ int main(int argc, char *argv[])
             case 'd':
                 printf("depth: %s\n", optarg);
                 imaging_depth = atoi(optarg);
+		break;
             case ':':
                 printf("option needs a value\n");
                 break;
@@ -541,10 +559,12 @@ int main(int argc, char *argv[])
                 printf("unknown option: %c\n", optopt);
                 break;
         }
+        optionCount++;
     }
 
     if (!iuf)
     {
+        fprintf(stderr, "illegal options.\n\n");
         printUsage(argv);
         exit(1);
     }
