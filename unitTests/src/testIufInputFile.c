@@ -143,7 +143,7 @@ TEST(IufInputFile, iufInputFileSetGetPatternListDict)
 {
     IUF_BOOL equal;
     int status;
-    iupald_t patternListDict = dgGeneratePatternListDict("mylabel",NULL,NULL);
+    iupald_t patternListDict = dgGeneratePatternListDict("mylabel",NULL,NULL, NULL);
     iuif_t obj = iufInputFileCreate(pFilename);
 
     status = iufInputFileSetPatternListDict(obj, patternListDict);
@@ -734,6 +734,36 @@ TEST(IufInputFile, testIufInputFileSerialization)
 
 }
 
+TEST(IufInputFile, testIufInputFileVeraSonics)
+{
+    int numFrames = 3;
+    int numSamplesPerLine = 2048;
+    int numChannels = 128;
+    char *ptestFileName = "testIufInputFileVerasonics.hdf5";
+
+    // create
+    iuif_t inputFile = dgGenerateInputFileVerasonics(ptestFileName, "S5-1", "bmode", numFrames, numSamplesPerLine, numChannels);
+    TEST_ASSERT(inputFile != IUIF_INVALID);
+
+    // save
+    int status = iufInputFileNodeSave(inputFile);
+    TEST_ASSERT_EQUAL(IUF_E_OK,status);
+    status = iufInputFileClose(inputFile);
+    TEST_ASSERT_EQUAL(IUF_E_OK,status);
+
+    // read back
+    iuif_t savedObj = iufInputFileNodeLoad(ptestFileName);
+    TEST_ASSERT(savedObj != NULL);
+    TEST_ASSERT_EQUAL(IUF_TRUE, iufInputFileCompare(inputFile,savedObj));
+
+    status = iufInputFileClose(savedObj);
+    TEST_ASSERT(status == IUF_E_OK);
+
+    dgDeleteInputFile(inputFile);
+    iufInputFileDelete(savedObj);
+}
+
+
 TEST_GROUP_RUNNER(IufInputFile)
 {
     RUN_TEST_CASE(IufInputFile, testIufInputFileCreate);
@@ -749,6 +779,7 @@ TEST_GROUP_RUNNER(IufInputFile)
     RUN_TEST_CASE(IufInputFile, iufInputFileSetGetAcquisition);
     RUN_TEST_CASE(IufInputFile, iufInputFileSetGetTransducer);
     RUN_TEST_CASE(IufInputFile, testIufInputFileSerialization);
+    RUN_TEST_CASE(IufInputFile, testIufInputFileVeraSonics);
     RUN_TEST_CASE(IufInputFile, testIufInputFileDataIOSaveFrame);
     RUN_TEST_CASE(IufInputFile, testIufInputFileDataIOSaveResponse);
     RUN_TEST_CASE(IufInputFile, testIufInputFileDataIOSaveChannel);

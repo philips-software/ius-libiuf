@@ -1,0 +1,644 @@
+CenterFrequency: 2500000.0
+Elements:
+  Element[0]:
+    Position:
+      X: -0.0001
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[10]:
+    Position:
+      X: -7.500000000000001e-05
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[11]:
+    Position:
+      X: -7.25e-05
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[12]:
+    Position:
+      X: -7.0e-05
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[13]:
+    Position:
+      X: -6.75e-05
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[14]:
+    Position:
+      X: -6.500000000000001e-05
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[15]:
+    Position:
+      X: -6.25e-05
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[16]:
+    Position:
+      X: -6.0e-05
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[17]:
+    Position:
+      X: -5.75e-05
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[18]:
+    Position:
+      X: -5.5e-05
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[19]:
+    Position:
+      X: -5.25e-05
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[1]:
+    Position:
+      X: -9.75e-05
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[20]:
+    Position:
+      X: -5.0e-05
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[21]:
+    Position:
+      X: -4.75e-05
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[22]:
+    Position:
+      X: -4.5e-05
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[23]:
+    Position:
+      X: -4.25e-05
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[24]:
+    Position:
+      X: -3.9999999999999996e-05
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[25]:
+    Position:
+      X: -3.7500000000000003e-05
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[26]:
+    Position:
+      X: -3.5e-05
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[27]:
+    Position:
+      X: -3.2500000000000004e-05
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[28]:
+    Position:
+      X: -2.9999999999999997e-05
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[29]:
+    Position:
+      X: -2.7500000000000004e-05
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[2]:
+    Position:
+      X: -9.5e-05
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[30]:
+    Position:
+      X: -2.4999999999999998e-05
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[31]:
+    Position:
+      X: -2.2500000000000005e-05
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[32]:
+    Position:
+      X: -1.9999999999999998e-05
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[33]:
+    Position:
+      X: -1.749999999999999e-05
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[34]:
+    Position:
+      X: -1.4999999999999999e-05
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[35]:
+    Position:
+      X: -1.2499999999999992e-05
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[36]:
+    Position:
+      X: -9.999999999999999e-06
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[37]:
+    Position:
+      X: -7.4999999999999926e-06
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[38]:
+    Position:
+      X: -4.9999999999999996e-06
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[39]:
+    Position:
+      X: -2.499999999999993e-06
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[3]:
+    Position:
+      X: -9.25e-05
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[40]:
+    Position:
+      X: 0.0
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[41]:
+    Position:
+      X: 2.5000000000000066e-06
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[42]:
+    Position:
+      X: 4.9999999999999996e-06
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[43]:
+    Position:
+      X: 7.500000000000006e-06
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[44]:
+    Position:
+      X: 9.999999999999999e-06
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[45]:
+    Position:
+      X: 1.2500000000000006e-05
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[46]:
+    Position:
+      X: 1.4999999999999999e-05
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[47]:
+    Position:
+      X: 1.7500000000000005e-05
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[48]:
+    Position:
+      X: 2.0000000000000012e-05
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[49]:
+    Position:
+      X: 2.250000000000002e-05
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[4]:
+    Position:
+      X: -9.0e-05
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[50]:
+    Position:
+      X: 2.4999999999999998e-05
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[51]:
+    Position:
+      X: 2.7500000000000004e-05
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[52]:
+    Position:
+      X: 3.000000000000001e-05
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[53]:
+    Position:
+      X: 3.250000000000002e-05
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[54]:
+    Position:
+      X: 3.5e-05
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[55]:
+    Position:
+      X: 3.7500000000000003e-05
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[56]:
+    Position:
+      X: 4.000000000000001e-05
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[57]:
+    Position:
+      X: 4.2500000000000017e-05
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[58]:
+    Position:
+      X: 4.4999999999999996e-05
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[59]:
+    Position:
+      X: 4.75e-05
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[5]:
+    Position:
+      X: -8.75e-05
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[60]:
+    Position:
+      X: 5.000000000000001e-05
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[61]:
+    Position:
+      X: 5.2500000000000016e-05
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[62]:
+    Position:
+      X: 5.4999999999999995e-05
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[63]:
+    Position:
+      X: 5.75e-05
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[64]:
+    Position:
+      X: 6.000000000000001e-05
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[65]:
+    Position:
+      X: 6.250000000000001e-05
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[66]:
+    Position:
+      X: 6.500000000000002e-05
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[67]:
+    Position:
+      X: 6.75e-05
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[68]:
+    Position:
+      X: 7.000000000000001e-05
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[69]:
+    Position:
+      X: 7.250000000000001e-05
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[6]:
+    Position:
+      X: -8.5e-05
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[70]:
+    Position:
+      X: 7.500000000000002e-05
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[71]:
+    Position:
+      X: 7.75e-05
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[72]:
+    Position:
+      X: 8.0e-05
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[73]:
+    Position:
+      X: 8.250000000000001e-05
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[74]:
+    Position:
+      X: 8.500000000000002e-05
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[75]:
+    Position:
+      X: 8.75e-05
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[76]:
+    Position:
+      X: 9.0e-05
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[77]:
+    Position:
+      X: 9.250000000000001e-05
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[78]:
+    Position:
+      X: 9.500000000000002e-05
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[79]:
+    Position:
+      X: 9.75e-05
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[7]:
+    Position:
+      X: -8.25e-05
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[8]:
+    Position:
+      X: -8.0e-05
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+  Element[9]:
+    Position:
+      X: -7.75e-05
+      Z: 0.0
+    Size:
+      SX: 0.00025
+      SZ: 0.00025
+    Theta: 0.0
+Shape: IUF_LINE
+TransducerName: S5_1
