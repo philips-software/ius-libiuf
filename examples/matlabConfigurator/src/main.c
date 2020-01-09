@@ -256,7 +256,7 @@ static char *writeRx(iupal_t patternList,
 
     int t=1;
 
-    strcat(script, "lowPassCoef = [0 0 0 0 0 0 0 0 0 0 0 1];\n" \
+    strcat(script, "lowPassCoeff = [0 0 0 0 0 0 0 0 0 0 0 1];\n" \
         "inputFilter = firpm(40,[0 0.02 0.22 0.78 0.98 1],[0 0 1 1 0 0]);\n" \
         "inputFilter = inputFilter(1:21);\n");
 
@@ -347,6 +347,7 @@ static char *writeRecon(iupal_t patternList)
     int numPatterns = iufPatternListGetSize(patternList);
     char *script = (char *) calloc(8000, sizeof(char));
     char *reconInfoScript = (char *) calloc(800, sizeof(char));
+    int i;
 
     sprintf(script, "%% Specify Recon structure array \n" \
                    "Recon = struct('senscutoff',  0.0, ...\n" \
@@ -356,7 +357,7 @@ static char *writeRecon(iupal_t patternList)
                    "'ImgBufDest',  [1,-1], ... \n" \
                    "'RINums',      1:%d);\n\n" \
                    "%% Define ReconInfo structures.\n", numPatterns);
-    for (int i=0; i<numPatterns; i++)
+    for (i=0; i<numPatterns; i++)
     {
         sprintf(reconInfoScript, "ReconInfo(%d).mode = 0;\n" \
                                "ReconInfo(%d).txnum = %d;\n" \
@@ -366,8 +367,8 @@ static char *writeRecon(iupal_t patternList)
                 i, i + 1,  // txnum
                 i, i + 1,  // rcvnum
                 i, i + 1); // regionnum
+         strcat(script, reconInfoScript);
     }
-    strcat(script, reconInfoScript);
     return script;
 }
 
