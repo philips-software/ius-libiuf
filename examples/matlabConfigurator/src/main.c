@@ -33,12 +33,12 @@ static char *writeTransducer(iut_t transducer)
 {
     char *script = (char *)calloc(500, sizeof(char)); // 500 should be large enough to hold string
     sprintf(script, "%%%% System object: transducer characteristics in the Trans object\n" \
-            "Trans = iusInitTrans('%s', %6.8f, %d);\n" \
+            "Trans = iusInitTrans('%s');\n" \
             "nrTdxTx = sum(Trans.elementsTx);\n" \
-            "nrTdxRx = sum(Trans.elementsRx););\n",
-            iufTransducerGetName(transducer),
-            iufTransducerGetCenterFrequency(transducer),
-            iufTransducerGetNumElements(transducer));
+            "nrTdxRx = sum(Trans.elementsRx);\n",
+            iufTransducerGetName(transducer));
+            //iufTransducerGetCenterFrequency(transducer), it is a Verasonics specific?
+            //iufTransducerGetNumElements(transducer));
     return script;
 }
 
@@ -88,7 +88,8 @@ static char *writeResource(iut_t transducer, iua_t acquisition, double depth, in
                     "PData.PDelta = [Trans.spacing 0.0 0.5];  \n" \
                     "PData.Size   = [%d %d 1];   \n" \
                     "PData.Origin = [%f 0.0 0.0];  \n" \
-                    "Resource.Parameters.numTransmit           = %d;\n" \
+                    "Resource.Parameters.simulateMode          = 0;\n" \
+                    "Resource.Parameters.numTransmit           = 128;\n" \
                     "Resource.Parameters.numRcvChannels        = Resource.Parameters.numTransmit;\n" \
                     "Resource.Parameters.speedOfSound          = %f;\n" \
                     "Resource.Parameters.verbose               = 2;\n" \
@@ -98,7 +99,7 @@ static char *writeResource(iut_t transducer, iua_t acquisition, double depth, in
                     "Resource.RcvBuffer(1).numFrames           = %d; %% for cineloop\n" \
                     "Resource.InterBuffer(1).numFrames         = 1;\n"\
                     "Resource.ImageBuffer(1).numFrames         = 1;\n" \
-                    "Resource.DisplayWindow(1).Title           = [%s, ...\n" \
+                    "Resource.DisplayWindow(1).Title           = ['%s', ...\n" \
                     " ' (', %d,' active elements)', ...\n"\
                     " ', max ', %f,' cm', ...\n" \
                     " ', Fc = ', %f, ' MHz', ...\n" \
@@ -109,7 +110,7 @@ static char *writeResource(iut_t transducer, iua_t acquisition, double depth, in
                     " Resource.DisplayWindow(1).ReferencePt    = [PData.Origin(1),PData.Origin(3)];\n",
                     rowsPerFrame, iufTransducerGetNumElements(transducer), // PData size z and x
                     originX, //PData origin
-                    iufTransducerGetNumElements(transducer), // Parameters.numTransmit
+                    //iufTransducerGetNumElements(transducer), // Parameters.numTransmit
                     iufAcquisitionGetSpeedOfSound(acquisition), // Parameters.speedOfSound
                     rowsPerFrame,            //RcvBuffer(1).rowsPerFrame
                     numFrames,              //RcvBuffer.numFrames
@@ -252,7 +253,7 @@ static char *writeRx(iupal_t patternList,
 
     int t=1;
 
-    strcat(script, "lowPassCoef = [0 0 0 0 0 0 0 0 0 0 0 1];\n" \
+    strcat(script, "lowPassCoeff = [0 0 0 0 0 0 0 0 0 0 0 1];\n" \
         "inputFilter = firpm(40,[0 0.02 0.22 0.78 0.98 1],[0 0 1 1 0 0]);\n" \
         "inputFilter = inputFilter(1:21);\n");
 
@@ -287,27 +288,22 @@ static char *writeRx(iupal_t patternList,
 }
 
 // The TW is derived from pulse
-static char *writeTw(iupd_t pulseDict)
+static char *writeTw(iup_t pulse)
 {
     char *script = (char *) calloc(5000, sizeof(char));
 
     sprintf(script, "%%%% Specify TW structure array.\n");
-    char **keys = iufPulseDictGetKeys(pulseDict);
-    for (size_t i=0; i < iufPulseDictGetSize(pulseDict); i++)
+
+    IufPulseType pulseType = iufPulseGetType(pulse);
+    if (pulseType == IUF_PARAMETRIC_PULSETYPE)
     {
-        iup_t pulse = iufPulseDictGet(pulseDict, keys[i]);
-        IufPulseType pulseType = iufPulseGetType(pulse);
-        if (pulseType == IUF_PARAMETRIC_PULSETYPE)
-        {
-            sprintf(script, "TW(%d) = iusComputeTW(%f,%d);\n",
-                    (int)i,
-                    iufParametricPulseGetFrequency((iupp_t)pulse),
+      sprintf(script, "TW(1) = iusComputeTW(%d,%d);\n",
+              (int)(iufParametricPulseGetFrequency((iupp_t)pulse)/1000000.0f), //in MHz instead of Hz
                     iufParametricPulseGetNumPulses((iupp_t)pulse));
-        }
-        else
-        {
-            sprintf(script, "%% Non-parametric pulse currently not supported;\n error=1;\n");
-        }
+    }
+    else
+    {
+       sprintf(script, "%% Non-parametric pulse currently not supported;\n error=1;\n");
     }
     return script;
 }
@@ -329,7 +325,8 @@ static char *writeTGC(iupal_t patternList, iursd_t receiveSettingsDict, double m
         {
             sprintf(tgcScript, "%%%% Currently only a default TGC is supported.\n");
         }
-        sprintf(tgcScript, "TGC(%d).CntrlPts = iusgTGCSetPoints;\n" \
+        sprintf(tgcScript, "iusgTGCSetPoints = 512 * ones(1,8);\n" \
+                           "TGC(%d).CntrlPts = iusgTGCSetPoints;\n" \
                            "TGC(%d).rangeMax = %f ;\n" \
                            "TGC(%d).Waveform = computeTGCWaveform(TGC(%d));\n",
                            (int)p+1,(int)p+1, maxDepthWL, (int)p+1, (int)p+1);
@@ -358,12 +355,13 @@ static char *writeRecon(iupal_t patternList)
                                "ReconInfo(%d).txnum = %d;\n" \
                                "ReconInfo(%d).rcvnum = %d;\n" \
                                "ReconInfo(%d).regionnum = %d;\n",
-                i,
-                i, i + 1,  // txnum
-                i, i + 1,  // rcvnum
-                i, i + 1); // regionnum
+                i + 1,
+                i + 1, i + 1,  // txnum
+                i + 1, i + 1,  // rcvnum
+                i + 1, i + 1); // regionnum
+        strcat(script, reconInfoScript);
     }
-    strcat(script, reconInfoScript);
+
     return script;
 }
 
@@ -392,7 +390,10 @@ static char *writeProcess(void)
                     "    'srcbufnum', 1, ... %% num buffers to process.\n" \
                     "    'srcframenum', -1, ...  %% process the most recent frame.\n" \
                     "    'dstbuffer', 'none'};\n" \
-                    "EF(1).Function = text2cell('%%EF#1');  %% Call an external function defined below\n");
+                    "EF(1).Function = text2cell('%%EF#1');  %% Call an external function defined below\n" \
+                    "%%EF#1\n" \
+                    "aap=0;\n" \
+                    "%%EF#1\n");
     return script;
 }
 
@@ -409,13 +410,13 @@ static char *writeEvents(iufl_t frameList, iupal_t patternList, char * label)
     double prevRelativeTimeInFrame = 0.0;
 
     /* Fixed sequence control */
-    sprintf(scriptLine, "seqControl(%d).command = 'jump'\n", SEQ_CONTROL_JUMP);
+    sprintf(scriptLine, "seqControl(%d).command = 'jump';\n", SEQ_CONTROL_JUMP);
     strcat(script, scriptLine);
-    sprintf(scriptLine, "seqControl(%d).argument = 1\n", SEQ_CONTROL_JUMP);
+    sprintf(scriptLine, "seqControl(%d).argument = 1;\n", SEQ_CONTROL_JUMP);
     strcat(script, scriptLine);
-    sprintf(scriptLine, "seqControl(%d).command = 'returnToMatlab'\n", SEQ_CONTROL_RETURN_TO_MATLAB);
+    sprintf(scriptLine, "seqControl(%d).command = 'returnToMatlab';\n", SEQ_CONTROL_RETURN_TO_MATLAB);
     strcat(script, scriptLine);
-    sprintf(scriptLine, "seqControl(%d).command = 'triggerOut'\n", SEQ_CONTROL_TRIGGER);
+    sprintf(scriptLine, "seqControl(%d).command = 'triggerOut';\n", SEQ_CONTROL_TRIGGER);
     strcat(script, scriptLine);
 
     /* write all delays between pulses as individual sequence controls */
@@ -430,21 +431,21 @@ static char *writeEvents(iufl_t frameList, iupal_t patternList, char * label)
                 iupa_t pattern = iufPatternListGet(patternList, e);
                 double curRelativeTimeInFrame = iufPatternGetTimeInFrame(pattern);
                 dt = curRelativeTimeInFrame - prevRelativeTimeInFrame;
-                sprintf(scriptLine, "seqControl(%d).command = timeToNextAcq\n", n);
+                sprintf(scriptLine, "seqControl(%d).command = 'timeToNextAcq';\n", n);
                 strcat(script, scriptLine);
-                sprintf(scriptLine, "seqControl(%d).argument = %f\n", n, dt);
+                sprintf(scriptLine, "seqControl(%d).argument = %f;\n", n, dt);
                 strcat(script, scriptLine);
-                sprintf(scriptLine, "seqControl(%d).condition = 'ignore'\n", n);
+                sprintf(scriptLine, "seqControl(%d).condition = 'ignore';\n", n);
                 strcat(script, scriptLine);
                 sprintf(scriptLine, "Event(%d).info       = 'Acquire B-mode ray line';\n", eventNum);
                 strcat(script, scriptLine);
                 sprintf(scriptLine, "Event(%d).tx         = %d;\n", eventNum, e);
                 strcat(script, scriptLine);
-                sprintf(scriptLine, "Event(%d).rcv        = %d;\n", eventNum, f);
+                sprintf(scriptLine, "Event(%d).rcv        = %d;\n", eventNum, e);
                 strcat(script, scriptLine);
-                sprintf(scriptLine, "Event(%d).recon      = 0;\n", eventNum);
+                sprintf(scriptLine, "Event(%d).recon      = %d;\n", eventNum, f+1);
                 strcat(script, scriptLine);
-                sprintf(scriptLine, "Event(%d).process    = 0;\n", eventNum);
+                sprintf(scriptLine, "Event(%d).process    = 1;\n", eventNum);
                 strcat(script, scriptLine);
                 sprintf(scriptLine, "Event(%d).seqControl = [%d,%d];\n", eventNum, n, SEQ_CONTROL_TRIGGER);
                 strcat(script, scriptLine);
@@ -462,9 +463,18 @@ static char *writeEvents(iufl_t frameList, iupal_t patternList, char * label)
     strcat(script, scriptLine);
     sprintf(scriptLine, "Event(%d).process    = 0;\n", eventNum);
     strcat(script, scriptLine);
-    sprintf(scriptLine, "Event(%d).seqControl = 1;\n", eventNum);
+    sprintf(scriptLine, "Event(%d).seqControl = [%d, %d];\n", eventNum, SEQ_CONTROL_JUMP, SEQ_CONTROL_RETURN_TO_MATLAB);
     strcat(script, scriptLine);
 
+    return script;
+}
+
+static char *writeFooter(char *fileName);
+{
+    char *script = (char *) calloc(12000, sizeof(char));
+    sprintf(script, "filename = %s;\n" \
+                    "VSX\n",
+                    fileName);
     return script;
 }
 
@@ -479,7 +489,7 @@ static char *parseIuf(iuif_t iuf, char *label, double depth)
         iupal_t patternList = iufPatternListDictGet(iufInputFileGetPatternListDict(iuf), label);
         iua_t acquisition = iufInputFileGetAcquisition(iuf);
         iursd_t receiveSettingsDict = iufInputFileGetReceiveSettingsDict(iuf);
-        iupd_t pulseDict = iufInputFileGetPulseDict(iuf);
+        iup_t pulse = iufPulseDictGet(iufInputFileGetPulseDict(iuf), label);
         iutad_t apodizationDict = iufInputFileGetTransmitApodizationDict(iuf);
         iusd_t sourcesDict = iufInputFileGetSourceDict(iuf);
         iufl_t frameList = iufInputFileGetFrameList(iuf);
@@ -490,12 +500,13 @@ static char *parseIuf(iuif_t iuf, char *label, double depth)
         strcat(script, writeTransducer(transducer));
         strcat(script, writeResource(transducer, acquisition, depth, numFrames));
         strcat(script, writeTx(patternList, transducer, apodizationDict, sourcesDict));
-        strcat(script, writeTw(pulseDict));
+        strcat(script, writeTw(pulse)); // Verasonics only supports 1 TW structure, not an array for each pattern?
         strcat(script, writeTGC(patternList, receiveSettingsDict, depthWL));
         strcat(script, writeRx(patternList, iufTransducerGetNumElements(transducer), depthWL, numFrames));
         strcat(script, writeRecon(patternList));
         strcat(script, writeProcess()); //processing of data is currently a fixed 2 item array
         strcat(script, writeEvents(frameList, patternList, label)); //writes the patterns of each frame with certain label
+        strcat(script, writeFooter("veragen.mat"));
     }
     else
     {

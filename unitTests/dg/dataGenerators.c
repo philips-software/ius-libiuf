@@ -252,6 +252,14 @@ iuif_t dgGenerateInputFile
     return inputFile;
 }
 
+
+// The Verasonics has a TX() array and Events() instead of a patternList and Frames.
+// The TX() array describes the transmit as an array of transducer element delays. A helper function is defined that
+// calculates the delays given a focus, steer and Origin. For an InputFile these delays are defined by a source.
+//
+// We need to convert from a source to a delay array. We have a helper function computeDelays for that to directly
+// set the Tx().delay array.
+//
 iuif_t dgGenerateInputFileVerasonics
 (
         char *ptestFileName,
