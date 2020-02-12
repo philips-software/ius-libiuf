@@ -1,0 +1,183 @@
+#include "iuf.h"
+#include <stdio.h>  
+#include <unistd.h>
+#include <string.h>
+#include <math.h>
+#include <iuf2DTransducerElementPrivate.h>
+#include <iufPositionPrivate.h>
+
+static void printUsage(char **argv)
+{
+  printf("Usage: for %s:\n", argv[0]);
+  printf("%s -i [inputfile.iuf] -o [outputfile.m]\n\n", argv[0]);
+  
+  printf("[outputfile.m] is the name of the .m script to run on a verasonics vantage. The script will create \
+ a iuf file with the same header, and merges the corresponding data\n");
+}
+
+static char *writeTransducer(iut_t transducer)
+{
+    char *script = (char *)calloc(500, sizeof(char)); // 500 should be large enough to hold string
+    sprintf(script, "%%%% System object: transducer characteristics in the Trans object\n" \
+            "Trans = iusInitTrans('%s', %6.8f, %d);\n" \
+            "nrTdxTx = sum(Trans.elementsTx);\n" \
+            "nrTdxRx = sum(Trans.elementsRx););\n",
+            iufTransducerGetName(transducer),
+            iufTransducerGetCenterFrequency(transducer),
+            iufTransducerGetNumElements(transducer));
+    return script;
+}
+
+static char *writeResource(iupald_t patternListDict, iut_t transducer, iua_t acquisition)
+{
+    char* script = (char *)calloc(5000, sizeof(char)); // 5000 characters should be enough
+    // get all keys from the patternList dictionary and for each key go though its list and accumulate the transmits
+    char **keys = iufPatternListDictGetKeys(patternListDict);
+    int patternListDictSize = iufPatternListDictGetSize(patternListDict);
+
+    // determine numWaves
+    int i=0, numWaves=0;
+    for (i = 0; i < patternListDictSize; i++)
+    {
+      iupal_t patternList = iufPatternListDictGet(patternListDict, keys[i]);
+      numWaves += iufPatternListGetSize(patternList);
+    }
+
+    // determine rowsPerFrame
+    double lambdaMm = iufAcquisitionGetSpeedOfSound(acquisition) / iufTransducerGetCenterFrequency(transducer);
+    IufTransducerShape shape = iufTransducerGetShape(transducer);
+    double elementPitch=0.0;
+    if (shape == IUF_2D_SHAPE)
+    {
+        iu2dte_t element0 = iuf2DTransducerGetElement((iu2dt_t)transducer, 0);
+        iu2dte_t element1 = iuf2DTransducerGetElement((iu2dt_t)transducer, 1);
+        elementPitch = IUF_ABS(iuf2DTransducerElementGetPosition(element1)->x -
+                iuf2DTransducerElementGetPosition(element0)->x);
+    }
+    double D = (iufTransducerGetNumElements(transducer) - 1) * elementPitch;
+    double rayDelta = (0.25) * asin(1.22*lambdaMm/D);
+
+    int numRays      = round(2*(M_PI/4)/rayDelta);
+    double maxAqcLength = round(100.0/lambdaMm);
+    double lineLengthRcvBuffer = 128 * ceil(maxAqcLength / 16.0);
+    int rowsPerFrame = 16 * ceil(lineLengthRcvBuffer * numRays / 16);
+    int interBufferRowsPerFrame = 16 * ceil(2^nextpow2(SFormat.endDepth/PData.pdeltaZ) / 16);
+    int interBufferColsPerFrame = PData.Size(2);
+
+    sprintf(script, "Resource.Parameters.connector             = 1;\n" \
+                    "Resource.Parameters.numTransmit           = %d;\n" \
+                    "Resource.Parameters.numRcvChannels        = %d;\n" \
+                    "Resource.Parameters.speedOfSound          = %f;\n" \
+                    "Resource.Parameters.speedCorrectionFactor = 1.0;\n" \
+                    "Resource.Parameters.startEvent            = 1;\n" \
+                    "Resource.Parameters.simulateMode          = 0;\n " \
+                    "Resource.Parameters.fakeScanhead          = 0;\n" \
+                    "Resource.Parameters.verbose               = 2;\n" \
+                    "Resource.RcvBuffer(1).datatype            = \'int16\';\n" \
+                    "Resource.RcvBuffer(1).rowsPerFrame = %d;\n" \
+                    "Resource.RcvBuffer(1).colsPerFrame =  Resource.Parameters.numRcvChannels;\n" \
+                    "Resource.RcvBuffer(1).numFrames    = 20;\n" \
+                    "Resource.InterBuffer(1).datatype     = 'complex';\n" \
+                    "Resource.InterBuffer(1).numFrames    = 1;\n"\
+                    "Resource.InterBuffer(1).rowsPerFrame = %d;\n" \
+                    "Resource.InterBuffer(1).colsPerFrame = %d;\n" \
+                    "Resource.ImageBuffer(1).datatype     = 'double';\n" \
+                    "Resource.ImageBuffer(1).rowsPerFrame = Resource.InterBuffer(1).rowsPerFrame;\n" \
+                    "Resource.ImageBuffer(1).colsPerFrame = Resource.InterBuffer(1).colsPerFrame;\n" \
+                    "Resource.ImageBuffer(1).numFrames    = 1;\n" \
+                    "Resource.DisplayWindow(1).Title      = [%s, ...\n" \
+                    " ' (', %d,' active elements)', ...\n"\
+                    " ', max ', %f,' cm', ...\n" \
+                    " ', Fc = ', %f, ' MHz', ...\n" \
+                    " ', numRays = ', %d];\n" \
+                    " Resource.DisplayWindow(1).pdelta     = %f;\n"\%
+                    " Resource.DisplayWindow(1).Position   = [%d,%d,%d,%d]\n" \
+                    " Resource.DisplayWindow(1).ReferencePt = [%d,%d];\n" \
+                    " Resource.DisplayWindow(1).Colormap    = gray(256);\n",
+                    iufTransducerGetNumElements(transducer), // Parameters.numTransmit
+                    iufTransducerGetNumElements(transducer), // Parameters.numRcvChannels
+                    iufAcquisitionGetSpeedOfSound(acquisition), // Parameters.speedOfSound
+                    rowsPerFrame, //RcvBuffer(1).rowsPerFrame
+                    interBufferRowsPerFrame, //InterBuffer(1).rowsPerFrame
+                    );
+}
+
+static char *parseIuf(iuif_t iuf)
+{
+    char *script = (char *) calloc(8000, sizeof(char));
+    sprintf(script, "%% Script generated from file:\n");
+    char *transducerScript;
+    char *resourceScript;
+/*    char *txScript;
+    char *rxScript;
+    char *tgcScript;
+    char *receiveScript;
+    char *processScript;
+    char *seqControlScript;
+    char *eventScript;
+    char *uiScript;
+*/
+    if (iuf)
+    {
+        transducerScript = writeTransducer(iufInputFileGetTransducer(iuf));
+        resourceScript = writeResource(iufInputFileGetPatternListDict(iuf),
+                iufInputFileGetTransducer(iuf),
+                iufInputFileGetAcquisition(iuf));
+    }
+    else
+    {
+        return "";
+    }
+
+    strcat(script, transducerScript);
+    strcat(script, resourceScript);
+
+    return script;
+}
+
+int main
+(
+    int argc,
+    char *argv[]
+)
+{
+    int version = iufGetVersionMajor();
+    int opt;
+    char *veraScript;
+    FILE *outputFile;
+    iuif_t iuf;
+
+    while((opt = getopt(argc, argv, ":i:o:")) != -1)  
+    {  
+        switch(opt)  
+        {  
+            case 'i':  
+                printf("inputFile (%s): %d\n", optarg, version);
+                iuf = iufInputFileNodeLoad(optarg);
+                break;
+            case 'o':  
+                printf("output: %s\n", optarg);
+                outputFile = fopen(optarg, "w");
+                break;  
+            case ':':  
+                printf("option needs a value\n");  
+                break;
+            case '?':  
+                printf("unknown option: %c\n", optopt); 
+                break;  
+        }  
+    }
+
+    if (!iuf)
+    {
+        printUsage(argv);
+        exit(1);
+    }
+
+    veraScript = parseIuf(iuf);
+    fprintf(outputFile, "%s", veraScript);
+
+    fclose(outputFile);
+
+    return 0;
+}

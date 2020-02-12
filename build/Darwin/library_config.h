@@ -1,0 +1,3 @@
+#define IUF_VERSION_MAJOR "3f"
+#define IUF_VERSION_MINOR "514f"
+#define IUF_VERSION_PATCH "25f"

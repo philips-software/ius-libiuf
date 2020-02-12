@@ -1,0 +1,1155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="iufLibrary"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;CMake Files\examples\;CMake Files\examples\genV3file\;CMake Files\examples\iufInputFileConvert\;CMake Files\examples\matlabConfigurator\;CMake Files\external\;CMake Files\unitTests\;CMake Files\unitTests\dg\;CMake Files\library\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="install/strip">
+				<Option working_dir="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/Makefile&quot;  VERBOSE=1 install/strip"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="install/local">
+				<Option working_dir="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/Makefile&quot;  VERBOSE=1 install/local"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="list_install_components">
+				<Option working_dir="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/Makefile&quot;  VERBOSE=1 list_install_components"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="install">
+				<Option working_dir="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/Makefile&quot;  VERBOSE=1 install"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="test">
+				<Option working_dir="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/Makefile&quot;  VERBOSE=1 test"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="Nightly">
+				<Option working_dir="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/Makefile&quot;  VERBOSE=1 Nightly"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="Continuous">
+				<Option working_dir="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/Makefile&quot;  VERBOSE=1 Continuous"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="Experimental">
+				<Option working_dir="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/Makefile&quot;  VERBOSE=1 Experimental"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="genV3file">
+				<Option output="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/examples/genV3file/genV3file" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/examples/genV3file"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/usr/local/Cellar/hdf5/1.10.4/include"/>
+					<Add directory="/usr/local/opt/szip/include"/>
+					<Add directory="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/examples/genV3file"/>
+					<Add directory="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/examples/genV3file/include"/>
+					<Add directory="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/include"/>
+					<Add directory="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/private"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/10.0.1/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/examples/genV3file/Makefile&quot;  VERBOSE=1 genV3file"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/examples/genV3file/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/examples/genV3file/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/examples/genV3file/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="genV3file/fast">
+				<Option output="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/examples/genV3file/genV3file" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/examples/genV3file"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/usr/local/Cellar/hdf5/1.10.4/include"/>
+					<Add directory="/usr/local/opt/szip/include"/>
+					<Add directory="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/examples/genV3file"/>
+					<Add directory="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/examples/genV3file/include"/>
+					<Add directory="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/include"/>
+					<Add directory="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/private"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/10.0.1/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/examples/genV3file/Makefile&quot;  VERBOSE=1 genV3file/fast"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/examples/genV3file/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/examples/genV3file/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/examples/genV3file/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="iufv2tov3">
+				<Option output="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/examples/iufInputFileConvert/iufv2tov3" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/examples/iufInputFileConvert"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/usr/local/Cellar/hdf5/1.10.4/include"/>
+					<Add directory="/usr/local/opt/szip/include"/>
+					<Add directory="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/examples/iufInputFileConvert"/>
+					<Add directory="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/examples/iufInputFileConvert/include"/>
+					<Add directory="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/include"/>
+					<Add directory="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/private"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/10.0.1/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/examples/iufInputFileConvert/Makefile&quot;  VERBOSE=1 iufv2tov3"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/examples/iufInputFileConvert/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/examples/iufInputFileConvert/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/examples/iufInputFileConvert/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="iufv2tov3/fast">
+				<Option output="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/examples/iufInputFileConvert/iufv2tov3" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/examples/iufInputFileConvert"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/usr/local/Cellar/hdf5/1.10.4/include"/>
+					<Add directory="/usr/local/opt/szip/include"/>
+					<Add directory="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/examples/iufInputFileConvert"/>
+					<Add directory="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/examples/iufInputFileConvert/include"/>
+					<Add directory="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/include"/>
+					<Add directory="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/private"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/10.0.1/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/examples/iufInputFileConvert/Makefile&quot;  VERBOSE=1 iufv2tov3/fast"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/examples/iufInputFileConvert/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/examples/iufInputFileConvert/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/examples/iufInputFileConvert/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="matlabConfigurator">
+				<Option output="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/examples/matlabConfigurator/matlabConfigurator" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/examples/matlabConfigurator"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/usr/local/Cellar/hdf5/1.10.4/include"/>
+					<Add directory="/usr/local/opt/szip/include"/>
+					<Add directory="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/examples/matlabConfigurator"/>
+					<Add directory="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/include"/>
+					<Add directory="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/private"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/10.0.1/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/examples/matlabConfigurator/Makefile&quot;  VERBOSE=1 matlabConfigurator"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/examples/matlabConfigurator/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/examples/matlabConfigurator/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/examples/matlabConfigurator/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="matlabConfigurator/fast">
+				<Option output="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/examples/matlabConfigurator/matlabConfigurator" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/examples/matlabConfigurator"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/usr/local/Cellar/hdf5/1.10.4/include"/>
+					<Add directory="/usr/local/opt/szip/include"/>
+					<Add directory="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/examples/matlabConfigurator"/>
+					<Add directory="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/include"/>
+					<Add directory="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/private"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/10.0.1/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/examples/matlabConfigurator/Makefile&quot;  VERBOSE=1 matlabConfigurator/fast"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/examples/matlabConfigurator/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/examples/matlabConfigurator/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/examples/matlabConfigurator/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="Unity">
+				<Option output="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/external/libUnity.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/external"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/external/Unity/src"/>
+					<Add directory="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/external/Unity/extras/fixture/src"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/10.0.1/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/external/Makefile&quot;  VERBOSE=1 Unity"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/external/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/external/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/external/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="Unity/fast">
+				<Option output="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/external/libUnity.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/external"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/external/Unity/src"/>
+					<Add directory="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/external/Unity/extras/fixture/src"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/10.0.1/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/external/Makefile&quot;  VERBOSE=1 Unity/fast"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/external/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/external/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/external/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="unitTests">
+				<Option output="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/unitTests/unitTests" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/unitTests"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/unitTests/include"/>
+					<Add directory="/usr/local/Cellar/hdf5/1.10.4/include"/>
+					<Add directory="/usr/local/opt/szip/include"/>
+					<Add directory="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/include"/>
+					<Add directory="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/include"/>
+					<Add directory="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/private"/>
+					<Add directory="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/unitTests"/>
+					<Add directory="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/external/Unity/src"/>
+					<Add directory="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/external/Unity/extras/fixture/src"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/10.0.1/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/unitTests/Makefile&quot;  VERBOSE=1 unitTests"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/unitTests/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/unitTests/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/unitTests/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="unitTests/fast">
+				<Option output="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/unitTests/unitTests" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/unitTests"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/unitTests/include"/>
+					<Add directory="/usr/local/Cellar/hdf5/1.10.4/include"/>
+					<Add directory="/usr/local/opt/szip/include"/>
+					<Add directory="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/include"/>
+					<Add directory="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/include"/>
+					<Add directory="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/private"/>
+					<Add directory="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/unitTests"/>
+					<Add directory="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/external/Unity/src"/>
+					<Add directory="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/external/Unity/extras/fixture/src"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/10.0.1/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/unitTests/Makefile&quot;  VERBOSE=1 unitTests/fast"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/unitTests/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/unitTests/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/unitTests/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="dg">
+				<Option output="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/unitTests/dg/libdg.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/unitTests/dg"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/unitTests/include"/>
+					<Add directory="/usr/local/Cellar/hdf5/1.10.4/include"/>
+					<Add directory="/usr/local/opt/szip/include"/>
+					<Add directory="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/include"/>
+					<Add directory="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/include"/>
+					<Add directory="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/private"/>
+					<Add directory="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/unitTests"/>
+					<Add directory="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/external/Unity/src"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/10.0.1/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/unitTests/dg/Makefile&quot;  VERBOSE=1 dg"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/unitTests/dg/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/unitTests/dg/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/unitTests/dg/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="dg/fast">
+				<Option output="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/unitTests/dg/libdg.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/unitTests/dg"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/unitTests/include"/>
+					<Add directory="/usr/local/Cellar/hdf5/1.10.4/include"/>
+					<Add directory="/usr/local/opt/szip/include"/>
+					<Add directory="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/include"/>
+					<Add directory="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/include"/>
+					<Add directory="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/private"/>
+					<Add directory="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/unitTests"/>
+					<Add directory="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/external/Unity/src"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/10.0.1/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/unitTests/dg/Makefile&quot;  VERBOSE=1 dg/fast"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/unitTests/dg/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/unitTests/dg/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/unitTests/dg/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="iuf">
+				<Option output="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/library/libiuf-3.514a25fd.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/library"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug"/>
+					<Add directory="/usr/local/Cellar/hdf5/1.10.4/include"/>
+					<Add directory="/usr/local/opt/szip/include"/>
+					<Add directory="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/external/hashmap/src"/>
+					<Add directory="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/include"/>
+					<Add directory="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/private"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/10.0.1/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/library/Makefile&quot;  VERBOSE=1 iuf"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/library/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/library/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/library/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="iuf/fast">
+				<Option output="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/library/libiuf-3.514a25fd.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/library"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug"/>
+					<Add directory="/usr/local/Cellar/hdf5/1.10.4/include"/>
+					<Add directory="/usr/local/opt/szip/include"/>
+					<Add directory="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/external/hashmap/src"/>
+					<Add directory="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/include"/>
+					<Add directory="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/private"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/10.0.1/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/library/Makefile&quot;  VERBOSE=1 iuf/fast"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/library/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/library/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/frankvanheesch/Documents/GitHub/ius-libiuf/cmake-build-debug/library/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/examples/genV3file/src/main.c">
+			<Option target="genV3file"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/examples/genV3file/src/nodeConfig.c">
+			<Option target="genV3file"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/examples/iufInputFileConvert/src/main.c">
+			<Option target="iufv2tov3"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/examples/iufInputFileConvert/src/readInputFileV2.c">
+			<Option target="iufv2tov3"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/examples/matlabConfigurator/src/main.c">
+			<Option target="matlabConfigurator"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/external/Unity/extras/fixture/src/unity_fixture.c">
+			<Option target="Unity"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/external/Unity/extras/fixture/src/unity_fixture.h">
+			<Option target="Unity"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/external/Unity/src/unity.c">
+			<Option target="Unity"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/external/Unity/src/unity.h">
+			<Option target="Unity"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/external/hashmap/src/hashmap.c">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/external/hashmap/src/hashmap.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/include/iuf2DNonParametricSource.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/include/iuf2DParametricSource.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/include/iuf2DSize.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/include/iuf2DTransducer.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/include/iuf2DTransducerElement.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/include/iuf2DTransducerElementList.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/include/iuf3DAngle.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/include/iuf3DNonParametricSource.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/include/iuf3DParametricSource.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/include/iuf3DSize.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/include/iuf3DTransducer.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/include/iuf3DTransducerElement.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/include/iuf3DTransducerElementList.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/include/iufAcquisition.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/include/iufData.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/include/iufDataStream.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/include/iufDemodulation.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/include/iufDemodulationDict.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/include/iufFile.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/include/iufFilter.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/include/iufFrame.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/include/iufFrameList.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/include/iufHDF5.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/include/iufHistoryNode.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/include/iufHistoryNodeList.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/include/iufInputFile.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/include/iufInputFileStructure.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/include/iufIqFile.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/include/iufIqFileStructure.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/include/iufIqPattern.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/include/iufIqPatternList.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/include/iufIqPatternListDict.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/include/iufNonParametricPulse.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/include/iufOffset.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/include/iufParameterDict.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/include/iufParametricPulse.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/include/iufPattern.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/include/iufPatternList.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/include/iufPatternListDict.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/include/iufPosition.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/include/iufPulse.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/include/iufPulseDict.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/include/iufReceiveChannelMap.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/include/iufReceiveChannelMapDict.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/include/iufReceiveSettings.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/include/iufReceiveSettingsDict.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/include/iufSource.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/include/iufSourceDict.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/include/iufTGC.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/include/iufTransducer.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/include/iufTransducerElement.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/include/iufTransmitApodization.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/include/iufTransmitApodizationDict.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/include/iufTypes.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/include/iufUtil.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/private/iuf2DNonParametricSourcePrivate.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/private/iuf2DSizePrivate.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/private/iuf2DTransducerADT.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/private/iuf2DTransducerElementListPrivate.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/private/iuf2DTransducerElementPrivate.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/private/iuf2DTransducerPrivate.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/private/iuf3DAnglePrivate.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/private/iuf3DSizePrivate.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/private/iuf3DTransducerADT.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/private/iuf3DTransducerElementListPrivate.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/private/iuf3DTransducerElementPrivate.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/private/iuf3DTransducerPrivate.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/private/iufAcquisitionPrivate.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/private/iufDataStreamDictPrivate.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/private/iufDemodulationDictPrivate.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/private/iufFrameListPrivate.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/private/iufHistoryNodeListPrivate.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/private/iufHistoryNodePrivate.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/private/iufInputFilePrivate.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/private/iufIqFilePrivate.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/private/iufIqPatternListDictADT.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/private/iufIqPatternListDictPrivate.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/private/iufIqPatternListPrivate.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/private/iufIqPatternPrivate.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/private/iufNonParametricPulsePrivate.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/private/iufParametricPulsePrivate.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/private/iufPatternListDictADT.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/private/iufPatternListDictPrivate.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/private/iufPatternListPrivate.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/private/iufPatternPrivate.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/private/iufPulseDictPrivate.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/private/iufPulsePrivate.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/private/iufReceiveChannelMapDictADT.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/private/iufReceiveChannelMapPrivate.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/private/iufReceiveSettingsDictADT.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/private/iufReceiveSettingsDictPrivate.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/private/iufSourcePrivate.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/private/iufTGCPrivate.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/private/iufTransducerADT.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/private/iufTransducerElementPrivate.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/private/iufTransducerPrivate.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/private/iufTransmitApodizationDictADT.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/private/iufTransmitApodizationPrivate.h">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/src/iuf2DNonParametricSource.c">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/src/iuf2DParametricSource.c">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/src/iuf2DSize.c">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/src/iuf2DTransducer.c">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/src/iuf2DTransducerElement.c">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/src/iuf2DTransducerElementList.c">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/src/iuf3DAngle.c">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/src/iuf3DNonParametricSource.c">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/src/iuf3DParametricSource.c">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/src/iuf3DSize.c">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/src/iuf3DTransducer.c">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/src/iuf3DTransducerElement.c">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/src/iuf3DTransducerElementList.c">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/src/iufAcquisition.c">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/src/iufData.c">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/src/iufDataStream.c">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/src/iufDataStreamDict.c">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/src/iufDemodulation.c">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/src/iufDemodulationDict.c">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/src/iufError.c">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/src/iufFile.c">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/src/iufFilter.c">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/src/iufFrame.c">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/src/iufFrameList.c">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/src/iufHDF5.c">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/src/iufHistoryNode.c">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/src/iufHistoryNodeList.c">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/src/iufInputFile.c">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/src/iufIqFile.c">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/src/iufIqPattern.c">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/src/iufIqPatternList.c">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/src/iufIqPatternListDict.c">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/src/iufNonParametricPulse.c">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/src/iufOffset.c">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/src/iufParameterDict.c">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/src/iufParametricPulse.c">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/src/iufPattern.c">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/src/iufPatternList.c">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/src/iufPatternListDict.c">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/src/iufPosition.c">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/src/iufPulse.c">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/src/iufPulseDict.c">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/src/iufReceiveChannelMap.c">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/src/iufReceiveChannelMapDict.c">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/src/iufReceiveSettings.c">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/src/iufReceiveSettingsDict.c">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/src/iufSource.c">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/src/iufSourceDict.c">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/src/iufTGC.c">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/src/iufTransducer.c">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/src/iufTransducerElement.c">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/src/iufTransmitApodization.c">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/src/iufTransmitApodizationDict.c">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/src/iufUtil.c">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/src/iufUuid.c">
+			<Option target="iuf"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/unitTests/dg/dataGenerators.c">
+			<Option target="dg"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/unitTests/dg/dataGenerators.h">
+			<Option target="dg"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/unitTests/src/testIuf2DNonParametricSource.c">
+			<Option target="unitTests"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/unitTests/src/testIuf2DParametricSource.c">
+			<Option target="unitTests"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/unitTests/src/testIuf2DTransducer.c">
+			<Option target="unitTests"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/unitTests/src/testIuf2DTransducerElement.c">
+			<Option target="unitTests"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/unitTests/src/testIuf2DTransducerElementList.c">
+			<Option target="unitTests"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/unitTests/src/testIuf3DNonParametricSource.c">
+			<Option target="unitTests"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/unitTests/src/testIuf3DParametricSource.c">
+			<Option target="unitTests"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/unitTests/src/testIuf3DTransducer.c">
+			<Option target="unitTests"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/unitTests/src/testIuf3DTransducerElement.c">
+			<Option target="unitTests"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/unitTests/src/testIuf3DTransducerElementList.c">
+			<Option target="unitTests"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/unitTests/src/testIufAcquisition.c">
+			<Option target="unitTests"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/unitTests/src/testIufDataStream.c">
+			<Option target="unitTests"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/unitTests/src/testIufDataStreamDict.c">
+			<Option target="unitTests"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/unitTests/src/testIufDemodulation.c">
+			<Option target="unitTests"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/unitTests/src/testIufDemodulationDict.c">
+			<Option target="unitTests"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/unitTests/src/testIufErrorHandling.c">
+			<Option target="unitTests"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/unitTests/src/testIufFile.c">
+			<Option target="unitTests"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/unitTests/src/testIufFilter.c">
+			<Option target="unitTests"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/unitTests/src/testIufFrame.c">
+			<Option target="unitTests"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/unitTests/src/testIufFrameList.c">
+			<Option target="unitTests"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/unitTests/src/testIufHistoryNode.c">
+			<Option target="unitTests"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/unitTests/src/testIufHistoryNodeList.c">
+			<Option target="unitTests"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/unitTests/src/testIufInputFile.c">
+			<Option target="unitTests"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/unitTests/src/testIufIqFile.c">
+			<Option target="unitTests"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/unitTests/src/testIufIqPattern.c">
+			<Option target="unitTests"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/unitTests/src/testIufIqPatternList.c">
+			<Option target="unitTests"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/unitTests/src/testIufIqPatternListDict.c">
+			<Option target="unitTests"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/unitTests/src/testIufNonParametricPulse.c">
+			<Option target="unitTests"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/unitTests/src/testIufParameterDict.c">
+			<Option target="unitTests"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/unitTests/src/testIufParametricPulse.c">
+			<Option target="unitTests"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/unitTests/src/testIufPattern.c">
+			<Option target="unitTests"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/unitTests/src/testIufPatternList.c">
+			<Option target="unitTests"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/unitTests/src/testIufPatternListDict.c">
+			<Option target="unitTests"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/unitTests/src/testIufPulse.c">
+			<Option target="unitTests"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/unitTests/src/testIufPulseDict.c">
+			<Option target="unitTests"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/unitTests/src/testIufReceiveChannelMap.c">
+			<Option target="unitTests"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/unitTests/src/testIufReceiveChannelMapDict.c">
+			<Option target="unitTests"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/unitTests/src/testIufReceiveSettings.c">
+			<Option target="unitTests"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/unitTests/src/testIufReceiveSettingsDict.c">
+			<Option target="unitTests"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/unitTests/src/testIufSource.c">
+			<Option target="unitTests"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/unitTests/src/testIufSourceDict.c">
+			<Option target="unitTests"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/unitTests/src/testIufTGC.c">
+			<Option target="unitTests"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/unitTests/src/testIufTransducer.c">
+			<Option target="unitTests"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/unitTests/src/testIufTransmitApodization.c">
+			<Option target="unitTests"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/unitTests/src/testIufTransmitApodizationDict.c">
+			<Option target="unitTests"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/unitTests/src/unitTests.c">
+			<Option target="unitTests"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/unitTests/src/util.c">
+			<Option target="unitTests"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/examples/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\examples\"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/examples/genV3file/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\examples\genV3file\"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/examples/iufInputFileConvert/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\examples\iufInputFileConvert\"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/examples/matlabConfigurator/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\examples\matlabConfigurator\"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/external/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\external\"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/unitTests/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\unitTests\"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/unitTests/dg/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\unitTests\dg\"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\library\"/>
+		</Unit>
+		<Unit filename="/Users/frankvanheesch/Documents/GitHub/ius-libiuf/library/library_config.h.in">
+			<Option virtualFolder="CMake Files\library\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>
