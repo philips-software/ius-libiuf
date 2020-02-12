@@ -10,5 +10,5 @@ $Script
 Script=$ScriptPath/memory_leak_detection.sh xml
 [[ -f $Script ]] || (printf "Error: $Script not found\n" >&2  && exit 1)
 $Script
-sonar-scanner -Dsonar.login=${SONAR_LOGIN}  -Dsonar.host.url=https://sonarc.ta.philips.com/
+sonar-scanner
 

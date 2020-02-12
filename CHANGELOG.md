@@ -7,6 +7,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 ## [Unreleased]
 
+- Added travis ci/cd support for Mac, Linux and Windows
+- Added integration with SonarCloud
+- Fixed Vulnerability issues detected by SonarCloud
+- Fixed Reliability issues detected by SonarCloud
+
+
 ## [2.1]
 
 - Initial open source version of The IUF file IO library SDK.

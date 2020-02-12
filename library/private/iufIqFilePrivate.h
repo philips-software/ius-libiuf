@@ -16,16 +16,16 @@ iuiqf_t iufIqFileSpecificsLoad
     iuiqf_t iqFile
 );
 
+int iufIqFileCompareInstance
+(
+    iuiqfi_t reference,
+    iuiqfi_t actual
+);
 
 int iufIqFileSaveInstance
 (
     hid_t handle,
     iuiqfi_t instanceData
-);
-
-iuhn_t iufIqFileLoadNode
-(
-    hid_t handle
 );
 
 void *iufIqFileInstanceLoad

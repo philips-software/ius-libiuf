@@ -411,7 +411,7 @@ static iutad_t extractTransmitApodizationDict(hid_t inputFile)
 		char pulseLabel[32];
 		float *apod = apodizations + i*numChannels;
 		iuta_t transmitApodization = iufTransmitApodizationCreate(apod, numChannels);
-		sprintf(pulseLabel, "pulse[%d]", i);
+		snprintf(pulseLabel, sizeof(pulseLabel), "pulse[%d]", i);
 		status |= iufTransmitApodizationDictSet(transmitApodizationDict, pulseLabel, transmitApodization);
 	}
 	if (status != IUF_E_OK)
@@ -529,7 +529,7 @@ static 	iupald_t extractPatternListDict
 	iupal_t patternList = iufPatternListCreate(numPulses, receiveSettingsDict, receiveChannelMapDict);
 	for (int i = 0; i < numPulses && status == IUF_E_OK; i++)
 	{
-		sprintf(apodizationLabel, "pulse[%d]", i); // for each pulse an apodizaion is defined in V2
+        snprintf(apodizationLabel, sizeof(apodizationLabel), "pulse[%d]", i); // for each pulse an apodizaion is defined in V2
 		iupa_t pattern = iufPatternCreate(transmitTimes[i], PULSE_LABEL, SOURCE_LABEL, label, apodizationLabel, label);
 		if (pattern == IUPA_INVALID)
 		{
