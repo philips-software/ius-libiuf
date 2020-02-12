@@ -55,8 +55,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/iuf.dir/src/iufUuid.c.o"
   "CMakeFiles/iuf.dir/src/iufUtil.c.o"
   "CMakeFiles/iuf.dir/__/external/hashmap/src/hashmap.c.o"
-  "libiuf-3.d3fec7fd.pdb"
-  "libiuf-3.d3fec7fd.a"
+  "libiuf-3.37750b8d.pdb"
+  "libiuf-3.37750b8d.a"
 )
 
 # Per-language clean rules from dependency scanning.

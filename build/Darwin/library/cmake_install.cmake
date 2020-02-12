@@ -34,17 +34,17 @@ endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
-   "/Users/frankvanheesch/Documents/GitHub/ius-libiuf/build/Darwin/dist/library/Darwin/libiuf-3.d3fec7fd.a")
+   "/Users/frankvanheesch/Documents/GitHub/ius-libiuf/build/Darwin/dist/library/Darwin/libiuf-3.37750b8d.a")
   if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
   if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
-file(INSTALL DESTINATION "/Users/frankvanheesch/Documents/GitHub/ius-libiuf/build/Darwin/dist/library/Darwin" TYPE STATIC_LIBRARY FILES "/Users/frankvanheesch/Documents/GitHub/ius-libiuf/build/Darwin/library/libiuf-3.d3fec7fd.a")
-  if(EXISTS "$ENV{DESTDIR}/Users/frankvanheesch/Documents/GitHub/ius-libiuf/build/Darwin/dist/library/Darwin/libiuf-3.d3fec7fd.a" AND
-     NOT IS_SYMLINK "$ENV{DESTDIR}/Users/frankvanheesch/Documents/GitHub/ius-libiuf/build/Darwin/dist/library/Darwin/libiuf-3.d3fec7fd.a")
-    execute_process(COMMAND "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ranlib" "$ENV{DESTDIR}/Users/frankvanheesch/Documents/GitHub/ius-libiuf/build/Darwin/dist/library/Darwin/libiuf-3.d3fec7fd.a")
+file(INSTALL DESTINATION "/Users/frankvanheesch/Documents/GitHub/ius-libiuf/build/Darwin/dist/library/Darwin" TYPE STATIC_LIBRARY FILES "/Users/frankvanheesch/Documents/GitHub/ius-libiuf/build/Darwin/library/libiuf-3.37750b8d.a")
+  if(EXISTS "$ENV{DESTDIR}/Users/frankvanheesch/Documents/GitHub/ius-libiuf/build/Darwin/dist/library/Darwin/libiuf-3.37750b8d.a" AND
+     NOT IS_SYMLINK "$ENV{DESTDIR}/Users/frankvanheesch/Documents/GitHub/ius-libiuf/build/Darwin/dist/library/Darwin/libiuf-3.37750b8d.a")
+    execute_process(COMMAND "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ranlib" "$ENV{DESTDIR}/Users/frankvanheesch/Documents/GitHub/ius-libiuf/build/Darwin/dist/library/Darwin/libiuf-3.37750b8d.a")
   endif()
 endif()
 
