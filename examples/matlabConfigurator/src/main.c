@@ -538,7 +538,7 @@ int main(int argc, char *argv[])
     char *veraScript;
     FILE *outputFile = NULL;
     iuif_t iuf = NULL;
-    char *label;
+    char *label = NULL;
     double imaging_depth = DEFAULT_IMAGING_DEPTH;
     int optionCount=0;
     
@@ -581,7 +581,11 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-    veraScript = parseIuf(iuf, label, imaging_depth);
+    if (label)
+    {
+        veraScript = parseIuf(iuf, label, imaging_depth);
+    }
+    
     if (outputFile)
     {
       fprintf(outputFile, "%s", veraScript);
