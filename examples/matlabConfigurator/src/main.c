@@ -472,7 +472,7 @@ static char *writeEvents(iufl_t frameList, iupal_t patternList, char * label)
     return script;
 }
 
-static char *writeFooter(char *fileName);
+static char *writeFooter(char *fileName)
 {
     char *script = (char *) calloc(12000, sizeof(char));
     sprintf(script, "filename = %s;\n" \
