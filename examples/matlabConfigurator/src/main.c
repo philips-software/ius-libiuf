@@ -585,11 +585,15 @@ int main(int argc, char *argv[])
     {
         veraScript = parseIuf(iuf, label, imaging_depth);
     }
+    else
+    {
+      veraScript = "";
+    }
     
     if (outputFile)
     {
       fprintf(outputFile, "%s", veraScript);
-     fclose(outputFile);
+      fclose(outputFile);
     }
     return 0;
 }
