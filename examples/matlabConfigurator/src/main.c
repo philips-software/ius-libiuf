@@ -5,6 +5,10 @@
 #include <math.h>
 #include <iufPositionPrivate.h>
 
+#ifndef M_PI
+    #define M_PI 3.14159265358979323846
+#endif
+
 #define DEFAULT_IMAGING_DEPTH 0.010
 #define PIXEL_DELTA (0.875f)
 #define WINDOW_RESOLUTION_Y 480
