@@ -76,11 +76,11 @@ static char *writeResource(iut_t transducer, iua_t acquisition, double depth, in
     }
     double D = (iufTransducerGetNumElements(transducer) - 1) * elementPitch * 1000.0; // in mm
     double rayDelta = (0.25) * asin(1.22*lambdaMm/D);
-    int numRays = round(2*(M_PI/4)/rayDelta);
+    int numRays = (int)round(2.0*(M_PI/4.0)/rayDelta);
     double maxAqcLength = round((depth*1000.0f)/lambdaMm);
     double lineLengthRcvBuffer = 128 * ceil(maxAqcLength / 16.0);
     float pixel_delta = PIXEL_DELTA;
-    int rowsPerFrame = 16 * ceil(lineLengthRcvBuffer * numRays / 16.0);
+    int rowsPerFrame = (int)(16.0 * ceil(lineLengthRcvBuffer * numRays / 16.0));
     int numColumns = 512; //ceil(2.0f*(maxAqcLength+M_PI/4.0f)*sin(-M_PI/4.0f)/pixel_delta);
     double originX = -(numColumns/2.0f)*pixel_delta;
 

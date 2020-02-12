@@ -62,7 +62,7 @@ iudm_t dgGenerateDemodulation
     iuff_t preFilter = iufFirFilterCreate(kernelSize);
     for (i=0; i<kernelSize; i++)
     {
-      iufFirFilterSetCoefficient(preFilter, i, 1.0/(float)kernelSize); //an averaging filter
+      iufFirFilterSetCoefficient(preFilter, i, 1.0f/(float)kernelSize); //an averaging filter
     }
     iufDemodulationSetPreFilter(obj, preFilter);
 
@@ -779,7 +779,7 @@ iut_t dgGenerateTransducer
     TEST_ASSERT(transducer != IU2DT_INVALID);
     for (i = 0; i < numTransducerElements; i++)
     {
-        iu2dp_t elemPos = iuf2DPositionCreate(((float)i-(numTransducerElements/2.0))*transducerPitch, 0.0f);
+        iu2dp_t elemPos = iuf2DPositionCreate(((float)i-(numTransducerElements/2.0f))*transducerPitch, 0.0f);
         iu2ds_t elemSize = iuf2DSizeCreate(0.25f*0.001f, 0.02f);
         float elemAngle = 0.0f;
         iu2dte_t element = iuf2DTransducerElementCreate(elemPos, elemAngle, elemSize);
