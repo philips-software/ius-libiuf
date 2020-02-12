@@ -144,6 +144,7 @@ static char *writeTx(iupal_t patternList,
     double transducerWidth = 0.0;
 
     IufTransducerShape transShape = iufTransducerGetShape(transducer);
+    int numElements = iufTransducerGetNumElements(transducer); 
     if (transShape == IUF_LINE)
     {
         iu2dp_t posFirst, posLast;

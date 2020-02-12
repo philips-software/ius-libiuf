@@ -769,7 +769,7 @@ unitTests/unitTests: unitTests/CMakeFiles/unitTests.dir/src/testIufTransmitApodi
 unitTests/unitTests: unitTests/CMakeFiles/unitTests.dir/src/unitTests.c.o
 unitTests/unitTests: unitTests/CMakeFiles/unitTests.dir/src/util.c.o
 unitTests/unitTests: unitTests/CMakeFiles/unitTests.dir/build.make
-unitTests/unitTests: library/libiuf-3.514a25fd.a
+unitTests/unitTests: library/libiuf-3.d3fec7fd.a
 unitTests/unitTests: external/libUnity.a
 unitTests/unitTests: /usr/local/Cellar/hdf5/1.10.4/lib/libhdf5.dylib
 unitTests/unitTests: /usr/local/opt/szip/lib/libsz.dylib

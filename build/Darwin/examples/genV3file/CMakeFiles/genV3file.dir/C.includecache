@@ -6,6 +6,10 @@
 
 #IncludeRegexTransform: 
 
+../../examples/genV3file/include/nodeConfig.h
+iuf.h
+../../examples/genV3file/include/iuf.h
+
 ../../library/include/iuf.h
 iuf2DNonParametricSource.h
 -
@@ -413,6 +417,12 @@ iufTypes.h
 -
 
 ../../library/include/iufUuid.h
+
+/Users/frankvanheesch/Documents/GitHub/ius-libiuf/examples/genV3file/src/main.c
+iuf.h
+/Users/frankvanheesch/Documents/GitHub/ius-libiuf/examples/genV3file/src/iuf.h
+nodeConfig.h
+/Users/frankvanheesch/Documents/GitHub/ius-libiuf/examples/genV3file/src/nodeConfig.h
 
 /Users/frankvanheesch/Documents/GitHub/ius-libiuf/examples/genV3file/src/nodeConfig.c
 iuf.h

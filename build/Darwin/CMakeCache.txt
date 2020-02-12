@@ -116,7 +116,7 @@ CMAKE_OSX_DEPLOYMENT_TARGET:STRING=
 
 //The product will be built against the headers and libraries located
 // inside the indicated SDK.
-CMAKE_OSX_SYSROOT:PATH=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk
+CMAKE_OSX_SYSROOT:PATH=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk
 
 //Value Computed by CMake
 CMAKE_PROJECT_DESCRIPTION:STATIC=
@@ -261,7 +261,7 @@ P4COMMAND:FILEPATH=P4COMMAND-NOTFOUND
 SCPCOMMAND:FILEPATH=/usr/bin/scp
 
 //Name of the computer/site where compile is being run
-SITE:STRING=Franks-MacBook-Pro-2.local
+SITE:STRING=Franks-MBP-2.fritz.box
 
 //Path to the SLURM sbatch executable
 SLURM_SBATCH_COMMAND:FILEPATH=SLURM_SBATCH_COMMAND-NOTFOUND

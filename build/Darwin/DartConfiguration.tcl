@@ -11,7 +11,7 @@ BuildDirectory: /Users/frankvanheesch/Documents/GitHub/ius-libiuf/build/Darwin
 CostDataFile: 
 
 # Site is something like machine.domain, i.e. pragmatic.crd
-Site: Franks-MacBook-Pro-2.local
+Site: Franks-MBP-2.fritz.box
 
 # Build name is osname-revision-compiler, i.e. Linux-2.4.2-2smp-c++
 BuildName: Darwin-cc

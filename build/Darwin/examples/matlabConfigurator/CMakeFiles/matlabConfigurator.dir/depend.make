@@ -62,7 +62,7 @@ examples/matlabConfigurator/CMakeFiles/matlabConfigurator.dir/src/main.c.o: ../.
 examples/matlabConfigurator/CMakeFiles/matlabConfigurator.dir/src/main.c.o: ../../library/include/iufTypes.h
 examples/matlabConfigurator/CMakeFiles/matlabConfigurator.dir/src/main.c.o: ../../library/include/iufUtil.h
 examples/matlabConfigurator/CMakeFiles/matlabConfigurator.dir/src/main.c.o: ../../library/include/iufUuid.h
-examples/matlabConfigurator/CMakeFiles/matlabConfigurator.dir/src/main.c.o: ../../library/private/iuf2DTransducerElementPrivate.h
+examples/matlabConfigurator/CMakeFiles/matlabConfigurator.dir/src/main.c.o: ../../library/private/iufPositionPrivate.h
 examples/matlabConfigurator/CMakeFiles/matlabConfigurator.dir/src/main.c.o: ../../examples/matlabConfigurator/src/main.c
 examples/matlabConfigurator/CMakeFiles/matlabConfigurator.dir/src/main.c.o: /usr/local/Cellar/hdf5/1.10.4/include/H5ACpublic.h
 examples/matlabConfigurator/CMakeFiles/matlabConfigurator.dir/src/main.c.o: /usr/local/Cellar/hdf5/1.10.4/include/H5Apublic.h

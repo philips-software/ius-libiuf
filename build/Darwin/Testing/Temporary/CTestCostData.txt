@@ -1,3 +1,0 @@
-suite_1_test 3 0
----
-suite_1_test

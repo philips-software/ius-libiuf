@@ -6,6 +6,10 @@
 
 #IncludeRegexTransform: 
 
+../../examples/iufInputFileConvert/include/iufInputFileReadV2.h
+iuf.h
+../../examples/iufInputFileConvert/include/iuf.h
+
 ../../library/include/iuf.h
 iuf2DNonParametricSource.h
 -
@@ -413,6 +417,14 @@ iufTypes.h
 -
 
 ../../library/include/iufUuid.h
+
+/Users/frankvanheesch/Documents/GitHub/ius-libiuf/examples/iufInputFileConvert/src/main.c
+iuf.h
+/Users/frankvanheesch/Documents/GitHub/ius-libiuf/examples/iufInputFileConvert/src/iuf.h
+hdf5.h
+/Users/frankvanheesch/Documents/GitHub/ius-libiuf/examples/iufInputFileConvert/src/hdf5.h
+iufInputFileReadV2.h
+/Users/frankvanheesch/Documents/GitHub/ius-libiuf/examples/iufInputFileConvert/src/iufInputFileReadV2.h
 
 /Users/frankvanheesch/Documents/GitHub/ius-libiuf/examples/iufInputFileConvert/src/readInputFileV2.c
 iuf.h

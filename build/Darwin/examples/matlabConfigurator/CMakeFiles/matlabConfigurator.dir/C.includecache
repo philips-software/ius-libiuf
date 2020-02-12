@@ -414,11 +414,11 @@ iufTypes.h
 
 ../../library/include/iufUuid.h
 
-../../library/private/iuf2DTransducerElementPrivate.h
+../../library/private/iufPositionPrivate.h
 hdf5.h
 -
-iuf2DTransducerElement.h
--
+iufPosition.h
+../../library/private/iufPosition.h
 
 /Users/frankvanheesch/Documents/GitHub/ius-libiuf/examples/matlabConfigurator/src/main.c
 iuf.h
@@ -431,7 +431,7 @@ string.h
 -
 math.h
 -
-iuf2DTransducerElementPrivate.h
+iufPositionPrivate.h
 -
 
 /usr/local/Cellar/hdf5/1.10.4/include/H5ACpublic.h

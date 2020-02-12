@@ -79,7 +79,7 @@ matlabConfigurator_EXTERNAL_OBJECTS =
 
 examples/matlabConfigurator/matlabConfigurator: examples/matlabConfigurator/CMakeFiles/matlabConfigurator.dir/src/main.c.o
 examples/matlabConfigurator/matlabConfigurator: examples/matlabConfigurator/CMakeFiles/matlabConfigurator.dir/build.make
-examples/matlabConfigurator/matlabConfigurator: library/libiuf-3.514a25fd.a
+examples/matlabConfigurator/matlabConfigurator: library/libiuf-3.d3fec7fd.a
 examples/matlabConfigurator/matlabConfigurator: /usr/local/Cellar/hdf5/1.10.4/lib/libhdf5.dylib
 examples/matlabConfigurator/matlabConfigurator: /usr/local/opt/szip/lib/libsz.dylib
 examples/matlabConfigurator/matlabConfigurator: /usr/lib/libz.dylib
