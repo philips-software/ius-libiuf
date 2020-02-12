@@ -1,6 +1,6 @@
 #include "iuf.h"
 #include <stdio.h>
-#include <unistd.h>
+#include "getopt.h"
 #include <string.h>
 #include <math.h>
 #include <iufPositionPrivate.h>

@@ -1,6 +1,7 @@
 include_directories(${HDF5_INCLUDE_DIR})
 
-link_directories(${CMAKE_SOURCE_DIR}/library/${CMAKE_SYSTEM_NAME})
+#link_directories(${CMAKE_SOURCE_DIR}/library/${CMAKE_SYSTEM_NAME})
+link_directories(${CMAKE_SOURCE_DIR}/library)
 add_executable(matlabConfigurator
         src/main.c
         )
