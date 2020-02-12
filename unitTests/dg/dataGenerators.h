@@ -59,6 +59,16 @@ iuif_t dgGenerateInputFile
 	int numChannels
 );
 
+iuif_t dgGenerateInputFileVerasonics
+(
+        char *ptestFileName,
+        char *transducerName,
+        char *label,
+        int numFrames,
+        int numSamplesPerLine,
+        int numChannels
+);
+
 iuiqf_t dgGenerateIqFile
 (
     char *ptestFileName,
@@ -84,6 +94,12 @@ iufl_t dgGenerateFrameList
 	int numFrames
 );
 
+iufl_t dgGenerateFrameListVerasonics
+(
+    int numFrames,
+    char *label
+);
+
 iupal_t dgGeneratePatternList
 (
 	int numPatterns,
@@ -96,7 +112,8 @@ iupald_t dgGeneratePatternListDict
 (
 	char *label,
 	iursd_t receiveSettingsDict,
-	iurcmd_t receiveChannelMapDict
+	iurcmd_t receiveChannelMapDict,
+	iusd_t sourceDict
 );
 
 iuiqpal_t dgGenerateIqPatternList
@@ -119,15 +136,30 @@ iupd_t dgGeneratePulseDict
     void
 );
 
+iupd_t dgGeneratePulseDictVerasonics
+(
+    void
+);
+
 iusd_t dgGenerateSourceDict
 (
     void
+);
+
+iusd_t dgGenerateSourceDictVerasonics(
+        char *label
 );
 
 iurcmd_t dgGenerateReceiveChannelMapDict
 (
 	char *label,
 	int numChannels
+);
+
+iurcmd_t dgGenerateReceiveChannelMapDictVerasonics
+(
+    char *label,
+    int numChannels
 );
 
 iurcm_t dgGenerateReceiveChannelMap
@@ -138,6 +170,12 @@ iurcm_t dgGenerateReceiveChannelMap
 iutad_t dgGenerateTransmitApodizationDict
 (
 	char *label
+);
+
+iutad_t dgGenerateTransmitApodizationDictVerasonics
+(
+        char *label,
+        int numElements
 );
 
 iurs_t dgGenerateReceiveSettings
